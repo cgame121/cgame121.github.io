@@ -4,12 +4,698 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>VOIDFALL — Idle Dungeon Crawler</title>
-<meta name="description" content="VOIDFALL: เกม idle dungeon crawler มินิมอล ลุยดันเจี้ยนอัตโนมัติ เก็บไอเทม สวมใส่อุปกรณ์ เลเวลอัพ">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%237C5CFC%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<style>
+/* ============================================
+   VOIDFALL — Design Tokens
+   ============================================ */
+:root {
+  /* Color */
+  --bg-void: #0B0D14;
+  --bg-panel: #12151F;
+  --bg-panel-raised: #181C2A;
+  --line: rgba(255,255,255,0.08);
+  --line-strong: rgba(255,255,255,0.14);
+  --text-primary: #E8E6E1;
+  --text-muted: #8B8FA3;
+  --text-faint: #5C6072;
+  --accent: #7C5CFC;
+  --accent-soft: rgba(124,92,252,0.18);
+  --danger: #FF6B5B;
+  --success: #3DDC97;
+  --gold: #F6C453;
+
+  /* Type */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Layout */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --gap: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(124,92,252,0.07), transparent 45%),
+    radial-gradient(circle at 85% 100%, rgba(61,220,151,0.05), transparent 40%);
+  min-height: 100vh;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ============================================
+   Top Bar
+   ============================================ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(11,13,20,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #B8A4FF, var(--accent) 70%);
+  box-shadow: 0 0 14px var(--accent-soft);
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+.player-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  max-width: 420px;
+  margin: 0 24px;
+}
+
+.level-badge {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.exp-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-panel-raised);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.exp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #B8A4FF);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.gold-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.gold-icon {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(246,196,83,0.6);
+}
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+.icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ============================================
+   Main Grid Layout
+   ============================================ */
+.main-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr 320px;
+  gap: var(--gap);
+  padding: var(--gap);
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin: 0 0 14px;
+  color: var(--text-primary);
+}
+.panel-subtitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 18px 0 10px;
+}
+
+.hint-text {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+
+/* ============================================
+   Character Panel
+   ============================================ */
+.char-panel { position: sticky; top: 84px; }
+
+.char-display {
+  position: relative;
+  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.char-aura {
+  position: absolute;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+  animation: pulse-aura 3.4s ease-in-out infinite;
+}
+@keyframes pulse-aura {
+  0%, 100% { transform: scale(0.92); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+.char-figure { width: 110px; height: 150px; position: relative; z-index: 1; }
+.char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
+.char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
+
+.stat-list { display: flex; flex-direction: column; gap: 8px; }
+.stat-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px;
+  padding: 7px 10px;
+  background: var(--bg-panel-raised);
+  border-radius: var(--radius-sm);
+}
+.stat-key { color: var(--text-muted); }
+.stat-val { font-weight: 600; font-family: var(--font-display); }
+
+.equip-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.equip-slot {
+  min-height: 64px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel-raised);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  position: relative;
+  padding: 10px 8px;
+}
+.equip-slot:hover { transform: translateY(-2px); border-color: var(--accent); }
+.equip-slot.filled { border-style: solid; }
+.equip-slot-label {
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 0;
+  text-align: left;
+  line-height: 1.8;
+  white-space: nowrap;
+}
+.equip-slot .item-icon { width: 24px; height: 24px; flex-shrink: 0; }
+
+/* ============================================
+   Stage / Battle Panel
+   ============================================ */
+.stage-panel { min-height: 640px; position: relative; }
+
+.dungeon-list { display: flex; flex-direction: column; gap: 10px; }
+
+.dungeon-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.dungeon-card:hover:not(.locked) { border-color: var(--accent); transform: translateX(2px); }
+.dungeon-card.locked { opacity: 0.45; cursor: not-allowed; }
+
+.dungeon-card-info { display: flex; flex-direction: column; gap: 4px; }
+.dungeon-card-name { font-family: var(--font-display); font-weight: 600; font-size: 14.5px; }
+.dungeon-card-desc { font-size: 12px; color: var(--text-muted); max-width: 360px; }
+.dungeon-card-level { font-size: 11px; color: var(--text-faint); }
+
+.dungeon-card-action {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dungeon-card.locked .dungeon-card-action { background: var(--bg-panel); color: var(--text-faint); }
+
+/* Battle stage */
+.battle-stage { display: flex; flex-direction: column; height: 100%; }
+.retreat-btn { align-self: flex-start; margin-bottom: 10px; }
+
+.stage-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 18px;
+}
+.stage-dungeon-name { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
+.stage-room-indicator { font-size: 12px; color: var(--text-muted); }
+
+.arena {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 1;
+  min-height: 320px;
+  padding: 20px 0;
+}
+
+.combatant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160px;
+  position: relative;
+  z-index: 2;
+}
+
+.combatant-aura {
+  position: absolute;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  top: 10px;
+  z-index: -1;
+}
+.aura-player { background: radial-gradient(circle, var(--accent-soft), transparent 70%); }
+.aura-monster { background: radial-gradient(circle, rgba(255,107,91,0.16), transparent 70%); }
+
+.combatant-figure { width: 92px; height: 120px; }
+.figure-player .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
+.figure-player .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
+.monster-shape { fill: #2A1B22; stroke: var(--danger); stroke-width: 1.5; }
+.monster-eye { fill: var(--danger); filter: drop-shadow(0 0 4px var(--danger)); }
+
+.hpbar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-panel-raised);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.hpbar-fill { height: 100%; transition: width 0.35s cubic-bezier(.2,.8,.3,1); }
+.hpbar-fill-player { background: linear-gradient(90deg, var(--accent), #B8A4FF); width: 100%; }
+.hpbar-fill-monster { background: linear-gradient(90deg, var(--danger), #FF9A8C); width: 100%; }
+
+.hpbar-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.monster-name { font-size: 12.5px; font-weight: 600; margin-top: 2px; color: var(--text-primary); }
+
+.vs-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-faint);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  z-index: 1;
+}
+
+/* attack animations */
+@keyframes lunge-right {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(46px); }
+  55% { transform: translateX(46px); }
+  100% { transform: translateX(0); }
+}
+@keyframes lunge-left {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(-46px); }
+  55% { transform: translateX(-46px); }
+  100% { transform: translateX(0); }
+}
+.attack-player .combatant-figure { animation: lunge-right 0.42s ease; }
+.attack-monster .combatant-figure { animation: lunge-left 0.42s ease; }
+
+@keyframes hit-flash {
+  0% { filter: brightness(1); }
+  30% { filter: brightness(2.4) saturate(0); }
+  100% { filter: brightness(1); }
+}
+.hit-flash .combatant-figure { animation: hit-flash 0.3s ease; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.shake { animation: shake 0.25s ease; }
+
+.fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.fx-particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  opacity: 0;
+}
+@keyframes particle-burst {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+}
+.fx-particle.burst { animation: particle-burst 0.55s ease-out forwards; }
+
+.fx-damage-text {
+  position: absolute;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+}
+.fx-damage-text.dmg-player-taken { color: var(--danger); }
+.fx-damage-text.dmg-monster-taken { color: var(--text-primary); }
+.fx-damage-text.dmg-crit { color: var(--gold); font-size: 23px; }
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(0) scale(0.8); }
+  15% { opacity: 1; transform: translateY(-6px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-46px) scale(1); }
+}
+.fx-damage-text.show { animation: float-up 0.9s ease-out forwards; }
+
+.combat-log {
+  margin-top: 16px;
+  height: 84px;
+  overflow-y: auto;
+  background: var(--bg-panel-raised);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.combat-log::-webkit-scrollbar { width: 4px; }
+.combat-log::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+.log-line-crit { color: var(--gold); }
+.log-line-defeat { color: var(--danger); font-weight: 600; }
+
+/* result overlay */
+.result-overlay {
+  position: absolute; inset: 0;
+  background: rgba(11,13,20,0.82);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-lg);
+  z-index: 30;
+}
+.result-card {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  text-align: center;
+  max-width: 320px;
+  animation: card-pop 0.3s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes card-pop {
+  0% { opacity: 0; transform: scale(0.9) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.result-card h3 {
+  font-family: var(--font-display);
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.result-card p { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+.result-loot {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 18px; min-height: 44px;
+}
+
+/* ============================================
+   Inventory Panel
+   ============================================ */
+.inv-panel { position: sticky; top: 84px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; }
+.inv-header { display: flex; justify-content: space-between; align-items: center; }
+.inv-count { font-size: 12px; color: var(--text-faint); }
+.inv-actions { margin: 10px 0 14px; }
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.inv-grid::-webkit-scrollbar { width: 5px; }
+.inv-grid::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+
+.inv-slot {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s, border-color 0.2s;
+}
+.inv-slot:hover { transform: translateY(-2px); }
+.inv-slot .item-icon { width: 28px; height: 28px; }
+.inv-slot.locked::after {
+  content: '';
+  position: absolute; top: 3px; right: 3px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+
+/* ============================================
+   Item icons (simple geometric SVG-like via CSS shapes / unicode-free)
+   ============================================ */
+.item-icon { display: inline-block; }
+.item-icon svg { width: 100%; height: 100%; }
+
+/* ============================================
+   Buttons
+   ============================================ */
+.btn-primary {
+  background: var(--accent);
+  color: white; border: none;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: filter 0.2s, transform 0.15s;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-primary:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+
+.btn-secondary {
+  background: var(--bg-panel-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--line-strong);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.btn-secondary:hover { border-color: var(--accent); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(255,107,91,0.4);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.btn-danger:hover { background: rgba(255,107,91,0.1); }
+
+.btn-text {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 4px 0;
+}
+.btn-text:hover { color: var(--text-primary); }
+
+.btn-small {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+.btn-small:hover { border-color: var(--accent); color: var(--text-primary); }
+
+.full-width { width: 100%; margin-top: 10px; }
+
+/* ============================================
+   Tooltip
+   ============================================ */
+.tooltip {
+  position: fixed;
+  z-index: 100;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  width: 220px;
+  font-size: 12.5px;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.tooltip-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.tooltip-rarity { font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+.tooltip-stat { display: flex; justify-content: space-between; color: var(--text-muted); padding: 2px 0; }
+.tooltip-stat span:last-child { color: var(--success); }
+.tooltip-actions { display: flex; gap: 6px; margin-top: 10px; }
+.tooltip-actions button {
+  flex: 1;
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+.tooltip-actions button:hover { border-color: var(--accent); }
+
+/* ============================================
+   Modal & toast
+   ============================================ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+}
+.modal-card {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  width: 300px;
+}
+.modal-card h3 { font-family: var(--font-display); margin: 0 0 16px; }
+
+.toast-container {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 300;
+  align-items: center;
+}
+.toast {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: 13px;
+  animation: toast-in 0.25s ease;
+}
+@keyframes toast-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hidden { display: none !important; }
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1100px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .char-panel, .inv-panel { position: static; max-height: none; }
+  .equip-slots { grid-template-columns: repeat(6, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .topbar { padding: 12px 14px; }
+  .player-summary { margin: 0 12px; }
+  .gold-pill span:not(.gold-icon) { font-size: 12px; }
+  .main-grid { padding: 10px; gap: 10px; }
+  .equip-slots { grid-template-columns: repeat(3, 1fr); }
+  .inv-grid { grid-template-columns: repeat(4, 1fr); }
+  .combatant { width: 110px; }
+  .combatant-figure { width: 70px; height: 96px; }
+  .arena { min-height: 220px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -162,11 +848,1147 @@
 <!-- ============ TOAST CONTAINER ============ -->
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="js/data.js"></script>
-<script src="js/items.js"></script>
-<script src="js/player.js"></script>
-<script src="js/combat.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/main.js"></script>
+<script>
+// ============================================
+// VOIDFALL - Game Data
+// ============================================
+
+const RARITY = {
+  common:    { label: "Common",    color: "#9CA3AF", glow: "rgba(156,163,175,0.45)", weight: 100, mult: 1.0 },
+  uncommon:  { label: "Uncommon",  color: "#3DDC97", glow: "rgba(61,220,151,0.5)",    weight: 55,  mult: 1.35 },
+  rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.85 },
+  epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.6 },
+  legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 3.8 },
+};
+
+const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary"];
+
+// Slot definitions
+const SLOTS = ["weapon", "head", "body", "hands", "feet", "trinket"];
+const SLOT_LABEL = {
+  weapon: "อาวุธ", head: "หัว", body: "ตัว", hands: "มือ", feet: "เท้า", trinket: "เครื่องประดับ",
+};
+
+// Base item templates per slot (stat ranges scale with rarity mult + item level)
+const ITEM_TEMPLATES = {
+  weapon: [
+    { name: "มีดสั้นเงา", primary: "atk", icon: "blade" },
+    { name: "ดาบหักแสง", primary: "atk", icon: "blade" },
+    { name: "คทาวิญญาณ", primary: "atk", icon: "staff" },
+  ],
+  head: [
+    { name: "หมวกคลุมราตรี", primary: "def", icon: "helm" },
+    { name: "มงกุฎเถ้าถ่าน", primary: "hp", icon: "helm" },
+  ],
+  body: [
+    { name: "เกราะเศษดาว", primary: "def", icon: "armor" },
+    { name: "เสื้อคลุมหมอกควัน", primary: "hp", icon: "armor" },
+  ],
+  hands: [
+    { name: "ปลอกมือกระดูก", primary: "crit", icon: "gloves" },
+    { name: "ถุงมือนักล่า", primary: "atk", icon: "gloves" },
+  ],
+  feet: [
+    { name: "รองเท้าสายลม", primary: "spd", icon: "boots" },
+    { name: "บูทเงาราตรี", primary: "def", icon: "boots" },
+  ],
+  trinket: [
+    { name: "หินวิญญาณ", primary: "crit", icon: "gem" },
+    { name: "เศษแก้วต้องสาป", primary: "atk", icon: "gem" },
+  ],
+};
+
+// Dungeons - 8 total, each with 4 normal rooms + 1 boss room
+const DUNGEONS = [
+  {
+    id: "d1", name: "ป่าเถ้าจาง", minLevel: 1,
+    desc: "ป่าที่แสงแดดไม่เคยลอดผ่าน เถ้าฝุ่นลอยอยู่กลางอากาศตลอดเวลา",
+    monsterPool: ["หนูเงา", "ค้างคาวมืด", "หมาป่าซีด"],
+    boss: { name: "ราชาหมาป่าเถ้า", hpMult: 4.5 },
+    baseHp: 18, baseAtk: 4, baseDef: 1, goldMult: 1, expMult: 1,
+    dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0 },
+  },
+  {
+    id: "d2", name: "สุสานเสียงครวญ", minLevel: 4,
+    desc: "หลุมศพเก่าที่ไม่มีใครจดจำชื่อผู้ตาย เสียงครวญลอยมาตามลม",
+    monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "วิญญาณคร่ำครวญ"],
+    boss: { name: "เจ้าสุสานไร้นาม", hpMult: 5 },
+    baseHp: 32, baseAtk: 7, baseDef: 3, goldMult: 1.4, expMult: 1.3,
+    dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0 },
+  },
+  {
+    id: "d3", name: "เหมืองคริสตัลร้าง", minLevel: 8,
+    desc: "เหมืองที่ขุดลึกเกินไปจนปลุกสิ่งที่หลับใหลขึ้นมา",
+    monsterPool: ["โกเลมคริสตัล", "ค้างคาวพิษ", "แมงมุมเหมือง"],
+    boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 5.5 },
+    baseHp: 55, baseAtk: 11, baseDef: 6, goldMult: 1.9, expMult: 1.6,
+    dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0 },
+  },
+  {
+    id: "d4", name: "หอคอยกระจกแตก", minLevel: 13,
+    desc: "หอคอยที่กระจกทุกบานสะท้อนภาพไม่ตรงกับความจริง",
+    monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
+    boss: { name: "จอมเวทกระจกมืด", hpMult: 6 },
+    baseHp: 88, baseAtk: 17, baseDef: 10, goldMult: 2.5, expMult: 2.1,
+    dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1 },
+  },
+  {
+    id: "d5", name: "ทะเลทรายเลือดแห้ง", minLevel: 19,
+    desc: "ทรายสีแดงคล้ำที่จดจำสงครามครั้งใหญ่ในอดีต",
+    monsterPool: ["นักรบทรายผุ", "อสรพิษเพลิง", "หัวขโมยทะเลทราย"],
+    boss: { name: "จอมทัพทรายเดือด", hpMult: 6.5 },
+    baseHp: 130, baseAtk: 25, baseDef: 15, goldMult: 3.2, expMult: 2.7,
+    dropTable: { common: 28, uncommon: 38, rare: 24, epic: 9, legendary: 1 },
+  },
+  {
+    id: "d6", name: "วิหารใต้นทีดำ", minLevel: 26,
+    desc: "วิหารจมอยู่ใต้แม่น้ำที่ไม่มีแสงใดส่องถึง",
+    monsterPool: ["นักบวชจมน้ำ", "งูทะเลลึก", "เทพปลอมแปลง"],
+    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 7 },
+    baseHp: 195, baseAtk: 36, baseDef: 22, goldMult: 4.1, expMult: 3.4,
+    dropTable: { common: 20, uncommon: 36, rare: 28, epic: 14, legendary: 2 },
+  },
+  {
+    id: "d7", name: "ป้อมปราการเหล็กกล้า", minLevel: 34,
+    desc: "ป้อมที่ครั้งหนึ่งปกป้องอาณาจักร บัดนี้กลับหันมาทำลายผู้บุกรุก",
+    monsterPool: ["ทหารเหล็กพัง", "ปืนใหญ่วิญญาณ", "แม่ทัพไร้หัว"],
+    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 7.5 },
+    baseHp: 280, baseAtk: 50, baseDef: 32, goldMult: 5.3, expMult: 4.3,
+    dropTable: { common: 14, uncommon: 32, rare: 30, epic: 20, legendary: 4 },
+  },
+  {
+    id: "d8", name: "ห้วงดิ่งสุดท้าย", minLevel: 43,
+    desc: "จุดสิ้นสุดของดันเจี้ยนทั้งมวล ที่ความมืดไม่มีก้นบึ้ง",
+    monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "วิญญาณพลัดถิ่น"],
+    boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 8.5 },
+    baseHp: 420, baseAtk: 70, baseDef: 45, goldMult: 7, expMult: 5.8,
+    dropTable: { common: 8, uncommon: 24, rare: 32, epic: 28, legendary: 8 },
+  },
+];
+
+// Player base stats at level 1
+const PLAYER_BASE = {
+  hp: 50, atk: 8, def: 3, crit: 5, spd: 1.0,
+};
+
+// Stat growth per level
+const LEVEL_GROWTH = {
+  hp: 8, atk: 1.6, def: 0.7, crit: 0.15,
+};
+
+// EXP needed for next level: formula based
+function expForLevel(level) {
+  return Math.floor(25 * Math.pow(level, 1.55));
+}
+
+
+// ============================================
+// VOIDFALL - Item generation & inventory logic
+// ============================================
+
+let itemUid = 0;
+function nextItemId() {
+  itemUid += 1;
+  return "it_" + Date.now().toString(36) + "_" + itemUid;
+}
+
+function rollRarity(dropTable) {
+  const entries = RARITY_ORDER.map(r => [r, dropTable[r] || 0]);
+  const total = entries.reduce((s, [, w]) => s + w, 0);
+  let roll = Math.random() * total;
+  for (const [r, w] of entries) {
+    if (roll < w) return r;
+    roll -= w;
+  }
+  return "common";
+}
+
+function generateItem(dungeon, dropTable) {
+  const slot = SLOTS[Math.floor(Math.random() * SLOTS.length)];
+  const templates = ITEM_TEMPLATES[slot];
+  const template = templates[Math.floor(Math.random() * templates.length)];
+  const rarity = rollRarity(dropTable);
+  const rarityInfo = RARITY[rarity];
+
+  // item level roughly tied to dungeon's minLevel range
+  const itemLevel = dungeon.minLevel + Math.floor(Math.random() * 5);
+
+  const statBudget = (itemLevel * 1.8 + 4) * rarityInfo.mult;
+  const stats = {};
+
+  // Primary stat gets the bulk
+  const primaryKey = template.primary;
+  stats[primaryKey] = roundStat(primaryKey, statBudget * 0.65);
+
+  // secondary stats - pick 1-2 random extras depending on rarity
+  const extraCount = rarity === "common" ? 0 : rarity === "uncommon" ? 1 : rarity === "rare" ? 1 : 2;
+  const possibleSecondary = ["atk", "def", "hp", "crit", "spd"].filter(k => k !== primaryKey);
+  shuffleArray(possibleSecondary);
+  for (let i = 0; i < extraCount; i++) {
+    const key = possibleSecondary[i];
+    stats[key] = roundStat(key, statBudget * (0.18 + Math.random() * 0.1));
+  }
+
+  return {
+    id: nextItemId(),
+    slot,
+    name: template.name,
+    icon: template.icon,
+    rarity,
+    itemLevel,
+    stats,
+    locked: false,
+  };
+}
+
+function roundStat(key, value) {
+  if (key === "crit" || key === "spd") {
+    return Math.round(value * 10) / 10 / (key === "spd" ? 8 : 1);
+  }
+  return Math.max(1, Math.round(value));
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function statLabel(key) {
+  return { atk: "พลังโจมตี", def: "ป้องกัน", hp: "พลังชีวิต", crit: "คริติคอล", spd: "ความเร็ว" }[key] || key;
+}
+
+function statValueDisplay(key, value) {
+  if (key === "crit") return "+" + value + "%";
+  if (key === "spd") return "+" + value.toFixed(2);
+  return "+" + value;
+}
+
+function sellValue(item) {
+  const rarityInfo = RARITY[item.rarity];
+  return Math.max(2, Math.round(item.itemLevel * 1.5 * rarityInfo.mult));
+}
+
+function computeItemPower(item) {
+  return Object.values(item.stats).reduce((s, v) => s + v, 0) * RARITY[item.rarity].mult;
+}
+
+
+// ============================================
+// VOIDFALL - Player state & stat computation
+// ============================================
+
+const SAVE_KEY = "voidfall_save_v1";
+
+function createNewPlayer() {
+  return {
+    level: 1,
+    exp: 0,
+    gold: 0,
+    unlockedDungeonIndex: 0, // can play DUNGEONS[0..unlockedDungeonIndex]
+    equipment: {
+      weapon: null, head: null, body: null, hands: null, feet: null, trinket: null,
+    },
+    inventory: [], // array of item objects
+    currentHp: null, // set after computing maxHp
+    lastSeenTimestamp: Date.now(),
+    stats: {
+      monstersKilled: 0,
+      bossesKilled: 0,
+      itemsFound: 0,
+      deepestDungeon: 0,
+    },
+  };
+}
+
+function getPlayerBaseStats(level) {
+  const lvl = level - 1;
+  return {
+    hp: Math.round(PLAYER_BASE.hp + LEVEL_GROWTH.hp * lvl),
+    atk: Math.round(PLAYER_BASE.atk + LEVEL_GROWTH.atk * lvl),
+    def: Math.round(PLAYER_BASE.def + LEVEL_GROWTH.def * lvl),
+    crit: Math.round((PLAYER_BASE.crit + LEVEL_GROWTH.crit * lvl) * 10) / 10,
+    spd: PLAYER_BASE.spd,
+  };
+}
+
+function getEquipmentStats(player) {
+  const total = { atk: 0, def: 0, hp: 0, crit: 0, spd: 0 };
+  for (const slot of SLOTS) {
+    const item = player.equipment[slot];
+    if (!item) continue;
+    for (const [k, v] of Object.entries(item.stats)) {
+      total[k] = (total[k] || 0) + v;
+    }
+  }
+  return total;
+}
+
+function getTotalStats(player) {
+  const base = getPlayerBaseStats(player.level);
+  const eq = getEquipmentStats(player);
+  return {
+    hp: base.hp + (eq.hp || 0),
+    atk: base.atk + (eq.atk || 0),
+    def: base.def + (eq.def || 0),
+    crit: Math.min(75, base.crit + (eq.crit || 0)),
+    spd: base.spd + (eq.spd || 0),
+  };
+}
+
+function gainExp(player, amount, onLevelUp) {
+  player.exp += amount;
+  let leveled = false;
+  while (player.exp >= expForLevel(player.level)) {
+    player.exp -= expForLevel(player.level);
+    player.level += 1;
+    leveled = true;
+  }
+  if (leveled && onLevelUp) onLevelUp();
+  return leveled;
+}
+
+// NOTE: Artifact sandboxes disallow browser storage (localStorage/sessionStorage).
+// Progress is kept in-memory for the current session via __VOIDFALL_MEMORY__.
+// Refreshing the artifact preview will reset progress; this is an environment
+// constraint, not a bug. Closing/reopening within the same render keeps state.
+window.__VOIDFALL_MEMORY__ = window.__VOIDFALL_MEMORY__ || { save: null };
+
+function savePlayer(player) {
+  player.lastSeenTimestamp = Date.now();
+  try {
+    window.__VOIDFALL_MEMORY__.save = JSON.stringify(player);
+  } catch (e) {
+    console.warn("Save failed", e);
+  }
+}
+
+function loadPlayer() {
+  try {
+    const raw = window.__VOIDFALL_MEMORY__.save;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // basic shape repair in case of future schema additions
+    if (!parsed.equipment) parsed.equipment = {};
+    for (const slot of SLOTS) {
+      if (parsed.equipment[slot] === undefined) parsed.equipment[slot] = null;
+    }
+    if (!parsed.inventory) parsed.inventory = [];
+    if (!parsed.stats) parsed.stats = { monstersKilled: 0, bossesKilled: 0, itemsFound: 0, deepestDungeon: 0 };
+    return parsed;
+  } catch (e) {
+    console.warn("Load failed", e);
+    return null;
+  }
+}
+
+function wipeSave() {
+  window.__VOIDFALL_MEMORY__.save = null;
+}
+
+
+// ============================================
+// VOIDFALL - Combat Engine
+// ============================================
+
+const ROOMS_PER_DUNGEON = 5; // 4 normal + 1 boss
+
+function generateMonster(dungeon, roomIndex, player) {
+  const isBoss = roomIndex === ROOMS_PER_DUNGEON - 1;
+  const scale = 1 + roomIndex * 0.18;
+  const name = isBoss
+    ? dungeon.boss.name
+    : dungeon.monsterPool[Math.floor(Math.random() * dungeon.monsterPool.length)];
+
+  const hpMult = isBoss ? dungeon.boss.hpMult : 1;
+
+  return {
+    name,
+    isBoss,
+    maxHp: Math.round(dungeon.baseHp * scale * hpMult),
+    hp: Math.round(dungeon.baseHp * scale * hpMult),
+    atk: Math.round(dungeon.baseAtk * scale * (isBoss ? 1.4 : 1)),
+    def: Math.round(dungeon.baseDef * scale * (isBoss ? 1.3 : 1)),
+    spd: 0.85 + Math.random() * 0.3,
+  };
+}
+
+// Combat is resolved as a sequence of discrete "ticks" the UI can animate through.
+// Each tick = one attack from either side, determined by relative speed using an
+// accumulator model so higher SPD attacks more often.
+function simulateBattle(player, monster) {
+  const stats = getTotalStats(player);
+  const playerState = { hp: player.currentHp != null ? player.currentHp : stats.hp, maxHp: stats.hp, spdAcc: 0 };
+  const monsterState = { hp: monster.hp, maxHp: monster.maxHp, spdAcc: 0 };
+
+  const log = [];
+  let tickGuard = 0;
+
+  while (playerState.hp > 0 && monsterState.hp > 0 && tickGuard < 500) {
+    tickGuard++;
+    playerState.spdAcc += stats.spd;
+    monsterState.spdAcc += monster.spd;
+
+    // whoever crosses threshold first acts; loop until someone does, allow both in same pass
+    if (playerState.spdAcc >= 1) {
+      playerState.spdAcc -= 1;
+      const result = resolveAttack(stats.atk, monster.def, stats.crit);
+      monsterState.hp = Math.max(0, monsterState.hp - result.damage);
+      log.push({ actor: "player", ...result, targetHpAfter: monsterState.hp, targetMaxHp: monsterState.maxHp });
+      if (monsterState.hp <= 0) break;
+    }
+    if (monsterState.spdAcc >= 1) {
+      monsterState.spdAcc -= 1;
+      const result = resolveAttack(monster.atk, stats.def, 5);
+      playerState.hp = Math.max(0, playerState.hp - result.damage);
+      log.push({ actor: "monster", ...result, targetHpAfter: playerState.hp, targetMaxHp: playerState.maxHp });
+      if (playerState.hp <= 0) break;
+    }
+  }
+
+  return {
+    log,
+    playerWon: monsterState.hp <= 0 && playerState.hp > 0,
+    playerFinalHp: playerState.hp,
+    playerMaxHp: playerState.maxHp,
+  };
+}
+
+function resolveAttack(atk, def, critChance) {
+  const mitigated = Math.max(1, Math.round(atk - def * 0.5));
+  const variance = 0.85 + Math.random() * 0.3;
+  let damage = Math.round(mitigated * variance);
+  const isCrit = Math.random() * 100 < critChance;
+  if (isCrit) damage = Math.round(damage * 1.75);
+  return { damage, isCrit };
+}
+
+function rollLoot(dungeon) {
+  // 65% chance of an item drop per kill, 100% for boss
+  return generateItem(dungeon, dungeon.dropTable);
+}
+
+function goldDropForKill(dungeon, isBoss) {
+  const base = 4 + dungeon.minLevel * 1.4;
+  return Math.round(base * dungeon.goldMult * (isBoss ? 4.5 : 1) * (0.85 + Math.random() * 0.3));
+}
+
+function expDropForKill(dungeon, isBoss) {
+  const base = 6 + dungeon.minLevel * 1.8;
+  return Math.round(base * dungeon.expMult * (isBoss ? 4 : 1) * (0.85 + Math.random() * 0.3));
+}
+
+
+// ============================================
+// VOIDFALL - UI Rendering
+// ============================================
+
+const ICONS = {
+  blade: `<svg viewBox="0 0 24 24"><path d="M4 20L16 8M16 8l3-3M16 8l1.5 1.5M19 5l1.5 1.5M4 20l2-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`,
+  staff: `<svg viewBox="0 0 24 24"><path d="M12 21V5M12 5a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`,
+  helm: `<svg viewBox="0 0 24 24"><path d="M4 14c0-5 3.5-9 8-9s8 4 8 9v3H4v-3z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M4 14h16" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  armor: `<svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg>`,
+  gloves: `<svg viewBox="0 0 24 24"><path d="M7 21V11a2 2 0 114 0v3M11 14v-5a2 2 0 114 0v5M15 14v-3a2 2 0 114 0v6c0 3-2 5-5 5H9a4 4 0 01-4-4v-3l2-2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  boots: `<svg viewBox="0 0 24 24"><path d="M8 3v9l-5 4v3h17c0-4-3-5-6-6V3H8z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg>`,
+  gem: `<svg viewBox="0 0 24 24"><path d="M6 9l6-6 6 6-6 12-6-12z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M6 9h12M9 9l3 12M15 9l-3 12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
+};
+
+function iconHtml(icon, color) {
+  return `<span class="item-icon" style="color:${color}">${ICONS[icon] || ""}</span>`;
+}
+
+function fmtNum(n) {
+  return Math.round(n).toLocaleString("en-US");
+}
+
+// ---------- HUD ----------
+function renderHud(player) {
+  document.getElementById("hudLevel").textContent = player.level;
+  document.getElementById("hudGold").textContent = fmtNum(player.gold);
+  const pct = Math.min(100, (player.exp / expForLevel(player.level)) * 100);
+  document.getElementById("hudExpFill").style.width = pct + "%";
+}
+
+// ---------- Stats panel ----------
+function renderStats(player) {
+  const s = getTotalStats(player);
+  document.getElementById("statHp").textContent = fmtNum(s.hp);
+  document.getElementById("statAtk").textContent = fmtNum(s.atk);
+  document.getElementById("statDef").textContent = fmtNum(s.def);
+  document.getElementById("statCrit").textContent = s.crit.toFixed(1) + "%";
+  document.getElementById("statSpd").textContent = s.spd.toFixed(2);
+}
+
+// ---------- Equipment slots ----------
+function renderEquipSlots(player, onSlotClick) {
+  const container = document.getElementById("equipSlots");
+  container.innerHTML = "";
+  for (const slot of SLOTS) {
+    const item = player.equipment[slot];
+    const el = document.createElement("div");
+    el.className = "equip-slot" + (item ? " filled" : "");
+    if (item) {
+      el.style.borderColor = RARITY[item.rarity].color;
+      el.style.boxShadow = `0 0 10px ${RARITY[item.rarity].glow}`;
+      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color);
+    } else {
+      el.innerHTML = `<span class="equip-slot-label">${SLOT_LABEL[slot]}</span>`;
+    }
+    el.addEventListener("click", (e) => onSlotClick(slot, item, e));
+    if (item) {
+      el.addEventListener("mouseenter", (e) => showTooltip(item, e, { equippedSlot: slot }));
+      el.addEventListener("mousemove", positionTooltip);
+      el.addEventListener("mouseleave", hideTooltip);
+    }
+    container.appendChild(el);
+  }
+}
+
+// ---------- Dungeon list ----------
+function renderDungeonList(player, onSelect) {
+  const container = document.getElementById("dungeonList");
+  container.innerHTML = "";
+  DUNGEONS.forEach((d, idx) => {
+    const locked = idx > player.unlockedDungeonIndex;
+    const el = document.createElement("div");
+    el.className = "dungeon-card" + (locked ? " locked" : "");
+    el.innerHTML = `
+      <div class="dungeon-card-info">
+        <span class="dungeon-card-name">${d.name}</span>
+        <span class="dungeon-card-desc">${d.desc}</span>
+        <span class="dungeon-card-level">เลเวลแนะนำ ${d.minLevel}+</span>
+      </div>
+      <button class="dungeon-card-action" ${locked ? "disabled" : ""}>${locked ? "ปิดอยู่" : "ลุย"}</button>
+    `;
+    if (!locked) {
+      el.addEventListener("click", () => onSelect(idx));
+    }
+    container.appendChild(el);
+  });
+}
+
+// ---------- Inventory grid ----------
+function renderInventory(player, handlers) {
+  const grid = document.getElementById("invGrid");
+  document.getElementById("invCount").textContent = `${player.inventory.length}/60`;
+  grid.innerHTML = "";
+  player.inventory.forEach((item) => {
+    const el = document.createElement("div");
+    el.className = "inv-slot" + (item.locked ? " locked" : "");
+    el.style.borderColor = RARITY[item.rarity].color + "55";
+    el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color);
+    el.addEventListener("mouseenter", (e) => showTooltip(item, e, { inventoryItem: true }));
+    el.addEventListener("mousemove", positionTooltip);
+    el.addEventListener("mouseleave", hideTooltip);
+    el.addEventListener("click", () => handlers.onEquip(item));
+    grid.appendChild(el);
+  });
+}
+
+// ---------- Tooltip ----------
+let tooltipCtx = null;
+function showTooltip(item, evt, ctx) {
+  tooltipCtx = { item, ...ctx };
+  const tip = document.getElementById("itemTooltip");
+  const rarityInfo = RARITY[item.rarity];
+  const statsHtml = Object.entries(item.stats).map(([k, v]) =>
+    `<div class="tooltip-stat"><span>${statLabel(k)}</span><span>${statValueDisplay(k, v)}</span></div>`
+  ).join("");
+
+  let actionsHtml = "";
+  if (ctx.inventoryItem) {
+    actionsHtml = `<div class="tooltip-actions">
+      <button data-act="equip">สวม</button>
+      <button data-act="lock">${item.locked ? "ปลดล็อก" : "ล็อก"}</button>
+      <button data-act="sell">ขาย ${sellValue(item)}g</button>
+    </div>`;
+  } else if (ctx.equippedSlot) {
+    actionsHtml = `<div class="tooltip-actions"><button data-act="unequip">ถอด</button></div>`;
+  }
+
+  tip.innerHTML = `
+    <div class="tooltip-name" style="color:${rarityInfo.color}">${item.name}</div>
+    <div class="tooltip-rarity" style="color:${rarityInfo.color}">${rarityInfo.label} · Lv.${item.itemLevel}</div>
+    ${statsHtml}
+    ${actionsHtml}
+  `;
+  tip.classList.remove("hidden");
+  positionTooltip(evt);
+
+  tip.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const act = btn.dataset.act;
+      if (window.__tooltipActionHandler) window.__tooltipActionHandler(act, item);
+    });
+  });
+}
+function positionTooltip(evt) {
+  const tip = document.getElementById("itemTooltip");
+  if (tip.classList.contains("hidden")) return;
+  const padding = 14;
+  let x = evt.clientX + padding;
+  let y = evt.clientY + padding;
+  const rect = tip.getBoundingClientRect();
+  if (x + rect.width > window.innerWidth - 10) x = evt.clientX - rect.width - padding;
+  if (y + rect.height > window.innerHeight - 10) y = evt.clientY - rect.height - padding;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+}
+function hideTooltip() {
+  document.getElementById("itemTooltip").classList.add("hidden");
+}
+
+// ---------- Toast ----------
+function showToast(message) {
+  const container = document.getElementById("toastContainer");
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = message;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+}
+
+// ---------- Battle stage rendering ----------
+function setArenaCombatants(player, monster) {
+  const stats = getTotalStats(player);
+  document.getElementById("monsterNameLabel").textContent = monster.name;
+  updateHpBar("player", player.currentHp, stats.hp);
+  updateHpBar("monster", monster.hp, monster.maxHp);
+}
+
+function updateHpBar(who, hp, maxHp) {
+  const pct = Math.max(0, (hp / maxHp) * 100);
+  document.getElementById(who + "HpFill").style.width = pct + "%";
+  document.getElementById(who + "HpLabel").textContent = `${fmtNum(Math.max(0,hp))}/${fmtNum(maxHp)}`;
+}
+
+function appendCombatLog(text, cls) {
+  const log = document.getElementById("combatLog");
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = text;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+  while (log.children.length > 40) log.removeChild(log.firstChild);
+}
+
+function clearCombatLog() {
+  document.getElementById("combatLog").innerHTML = "";
+}
+
+// ---------- Combat FX ----------
+function playAttackAnim(actor) {
+  const playerEl = document.getElementById("arenaPlayer").closest(".combatant");
+  const monsterEl = document.getElementById("arenaMonster").closest(".combatant");
+  const attacker = actor === "player" ? playerEl : monsterEl;
+  const defender = actor === "player" ? monsterEl : playerEl;
+
+  const attackCls = actor === "player" ? "attack-player" : "attack-monster";
+  attacker.classList.add(attackCls);
+  setTimeout(() => attacker.classList.remove(attackCls), 450);
+
+  setTimeout(() => {
+    defender.classList.add("hit-flash", "shake");
+    setTimeout(() => defender.classList.remove("hit-flash", "shake"), 320);
+    spawnParticles(defender);
+  }, 190);
+}
+
+function spawnParticles(targetEl) {
+  const fxLayer = document.getElementById("fxLayer");
+  const arenaRect = fxLayer.getBoundingClientRect();
+  const targetRect = targetEl.getBoundingClientRect();
+  const cx = targetRect.left - arenaRect.left + targetRect.width / 2;
+  const cy = targetRect.top - arenaRect.top + targetRect.height / 2.4;
+
+  for (let i = 0; i < 7; i++) {
+    const p = document.createElement("div");
+    p.className = "fx-particle burst";
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 24 + Math.random() * 30;
+    p.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+    p.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+    p.style.left = cx + "px";
+    p.style.top = cy + "px";
+    fxLayer.appendChild(p);
+    setTimeout(() => p.remove(), 600);
+  }
+}
+
+function spawnDamageText(actor, damage, isCrit) {
+  const fxLayer = document.getElementById("fxLayer");
+  const targetEl = (actor === "player" ? document.getElementById("arenaPlayer") : document.getElementById("arenaMonster")).closest(".combatant");
+  const arenaRect = fxLayer.getBoundingClientRect();
+  const targetRect = targetEl.getBoundingClientRect();
+  const cx = targetRect.left - arenaRect.left + targetRect.width / 2;
+  const cy = targetRect.top - arenaRect.top + 10;
+
+  const el = document.createElement("div");
+  el.className = "fx-damage-text " + (isCrit ? "dmg-crit" : (actor === "player" ? "dmg-player-taken" : "dmg-monster-taken"));
+  el.textContent = (isCrit ? "✦ " : "") + damage;
+  el.style.left = (cx - 14) + "px";
+  el.style.top = cy + "px";
+  fxLayer.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("show"));
+  setTimeout(() => el.remove(), 950);
+}
+
+
+// ============================================
+// VOIDFALL - Main Game Controller
+// ============================================
+
+let player = loadPlayer() || createNewPlayer();
+let currentDungeonIndex = null;
+let currentRoomIndex = 0;
+let currentMonster = null;
+let battleTimer = null;
+let inBattleTransition = false;
+
+const BATTLE_TICK_MS = 850; // pace of auto-battle exchanges shown to the player
+
+function init() {
+  // ensure currentHp is valid
+  const stats = getTotalStats(player);
+  if (player.currentHp == null || player.currentHp <= 0) player.currentHp = stats.hp;
+  player.currentHp = Math.min(player.currentHp, stats.hp);
+
+  applyOfflineProgress();
+
+  renderAll();
+  bindGlobalEvents();
+  showDungeonSelectView();
+
+  // autosave loop
+  setInterval(() => savePlayer(player), 10000);
+  window.addEventListener("beforeunload", () => savePlayer(player));
+}
+
+function renderAll() {
+  renderHud(player);
+  renderStats(player);
+  renderEquipSlots(player, onEquipSlotClick);
+  renderDungeonList(player, enterDungeon);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+}
+
+// ============================================
+// Offline progress (idle gold while away, capped)
+// ============================================
+function applyOfflineProgress() {
+  const last = player.lastSeenTimestamp || Date.now();
+  const elapsedMs = Date.now() - last;
+  const cappedMs = Math.min(elapsedMs, 1000 * 60 * 60 * 4); // cap at 4 hours
+  if (cappedMs < 60000) return; // less than a minute, ignore
+
+  const minutes = cappedMs / 60000;
+  const dungeon = DUNGEONS[Math.max(0, player.unlockedDungeonIndex)];
+  const goldPerMin = 1.2 * (dungeon.goldMult || 1) * (1 + player.level * 0.05);
+  const earned = Math.round(goldPerMin * minutes);
+  if (earned > 0) {
+    player.gold += earned;
+    setTimeout(() => showToast(`ขณะที่คุณไม่อยู่ ได้รับทองคำ ${fmtNum(earned)} จากการสำรวจ`), 600);
+  }
+}
+
+// ============================================
+// View switching
+// ============================================
+function showDungeonSelectView() {
+  document.getElementById("dungeonSelectView").classList.remove("hidden");
+  document.getElementById("battleStageView").classList.add("hidden");
+  document.getElementById("resultOverlay").classList.add("hidden");
+  stopBattleLoop();
+  renderDungeonList(player, enterDungeon);
+}
+
+function showBattleStageView() {
+  document.getElementById("dungeonSelectView").classList.add("hidden");
+  document.getElementById("battleStageView").classList.remove("hidden");
+}
+
+// ============================================
+// Dungeon flow
+// ============================================
+function enterDungeon(idx) {
+  currentDungeonIndex = idx;
+  currentRoomIndex = 0;
+  const stats = getTotalStats(player);
+  player.currentHp = stats.hp; // full heal on entry
+
+  showBattleStageView();
+  clearCombatLog();
+  document.getElementById("stageDungeonName").textContent = DUNGEONS[idx].name;
+  spawnRoom();
+}
+
+function spawnRoom() {
+  const dungeon = DUNGEONS[currentDungeonIndex];
+  document.getElementById("stageRoomIndicator").textContent =
+    currentRoomIndex === ROOMS_PER_DUNGEON - 1
+      ? `ห้องบอส (${ROOMS_PER_DUNGEON}/${ROOMS_PER_DUNGEON})`
+      : `ห้อง ${currentRoomIndex + 1}/${ROOMS_PER_DUNGEON}`;
+
+  currentMonster = generateMonster(dungeon, currentRoomIndex, player);
+  setArenaCombatants(player, currentMonster);
+  appendCombatLog(`พบ ${currentMonster.name}${currentMonster.isBoss ? " (บอส)" : ""}`);
+
+  startBattleLoop();
+}
+
+function startBattleLoop() {
+  stopBattleLoop();
+  battleTimer = setInterval(runBattleTick, BATTLE_TICK_MS);
+}
+function stopBattleLoop() {
+  if (battleTimer) clearInterval(battleTimer);
+  battleTimer = null;
+}
+
+// We run the full simulateBattle once per "room" lazily isn't idle-friendly for animation,
+// so instead we step the fight one exchange at a time using a persistent mini state.
+let exchangeState = null;
+
+function runBattleTick() {
+  if (inBattleTransition) return;
+  const dungeon = DUNGEONS[currentDungeonIndex];
+  const stats = getTotalStats(player);
+
+  if (!exchangeState || exchangeState.monster !== currentMonster) {
+    exchangeState = {
+      monster: currentMonster,
+      monsterHp: currentMonster.hp,
+      playerSpdAcc: 0,
+      monsterSpdAcc: 0,
+    };
+  }
+
+  exchangeState.playerSpdAcc += stats.spd;
+  exchangeState.monsterSpdAcc += currentMonster.spd;
+
+  let playerActed = false, monsterActed = false;
+
+  if (exchangeState.playerSpdAcc >= 1 && exchangeState.monsterHp > 0) {
+    exchangeState.playerSpdAcc -= 1;
+    const result = resolveAttack(stats.atk, currentMonster.def, stats.crit);
+    exchangeState.monsterHp = Math.max(0, exchangeState.monsterHp - result.damage);
+    currentMonster.hp = exchangeState.monsterHp;
+    playAttackAnim("player");
+    setTimeout(() => spawnDamageText("monster", result.damage, result.isCrit), 190);
+    updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
+    appendCombatLog(`คุณโจมตี ${currentMonster.name} ${result.isCrit ? "(คริติคอล) " : ""}-${result.damage}`, result.isCrit ? "log-line-crit" : null);
+    playerActed = true;
+  }
+
+  if (exchangeState.monsterHp <= 0) {
+    setTimeout(() => onMonsterDefeated(), 500);
+    return;
+  }
+
+  if (exchangeState.monsterSpdAcc >= 1) {
+    exchangeState.monsterSpdAcc -= 1;
+    const result = resolveAttack(currentMonster.atk, stats.def, 5);
+    player.currentHp = Math.max(0, player.currentHp - result.damage);
+    setTimeout(() => {
+      playAttackAnim("monster");
+      setTimeout(() => spawnDamageText("player", result.damage, result.isCrit), 190);
+      updateHpBar("player", player.currentHp, stats.hp);
+    }, playerActed ? 420 : 0);
+    appendCombatLog(`${currentMonster.name} โจมตีคุณ ${result.isCrit ? "(คริติคอล) " : ""}-${result.damage}`, result.isCrit ? "log-line-crit" : null);
+    monsterActed = true;
+  }
+
+  if (player.currentHp <= 0) {
+    setTimeout(() => onPlayerDefeated(), monsterActed ? 700 : 100);
+  }
+}
+
+function onMonsterDefeated() {
+  stopBattleLoop();
+  inBattleTransition = true;
+  const dungeon = DUNGEONS[currentDungeonIndex];
+  const isBoss = currentMonster.isBoss;
+
+  player.stats.monstersKilled += 1;
+  if (isBoss) player.stats.bossesKilled += 1;
+
+  const gold = goldDropForKill(dungeon, isBoss);
+  const exp = expDropForKill(dungeon, isBoss);
+  player.gold += gold;
+
+  appendCombatLog(`คุณกำจัด ${currentMonster.name} สำเร็จ! +${gold}g +${exp}exp`, "log-line-crit");
+
+  const dropChance = isBoss ? 1 : 0.65;
+  let loot = null;
+  if (Math.random() < dropChance && player.inventory.length < 60) {
+    loot = rollLoot(dungeon);
+    player.inventory.push(loot);
+    player.stats.itemsFound += 1;
+  }
+
+  const leveledUp = gainExp(player, exp, () => {
+    showToast(`เลเวลอัพ! ตอนนี้คุณเลเวล ${player.level}`);
+  });
+
+  renderHud(player);
+  renderStats(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+
+  const isLastRoom = currentRoomIndex === ROOMS_PER_DUNGEON - 1;
+
+  if (isLastRoom) {
+    // dungeon cleared - possibly unlock next
+    if (currentDungeonIndex === player.unlockedDungeonIndex && currentDungeonIndex < DUNGEONS.length - 1) {
+      player.unlockedDungeonIndex = currentDungeonIndex + 1;
+      player.stats.deepestDungeon = player.unlockedDungeonIndex;
+      savePlayer(player);
+    }
+    showResultOverlay({
+      win: true,
+      title: "พิชิตดันเจี้ยน!",
+      subtitle: `คุณเอาชนะ ${dungeon.name} ได้สำเร็จ`,
+      loot,
+      gold, exp,
+      onContinue: () => { inBattleTransition = false; showDungeonSelectView(); },
+    });
+  } else {
+    showResultOverlay({
+      win: true,
+      title: "ชนะการต่อสู้",
+      subtitle: `กำจัด ${currentMonster.name} แล้ว`,
+      loot,
+      gold, exp,
+      onContinue: () => {
+        inBattleTransition = false;
+        currentRoomIndex += 1;
+        document.getElementById("resultOverlay").classList.add("hidden");
+        spawnRoom();
+      },
+    });
+  }
+}
+
+function onPlayerDefeated() {
+  stopBattleLoop();
+  inBattleTransition = true;
+  appendCombatLog(`คุณพ่ายแพ้ต่อ ${currentMonster.name}...`, "log-line-defeat");
+  showResultOverlay({
+    win: false,
+    title: "พ่ายแพ้",
+    subtitle: "ตัวละครของคุณล้มลง แต่ฟื้นตัวได้เมื่อกลับเมือง",
+    loot: null,
+    onContinue: () => {
+      inBattleTransition = false;
+      const stats = getTotalStats(player);
+      player.currentHp = Math.round(stats.hp * 0.5);
+      savePlayer(player);
+      showDungeonSelectView();
+    },
+  });
+}
+
+function showResultOverlay({ win, title, subtitle, loot, gold, exp, onContinue }) {
+  const overlay = document.getElementById("resultOverlay");
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultTitle").style.color = win ? "var(--success)" : "var(--danger)";
+  let sub = subtitle;
+  if (win && (gold || exp)) sub += ` · +${fmtNum(gold)} ทอง · +${fmtNum(exp)} EXP`;
+  document.getElementById("resultSubtitle").textContent = sub;
+
+  const lootContainer = document.getElementById("resultLoot");
+  lootContainer.innerHTML = "";
+  if (loot) {
+    const el = document.createElement("div");
+    el.className = "inv-slot";
+    el.style.borderColor = RARITY[loot.rarity].color;
+    el.style.boxShadow = `0 0 10px ${RARITY[loot.rarity].glow}`;
+    el.innerHTML = iconHtml(loot.icon, RARITY[loot.rarity].color);
+    el.addEventListener("mouseenter", (e) => showTooltip(loot, e, { inventoryItem: true }));
+    el.addEventListener("mousemove", positionTooltip);
+    el.addEventListener("mouseleave", hideTooltip);
+    lootContainer.appendChild(el);
+  }
+
+  overlay.classList.remove("hidden");
+  const btn = document.getElementById("resultContinueBtn");
+  btn.textContent = win ? "ดำเนินต่อ" : "กลับเมือง";
+  btn.onclick = () => {
+    overlay.classList.add("hidden");
+    onContinue();
+  };
+}
+
+// ============================================
+// Equipment interactions
+// ============================================
+function onEquipSlotClick(slot, item) {
+  if (!item) return;
+  // handled via tooltip "unequip" button mostly; click also unequips quickly
+}
+
+function onInventoryItemClick(item) {
+  // quick-equip on click; tooltip provides finer actions
+  equipItem(item);
+}
+
+function equipItem(item) {
+  const prev = player.equipment[item.slot];
+  player.equipment[item.slot] = item;
+  player.inventory = player.inventory.filter(i => i.id !== item.id);
+  if (prev) player.inventory.push(prev);
+
+  const stats = getTotalStats(player);
+  player.currentHp = Math.min(player.currentHp, stats.hp);
+
+  renderStats(player);
+  renderEquipSlots(player, onEquipSlotClick);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+  showToast(`สวม ${item.name} แล้ว`);
+  hideTooltip();
+}
+
+function unequipItem(slot) {
+  const item = player.equipment[slot];
+  if (!item) return;
+  if (player.inventory.length >= 60) {
+    showToast("คลังไอเทมเต็ม ไม่สามารถถอดได้");
+    return;
+  }
+  player.equipment[slot] = null;
+  player.inventory.push(item);
+  renderStats(player);
+  renderEquipSlots(player, onEquipSlotClick);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+  hideTooltip();
+}
+
+function toggleLockItem(item) {
+  item.locked = !item.locked;
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  hideTooltip();
+}
+
+function sellItem(item) {
+  const value = sellValue(item);
+  player.inventory = player.inventory.filter(i => i.id !== item.id);
+  player.gold += value;
+  renderHud(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+  showToast(`ขาย ${item.name} ได้ ${value}g`);
+  hideTooltip();
+}
+
+function sellAllJunk() {
+  const sellable = player.inventory.filter(i => !i.locked);
+  if (sellable.length === 0) {
+    showToast("ไม่มีไอเทมที่ขายได้ (ทั้งหมดถูกล็อกไว้)");
+    return;
+  }
+  const total = sellable.reduce((s, i) => s + sellValue(i), 0);
+  player.inventory = player.inventory.filter(i => i.locked);
+  player.gold += total;
+  renderHud(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+  showToast(`ขายไอเทม ${sellable.length} ชิ้น ได้ ${fmtNum(total)}g`);
+}
+
+// ============================================
+// Global event bindings
+// ============================================
+function bindGlobalEvents() {
+  document.getElementById("retreatBtn").addEventListener("click", () => {
+    stopBattleLoop();
+    inBattleTransition = false;
+    showDungeonSelectView();
+  });
+
+  document.getElementById("sellJunkBtn").addEventListener("click", sellAllJunk);
+
+  document.getElementById("settingsBtn").addEventListener("click", () => {
+    document.getElementById("settingsModal").classList.remove("hidden");
+  });
+  document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+    document.getElementById("settingsModal").classList.add("hidden");
+  });
+  document.getElementById("resetSaveBtn").addEventListener("click", () => {
+    const btn = document.getElementById("resetSaveBtn");
+    if (btn.dataset.confirming === "1") {
+      wipeSave();
+      player = createNewPlayer();
+      const stats = getTotalStats(player);
+      player.currentHp = stats.hp;
+      currentDungeonIndex = null;
+      currentRoomIndex = 0;
+      currentMonster = null;
+      exchangeState = null;
+      stopBattleLoop();
+      inBattleTransition = false;
+      renderAll();
+      showDungeonSelectView();
+      document.getElementById("settingsModal").classList.add("hidden");
+      btn.dataset.confirming = "0";
+      btn.textContent = "ล้างข้อมูลเซฟทั้งหมด";
+      showToast("ล้างข้อมูลเซฟแล้ว เริ่มเกมใหม่");
+    } else {
+      btn.dataset.confirming = "1";
+      btn.textContent = "กดอีกครั้งเพื่อยืนยัน";
+      setTimeout(() => {
+        if (btn.dataset.confirming === "1") {
+          btn.dataset.confirming = "0";
+          btn.textContent = "ล้างข้อมูลเซฟทั้งหมด";
+        }
+      }, 3000);
+    }
+  });
+  document.getElementById("exportSaveBtn").addEventListener("click", async () => {
+    const data = JSON.stringify(player);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(data);
+        showToast("คัดลอกข้อมูลเซฟแล้ว");
+      } else {
+        throw new Error("no clipboard api");
+      }
+    } catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = data;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("คัดลอกข้อมูลเซฟแล้ว");
+      } catch (e2) {
+        showToast("ไม่สามารถคัดลอกอัตโนมัติได้ในหน้านี้");
+      }
+      document.body.removeChild(ta);
+    }
+  });
+
+  window.__tooltipActionHandler = (act, item) => {
+    if (act === "equip") equipItem(item);
+    if (act === "lock") toggleLockItem(item);
+    if (act === "sell") sellItem(item);
+    if (act === "unequip") unequipItem(item.slot);
+  };
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".equip-slot") && !e.target.closest(".inv-slot") && !e.target.closest(".tooltip")) {
+      hideTooltip();
+    }
+  });
+}
+
+init();
+
+</script>
 </body>
 </html>
