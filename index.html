@@ -240,6 +240,28 @@ button {
   flex-shrink: 0;
 }
 
+.cp-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-panel-raised);
+  border: 1px solid rgba(124,92,252,0.35);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--accent);
+  font-family: var(--font-display);
+}
+.cp-icon {
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 9px solid var(--accent);
+  filter: drop-shadow(0 0 4px var(--accent-soft));
+  flex-shrink: 0;
+}
+
 .icon-btn {
   background: transparent;
   border: 1px solid var(--line);
@@ -386,6 +408,32 @@ button {
 }
 .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
 .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
+
+.cp-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(124,92,252,0.16), rgba(124,92,252,0.04));
+  border: 1px solid rgba(124,92,252,0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.cp-banner-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cp-banner-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
 
 .stat-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
 .stat-row {
@@ -1295,6 +1343,33 @@ button {
 .tooltip-close:hover { color: var(--text-primary); border-color: var(--accent); }
 .tooltip-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin-bottom: 2px; }
 .tooltip-rarity { font-size: 11.5px; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.tooltip-cp-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.3);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.tooltip-cp-line-label { color: var(--text-muted); font-weight: 600; }
+.tooltip-cp-line-val { font-family: var(--font-display); font-weight: 700; color: var(--accent); }
+
+.tooltip-compare-cp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--bg-panel);
+  font-size: 12px;
+}
+.tooltip-compare-cp-label { color: var(--text-faint); font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; }
+.tooltip-compare-cp-val { font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+
 .tooltip-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2035,6 +2110,10 @@ button {
             <span class="level-num" id="hudLevel">1</span>
           </div>
         </div>
+        <div class="cp-pill" title="พลังรวม (Combat Power)">
+          <span class="cp-icon"></span>
+          <span id="hudCP">0</span>
+        </div>
         <div class="gold-pill">
           <span class="gold-icon"></span>
           <span id="hudGold">0</span>
@@ -2085,6 +2164,11 @@ button {
       <div class="char-display">
         <div class="char-aura" id="charAura"></div>
         <img class="char-figure" id="charFigure" src="" alt="Rayn the swordsman" draggable="false">
+      </div>
+
+      <div class="cp-banner">
+        <span class="cp-banner-label">พลังรวม (CP)</span>
+        <span class="cp-banner-value" id="cpValue">0</span>
       </div>
 
       <div class="stat-list">
@@ -3184,6 +3268,51 @@ function getTotalStats(player) {
   };
 }
 
+// ============================================
+// VOIDFALL - Combat Power (CP)
+// A single number that summarizes overall strength, the way most
+// idle/RPG games do. It's a weighted sum of the final stats — each
+// stat is worth a different amount of "power" per point because they
+// don't all move at the same scale (HP racks up hundreds of points
+// while crit% tops out at 75), and because some stats matter more in
+// battle (ATK and SPD drive how much damage goes out and how often).
+// Weights below are tuned against the game's own base/growth numbers
+// (PLAYER_BASE / LEVEL_GROWTH) so a fresh level-1 character with no
+// gear lands around ~200 CP, which feels like a sensible "starting power".
+// ============================================
+const CP_WEIGHTS = {
+  hp: 0.6,     // big pool, so each point counts for relatively little
+  atk: 3.5,    // primary damage stat — heavily weighted
+  def: 3,      // mitigation, weighted close to atk
+  crit: 10,    // per % point; crit is capped at 75 so this can't run away
+  spd: 100,    // per point; spd moves in small decimals (base 1.0) but governs turn frequency
+};
+
+function combatPowerFromStats(stats) {
+  let cp = 0;
+  for (const key in CP_WEIGHTS) {
+    if (stats[key] != null) cp += stats[key] * CP_WEIGHTS[key];
+  }
+  return Math.round(cp);
+}
+
+// Total combat power for the player, derived from their fully computed
+// stats (base + equipment + prestige bonus already folded in).
+function getCombatPower(player) {
+  return combatPowerFromStats(getTotalStats(player));
+}
+
+// Combat power contributed by a single item alone (its stats with
+// enchant bonus applied) — used to show "+N CP" on tooltips, independent
+// of the player's base stats.
+function itemCombatPower(item) {
+  if (!item || !item.stats) return 0;
+  const mult = enchantStatMultiplier(item);
+  const scaled = {};
+  for (const [k, v] of Object.entries(item.stats)) scaled[k] = v * mult;
+  return combatPowerFromStats(scaled);
+}
+
 function gainExp(player, amount, onLevelUp) {
   player.exp += amount;
   let leveled = false;
@@ -3621,6 +3750,10 @@ function renderStats(player) {
   document.getElementById("statDef").textContent = fmtNum(s.def);
   document.getElementById("statCrit").textContent = s.crit.toFixed(1) + "%";
   document.getElementById("statSpd").textContent = s.spd.toFixed(2);
+
+  const cp = combatPowerFromStats(s);
+  document.getElementById("cpValue").textContent = fmtNum(cp);
+  document.getElementById("hudCP").textContent = fmtNum(cp);
 }
 
 // ---------- Equipment slots ----------
@@ -3978,8 +4111,13 @@ function renderCompareHtml(item, ctx) {
   if (!ctx.inventoryItem) return "";
   const equippedItem = player.equipment[item.slot];
   if (!equippedItem) {
+    const cpGain = itemCombatPower(item);
     return `<div class="tooltip-compare">
       <div class="tooltip-compare-title">เปรียบเทียบอุปกรณ์</div>
+      <div class="tooltip-compare-cp">
+        <span class="tooltip-compare-cp-label">พลังที่จะได้รับ</span>
+        <span class="tooltip-compare-cp-val diff-up">+${fmtNum(cpGain)} CP</span>
+      </div>
       <div class="tooltip-compare-empty">ยังไม่มีอุปกรณ์ที่สวมในช่อง ${SLOT_LABEL[item.slot] || item.slot}</div>
     </div>`;
   }
@@ -4019,6 +4157,15 @@ function renderCompareHtml(item, ctx) {
 
   return `<div class="tooltip-compare">
     <div class="tooltip-compare-title">เปรียบเทียบกับที่ใส่อยู่</div>
+    ${(() => {
+      const cpDiff = itemCombatPower(item) - itemCombatPower(equippedItem);
+      const cls = cpDiff > 0 ? "diff-up" : cpDiff < 0 ? "diff-down" : "diff-eq";
+      const sign = cpDiff > 0 ? "+" : "";
+      return `<div class="tooltip-compare-cp">
+        <span class="tooltip-compare-cp-label">เปลี่ยนแปลงพลังรวม</span>
+        <span class="tooltip-compare-cp-val ${cls}">${sign}${fmtNum(cpDiff)} CP</span>
+      </div>`;
+    })()}
     <div class="tooltip-compare-grid">
       <div class="tooltip-compare-col">
         <div class="tooltip-compare-col-label" style="color:${RARITY[item.rarity].color}">ไอเทมนี้</div>
@@ -4040,6 +4187,10 @@ function renderTooltipContent(item, ctx) {
   const statsHtml = `<div class="tooltip-stats-grid">` + Object.entries(item.stats).map(([k, v]) =>
     `<div class="tooltip-stat"><span class="tooltip-stat-label">${statLabel(k)}</span><span class="tooltip-stat-val">${statValueDisplay(k, v * mult)}</span></div>`
   ).join("") + `</div>`;
+  const cpLineHtml = `<div class="tooltip-cp-line">
+    <span class="tooltip-cp-line-label">พลังของไอเทมนี้</span>
+    <span class="tooltip-cp-line-val">${fmtNum(itemCombatPower(item))} CP</span>
+  </div>`;
 
   let actionsHtml = "";
   if (ctx.inventoryItem) {
@@ -4083,6 +4234,7 @@ function renderTooltipContent(item, ctx) {
       <button class="tooltip-close" data-act="__close" aria-label="ปิด" title="ปิด">×</button>
     </div>
     ${statsHtml}
+    ${cpLineHtml}
     ${actionsHtml}
     ${enchantHtml}
     ${compareHtml}
