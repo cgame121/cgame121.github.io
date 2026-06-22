@@ -3031,6 +3031,7 @@ function onMonsterDefeated() {
 
   renderHud(player);
   renderStats(player);
+  renderPrestigeBox(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   savePlayer(player);
 
@@ -3132,6 +3133,7 @@ function onEndlessWaveCleared() {
 
   renderHud(player);
   renderStats(player);
+  renderPrestigeBox(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   savePlayer(player);
 
