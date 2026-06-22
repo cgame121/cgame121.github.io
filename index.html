@@ -525,7 +525,14 @@ button {
   object-fit: contain;
   object-position: bottom center;
   filter: drop-shadow(0 6px 8px rgba(0,0,0,0.5));
-  animation: char-bob 1.5s ease-in-out infinite;
+  animation: char-bob-player 1.5s ease-in-out infinite;
+  /* Rayn's art is drawn facing the same way as the monster art;
+     mirror the player so they face right, toward the monster. */
+  transform: scaleX(-1);
+}
+@keyframes char-bob-player {
+  0%, 100% { transform: scaleX(-1) translateY(0); }
+  50% { transform: scaleX(-1) translateY(-6px); }
 }
 .figure-player .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
 .figure-player .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
@@ -556,9 +563,9 @@ button {
 .combatant-monster.is-boss .monster-name { color: var(--danger); font-size: 13.5px; }
 
 @keyframes rayn-dash-in {
-  0% { transform: translateX(-60px); opacity: 0.4; }
-  60% { transform: translateX(4px); opacity: 1; }
-  100% { transform: translateX(0); opacity: 1; }
+  0% { transform: scaleX(-1) translateX(60px); opacity: 0.4; }
+  60% { transform: scaleX(-1) translateX(-4px); opacity: 1; }
+  100% { transform: scaleX(-1) translateX(0); opacity: 1; }
 }
 .rayn-dash-in.figure-player { animation: rayn-dash-in 0.38s ease-out; }
 
@@ -588,10 +595,10 @@ button {
 
 /* attack animations */
 @keyframes lunge-right {
-  0% { transform: translateX(0); }
-  40% { transform: translateX(46px); }
-  55% { transform: translateX(46px); }
-  100% { transform: translateX(0); }
+  0% { transform: scaleX(-1) translateX(0); }
+  40% { transform: scaleX(-1) translateX(-46px); }
+  55% { transform: scaleX(-1) translateX(-46px); }
+  100% { transform: scaleX(-1) translateX(0); }
 }
 @keyframes lunge-left {
   0% { transform: translateX(0); }
@@ -668,44 +675,95 @@ button {
 .log-line-crit { color: var(--gold); }
 .log-line-defeat { color: var(--danger); font-weight: 600; }
 
-/* result overlay */
-.result-overlay {
-  position: absolute; inset: 0;
-  background: rgba(11,13,20,0.88);
-  backdrop-filter: blur(2px);
-  display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-lg);
+/* result panel — docked at the bottom of the battle stage instead of
+   popping up as a centered modal. Slides in from below so it never
+   covers the arena and feels like part of the layout, not an interruption. */
+.result-dock {
+  position: relative;
   z-index: 30;
-  contain: layout style paint;
+  flex-shrink: 0;
+  pointer-events: none;
 }
+.result-dock.hidden { display: none; }
 .result-card {
-  background: var(--bg-panel-raised);
+  pointer-events: auto;
+  background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel));
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
-  padding: 28px 32px;
-  text-align: center;
-  max-width: 320px;
-  animation: card-pop 0.3s cubic-bezier(.2,.9,.3,1.2);
+  padding: 18px 20px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 -6px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.02) inset;
+  animation: result-slide-up 0.32s cubic-bezier(.2,.85,.3,1.1);
 }
-@keyframes card-pop {
-  0% { opacity: 0; transform: scale(0.9) translateY(8px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+.result-card.is-win { border-color: rgba(61,220,151,0.35); }
+.result-card.is-loss { border-color: rgba(255,107,91,0.35); }
+@keyframes result-slide-up {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
+.result-card-status {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.result-card.is-win .result-card-status { background: linear-gradient(180deg, var(--success), transparent); }
+.result-card.is-loss .result-card-status { background: linear-gradient(180deg, var(--danger), transparent); }
+.result-card-body { flex: 1; min-width: 0; }
 .result-card h3 {
   font-family: var(--font-display);
-  margin: 0 0 8px;
-  font-size: 20px;
+  margin: 0 0 3px;
+  font-size: 15.5px;
+  line-height: 1.2;
 }
-.result-card p { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+.result-card p {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  margin: 0;
+  line-height: 1.4;
+}
+.result-rewards {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.result-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-void);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.result-pill-gold { color: var(--gold); }
+.result-pill-exp { color: var(--accent); }
 .result-loot {
-  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-  margin-bottom: 18px; min-height: 44px;
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin: 0;
+}
+.result-loot .inv-slot { width: 38px; height: 38px; cursor: default; }
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
 .result-auto-hint {
-  margin: 10px 0 0;
-  font-size: 11.5px;
+  margin: 0;
+  font-size: 10.5px;
   color: var(--text-faint);
   animation: hint-pulse 1.4s ease-in-out infinite;
+  white-space: nowrap;
 }
 @keyframes hint-pulse {
   0%, 100% { opacity: 0.55; }
@@ -984,6 +1042,22 @@ button {
   .tier-tab-label { font-size: 11.5px; }
   .dungeon-card { flex-direction: column; align-items: stretch; gap: 10px; }
   .dungeon-card-action { width: 100%; }
+  .result-card {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+  .result-card-status { display: none; }
+  .result-card-body { flex-basis: 100%; }
+  .result-loot { order: 2; }
+  .result-actions {
+    order: 3;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-basis: 100%;
+    margin-top: 4px;
+  }
+  .result-actions .btn-primary { flex: 1; }
 }
 
 </style>
@@ -1107,13 +1181,19 @@ button {
         <div class="combat-log" id="combatLog"></div>
       </div>
 
-      <div class="result-overlay hidden" id="resultOverlay">
-        <div class="result-card">
-          <h3 id="resultTitle">ชัยชนะ</h3>
-          <p id="resultSubtitle"></p>
+      <div class="result-dock hidden" id="resultOverlay">
+        <div class="result-card" id="resultCard">
+          <div class="result-card-status"></div>
+          <div class="result-card-body">
+            <h3 id="resultTitle">ชัยชนะ</h3>
+            <p id="resultSubtitle"></p>
+            <div class="result-rewards" id="resultRewards"></div>
+          </div>
           <div class="result-loot" id="resultLoot"></div>
-          <button class="btn-primary" id="resultContinueBtn">ดำเนินต่อ</button>
-          <p class="result-auto-hint hidden" id="resultAutoHint">กำลังดำเนินต่ออัตโนมัติ…</p>
+          <div class="result-actions">
+            <button class="btn-primary" id="resultContinueBtn">ดำเนินต่อ</button>
+            <p class="result-auto-hint hidden" id="resultAutoHint">กำลังดำเนินต่ออัตโนมัติ…</p>
+          </div>
         </div>
       </div>
 
@@ -2710,11 +2790,28 @@ function onPlayerDefeated() {
 
 function showResultOverlay({ win, title, subtitle, loot, gold, exp, onContinue }) {
   const overlay = document.getElementById("resultOverlay");
+  const card = document.getElementById("resultCard");
+  card.classList.toggle("is-win", win);
+  card.classList.toggle("is-loss", !win);
+
   document.getElementById("resultTitle").textContent = title;
   document.getElementById("resultTitle").style.color = win ? "var(--success)" : "var(--danger)";
-  let sub = subtitle;
-  if (win && (gold || exp)) sub += ` · +${fmtNum(gold)} ทอง · +${fmtNum(exp)} EXP`;
-  document.getElementById("resultSubtitle").textContent = sub;
+  document.getElementById("resultSubtitle").textContent = subtitle;
+
+  const rewardsEl = document.getElementById("resultRewards");
+  rewardsEl.innerHTML = "";
+  if (win && gold) {
+    const pill = document.createElement("span");
+    pill.className = "result-pill result-pill-gold";
+    pill.textContent = `+${fmtNum(gold)} ทอง`;
+    rewardsEl.appendChild(pill);
+  }
+  if (win && exp) {
+    const pill = document.createElement("span");
+    pill.className = "result-pill result-pill-exp";
+    pill.textContent = `+${fmtNum(exp)} EXP`;
+    rewardsEl.appendChild(pill);
+  }
 
   const lootContainer = document.getElementById("resultLoot");
   lootContainer.innerHTML = "";
