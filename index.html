@@ -148,30 +148,46 @@ button {
 }
 
 .level-badge {
-  width: 34px; height: 34px;
-  border-radius: 50%;
+  position: relative;
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.level-badge svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+
+.exp-ring-bg {
+  fill: none;
+  stroke: var(--bg-panel-raised);
+  stroke-width: 3;
+}
+
+.exp-ring-fill {
+  fill: none;
+  stroke: url(#expGrad);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 119.4;
+  stroke-dashoffset: 119.4;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.level-badge-inner {
+  position: relative;
+  z-index: 1;
   background: var(--bg-panel-raised);
-  border: 1px solid var(--accent);
+  width: 32px; height: 32px;
+  border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.exp-track {
-  flex: 1;
-  height: 6px;
-  background: var(--bg-panel-raised);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.exp-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--accent), #B8A4FF);
-  border-radius: 4px;
-  transition: width 0.4s ease;
+  font-size: 13px;
+  color: var(--text-primary);
 }
 
 .gold-pill {
@@ -1085,66 +1101,118 @@ button {
 /* ============================================
    Tooltip
    ============================================ */
+/* ============================================
+   Item Bottom Sheet (replaces floating tooltip)
+   ============================================ */
 .tooltip {
   position: fixed;
-  z-index: 100;
+  z-index: 200;
+  left: 0; right: 0; bottom: 0;
   background: var(--bg-panel-raised);
   border: 1px solid var(--line-strong);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  width: 220px;
-  max-width: min(220px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 80vh;
   overflow-y: auto;
-  font-size: 12.5px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  font-size: 13px;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
 }
-.tooltip-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.tooltip:not(.hidden) {
+  transform: translateY(0);
+}
+.tooltip-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.tooltip-backdrop.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.tooltip-handle {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 4px;
+}
+.tooltip-handle-bar {
+  width: 36px; height: 4px;
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+.tooltip-body {
+  padding: 4px 20px 28px;
+}
+.tooltip-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .tooltip-close {
   flex-shrink: 0;
-  background: transparent;
-  border: none;
-  color: var(--text-faint);
-  font-size: 18px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 16px;
   line-height: 1;
-  padding: 0 2px;
-  margin-top: -2px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
 }
-.tooltip-close:hover { color: var(--text-primary); }
-.tooltip-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-bottom: 2px; }
-.tooltip-rarity { font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
-.tooltip-stat { display: flex; justify-content: space-between; color: var(--text-muted); padding: 2px 0; }
-.tooltip-stat span:last-child { color: var(--success); }
-.tooltip-actions { display: flex; gap: 6px; margin-top: 10px; }
+.tooltip-close:hover { color: var(--text-primary); border-color: var(--accent); }
+.tooltip-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+.tooltip-rarity { font-size: 11.5px; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.tooltip-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.tooltip-stat {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.tooltip-stat-label { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.tooltip-stat-val { font-size: 15px; font-weight: 700; color: var(--success); font-family: var(--font-display); }
+.tooltip-actions { display: flex; gap: 8px; margin-top: 4px; }
 .tooltip-actions button {
   flex: 1;
-  font-size: 11px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong);
   background: var(--bg-panel);
   color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
 }
-.tooltip-actions button:hover { border-color: var(--accent); }
+.tooltip-actions button:hover { border-color: var(--accent); background: var(--accent-soft); }
 
 .tooltip-enchant {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid var(--line);
 }
 .tooltip-enchant-row {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .tooltip-enchant-btn {
   width: 100%;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 7px 8px;
-  border-radius: 6px;
+  padding: 11px 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(246,196,83,0.45);
   background: rgba(246,196,83,0.1);
   color: var(--gold);
@@ -1152,10 +1220,10 @@ button {
 .tooltip-enchant-btn:hover:not(:disabled) { background: rgba(246,196,83,0.2); }
 .tooltip-enchant-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .tooltip-enchant.maxed {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid var(--line);
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--gold);
   text-align: center;
 }
@@ -1302,10 +1370,19 @@ button {
 
       <div class="player-summary">
         <div class="level-badge">
-          <span class="level-num" id="hudLevel">1</span>
-        </div>
-        <div class="exp-track">
-          <div class="exp-fill" id="hudExpFill"></div>
+          <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="expGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="var(--accent)"/>
+                <stop offset="100%" stop-color="#B8A4FF"/>
+              </linearGradient>
+            </defs>
+            <circle class="exp-ring-bg" cx="22" cy="22" r="19"/>
+            <circle class="exp-ring-fill" id="hudExpFill" cx="22" cy="22" r="19"/>
+          </svg>
+          <div class="level-badge-inner">
+            <span class="level-num" id="hudLevel">1</span>
+          </div>
         </div>
         <div class="gold-pill">
           <span class="gold-icon"></span>
@@ -1501,8 +1578,12 @@ button {
 
 </div>
 
-<!-- ============ ITEM TOOLTIP ============ -->
-<div class="tooltip hidden" id="itemTooltip"></div>
+<!-- ============ ITEM BOTTOM SHEET ============ -->
+<div class="tooltip-backdrop" id="itemTooltipBackdrop"></div>
+<div class="tooltip hidden" id="itemTooltip">
+  <div class="tooltip-handle"><div class="tooltip-handle-bar"></div></div>
+  <div class="tooltip-body" id="itemTooltipBody"></div>
+</div>
 
 <!-- ============ SETTINGS MODAL ============ -->
 <div class="modal-backdrop hidden" id="settingsModal">
@@ -2618,7 +2699,10 @@ function renderHud(player) {
   document.getElementById("hudGold").textContent = fmtNum(player.gold);
   document.getElementById("hudGems").textContent = fmtNum(player.gems || 0);
   const pct = Math.min(100, (player.exp / expForLevel(player.level)) * 100);
-  document.getElementById("hudExpFill").style.width = pct + "%";
+  const circumference = 2 * Math.PI * 19; // r=19
+  const offset = circumference * (1 - pct / 100);
+  document.getElementById("hudExpFill").style.strokeDasharray = circumference;
+  document.getElementById("hudExpFill").style.strokeDashoffset = offset;
 }
 
 // ---------- Stats panel ----------
@@ -2647,11 +2731,6 @@ function renderEquipSlots(player, onSlotClick) {
       el.innerHTML = `<span class="equip-slot-label">${SLOT_LABEL[slot]}</span>`;
     }
     el.addEventListener("click", (e) => onSlotClick(slot, item, e));
-    if (item) {
-      el.addEventListener("mouseenter", (e) => showTooltip(item, e, { equippedSlot: slot }));
-      el.addEventListener("mousemove", positionTooltip);
-      el.addEventListener("mouseleave", scheduleHideTooltip);
-    }
     container.appendChild(el);
   }
 }
@@ -2771,9 +2850,6 @@ function renderInventory(player, handlers) {
     el.className = "inv-slot" + (item.locked ? " locked" : "");
     el.style.borderColor = RARITY[item.rarity].color + "55";
     el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
-    el.addEventListener("mouseenter", (e) => showTooltip(item, e, { inventoryItem: true }));
-    el.addEventListener("mousemove", positionTooltip);
-    el.addEventListener("mouseleave", scheduleHideTooltip);
     el.addEventListener("click", (e) => handlers.onEquip(item, e));
     grid.appendChild(el);
   });
@@ -2949,12 +3025,12 @@ function performReroll() {
 let tooltipCtx = null;
 
 function renderTooltipContent(item, ctx) {
-  const tip = document.getElementById("itemTooltip");
+  const body = document.getElementById("itemTooltipBody");
   const rarityInfo = RARITY[item.rarity];
   const mult = enchantStatMultiplier(item);
-  const statsHtml = Object.entries(item.stats).map(([k, v]) =>
-    `<div class="tooltip-stat"><span>${statLabel(k)}</span><span>${statValueDisplay(k, v * mult)}</span></div>`
-  ).join("");
+  const statsHtml = `<div class="tooltip-stats-grid">` + Object.entries(item.stats).map(([k, v]) =>
+    `<div class="tooltip-stat"><span class="tooltip-stat-label">${statLabel(k)}</span><span class="tooltip-stat-val">${statValueDisplay(k, v * mult)}</span></div>`
+  ).join("") + `</div>`;
 
   let actionsHtml = "";
   if (ctx.inventoryItem) {
@@ -2969,7 +3045,7 @@ function renderTooltipContent(item, ctx) {
 
   const enchantHtml = renderEnchantSectionHtml(item);
 
-  tip.innerHTML = `
+  body.innerHTML = `
     <div class="tooltip-head">
       <div>
         <div class="tooltip-name" style="color:${rarityInfo.color}">${itemDisplayName(item)}</div>
@@ -2982,7 +3058,7 @@ function renderTooltipContent(item, ctx) {
     ${enchantHtml}
   `;
 
-  tip.querySelectorAll("button").forEach(btn => {
+  body.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const act = btn.dataset.act;
@@ -3014,10 +3090,11 @@ function renderEnchantSectionHtml(item) {
 
 function showTooltip(item, evt, ctx) {
   tooltipCtx = { item, ...ctx };
-  cancelHideTooltip();
   renderTooltipContent(item, ctx);
-  document.getElementById("itemTooltip").classList.remove("hidden");
-  positionTooltip(evt);
+  const tip = document.getElementById("itemTooltip");
+  const backdrop = document.getElementById("itemTooltipBackdrop");
+  tip.classList.remove("hidden");
+  backdrop.classList.add("visible");
 }
 
 // Tapping the same item again while its tooltip is open closes it — this is
@@ -3031,56 +3108,25 @@ function toggleTooltip(item, evt, ctx) {
   showTooltip(item, evt, ctx);
 }
 
-// Hiding is delayed slightly so moving the mouse from the icon toward
-// the tooltip itself (to click a button inside it) doesn't make the
-// tooltip disappear mid-travel. The tooltip's own mouseenter cancels
-// the pending hide; its mouseleave re-schedules it.
-let tooltipHideTimer = null;
-function scheduleHideTooltip() {
-  clearTimeout(tooltipHideTimer);
-  tooltipHideTimer = setTimeout(hideTooltip, 150);
-}
-function cancelHideTooltip() {
-  clearTimeout(tooltipHideTimer);
-  tooltipHideTimer = null;
-}
+// (positionTooltip removed — bottom sheet doesn't need positioning)
 
-// Re-renders the open tooltip's content in place (no repositioning) —
-// used after an action like enchanting changes the item's numbers.
 function refreshOpenTooltip() {
   const tip = document.getElementById("itemTooltip");
   if (!tooltipCtx || tip.classList.contains("hidden")) return;
   renderTooltipContent(tooltipCtx.item, tooltipCtx);
 }
 
-function positionTooltip(evt) {
-  const tip = document.getElementById("itemTooltip");
-  if (tip.classList.contains("hidden")) return;
-  const padding = 14;
-  let x = evt.clientX + padding;
-  let y = evt.clientY + padding;
-  const rect = tip.getBoundingClientRect();
-  if (x + rect.width > window.innerWidth - 10) x = evt.clientX - rect.width - padding;
-  if (y + rect.height > window.innerHeight - 10) y = evt.clientY - rect.height - padding;
-  // Final clamp: guarantees the tooltip always stays fully on-screen,
-  // even on narrow phones where the icon sits near an edge.
-  x = Math.max(10, Math.min(x, window.innerWidth - rect.width - 10));
-  y = Math.max(10, Math.min(y, window.innerHeight - rect.height - 10));
-  tip.style.left = x + "px";
-  tip.style.top = y + "px";
-}
+
 function hideTooltip() {
   tooltipCtx = null;
   document.getElementById("itemTooltip").classList.add("hidden");
+  document.getElementById("itemTooltipBackdrop").classList.remove("visible");
 }
 
-// Keeps the tooltip open while the cursor is over it (so its buttons,
-// like ตีบวก, can actually be reached and clicked), and only hides it
-// once the cursor leaves the tooltip itself.
-(function setupTooltipHoverBridge() {
-  const tip = document.getElementById("itemTooltip");
-  tip.addEventListener("mouseenter", cancelHideTooltip);
-  tip.addEventListener("mouseleave", scheduleHideTooltip);
+// Close bottom sheet when tapping the backdrop
+(function setupTooltipBackdrop() {
+  document.getElementById("itemTooltipBackdrop").addEventListener("click", hideTooltip);
+  document.getElementById("itemTooltip").addEventListener("click", (e) => e.stopPropagation());
 })();
 
 
@@ -3786,9 +3832,7 @@ function showResultOverlay({ win, title, subtitle, loot, gold, exp, gems, onCont
     el.style.borderColor = RARITY[loot.rarity].color;
     el.style.boxShadow = `0 0 10px ${RARITY[loot.rarity].glow}`;
     el.innerHTML = iconHtml(loot.icon, RARITY[loot.rarity].color);
-    el.addEventListener("mouseenter", (e) => showTooltip(loot, e, { inventoryItem: true }));
-    el.addEventListener("mousemove", positionTooltip);
-    el.addEventListener("mouseleave", scheduleHideTooltip);
+    el.addEventListener("click", (e) => showTooltip(loot, e, { inventoryItem: true }));
     lootContainer.appendChild(el);
   }
 
@@ -4101,11 +4145,7 @@ function bindGlobalEvents() {
     if (act === "enchant") attemptEnchantItem(item);
   };
 
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".equip-slot") && !e.target.closest(".inv-slot") && !e.target.closest(".tooltip")) {
-      hideTooltip();
-    }
-  });
+  // Bottom sheet is closed via backdrop click or close button — no global dismiss needed
 }
 
 init();
