@@ -2758,10 +2758,11 @@ const DUNGEON_TIERS = [
   { id: "normal", label: "ทั่วไป", color: "var(--success)" },
   { id: "hard", label: "ยาก", color: "var(--gold)" },
   { id: "extreme", label: "ยากมาก", color: "var(--danger)" },
+  { id: "transcendent", label: "เหนือมิติ", color: "#CC88FF" },
 ];
 
-// Dungeons - 20 total, each with 4 normal rooms + 1 boss room.
-// Grouped into 3 difficulty tiers: normal (8) -> hard (6) -> extreme (6).
+// Dungeons - 30 total, each with 14 normal rooms + 1 boss room (3x original).
+// Grouped into 4 difficulty tiers: normal (7) -> hard (5) -> extreme (5) -> transcendent (10).
 const DUNGEONS = [
   {
     id: "d1", name: "ป่าเถ้าจาง", minLevel: 1, tier: "normal",
@@ -2898,6 +2899,87 @@ const DUNGEONS = [
     boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 12 },
     baseHp: 1950, baseAtk: 352, baseDef: 234, goldMult: 35, expMult: 30,
     dropTable: { common: 0, uncommon: 0, rare: 8, epic: 35, legendary: 57 },
+  },
+  // ── TRANSCENDENT TIER ──────────────────────────────────────────────────────
+  {
+    id: "d10", name: "ห้วงอนันต์เหนือมิติ", minLevel: 102, tier: "transcendent",
+    desc: "พื้นที่ที่อยู่เหนือกฎของมิติทั้งปวง ไม่มีแสง ไม่มีเวลา มีเพียงพลังงานแห่งการทำลายล้าง",
+    monsterPool: ["อสูรอนันต์", "เศษเสี้ยวความว่างเปล่า", "ผู้พิทักษ์นิรันดร์"],
+    boss: { name: "เจ้าแห่งอนันต์", hpMult: 13 },
+    baseHp: 2500, baseAtk: 448, baseDef: 298, goldMult: 44, expMult: 38,
+    dropTable: { common: 0, uncommon: 0, rare: 4, epic: 32, legendary: 64 },
+  },
+  {
+    id: "d10b", name: "แกนกลางแห่งความว่างเปล่า", minLevel: 112, tier: "transcendent",
+    desc: "ศูนย์กลางของจักรวาลที่ถูกกัดกร่อนจนเหลือแต่ความว่างเปล่า สิ่งมีชีวิตที่เข้ามาจะสูญสลายทีละส่วน",
+    monsterPool: ["เศษเสี้ยวความว่างเปล่า", "จิตวิญญาณสูญสลาย", "อสูรสาปแช่ง"],
+    boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 13.5 },
+    baseHp: 3200, baseAtk: 572, baseDef: 380, goldMult: 56, expMult: 48,
+    dropTable: { common: 0, uncommon: 0, rare: 2, epic: 28, legendary: 70 },
+  },
+  {
+    id: "d10c", name: "วังวนนิรันดร์แห่งวิญญาณ", minLevel: 123, tier: "transcendent",
+    desc: "วังวนที่กักขังวิญญาณนักรบผู้แข็งแกร่งที่สุดตลอดกาล พวกเขาถูกบังคับให้สู้รบไปชั่วนิรันดร์",
+    monsterPool: ["วิญญาณนักรบอมตะ", "ผู้พิทักษ์นิรันดร์", "อสูรอนันต์"],
+    boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 14 },
+    baseHp: 4100, baseAtk: 728, baseDef: 484, goldMult: 70, expMult: 60,
+    dropTable: { common: 0, uncommon: 0, rare: 1, epic: 24, legendary: 75 },
+  },
+  {
+    id: "d11", name: "ดาวมรณะแห่งจักรวาล", minLevel: 135, tier: "transcendent",
+    desc: "ดาวที่กำลังจะระเบิดสลาย แต่ก่อนจะสูญสิ้น มันกลับให้กำเนิดอสูรร้ายที่แข็งแกร่งที่สุดในจักรวาล",
+    monsterPool: ["อสูรดาวเพลิง", "หินอุกกาบาตจิตวิญญาณ", "อสูรอนันต์"],
+    boss: { name: "จอมอสูรดาวมรณะ", hpMult: 14.5 },
+    baseHp: 5200, baseAtk: 924, baseDef: 614, goldMult: 88, expMult: 75,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 20, legendary: 80 },
+  },
+  {
+    id: "d11b", name: "สุสานเทพจักรวาล", minLevel: 148, tier: "transcendent",
+    desc: "สุสานที่ฝังพระศพของเทพผู้สร้างจักรวาล วิญญาณของพวกเขาลุกขึ้นมาเพื่อทดสอบผู้บุกรุก",
+    monsterPool: ["วิญญาณเทพผู้สร้าง", "ผู้พิทักษ์สุสานศักดิ์สิทธิ์", "จิตวิญญาณสูญสลาย"],
+    boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 15 },
+    baseHp: 6600, baseAtk: 1170, baseDef: 778, goldMult: 110, expMult: 94,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 15, legendary: 85 },
+  },
+  {
+    id: "d12", name: "มิติต้นกำเนิดแห่งความมืด", minLevel: 162, tier: "transcendent",
+    desc: "มิติแรกที่มีก่อนจักรวาลจะถือกำเนิด ความมืดที่นี่มีจิตใจและหิวโหยพลังงานชีวิต",
+    monsterPool: ["ความมืดดั้งเดิม", "อสูรสาปแช่ง", "วิญญาณเทพผู้สร้าง"],
+    boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 15.5 },
+    baseHp: 8400, baseAtk: 1484, baseDef: 988, goldMult: 138, expMult: 118,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 10, legendary: 90 },
+  },
+  {
+    id: "d12b", name: "ป้อมปราการเหนือกาลเวลา", minLevel: 177, tier: "transcendent",
+    desc: "ป้อมที่สร้างขึ้นนอกกรอบเวลา ผู้รักษาการณ์ที่นี่เป็นเงาของนักรบผู้ยิ่งใหญ่จากทุกยุคสมัย",
+    monsterPool: ["เงานักรบจากทุกยุคสมัย", "ผู้พิทักษ์เหนือกาลเวลา", "ความมืดดั้งเดิม"],
+    boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 16 },
+    baseHp: 10600, baseAtk: 1880, baseDef: 1252, goldMult: 172, expMult: 148,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 6, legendary: 94 },
+  },
+  {
+    id: "d13", name: "บัลลังก์ผู้สร้างและผู้ทำลาย", minLevel: 193, tier: "transcendent",
+    desc: "สถานที่ที่พลังแห่งการสร้างและการทำลายล้างชนกัน ทุกสิ่งที่เข้ามาจะถูกกลืนกินและเกิดใหม่อีกครั้ง",
+    monsterPool: ["อสูรแห่งการสร้าง", "อสูรแห่งการทำลาย", "เงานักรบจากทุกยุคสมัย"],
+    boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 17 },
+    baseHp: 13400, baseAtk: 2380, baseDef: 1584, goldMult: 215, expMult: 185,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 97 },
+  },
+  {
+    id: "d13b", name: "ห้วงลึกแห่งพลังงานดิบ", minLevel: 210, tier: "transcendent",
+    desc: "แหล่งพลังงานบริสุทธิ์ดิบที่ไม่มีรูปร่าง ก่อนจักรวาลจะมีกฎใดๆ พลังงานที่นี่สามารถสร้างและทำลายจักรวาลได้",
+    monsterPool: ["พลังงานดิบมีชีวิต", "อสูรแห่งการทำลาย", "ผู้พิทักษ์เหนือกาลเวลา"],
+    boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 18 },
+    baseHp: 17000, baseAtk: 3010, baseDef: 2006, goldMult: 270, expMult: 232,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 1, legendary: 99 },
+  },
+  {
+    id: "d14", name: "จุดสิ้นสุดก่อนการเริ่มต้น", minLevel: 230, tier: "transcendent",
+    desc: "จุดที่อยู่นอกเหนือความเป็นและความตาย ก่อนที่จักรวาลจะมีอยู่และหลังจากที่มันสูญสิ้นไปแล้ว มีเพียงสิ่งนี้เท่านั้นที่ดำรงอยู่",
+    monsterPool: ["สิ่งที่ไม่มีชื่อ", "พลังงานดิบมีชีวิต", "อสูรแห่งการสร้าง"],
+    boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 20 },
+    baseHp: 22000, baseAtk: 3900, baseDef: 2600, goldMult: 340, expMult: 292,
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 100 },
   },
 ];
 
@@ -3129,7 +3211,7 @@ function rerollItemStats(item) {
 // ============================================
 function gemDropForBossKill(dungeon, player) {
   const tierIndex = Math.max(0, DUNGEON_TIERS.findIndex(t => t.id === dungeon.tier));
-  const base = 3 + tierIndex * 2; // normal: 3, hard: 5, extreme: 7
+  const base = 3 + tierIndex * 2; // normal: 3, hard: 5, extreme: 7, transcendent: 9
   return Math.round(base * prestigeBonusMultiplier(player));
 }
 
@@ -3588,7 +3670,7 @@ function importSaveFromText(text) {
 // VOIDFALL - Combat Engine
 // ============================================
 
-const ROOMS_PER_DUNGEON = 5; // 4 normal + 1 boss
+const ROOMS_PER_DUNGEON = 15; // 14 normal + 1 boss (3x original)
 
 function generateMonster(dungeon, roomIndex, player) {
   const isBoss = roomIndex === ROOMS_PER_DUNGEON - 1;
