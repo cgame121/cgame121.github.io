@@ -883,6 +883,84 @@ button {
 
 .full-width { width: 100%; margin-top: 10px; }
 
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+}
+.btn-danger:disabled:hover { background: transparent; }
+
+/* ============================================
+   Prestige / Rebirth box
+   ============================================ */
+.prestige-box {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.prestige-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px;
+  padding: 6px 0;
+}
+.prestige-row:not(:last-child) { border-bottom: 1px solid var(--line); }
+.prestige-row span:first-child { color: var(--text-muted); }
+.prestige-row span:last-child { font-weight: 600; font-family: var(--font-display); color: var(--gold); }
+.prestige-box .hint-text { margin: 12px 0 4px; }
+
+/* ============================================
+   Boss Rush / Endless mode
+   ============================================ */
+.endless-entry-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  background: linear-gradient(135deg, rgba(246,196,83,0.14), rgba(124,92,252,0.1));
+  border: 1px solid rgba(246,196,83,0.35);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.endless-entry-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+.endless-entry-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--gold);
+}
+.endless-entry-sub { font-size: 12px; color: var(--text-muted); }
+
+.endless-intro { display: flex; flex-direction: column; }
+.endless-best {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.endless-best span:last-child { font-weight: 700; font-family: var(--font-display); color: var(--gold); font-size: 15px; }
+
+.endless-leaderboard { display: flex; flex-direction: column; gap: 6px; }
+.leaderboard-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12.5px;
+}
+.leaderboard-rank { color: var(--text-faint); font-weight: 600; width: 28px; flex-shrink: 0; }
+.leaderboard-wave { flex: 1; font-weight: 600; }
+.leaderboard-gold { color: var(--gold); font-family: var(--font-display); }
+
 /* ============================================
    Tooltip
    ============================================ */
@@ -1130,6 +1208,15 @@ button {
 
       <h3 class="panel-subtitle">อุปกรณ์ที่สวม</h3>
       <div class="equip-slots" id="equipSlots"></div>
+
+      <h3 class="panel-subtitle">ฟื้นคืนชีพ (Rebirth)</h3>
+      <div class="prestige-box" id="prestigeBox">
+        <div class="prestige-row"><span>คะแนนสะสม</span><span id="prestigePoints">0</span></div>
+        <div class="prestige-row"><span>โบนัสสเตตัส/รางวัลถาวร</span><span id="prestigeBonusPct">+0%</span></div>
+        <div class="prestige-row"><span>ฟื้นคืนชีพแล้ว</span><span id="prestigeCount">0</span></div>
+        <p class="hint-text" id="prestigeHint"></p>
+        <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
+      </div>
     </section>
 
     <!-- Dungeon / Battle stage -->
@@ -1145,8 +1232,24 @@ button {
       <div class="dungeon-select" id="dungeonSelectView">
         <h2 class="panel-title">เลือกดันเจี้ยน</h2>
         <p class="hint-text">เลือกดันเจี้ยนเพื่อเริ่มลุยอัตโนมัติ ชนะแล้วจะได้ทองคำ, EXP และไอเทมดรอป</p>
+
+        <button class="endless-entry-card" id="openEndlessBtn">
+          <span class="endless-entry-title">⚔️ บอสรัช: ท้าทายไม่สิ้นสุด</span>
+          <span class="endless-entry-sub">เผชิญหน้าบอสคลื่นแล้วคลื่นเล่า ไม่มีจุดจบ • สถิติของคุณ: คลื่นที่ <span id="endlessEntryBest">0</span></span>
+        </button>
+
         <div class="tier-tabs" id="tierTabs"></div>
         <div class="dungeon-list" id="dungeonList"></div>
+      </div>
+
+      <div class="endless-intro hidden" id="endlessIntroView">
+        <button class="btn-text retreat-btn" id="endlessBackBtn">← ย้อนกลับ</button>
+        <h2 class="panel-title">บอสรัช: ท้าทายไม่สิ้นสุด</h2>
+        <p class="hint-text">เผชิญหน้าบอสที่แข็งแกร่งขึ้นต่อเนื่องไปเรื่อยๆ ไม่มีจุดจบ พ่ายแพ้เมื่อใดคือจบการท้าทาย ระบบจะเก็บสถิติที่ดีที่สุดของคุณไว้</p>
+        <div class="endless-best"><span>สถิติสูงสุด</span><span id="endlessBestWave">คลื่นที่ 0</span></div>
+        <button class="btn-primary full-width" id="endlessStartBtn">เริ่มท้าทาย</button>
+        <h3 class="panel-subtitle">อันดับคะแนนส่วนตัว (สูงสุด 10)</h3>
+        <div class="endless-leaderboard" id="endlessLeaderboardList"></div>
       </div>
 
       <div class="battle-stage hidden" id="battleStageView">
@@ -1555,6 +1658,47 @@ function expForLevel(level) {
   return Math.floor(25 * Math.pow(level, 1.55));
 }
 
+// ============================================
+// VOIDFALL - Prestige / Rebirth system
+// Resetting your level in exchange for a permanent bonus, plus a
+// growing head-start (more dungeons pre-unlocked) on every replay.
+// ============================================
+const REBIRTH_MIN_LEVEL = 20;        // minimum level required to rebirth
+const REBIRTH_BONUS_PER_POINT = 0.02; // +2% to atk/def/hp/gold/exp per prestige point
+
+function prestigeBonusMultiplier(player) {
+  const points = (player.prestige && player.prestige.points) || 0;
+  return 1 + points * REBIRTH_BONUS_PER_POINT;
+}
+
+function getRebirthInfo(player) {
+  const eligible = player.level >= REBIRTH_MIN_LEVEL;
+  const pointsGain = Math.max(1, Math.floor(player.level / 5));
+  // Each rebirth permanently raises how many dungeons you start unlocked
+  // with next time, capped at half the dungeon list so progression still matters.
+  const shortcutCap = Math.floor((DUNGEONS.length - 1) / 2);
+  const nextShortcutIndex = Math.min((player.prestige.rebirths || 0) + 1, shortcutCap);
+  return { eligible, pointsGain, nextShortcutIndex };
+}
+
+function doRebirth(player) {
+  const info = getRebirthInfo(player);
+  if (!info.eligible) return false;
+
+  player.prestige.points += info.pointsGain;
+  player.prestige.rebirths += 1;
+
+  player.level = 1;
+  player.exp = 0;
+  player.gold = 0;
+  player.unlockedDungeonIndex = info.nextShortcutIndex;
+  player.stats.deepestDungeon = Math.max(player.stats.deepestDungeon, info.nextShortcutIndex);
+
+  const stats = getTotalStats(player);
+  player.currentHp = stats.hp;
+  return true;
+}
+
 
 // ============================================
 // VOIDFALL - Item generation & inventory logic
@@ -1714,6 +1858,14 @@ function createNewPlayer() {
       itemsFound: 0,
       deepestDungeon: 0,
     },
+    prestige: {
+      points: 0,    // permanent currency earned from rebirths, boosts stats/rewards
+      rebirths: 0,  // number of times the player has rebirthed
+    },
+    endless: {
+      bestWave: 0,      // best wave ever reached in Boss Rush
+      leaderboard: [],  // top runs: { wave, gold, ts }
+    },
   };
 }
 
@@ -1744,10 +1896,11 @@ function getEquipmentStats(player) {
 function getTotalStats(player) {
   const base = getPlayerBaseStats(player.level);
   const eq = getEquipmentStats(player);
+  const mult = prestigeBonusMultiplier(player);
   return {
-    hp: Math.round(base.hp + (eq.hp || 0)),
-    atk: Math.round(base.atk + (eq.atk || 0)),
-    def: Math.round(base.def + (eq.def || 0)),
+    hp: Math.round((base.hp + (eq.hp || 0)) * mult),
+    atk: Math.round((base.atk + (eq.atk || 0)) * mult),
+    def: Math.round((base.def + (eq.def || 0)) * mult),
     crit: Math.min(75, base.crit + (eq.crit || 0)),
     spd: base.spd + (eq.spd || 0),
   };
@@ -1885,6 +2038,12 @@ function repairPlayerShape(parsed) {
   if (typeof parsed.lastSeenTimestamp !== "number") parsed.lastSeenTimestamp = Date.now();
   if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
   if (typeof parsed.settings.autoMode !== "boolean") parsed.settings.autoMode = true;
+  if (!parsed.prestige || typeof parsed.prestige !== "object") parsed.prestige = {};
+  if (typeof parsed.prestige.points !== "number" || parsed.prestige.points < 0) parsed.prestige.points = 0;
+  if (typeof parsed.prestige.rebirths !== "number" || parsed.prestige.rebirths < 0) parsed.prestige.rebirths = 0;
+  if (!parsed.endless || typeof parsed.endless !== "object") parsed.endless = {};
+  if (typeof parsed.endless.bestWave !== "number" || parsed.endless.bestWave < 0) parsed.endless.bestWave = 0;
+  if (!Array.isArray(parsed.endless.leaderboard)) parsed.endless.leaderboard = [];
   return parsed;
 }
 
@@ -2040,14 +2199,69 @@ function rollLoot(dungeon) {
   return generateItem(dungeon, dungeon.dropTable);
 }
 
-function goldDropForKill(dungeon, isBoss) {
+function goldDropForKill(dungeon, isBoss, player) {
   const base = 4 + dungeon.minLevel * 1.4;
-  return Math.round(base * dungeon.goldMult * (isBoss ? 4.5 : 1) * (0.85 + Math.random() * 0.3));
+  const raw = base * dungeon.goldMult * (isBoss ? 4.5 : 1) * (0.85 + Math.random() * 0.3);
+  return Math.round(raw * (player ? prestigeBonusMultiplier(player) : 1));
 }
 
-function expDropForKill(dungeon, isBoss) {
+function expDropForKill(dungeon, isBoss, player) {
   const base = 6 + dungeon.minLevel * 1.8;
-  return Math.round(base * dungeon.expMult * (isBoss ? 4 : 1) * (0.85 + Math.random() * 0.3));
+  const raw = base * dungeon.expMult * (isBoss ? 4 : 1) * (0.85 + Math.random() * 0.3);
+  return Math.round(raw * (player ? prestigeBonusMultiplier(player) : 1));
+}
+
+// ============================================
+// VOIDFALL - Boss Rush / Endless mode
+// A challenge mode separate from the normal dungeon crawl: an
+// unbroken chain of boss fights that scale forever. Progress is not
+// saved mid-run — only the result (wave reached) is kept, in a small
+// personal leaderboard of best attempts.
+// ============================================
+const ENDLESS_WAVE_SCALE = 1.13;   // boss HP/ATK/DEF growth per wave
+const ENDLESS_REWARD_SCALE = 1.07; // gold/exp growth per wave
+const ENDLESS_LEADERBOARD_MAX = 10;
+
+// Endless bosses scale off whatever dungeon tier the player has already
+// unlocked, so the challenge stays roughly matched to their gear/level.
+function getEndlessBaseDungeon(player) {
+  return DUNGEONS[Math.min(player.unlockedDungeonIndex, DUNGEONS.length - 1)];
+}
+
+function generateEndlessBoss(wave, player) {
+  const baseDungeon = getEndlessBaseDungeon(player);
+  const unlockedBossNames = DUNGEONS.slice(0, player.unlockedDungeonIndex + 1).map(d => d.boss.name);
+  const name = unlockedBossNames[(wave - 1) % unlockedBossNames.length];
+  const scale = Math.pow(ENDLESS_WAVE_SCALE, wave - 1);
+  const maxHp = Math.round(baseDungeon.baseHp * baseDungeon.boss.hpMult * scale);
+  return {
+    name,
+    isBoss: true,
+    maxHp,
+    hp: maxHp,
+    atk: Math.round(baseDungeon.baseAtk * 1.4 * scale),
+    def: Math.round(baseDungeon.baseDef * 1.3 * scale),
+    spd: 0.85 + Math.random() * 0.3,
+  };
+}
+
+function endlessGoldForWave(wave, player) {
+  const baseDungeon = getEndlessBaseDungeon(player);
+  return Math.round(goldDropForKill(baseDungeon, true, player) * Math.pow(ENDLESS_REWARD_SCALE, wave - 1));
+}
+
+function endlessExpForWave(wave, player) {
+  const baseDungeon = getEndlessBaseDungeon(player);
+  return Math.round(expDropForKill(baseDungeon, true, player) * Math.pow(ENDLESS_REWARD_SCALE, wave - 1));
+}
+
+// Saves a finished run into the personal leaderboard, keeping only the
+// best ENDLESS_LEADERBOARD_MAX attempts (sorted by wave, then gold).
+function recordEndlessRun(player, waveReached, goldEarned) {
+  if (waveReached > player.endless.bestWave) player.endless.bestWave = waveReached;
+  player.endless.leaderboard.push({ wave: waveReached, gold: goldEarned, ts: Date.now() });
+  player.endless.leaderboard.sort((a, b) => (b.wave - a.wave) || (b.gold - a.gold));
+  player.endless.leaderboard = player.endless.leaderboard.slice(0, ENDLESS_LEADERBOARD_MAX);
 }
 
 
@@ -2180,6 +2394,48 @@ function renderDungeonList(player, onSelect) {
       el.addEventListener("click", () => onSelect(idx));
     }
     container.appendChild(el);
+  });
+}
+
+// ---------- Prestige / Rebirth box ----------
+function renderPrestigeBox(player) {
+  const info = getRebirthInfo(player);
+  document.getElementById("prestigePoints").textContent = fmtNum(player.prestige.points);
+  document.getElementById("prestigeBonusPct").textContent =
+    `+${Math.round((prestigeBonusMultiplier(player) - 1) * 100)}%`;
+  document.getElementById("prestigeCount").textContent = fmtNum(player.prestige.rebirths);
+
+  const hint = document.getElementById("prestigeHint");
+  const btn = document.getElementById("rebirthBtn");
+  if (info.eligible) {
+    hint.textContent = `รีเซ็ตเลเวลกลับเป็น 1 เพื่อรับคะแนนสะสม +${info.pointsGain} (เพิ่มโบนัสถาวร) และเริ่มใหม่พร้อมดันเจี้ยนที่ปลดล็อกไว้แล้ว ${info.nextShortcutIndex + 1} แห่งทันที — ไอเทมและอุปกรณ์จะไม่หายไป`;
+    btn.disabled = false;
+  } else {
+    hint.textContent = `ต้องถึงเลเวล ${REBIRTH_MIN_LEVEL} ก่อนจึงจะฟื้นคืนชีพได้ (ปัจจุบันเลเวล ${player.level})`;
+    btn.disabled = true;
+  }
+}
+
+// ---------- Boss Rush / Endless intro & leaderboard ----------
+function renderEndlessIntro(player) {
+  document.getElementById("endlessBestWave").textContent = `คลื่นที่ ${fmtNum(player.endless.bestWave)}`;
+  document.getElementById("endlessEntryBest").textContent = fmtNum(player.endless.bestWave);
+
+  const list = document.getElementById("endlessLeaderboardList");
+  list.innerHTML = "";
+  if (player.endless.leaderboard.length === 0) {
+    list.innerHTML = `<p class="dungeon-list-empty">ยังไม่มีสถิติ ลองท้าทายดูสิ!</p>`;
+    return;
+  }
+  player.endless.leaderboard.forEach((entry, i) => {
+    const row = document.createElement("div");
+    row.className = "leaderboard-row";
+    row.innerHTML = `
+      <span class="leaderboard-rank">#${i + 1}</span>
+      <span class="leaderboard-wave">คลื่นที่ ${fmtNum(entry.wave)}</span>
+      <span class="leaderboard-gold">${fmtNum(entry.gold)}g</span>
+    `;
+    list.appendChild(row);
   });
 }
 
@@ -2468,6 +2724,11 @@ let battleTimer = null;
 let inBattleTransition = false;
 let resultAutoTimer = null; // pending auto-continue from the win/loss overlay
 
+// "dungeon" = normal dungeon crawl, "endless" = Boss Rush challenge run
+let gameMode = "dungeon";
+let currentEndlessWave = 1;
+let endlessRunGold = 0;
+
 const BATTLE_TICK_MS = 850; // pace of auto-battle exchanges shown to the player
 
 function init() {
@@ -2511,6 +2772,7 @@ function renderAll() {
   renderHud(player);
   renderStats(player);
   renderEquipSlots(player, onEquipSlotClick);
+  renderPrestigeBox(player);
   refreshDungeonSelectUI(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   renderAutoToggle(player);
@@ -2534,7 +2796,7 @@ function applyOfflineProgress() {
 
   const minutes = cappedMs / 60000;
   const dungeon = DUNGEONS[Math.max(0, player.unlockedDungeonIndex)];
-  const goldPerMin = 1.2 * (dungeon.goldMult || 1) * (1 + player.level * 0.05);
+  const goldPerMin = 1.2 * (dungeon.goldMult || 1) * (1 + player.level * 0.05) * prestigeBonusMultiplier(player);
   const earned = Math.round(goldPerMin * minutes);
   if (earned > 0) {
     player.gold += earned;
@@ -2580,6 +2842,7 @@ function showDungeonSelectView() {
   clearResultAutoTimer();
   document.getElementById("dungeonSelectView").classList.remove("hidden");
   document.getElementById("battleStageView").classList.add("hidden");
+  document.getElementById("endlessIntroView").classList.add("hidden");
   document.getElementById("resultOverlay").classList.add("hidden");
   stopBattleLoop();
   refreshDungeonSelectUI(player);
@@ -2587,7 +2850,19 @@ function showDungeonSelectView() {
 
 function showBattleStageView() {
   document.getElementById("dungeonSelectView").classList.add("hidden");
+  document.getElementById("endlessIntroView").classList.add("hidden");
   document.getElementById("battleStageView").classList.remove("hidden");
+}
+
+function showEndlessIntroView() {
+  clearResultAutoTimer();
+  stopBattleLoop();
+  gameMode = "dungeon"; // not mid-run while just browsing the leaderboard
+  document.getElementById("dungeonSelectView").classList.add("hidden");
+  document.getElementById("battleStageView").classList.add("hidden");
+  document.getElementById("resultOverlay").classList.add("hidden");
+  document.getElementById("endlessIntroView").classList.remove("hidden");
+  renderEndlessIntro(player);
 }
 
 // ============================================
@@ -2595,6 +2870,7 @@ function showBattleStageView() {
 // ============================================
 function enterDungeon(idx) {
   clearResultAutoTimer();
+  gameMode = "dungeon";
   currentDungeonIndex = idx;
   currentRoomIndex = 0;
   const stats = getTotalStats(player);
@@ -2604,6 +2880,34 @@ function enterDungeon(idx) {
   clearCombatLog();
   document.getElementById("stageDungeonName").textContent = DUNGEONS[idx].name;
   spawnRoom();
+}
+
+function enterEndlessMode() {
+  clearResultAutoTimer();
+  gameMode = "endless";
+  currentDungeonIndex = null;
+  currentEndlessWave = 1;
+  endlessRunGold = 0;
+  exchangeState = null;
+  const stats = getTotalStats(player);
+  player.currentHp = stats.hp; // full heal on entry
+
+  showBattleStageView();
+  clearCombatLog();
+  document.getElementById("stageDungeonName").textContent = "บอสรัช: ไม่สิ้นสุด";
+  spawnEndlessRoom();
+}
+
+function spawnEndlessRoom() {
+  document.getElementById("stageRoomIndicator").textContent =
+    `คลื่นที่ ${currentEndlessWave} (สถิติ: ${fmtNum(player.endless.bestWave)})`;
+
+  currentMonster = generateEndlessBoss(currentEndlessWave, player);
+  setArenaCombatants(player, currentMonster);
+  appendCombatLog(`คลื่นที่ ${currentEndlessWave}: พบ ${currentMonster.name} (บอส)`);
+  playRaynDash(document.getElementById("arenaPlayer"));
+
+  startBattleLoop();
 }
 
 function spawnRoom() {
@@ -2691,14 +2995,20 @@ function runBattleTick() {
 function onMonsterDefeated() {
   stopBattleLoop();
   inBattleTransition = true;
+
+  if (gameMode === "endless") {
+    onEndlessWaveCleared();
+    return;
+  }
+
   const dungeon = DUNGEONS[currentDungeonIndex];
   const isBoss = currentMonster.isBoss;
 
   player.stats.monstersKilled += 1;
   if (isBoss) player.stats.bossesKilled += 1;
 
-  const gold = goldDropForKill(dungeon, isBoss);
-  const exp = expDropForKill(dungeon, isBoss);
+  const gold = goldDropForKill(dungeon, isBoss, player);
+  const exp = expDropForKill(dungeon, isBoss, player);
   player.gold += gold;
 
   appendCombatLog(`คุณกำจัด ${currentMonster.name} สำเร็จ! +${gold}g +${exp}exp`, "log-line-crit");
@@ -2769,6 +3079,12 @@ function onPlayerDefeated() {
   stopBattleLoop();
   inBattleTransition = true;
   appendCombatLog(`คุณพ่ายแพ้ต่อ ${currentMonster.name}...`, "log-line-defeat");
+
+  if (gameMode === "endless") {
+    onEndlessRunEnded();
+    return;
+  }
+
   showResultOverlay({
     win: false,
     title: "พ่ายแพ้",
@@ -2784,6 +3100,76 @@ function onPlayerDefeated() {
       } else {
         showDungeonSelectView();
       }
+    },
+  });
+}
+
+// ---------- Boss Rush wave win / run end ----------
+function onEndlessWaveCleared() {
+  player.stats.monstersKilled += 1;
+  player.stats.bossesKilled += 1;
+
+  const gold = endlessGoldForWave(currentEndlessWave, player);
+  const exp = endlessExpForWave(currentEndlessWave, player);
+  player.gold += gold;
+  endlessRunGold += gold;
+
+  appendCombatLog(`คุณเอาชนะ ${currentMonster.name} แห่งคลื่นที่ ${currentEndlessWave}! +${gold}g +${exp}exp`, "log-line-crit");
+
+  const baseDungeon = getEndlessBaseDungeon(player);
+  let loot = null;
+  if (player.inventory.length < 60) {
+    loot = rollLoot(baseDungeon);
+    player.inventory.push(loot);
+    player.stats.itemsFound += 1;
+  } else {
+    setTimeout(() => showToast("คลังไอเทมเต็ม! ไอเทมที่ควรได้รับถูกละทิ้ง — ขายของเก่าเพื่อเปิดที่ว่าง"), 700);
+  }
+
+  const leveledUp = gainExp(player, exp, () => {
+    showToast(`เลเวลอัพ! ตอนนี้คุณเลเวล ${player.level}`);
+  });
+
+  renderHud(player);
+  renderStats(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  savePlayer(player);
+
+  showResultOverlay({
+    win: true,
+    title: `ผ่านคลื่นที่ ${currentEndlessWave}!`,
+    subtitle: `กำจัด ${currentMonster.name} สำเร็จ — สถิติสูงสุดของคุณคือคลื่นที่ ${fmtNum(player.endless.bestWave)}`,
+    loot,
+    gold, exp,
+    onContinue: () => {
+      inBattleTransition = false;
+      currentEndlessWave += 1;
+      document.getElementById("resultOverlay").classList.add("hidden");
+      spawnEndlessRoom();
+    },
+  });
+}
+
+function onEndlessRunEnded() {
+  const wavesCleared = Math.max(0, currentEndlessWave - 1);
+  const isNewBest = wavesCleared > player.endless.bestWave;
+  recordEndlessRun(player, wavesCleared, endlessRunGold);
+  savePlayer(player, { immediate: true });
+
+  showResultOverlay({
+    win: false,
+    title: "จบการท้าทาย",
+    subtitle: isNewBest
+      ? `สถิติใหม่! คุณผ่านไปได้ ${fmtNum(wavesCleared)} คลื่น`
+      : `คุณผ่านไปได้ ${fmtNum(wavesCleared)} คลื่น (สถิติสูงสุด ${fmtNum(player.endless.bestWave)})`,
+    loot: null,
+    onContinue: () => {
+      inBattleTransition = false;
+      gameMode = "dungeon";
+      const stats = getTotalStats(player);
+      player.currentHp = Math.round(stats.hp * 0.5);
+      savePlayer(player);
+      showEndlessIntroView();
     },
   });
 }
@@ -2961,7 +3347,50 @@ function bindGlobalEvents() {
   document.getElementById("retreatBtn").addEventListener("click", () => {
     stopBattleLoop();
     inBattleTransition = false;
+    if (gameMode === "endless") {
+      const wavesCleared = Math.max(0, currentEndlessWave - 1);
+      recordEndlessRun(player, wavesCleared, endlessRunGold);
+      savePlayer(player, { immediate: true });
+      gameMode = "dungeon";
+      showEndlessIntroView();
+    } else {
+      showDungeonSelectView();
+    }
+  });
+
+  document.getElementById("openEndlessBtn").addEventListener("click", () => {
+    showEndlessIntroView();
+  });
+  document.getElementById("endlessBackBtn").addEventListener("click", () => {
     showDungeonSelectView();
+  });
+  document.getElementById("endlessStartBtn").addEventListener("click", () => {
+    enterEndlessMode();
+  });
+
+  document.getElementById("rebirthBtn").addEventListener("click", () => {
+    const info = getRebirthInfo(player);
+    if (!info.eligible) return;
+    const btn = document.getElementById("rebirthBtn");
+    if (btn.dataset.confirming === "1") {
+      const gain = info.pointsGain;
+      doRebirth(player);
+      btn.dataset.confirming = "0";
+      btn.textContent = "ฟื้นคืนชีพ (รีเซ็ตเลเวล)";
+      savePlayer(player, { immediate: true });
+      renderAll();
+      showDungeonSelectView();
+      showToast(`ฟื้นคืนชีพสำเร็จ! ได้รับคะแนนสะสม +${gain}`);
+    } else {
+      btn.dataset.confirming = "1";
+      btn.textContent = "กดอีกครั้งเพื่อยืนยันการฟื้นคืนชีพ";
+      setTimeout(() => {
+        if (btn.dataset.confirming === "1") {
+          btn.dataset.confirming = "0";
+          btn.textContent = "ฟื้นคืนชีพ (รีเซ็ตเลเวล)";
+        }
+      }, 3000);
+    }
   });
 
   document.getElementById("autoModeToggle").addEventListener("click", () => {
@@ -2991,6 +3420,7 @@ function bindGlobalEvents() {
       currentRoomIndex = 0;
       currentMonster = null;
       exchangeState = null;
+      gameMode = "dungeon";
       stopBattleLoop();
       inBattleTransition = false;
       renderAll();
@@ -3062,6 +3492,7 @@ function bindGlobalEvents() {
       currentRoomIndex = 0;
       currentMonster = null;
       exchangeState = null;
+      gameMode = "dungeon";
       stopBattleLoop();
       inBattleTransition = false;
       savePlayer(player, { immediate: true });
