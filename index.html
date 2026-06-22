@@ -137,27 +137,33 @@ button {
 }
 .tab-btn-settings.active::after { background: var(--text-muted); }
 
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #B8A4FF, var(--accent) 70%);
-  box-shadow: 0 0 14px var(--accent-soft);
-}
-.brand-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: 0.06em;
-}
-
 .player-summary {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 14px;
   flex: 1;
-  max-width: 420px;
-  margin: 0 24px;
+  width: 100%;
+}
+
+.hud-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.level-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.level-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .level-badge {
@@ -1661,8 +1667,10 @@ button {
    ============================================ */
 @media (max-width: 560px) {
   .topbar { padding: 12px 14px; }
-  .player-summary { margin: 0 12px; gap: 8px; }
-  .gold-pill, .gem-pill { padding: 5px 9px; }
+  .level-block { gap: 5px; }
+  .level-label { font-size: 11px; }
+  .hud-pills { gap: 7px; }
+  .gold-pill, .gem-pill, .cp-pill { padding: 5px 9px; }
   .gold-pill span:not(.gold-icon), .gem-pill span:not(.gem-icon) { font-size: 12px; }
   .main-grid { padding: 10px; gap: 10px; }
   .combatant { width: 110px; }
@@ -2089,38 +2097,38 @@ button {
   <!-- ============ STICKY HEADER: TOP BAR + TAB NAV ============ -->
   <div class="app-header">
     <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark"></span>
-        <span class="brand-name">VOIDFALL</span>
-      </div>
-
       <div class="player-summary">
-        <div class="level-badge">
-          <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="expGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="var(--accent)"/>
-                <stop offset="100%" stop-color="#B8A4FF"/>
-              </linearGradient>
-            </defs>
-            <circle class="exp-ring-bg" cx="22" cy="22" r="19"/>
-            <circle class="exp-ring-fill" id="hudExpFill" cx="22" cy="22" r="19"/>
-          </svg>
-          <div class="level-badge-inner">
-            <span class="level-num" id="hudLevel">1</span>
+        <div class="level-block">
+          <span class="level-label">เลเวล</span>
+          <div class="level-badge">
+            <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="expGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="var(--accent)"/>
+                  <stop offset="100%" stop-color="#B8A4FF"/>
+                </linearGradient>
+              </defs>
+              <circle class="exp-ring-bg" cx="22" cy="22" r="19"/>
+              <circle class="exp-ring-fill" id="hudExpFill" cx="22" cy="22" r="19"/>
+            </svg>
+            <div class="level-badge-inner">
+              <span class="level-num" id="hudLevel">1</span>
+            </div>
           </div>
         </div>
-        <div class="cp-pill" title="พลังรวม (Combat Power)">
-          <span class="cp-icon"></span>
-          <span id="hudCP">0</span>
-        </div>
-        <div class="gold-pill">
-          <span class="gold-icon"></span>
-          <span id="hudGold">0</span>
-        </div>
-        <div class="gem-pill">
-          <span class="gem-icon"></span>
-          <span id="hudGems">0</span>
+        <div class="hud-pills">
+          <div class="cp-pill" title="พลังรวม (Combat Power)">
+            <span class="cp-icon"></span>
+            <span id="hudCP">0</span>
+          </div>
+          <div class="gold-pill">
+            <span class="gold-icon"></span>
+            <span id="hudGold">0</span>
+          </div>
+          <div class="gem-pill">
+            <span class="gem-icon"></span>
+            <span id="hudGems">0</span>
+          </div>
         </div>
       </div>
 
