@@ -1581,7 +1581,7 @@ button {
         <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8V6a4 4 0 018 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
         <span>คลัง</span>
       </button>
-      <button class="tab-btn tab-btn-settings" id="settingsBtn" aria-label="ตั้งค่า" title="ตั้งค่า">
+      <button class="tab-btn tab-btn-settings" data-tab="settings" id="settingsBtn" role="tab" aria-selected="false" aria-label="ตั้งค่า" title="ตั้งค่า">
         <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
         <span>ตั้งค่า</span>
       </button>
@@ -1733,6 +1733,17 @@ button {
       <div class="inv-grid" id="invGrid"></div>
     </section>
 
+    <!-- Settings -->
+    <section class="panel settings-panel tab-panel" data-tab-panel="settings">
+      <h2 class="panel-title">ตั้งค่า</h2>
+      <p class="save-status" id="saveStatusText"></p>
+      <button class="btn-secondary full-width" id="exportSaveBtn">คัดลอกข้อมูลเซฟ</button>
+      <button class="btn-secondary full-width" id="importSaveBtn">นำเข้าข้อมูลเซฟ</button>
+      <textarea class="import-textarea hidden" id="importSaveTextarea" placeholder="วางข้อมูลเซฟที่คัดลอกไว้ที่นี่"></textarea>
+      <button class="btn-primary full-width hidden" id="confirmImportBtn">ยืนยันการนำเข้า</button>
+      <button class="btn-danger full-width" id="resetSaveBtn">ล้างข้อมูลเซฟทั้งหมด</button>
+    </section>
+
   </main>
 
 </div>
@@ -1742,20 +1753,6 @@ button {
 <div class="tooltip hidden" id="itemTooltip">
   <div class="tooltip-handle"><div class="tooltip-handle-bar"></div></div>
   <div class="tooltip-body" id="itemTooltipBody"></div>
-</div>
-
-<!-- ============ SETTINGS MODAL ============ -->
-<div class="modal-backdrop hidden" id="settingsModal">
-  <div class="modal-card">
-    <h3>ตั้งค่า</h3>
-    <p class="save-status" id="saveStatusText"></p>
-    <button class="btn-secondary full-width" id="exportSaveBtn">คัดลอกข้อมูลเซฟ</button>
-    <button class="btn-secondary full-width" id="importSaveBtn">นำเข้าข้อมูลเซฟ</button>
-    <textarea class="import-textarea hidden" id="importSaveTextarea" placeholder="วางข้อมูลเซฟที่คัดลอกไว้ที่นี่"></textarea>
-    <button class="btn-primary full-width hidden" id="confirmImportBtn">ยืนยันการนำเข้า</button>
-    <button class="btn-danger full-width" id="resetSaveBtn">ล้างข้อมูลเซฟทั้งหมด</button>
-    <button class="btn-text full-width" id="closeSettingsBtn">ปิด</button>
-  </div>
 </div>
 
 <!-- ============ OFFLINE PROGRESS MODAL ============ -->
@@ -3573,6 +3570,7 @@ function switchTab(tabName) {
   document.querySelectorAll(".tab-panel").forEach(panel => {
     panel.classList.toggle("active", panel.dataset.tabPanel === tabName);
   });
+  if (tabName === "settings") updateSaveStatusUI();
   hideTooltip();
 }
 
@@ -4194,13 +4192,6 @@ function bindGlobalEvents() {
     document.getElementById("offlineModal").classList.add("hidden");
   });
 
-  document.getElementById("settingsBtn").addEventListener("click", () => {
-    updateSaveStatusUI();
-    document.getElementById("settingsModal").classList.remove("hidden");
-  });
-  document.getElementById("closeSettingsBtn").addEventListener("click", () => {
-    document.getElementById("settingsModal").classList.add("hidden");
-  });
   document.getElementById("resetSaveBtn").addEventListener("click", () => {
     const btn = document.getElementById("resetSaveBtn");
     if (btn.dataset.confirming === "1") {
@@ -4217,7 +4208,7 @@ function bindGlobalEvents() {
       inBattleTransition = false;
       renderAll();
       showDungeonSelectView();
-      document.getElementById("settingsModal").classList.add("hidden");
+      switchTab("battle");
       btn.dataset.confirming = "0";
       btn.textContent = "ล้างข้อมูลเซฟทั้งหมด";
       showToast("ล้างข้อมูลเซฟแล้ว เริ่มเกมใหม่");
@@ -4290,10 +4281,10 @@ function bindGlobalEvents() {
       savePlayer(player, { immediate: true });
       renderAll();
       showDungeonSelectView();
+      switchTab("battle");
       box.value = "";
       box.classList.add("hidden");
       document.getElementById("confirmImportBtn").classList.add("hidden");
-      document.getElementById("settingsModal").classList.add("hidden");
       showToast("นำเข้าข้อมูลเซฟสำเร็จ");
     } catch (e) {
       showToast(e.message || "นำเข้าข้อมูลเซฟไม่สำเร็จ");
