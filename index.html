@@ -1736,6 +1736,15 @@ button {
     <!-- Settings -->
     <section class="panel settings-panel tab-panel" data-tab-panel="settings">
       <h2 class="panel-title">ตั้งค่า</h2>
+
+      <div class="auto-toggle-row">
+        <span class="auto-toggle-label">ไม่ให้จอดับขณะเล่น</span>
+        <button class="auto-toggle" id="keepScreenOnToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดไม่ให้จอดับขณะเล่น">
+          <span class="auto-toggle-knob"></span>
+        </button>
+      </div>
+      <p class="hint-text" id="keepScreenOnHint"></p>
+
       <p class="save-status" id="saveStatusText"></p>
       <button class="btn-secondary full-width" id="exportSaveBtn">คัดลอกข้อมูลเซฟ</button>
       <button class="btn-secondary full-width" id="importSaveBtn">นำเข้าข้อมูลเซฟ</button>
@@ -2403,6 +2412,7 @@ function createNewPlayer() {
     lastSeenTimestamp: Date.now(),
     settings: {
       autoMode: true, // auto-continue through rooms/dungeons without tapping
+      keepScreenOn: true, // request a wake lock so the screen doesn't sleep during idle play
     },
     stats: {
       monstersKilled: 0,
@@ -2596,6 +2606,7 @@ function repairPlayerShape(parsed) {
   if (typeof parsed.lastSeenTimestamp !== "number") parsed.lastSeenTimestamp = Date.now();
   if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
   if (typeof parsed.settings.autoMode !== "boolean") parsed.settings.autoMode = true;
+  if (typeof parsed.settings.keepScreenOn !== "boolean") parsed.settings.keepScreenOn = true;
   if (!parsed.prestige || typeof parsed.prestige !== "object") parsed.prestige = {};
   if (typeof parsed.prestige.points !== "number" || parsed.prestige.points < 0) parsed.prestige.points = 0;
   if (typeof parsed.prestige.rebirths !== "number" || parsed.prestige.rebirths < 0) parsed.prestige.rebirths = 0;
@@ -3446,8 +3457,13 @@ function init() {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       savePlayer(player, { immediate: true });
+    } else {
+      // the OS/browser releases the wake lock whenever the tab is hidden,
+      // so it has to be re-requested every time the player comes back
+      requestWakeLock();
     }
   });
+  requestWakeLock();
 }
 
 function renderAll() {
@@ -3459,6 +3475,7 @@ function renderAll() {
   renderInventory(player, { onEquip: onInventoryItemClick });
   renderShop(player);
   renderAutoToggle(player);
+  renderKeepScreenOnToggle(player);
 }
 
 function renderAutoToggle(player) {
@@ -3466,6 +3483,50 @@ function renderAutoToggle(player) {
   const toggle = document.getElementById("autoModeToggle");
   toggle.classList.toggle("on", isOn);
   toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+}
+
+function renderKeepScreenOnToggle(player) {
+  const isOn = !!(player.settings && player.settings.keepScreenOn);
+  const toggle = document.getElementById("keepScreenOnToggle");
+  toggle.classList.toggle("on", isOn);
+  toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+  const hint = document.getElementById("keepScreenOnHint");
+  if (hint) {
+    hint.textContent = wakeLockSupported
+      ? "กันจอดับอัตโนมัติขณะเปิดเกมไว้ เพื่อให้ดูการลุยดันเจี้ยนต่อเนื่องได้"
+      : "เบราว์เซอร์นี้ไม่รองรับการกันจอดับอัตโนมัติ — ปรับเวลาหน้าจอดับของเครื่องเองในตั้งค่าระบบ";
+  }
+}
+
+// ============================================
+// Screen Wake Lock — keeps the device awake while the game tab is in
+// the foreground, since this is an idle game with little touch input
+// to keep the screen alive on its own. Released automatically by the
+// browser when the tab is hidden, so we re-request it on return.
+// ============================================
+const wakeLockSupported = "wakeLock" in navigator;
+let wakeLockHandle = null;
+
+async function requestWakeLock() {
+  if (!wakeLockSupported) return;
+  if (!(player.settings && player.settings.keepScreenOn)) return;
+  if (document.visibilityState !== "visible") return;
+  try {
+    wakeLockHandle = await navigator.wakeLock.request("screen");
+    wakeLockHandle.addEventListener("release", () => {
+      wakeLockHandle = null;
+    });
+  } catch (e) {
+    // can fail if e.g. battery saver is on — fail silently, screen just sleeps as before
+    wakeLockHandle = null;
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLockHandle) {
+    wakeLockHandle.release().catch(() => {});
+    wakeLockHandle = null;
+  }
 }
 
 // ============================================
@@ -4184,6 +4245,19 @@ function bindGlobalEvents() {
     renderAutoToggle(player);
     savePlayer(player);
     showToast(player.settings.autoMode ? "เปิดออโต้ดำเนินต่อแล้ว" : "ปิดออโต้ดำเนินต่อแล้ว");
+  });
+
+  document.getElementById("keepScreenOnToggle").addEventListener("click", () => {
+    player.settings.keepScreenOn = !(player.settings && player.settings.keepScreenOn);
+    renderKeepScreenOnToggle(player);
+    savePlayer(player);
+    if (player.settings.keepScreenOn) {
+      requestWakeLock();
+      showToast(wakeLockSupported ? "เปิดกันจอดับแล้ว" : "เบราว์เซอร์นี้ไม่รองรับฟีเจอร์นี้");
+    } else {
+      releaseWakeLock();
+      showToast("ปิดกันจอดับแล้ว");
+    }
   });
 
   document.getElementById("sellJunkBtn").addEventListener("click", sellAllJunk);
