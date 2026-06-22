@@ -593,6 +593,25 @@ button {
 .dungeon-card-desc { font-size: 12px; color: var(--text-muted); max-width: 360px; line-height: 1.45; }
 .dungeon-card-level { font-size: 11px; color: var(--text-faint); }
 
+.dungeon-card-cp {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.dungeon-card-cp-label { font-size: 11px; color: var(--text-faint); }
+.dungeon-card-cp-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.dungeon-card-cp-status.cp-ready { color: var(--success); background: rgba(61,220,151,0.14); }
+.dungeon-card-cp-status.cp-risky { color: var(--gold); background: rgba(246,196,83,0.14); }
+.dungeon-card-cp-status.cp-weak  { color: var(--danger); background: rgba(255,107,91,0.14); }
+
 .dungeon-card-action {
   background: var(--accent);
   color: white;
@@ -3591,6 +3610,37 @@ function generateMonster(dungeon, roomIndex, player) {
   };
 }
 
+// "Recommended CP" for a dungeon — ties the CP system directly to the
+// dungeon system by running the same boss-scaling math generateMonster()
+// uses (boss room, same scale/hpMult/atk/def multipliers), then running
+// that monster's stats through the exact same CP_WEIGHTS formula used for
+// the player. That shared formula is what makes the two numbers comparable:
+// a player can look at "your CP" vs "this dungeon's CP" and know roughly
+// where they stand. Spd is fixed at 1.0 (the average monster roll) instead
+// of randomized, so the number shown is stable rather than jittering on
+// every render.
+function getDungeonRecommendedCP(dungeon) {
+  const bossRoomIndex = ROOMS_PER_DUNGEON - 1;
+  const scale = 1 + bossRoomIndex * 0.18;
+  const bossStats = {
+    hp: dungeon.baseHp * scale * dungeon.boss.hpMult,
+    atk: dungeon.baseAtk * scale * 1.4,
+    def: dungeon.baseDef * scale * 1.3,
+    spd: 1.0,
+  };
+  return combatPowerFromStats(bossStats);
+}
+
+// How a player's current CP stacks up against a dungeon's recommended CP.
+// Purely advisory — dungeons still unlock sequentially by clearing the
+// previous one, this just tells the player whether they're geared for it.
+function getDungeonCpStatus(playerCP, recommendedCP) {
+  const ratio = recommendedCP > 0 ? playerCP / recommendedCP : 1;
+  if (ratio >= 1) return { cls: "cp-ready", label: "พร้อมลุย" };
+  if (ratio >= 0.7) return { cls: "cp-risky", label: "พอลุยไหว" };
+  return { cls: "cp-weak", label: "พลังยังไม่พอ" };
+}
+
 // Combat is resolved as a sequence of discrete "ticks" the UI can animate through.
 // Each tick = one attack from either side, determined by relative speed using an
 // accumulator model so higher SPD attacks more often.
@@ -3831,9 +3881,13 @@ function renderDungeonList(player, onSelect) {
     return;
   }
 
+  const playerCP = getCombatPower(player);
+
   indices.forEach((idx) => {
     const d = DUNGEONS[idx];
     const locked = idx > player.unlockedDungeonIndex;
+    const recommendedCP = getDungeonRecommendedCP(d);
+    const cpStatus = getDungeonCpStatus(playerCP, recommendedCP);
     const el = document.createElement("div");
     el.className = "dungeon-card" + (locked ? " locked" : "");
     el.innerHTML = `
@@ -3842,6 +3896,10 @@ function renderDungeonList(player, onSelect) {
         <span class="dungeon-card-name">${d.name}</span>
         <span class="dungeon-card-desc">${d.desc}</span>
         <span class="dungeon-card-level">เลเวลแนะนำ ${d.minLevel}+</span>
+        <div class="dungeon-card-cp">
+          <span class="dungeon-card-cp-label">พลังแนะนำ ${fmtNum(recommendedCP)} CP</span>
+          ${locked ? "" : `<span class="dungeon-card-cp-status ${cpStatus.cls}">${cpStatus.label}</span>`}
+        </div>
       </div>
       <button class="dungeon-card-action" ${locked ? "disabled" : ""}>${locked ? "ปิดอยู่" : "ลุย"}</button>
     `;
