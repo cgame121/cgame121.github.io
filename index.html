@@ -1288,7 +1288,8 @@ button {
   color: var(--danger);
   transition: background 0.15s, box-shadow 0.15s;
 }
-.tooltip-btn-sell:hover { background: rgba(255,107,91,0.1); box-shadow: 0 0 10px rgba(255,107,91,0.2); }
+.tooltip-btn-sell:hover:not(:disabled) { background: rgba(255,107,91,0.1); box-shadow: 0 0 10px rgba(255,107,91,0.2); }
+.tooltip-btn-sell:disabled { opacity: 0.4; cursor: not-allowed; color: var(--text-faint); border-color: var(--line-strong); }
 
 /* Compare section */
 .tooltip-compare {
@@ -1464,23 +1465,26 @@ button {
 
 .toast-container {
   position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; flex-direction: column; gap: 8px;
-  z-index: 300;
-  align-items: center;
+  top: 78px; right: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+  z-index: 60;
+  align-items: flex-end;
+  pointer-events: none;
+  max-width: min(72vw, 280px);
 }
 .toast {
   background: var(--bg-panel-raised);
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  padding: 10px 20px;
-  font-size: 13px;
-  animation: toast-in 0.25s ease;
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+  animation: toast-in 0.2s ease;
 }
 @keyframes toast-in {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateX(12px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 .hidden { display: none !important; }
@@ -1504,6 +1508,7 @@ button {
   .tier-tab-label { font-size: 11.5px; }
   .dungeon-card { flex-direction: column; align-items: stretch; gap: 10px; }
   .dungeon-card-action { width: 100%; }
+  .toast-container { top: 72px; right: 10px; max-width: min(78vw, 240px); }
   .result-card {
     flex-wrap: wrap;
     padding: 14px 16px;
@@ -3196,7 +3201,9 @@ function renderTooltipContent(item, ctx) {
         <button class="tooltip-btn-lock ${item.locked ? "is-locked" : ""}" data-act="lock">
           ${item.locked ? "ปลดล็อก" : "ล็อก"}
         </button>
-        <button class="tooltip-btn-sell" data-act="sell">ขาย ${sellValue(item)}g</button>
+        <button class="tooltip-btn-sell" data-act="sell" ${item.locked ? "disabled" : ""}>
+          ${item.locked ? "ล็อกอยู่" : `ขาย ${sellValue(item)}g`}
+        </button>
       </div>
     </div>`;
   } else if (ctx.equippedSlot) {
@@ -3297,7 +3304,28 @@ function hideTooltip() {
 
 
 // ---------- Toast ----------
-function showToast(message) { /* notifications disabled */ }
+const TOAST_DURATION_MS = 2000;
+const TOAST_MAX_STACKED = 2;
+
+function showToast(message) {
+  const container = document.getElementById("toastContainer");
+  if (!container || !message) return;
+
+  // Cap how many toasts can stack at once so a burst of actions
+  // (e.g. selling a full inventory of junk) can't pile up forever.
+  while (container.children.length >= TOAST_MAX_STACKED) {
+    container.removeChild(container.firstElementChild);
+  }
+
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = message;
+  container.appendChild(el);
+
+  setTimeout(() => {
+    if (el.parentNode === container) container.removeChild(el);
+  }, TOAST_DURATION_MS);
+}
 
 // ---------- Battle stage rendering ----------
 function setArenaCombatants(player, monster) {
@@ -3842,6 +3870,8 @@ function onMonsterDefeated() {
       loot = rollLoot(dungeon);
       player.inventory.push(loot);
       player.stats.itemsFound += 1;
+    } else {
+      showToast("คลังไอเทมเต็ม พลาดไอเทมที่ดรอป — ขายของเก่าก่อน");
     }
   }
 
@@ -3948,6 +3978,7 @@ function onEndlessWaveCleared() {
     player.inventory.push(loot);
     player.stats.itemsFound += 1;
   } else {
+    showToast("คลังไอเทมเต็ม พลาดไอเทมที่ดรอป — ขายของเก่าก่อน");
   }
 
   const leveledUp = gainExp(player, exp, () => {
@@ -4162,6 +4193,10 @@ function attemptRerollFromTooltip(item) {
 }
 
 function sellItem(item) {
+  if (item.locked) {
+    showToast("ไอเทมนี้ถูกล็อกไว้ ปลดล็อกก่อนถึงจะขายได้");
+    return;
+  }
   const value = sellValue(item);
   player.inventory = player.inventory.filter(i => i.id !== item.id);
   player.gold += value;
