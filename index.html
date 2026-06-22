@@ -3492,6 +3492,7 @@ function init() {
     }
   });
   requestWakeLock();
+  armWakeLockGestureRetry();
 }
 
 function renderAll() {
@@ -3519,10 +3520,18 @@ function renderKeepScreenOnToggle(player) {
   toggle.classList.toggle("on", isOn);
   toggle.setAttribute("aria-checked", isOn ? "true" : "false");
   const hint = document.getElementById("keepScreenOnHint");
-  if (hint) {
-    hint.textContent = wakeLockSupported
-      ? "กันจอดับอัตโนมัติขณะเปิดเกมไว้ เพื่อให้ดูการลุยดันเจี้ยนต่อเนื่องได้"
-      : "เบราว์เซอร์นี้ไม่รองรับการกันจอดับอัตโนมัติ — ปรับเวลาหน้าจอดับของเครื่องเองในตั้งค่าระบบ";
+  if (!hint) return;
+
+  if (!wakeLockSupported) {
+    hint.textContent = "เบราว์เซอร์นี้ไม่รองรับการกันจอดับอัตโนมัติ — ปรับเวลาหน้าจอดับของเครื่องเองในตั้งค่าระบบ";
+  } else if (!isOn) {
+    hint.textContent = "กันจอดับอัตโนมัติขณะเปิดเกมไว้ เพื่อให้ดูการลุยดันเจี้ยนต่อเนื่องได้";
+  } else if (wakeLockStatus === "held") {
+    hint.textContent = "กำลังกันจอดับอยู่ ✓";
+  } else if (wakeLockStatus === "blocked") {
+    hint.textContent = "ไม่สามารถกันจอดับได้ในหน้านี้ (อาจถูกบล็อกโดยหน้าเว็บที่ฝังเกมนี้ไว้) — แตะที่หน้าจอเพื่อลองใหม่ หรือปรับเวลาหน้าจอดับของเครื่องเอง";
+  } else {
+    hint.textContent = "กำลังเปิดใช้งาน...";
   }
 }
 
@@ -3532,29 +3541,80 @@ function renderKeepScreenOnToggle(player) {
 // to keep the screen alive on its own. Released automatically by the
 // browser when the tab is hidden, so we re-request it on return.
 // ============================================
+// ============================================
+// Screen Wake Lock — keeps the device awake while the game tab is in
+// the foreground, since this is an idle game with little touch input
+// to keep the screen alive on its own. Released automatically by the
+// browser when the tab is hidden, so we re-request it on return.
+//
+// Real-world gotchas this has to handle:
+// - The API can exist (`navigator.wakeLock`) but still be blocked by a
+//   Permissions-Policy from the page/iframe embedding this game — this
+//   is common when the game runs inside someone else's site/app shell.
+//   That rejects with NotAllowedError and looks identical to "just
+//   didn't work" unless we surface it.
+// - Some browsers only honor the *first* request if it happens inside
+//   a user gesture (click/tap), not from code that runs automatically
+//   on page load. So a load-time request can silently fail while a
+//   request fired from an actual click succeeds.
+// - The lock is auto-released whenever the tab is hidden/backgrounded,
+//   so it must be re-acquired every time the player returns.
+// ============================================
 const wakeLockSupported = "wakeLock" in navigator;
 let wakeLockHandle = null;
+// Tracks *why* the lock isn't held, for the settings hint:
+// "held" | "unsupported" | "blocked" | "pending" | "off"
+let wakeLockStatus = wakeLockSupported ? "pending" : "unsupported";
+let wakeLockNeedsGesture = false;
 
 async function requestWakeLock() {
-  if (!wakeLockSupported) return;
-  if (!(player.settings && player.settings.keepScreenOn)) return;
-  if (document.visibilityState !== "visible") return;
+  if (!wakeLockSupported) { wakeLockStatus = "unsupported"; return; }
+  if (!(player.settings && player.settings.keepScreenOn)) { wakeLockStatus = "off"; return; }
+  if (wakeLockHandle) { wakeLockStatus = "held"; return; } // already holding one
+  if (document.visibilityState !== "visible") return; // wait for the tab to be foregrounded
   try {
     wakeLockHandle = await navigator.wakeLock.request("screen");
+    wakeLockStatus = "held";
+    wakeLockNeedsGesture = false;
     wakeLockHandle.addEventListener("release", () => {
       wakeLockHandle = null;
+      // Don't downgrade status here: visibilitychange/gesture retry will
+      // re-acquire it almost immediately in the normal "tab went to
+      // background" case, so flipping the hint text would just flicker.
     });
   } catch (e) {
-    // can fail if e.g. battery saver is on — fail silently, screen just sleeps as before
     wakeLockHandle = null;
+    console.warn("Wake Lock request failed:", e && e.name, e && e.message);
+    if (e && e.name === "NotAllowedError") {
+      // Either blocked by a Permissions-Policy (embedding context), or
+      // this browser requires a user gesture for the first request.
+      wakeLockNeedsGesture = true;
+      wakeLockStatus = "blocked";
+    } else {
+      wakeLockStatus = "blocked";
+    }
   }
+  renderKeepScreenOnToggle(player);
 }
 
 function releaseWakeLock() {
+  wakeLockNeedsGesture = false;
   if (wakeLockHandle) {
     wakeLockHandle.release().catch(() => {});
     wakeLockHandle = null;
   }
+}
+
+// Some browsers (notably ones embedding this page in an iframe, or with
+// stricter gesture requirements) only allow the *first* wake lock request
+// to succeed if it happens inside a real user interaction. If our silent
+// startup request got rejected, retry once on the player's next tap.
+function armWakeLockGestureRetry() {
+  const retry = () => {
+    if (wakeLockNeedsGesture) requestWakeLock();
+  };
+  document.addEventListener("pointerdown", retry, { passive: true });
+  document.addEventListener("click", retry);
 }
 
 // ============================================
@@ -3659,7 +3719,10 @@ function switchTab(tabName) {
   document.querySelectorAll(".tab-panel").forEach(panel => {
     panel.classList.toggle("active", panel.dataset.tabPanel === tabName);
   });
-  if (tabName === "settings") updateSaveStatusUI();
+  if (tabName === "settings") {
+    updateSaveStatusUI();
+    renderKeepScreenOnToggle(player);
+  }
   hideTooltip();
 }
 
@@ -4282,15 +4345,21 @@ function bindGlobalEvents() {
     showToast(player.settings.autoMode ? "เปิดออโต้ดำเนินต่อแล้ว" : "ปิดออโต้ดำเนินต่อแล้ว");
   });
 
-  document.getElementById("keepScreenOnToggle").addEventListener("click", () => {
+  document.getElementById("keepScreenOnToggle").addEventListener("click", async () => {
     player.settings.keepScreenOn = !(player.settings && player.settings.keepScreenOn);
     renderKeepScreenOnToggle(player);
     savePlayer(player);
     if (player.settings.keepScreenOn) {
-      requestWakeLock();
-      showToast(wakeLockSupported ? "เปิดกันจอดับแล้ว" : "เบราว์เซอร์นี้ไม่รองรับฟีเจอร์นี้");
+      if (!wakeLockSupported) {
+        showToast("เบราว์เซอร์นี้ไม่รองรับฟีเจอร์นี้");
+      } else {
+        await requestWakeLock(); // this click is a real user gesture, so it has the best chance of succeeding
+        showToast(wakeLockStatus === "held" ? "เปิดกันจอดับแล้ว" : "ไม่สามารถเปิดกันจอดับได้ในหน้านี้");
+      }
     } else {
       releaseWakeLock();
+      wakeLockStatus = "off";
+      renderKeepScreenOnToggle(player);
       showToast("ปิดกันจอดับแล้ว");
     }
   });
