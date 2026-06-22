@@ -1527,6 +1527,76 @@ button {
   .result-actions .btn-primary { flex: 1; }
 }
 
+/* ============================================
+   Auto-Sell Settings UI
+   ============================================ */
+.autosell-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.autosell-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.autosell-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.autosell-rarity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.autosell-rarity-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  cursor: pointer;
+  text-align: left;
+}
+.autosell-rarity-btn .rarity-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.autosell-rarity-btn.active {
+  color: var(--text-primary);
+}
+.autosell-rarity-btn.active[data-rarity="common"] { border-color: #9CA3AF; background: rgba(156,163,175,0.1); color: #9CA3AF; }
+.autosell-rarity-btn.active[data-rarity="uncommon"] { border-color: #3DDC97; background: rgba(61,220,151,0.1); color: #3DDC97; }
+.autosell-rarity-btn.active[data-rarity="rare"] { border-color: #5B9CFF; background: rgba(91,156,255,0.1); color: #5B9CFF; }
+.autosell-rarity-btn.active[data-rarity="epic"] { border-color: #B07CFC; background: rgba(176,124,252,0.1); color: #B07CFC; }
+.autosell-rarity-btn.active[data-rarity="legendary"] { border-color: #F6C453; background: rgba(246,196,83,0.1); color: #F6C453; }
+.autosell-rarity-btn[data-rarity="common"] .rarity-dot { background: #9CA3AF; }
+.autosell-rarity-btn[data-rarity="uncommon"] .rarity-dot { background: #3DDC97; }
+.autosell-rarity-btn[data-rarity="rare"] .rarity-dot { background: #5B9CFF; }
+.autosell-rarity-btn[data-rarity="epic"] .rarity-dot { background: #B07CFC; }
+.autosell-rarity-btn[data-rarity="legendary"] .rarity-dot { background: #F6C453; box-shadow: 0 0 6px rgba(246,196,83,0.7); }
+.autosell-preview {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  padding: 8px 10px;
+  background: var(--bg-panel-raised);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  line-height: 1.5;
+}
+
 </style>
 </head>
 <body>
@@ -1749,6 +1819,34 @@ button {
         </button>
       </div>
       <p class="hint-text" id="keepScreenOnHint"></p>
+
+      <div class="auto-toggle-row" style="margin-top:12px;">
+        <span class="auto-toggle-label">ขายไอเทมอัตโนมัติ</span>
+        <button class="auto-toggle" id="autoSellToggle" role="switch" aria-checked="false" aria-label="เปิด/ปิดขายไอเทมอัตโนมัติ">
+          <span class="auto-toggle-knob"></span>
+        </button>
+      </div>
+      <div class="autosell-section" id="autoSellSection">
+        <p class="autosell-desc">เลือกความหายากที่ต้องการขายอัตโนมัติทันทีเมื่อดรอป (ไอเทมที่ล็อกจะไม่ถูกขาย)</p>
+        <div class="autosell-rarity-grid">
+          <button class="autosell-rarity-btn" data-rarity="common" id="autoSellCommon">
+            <span class="rarity-dot"></span> ธรรมดา
+          </button>
+          <button class="autosell-rarity-btn" data-rarity="uncommon" id="autoSellUncommon">
+            <span class="rarity-dot"></span> ไม่ธรรมดา
+          </button>
+          <button class="autosell-rarity-btn" data-rarity="rare" id="autoSellRare">
+            <span class="rarity-dot"></span> หายาก
+          </button>
+          <button class="autosell-rarity-btn" data-rarity="epic" id="autoSellEpic">
+            <span class="rarity-dot"></span> มหากาพย์
+          </button>
+          <button class="autosell-rarity-btn" data-rarity="legendary" id="autoSellLegendary">
+            <span class="rarity-dot"></span> ตำนาน
+          </button>
+        </div>
+        <p class="autosell-preview" id="autoSellPreview">เลือกระดับที่ต้องการขายอัตโนมัติ</p>
+      </div>
 
       <p class="save-status" id="saveStatusText"></p>
       <button class="btn-secondary full-width" id="exportSaveBtn">คัดลอกข้อมูลเซฟ</button>
@@ -2418,6 +2516,8 @@ function createNewPlayer() {
     settings: {
       autoMode: true, // auto-continue through rooms/dungeons without tapping
       keepScreenOn: true, // request a wake lock so the screen doesn't sleep during idle play
+      autoSell: false, // auto-sell items below a rarity threshold
+      autoSellRarities: { common: true, uncommon: false, rare: false, epic: false, legendary: false }, // which rarities to auto-sell
     },
     stats: {
       monstersKilled: 0,
@@ -2612,6 +2712,16 @@ function repairPlayerShape(parsed) {
   if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
   if (typeof parsed.settings.autoMode !== "boolean") parsed.settings.autoMode = true;
   if (typeof parsed.settings.keepScreenOn !== "boolean") parsed.settings.keepScreenOn = true;
+  if (typeof parsed.settings.autoSell !== "boolean") parsed.settings.autoSell = false;
+  if (!parsed.settings.autoSellRarities || typeof parsed.settings.autoSellRarities !== "object") {
+    parsed.settings.autoSellRarities = { common: true, uncommon: false, rare: false, epic: false, legendary: false };
+  } else {
+    for (const r of ["common", "uncommon", "rare", "epic", "legendary"]) {
+      if (typeof parsed.settings.autoSellRarities[r] !== "boolean") {
+        parsed.settings.autoSellRarities[r] = r === "common";
+      }
+    }
+  }
   if (!parsed.prestige || typeof parsed.prestige !== "object") parsed.prestige = {};
   if (typeof parsed.prestige.points !== "number" || parsed.prestige.points < 0) parsed.prestige.points = 0;
   if (typeof parsed.prestige.rebirths !== "number" || parsed.prestige.rebirths < 0) parsed.prestige.rebirths = 0;
@@ -3505,6 +3615,7 @@ function renderAll() {
   renderShop(player);
   renderAutoToggle(player);
   renderKeepScreenOnToggle(player);
+  renderAutoSellUI();
 }
 
 function renderAutoToggle(player) {
@@ -3659,11 +3770,20 @@ function applyOfflineProgress() {
   const rawRolls = minutes / OFFLINE_ITEM_INTERVAL_MIN;
   const rolls = Math.min(OFFLINE_MAX_ITEMS, Math.floor(rawRolls) + (Math.random() < (rawRolls % 1) ? 1 : 0));
   let itemsEarned = 0;
+  let offlineGoldFromSell = 0;
   for (let i = 0; i < rolls; i++) {
     if (player.inventory.length >= inventoryCapacity(player)) break;
-    player.inventory.push(generateItem(dungeon, dungeon.dropTable));
+    const newItem = generateItem(dungeon, dungeon.dropTable);
     player.stats.itemsFound += 1;
-    itemsEarned++;
+    // Auto-sell filter applies to offline drops too
+    if (shouldAutoSell(newItem)) {
+      const val = sellValue(newItem);
+      player.gold += val;
+      offlineGoldFromSell += val;
+    } else {
+      player.inventory.push(newItem);
+      itemsEarned++;
+    }
   }
 
   player.gold += goldEarned;
@@ -3722,6 +3842,7 @@ function switchTab(tabName) {
   if (tabName === "settings") {
     updateSaveStatusUI();
     renderKeepScreenOnToggle(player);
+    renderAutoSellUI();
   }
   hideTooltip();
 }
@@ -3933,6 +4054,10 @@ function onMonsterDefeated() {
       loot = rollLoot(dungeon);
       player.inventory.push(loot);
       player.stats.itemsFound += 1;
+      // Auto-sell check: if this item matches the auto-sell filter, sell it immediately
+      if (tryAutoSellItem(loot)) {
+        loot = null; // don't show in result loot panel since it was auto-sold
+      }
     } else {
       showToast("คลังไอเทมเต็ม พลาดไอเทมที่ดรอป — ขายของเก่าก่อน");
     }
@@ -4040,6 +4165,10 @@ function onEndlessWaveCleared() {
     loot = rollLoot(baseDungeon);
     player.inventory.push(loot);
     player.stats.itemsFound += 1;
+    // Auto-sell check
+    if (tryAutoSellItem(loot)) {
+      loot = null;
+    }
   } else {
     showToast("คลังไอเทมเต็ม พลาดไอเทมที่ดรอป — ขายของเก่าก่อน");
   }
@@ -4286,6 +4415,72 @@ function sellAllJunk() {
 }
 
 // ============================================
+// Auto-Sell System
+// ============================================
+
+function shouldAutoSell(item) {
+  if (!player.settings || !player.settings.autoSell) return false;
+  if (item.locked) return false;
+  const rarities = player.settings.autoSellRarities || {};
+  return !!(rarities[item.rarity]);
+}
+
+function tryAutoSellItem(item) {
+  if (!shouldAutoSell(item)) return false;
+  const value = sellValue(item);
+  player.inventory = player.inventory.filter(i => i.id !== item.id);
+  player.gold += value;
+  showToast(`🪙 ขายอัตโนมัติ: ${itemDisplayName(item)} +${value}g`);
+  return true;
+}
+
+function autoSellInventory() {
+  if (!player.settings || !player.settings.autoSell) return 0;
+  const toSell = player.inventory.filter(i => !i.locked && shouldAutoSell(i));
+  if (toSell.length === 0) return 0;
+  const total = toSell.reduce((s, i) => s + sellValue(i), 0);
+  player.inventory = player.inventory.filter(i => !toSell.includes(i));
+  player.gold += total;
+  if (toSell.length > 0) {
+    showToast(`🪙 ขายอัตโนมัติ ${toSell.length} ชิ้น ได้ ${fmtNum(total)}g`);
+  }
+  return toSell.length;
+}
+
+function renderAutoSellUI() {
+  const settings = player.settings || {};
+  const isOn = !!settings.autoSell;
+  const toggle = document.getElementById("autoSellToggle");
+  if (!toggle) return;
+  toggle.classList.toggle("on", isOn);
+  toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+
+  const rarities = settings.autoSellRarities || {};
+  ["common", "uncommon", "rare", "epic", "legendary"].forEach(r => {
+    const btn = document.getElementById("autoSell" + r.charAt(0).toUpperCase() + r.slice(1));
+    if (btn) btn.classList.toggle("active", !!rarities[r]);
+  });
+
+  // Update preview text
+  const preview = document.getElementById("autoSellPreview");
+  if (!preview) return;
+  if (!isOn) {
+    preview.textContent = "ระบบขายอัตโนมัติปิดอยู่";
+    return;
+  }
+  const selected = ["common", "uncommon", "rare", "epic", "legendary"].filter(r => rarities[r]);
+  const labels = { common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน" };
+  if (selected.length === 0) {
+    preview.textContent = "ยังไม่ได้เลือกระดับ — กดเลือกระดับที่ต้องการขายอัตโนมัติ";
+  } else {
+    preview.textContent = `จะขายอัตโนมัติ: ${selected.map(r => labels[r]).join(", ")}`;
+    if (rarities["legendary"]) {
+      preview.textContent += " ⚠️ รวมตำนาน!";
+    }
+  }
+}
+
+// ============================================
 // Global event bindings
 // ============================================
 function bindGlobalEvents() {
@@ -4365,6 +4560,28 @@ function bindGlobalEvents() {
   });
 
   document.getElementById("sellJunkBtn").addEventListener("click", sellAllJunk);
+
+  // Auto-sell toggle
+  document.getElementById("autoSellToggle").addEventListener("click", () => {
+    if (!player.settings) player.settings = {};
+    player.settings.autoSell = !player.settings.autoSell;
+    renderAutoSellUI();
+    savePlayer(player);
+    showToast(player.settings.autoSell ? "เปิดขายไอเทมอัตโนมัติแล้ว" : "ปิดขายไอเทมอัตโนมัติแล้ว");
+  });
+
+  // Auto-sell rarity buttons (toggle individual rarities)
+  ["common", "uncommon", "rare", "epic", "legendary"].forEach(r => {
+    const btn = document.getElementById("autoSell" + r.charAt(0).toUpperCase() + r.slice(1));
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      if (!player.settings) player.settings = {};
+      if (!player.settings.autoSellRarities) player.settings.autoSellRarities = {};
+      player.settings.autoSellRarities[r] = !player.settings.autoSellRarities[r];
+      renderAutoSellUI();
+      savePlayer(player);
+    });
+  });
 
   document.getElementById("offlineCollectBtn").addEventListener("click", () => {
     document.getElementById("offlineModal").classList.add("hidden");
