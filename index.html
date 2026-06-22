@@ -312,20 +312,20 @@ button {
 
 .panel-title {
   font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 16px;
   color: var(--text-primary);
 }
 .panel-subtitle {
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-faint);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 18px 0 10px;
+  letter-spacing: 0.1em;
+  margin: 22px 0 10px;
 }
 
 .hint-text {
@@ -374,48 +374,70 @@ button {
 .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
 .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
 
-.stat-list { display: flex; flex-direction: column; gap: 8px; }
+.stat-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
 .stat-row {
-  display: flex; justify-content: space-between;
+  display: flex; justify-content: space-between; align-items: center;
   font-size: 13px;
-  padding: 7px 10px;
-  background: var(--bg-panel-raised);
-  border-radius: var(--radius-sm);
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--line);
 }
-.stat-key { color: var(--text-muted); }
-.stat-val { font-weight: 600; font-family: var(--font-display); }
+.stat-key { color: var(--text-muted); letter-spacing: 0.01em; }
+.stat-val { font-weight: 600; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.02em; }
 
 .equip-slots {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 .equip-slot {
-  min-height: 64px;
-  border: 1.5px dashed var(--line-strong);
-  border-radius: var(--radius-sm);
+  min-height: 60px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
   background: var(--bg-panel-raised);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   cursor: pointer;
-  transition: border-color 0.2s, transform 0.15s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
   position: relative;
-  padding: 10px 8px;
+  padding: 10px 10px;
 }
-.equip-slot:hover { transform: translateY(-2px); border-color: var(--accent); }
-.equip-slot.filled { border-style: solid; }
+.equip-slot:hover { transform: translateY(-1px); border-color: var(--accent); }
+.equip-slot.filled { border-style: solid; border-width: 1px; justify-content: flex-start; }
 .equip-slot-label {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-faint);
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
   text-align: left;
   line-height: 1.8;
   white-space: nowrap;
 }
-.equip-slot .item-icon { width: 24px; height: 24px; flex-shrink: 0; }
+.equip-slot .item-icon { width: 22px; height: 22px; flex-shrink: 0; }
+.equip-slot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+.equip-slot-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+.equip-slot-type {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
 
 /* ============================================
    Stage / Battle Panel
@@ -889,15 +911,17 @@ button {
 .btn-secondary:hover { border-color: var(--accent); }
 
 .btn-danger {
-  background: transparent;
+  background: rgba(255,107,91,0.06);
   color: var(--danger);
   border: 1px solid rgba(255,107,91,0.4);
-  padding: 10px 18px;
-  border-radius: 999px;
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 13px;
+  box-shadow: 0 0 10px rgba(255,107,91,0.14);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
-.btn-danger:hover { background: rgba(255,107,91,0.1); }
+.btn-danger:hover { background: rgba(255,107,91,0.12); border-color: var(--danger); box-shadow: 0 0 14px rgba(255,107,91,0.24); }
 
 .btn-text {
   background: transparent;
@@ -925,9 +949,10 @@ button {
 .btn-danger:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background: transparent;
+  background: rgba(255,107,91,0.06);
+  box-shadow: none;
 }
-.btn-danger:disabled:hover { background: transparent; }
+.btn-danger:disabled:hover { background: rgba(255,107,91,0.06); box-shadow: none; }
 
 /* ============================================
    Prestige / Rebirth box
@@ -936,17 +961,17 @@ button {
   background: var(--bg-panel-raised);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  padding: 4px 16px;
 }
 .prestige-row {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 13px;
-  padding: 6px 0;
+  font-size: 12.5px;
+  padding: 10px 0;
 }
 .prestige-row:not(:last-child) { border-bottom: 1px solid var(--line); }
 .prestige-row span:first-child { color: var(--text-muted); }
-.prestige-row span:last-child { font-weight: 600; font-family: var(--font-display); color: var(--gold); }
-.prestige-box .hint-text { margin: 12px 0 4px; }
+.prestige-row span:last-child { font-weight: 600; font-family: var(--font-display); color: var(--gold); letter-spacing: 0.02em; }
+.prestige-box .hint-text { margin: 14px 0 12px; }
 
 /* ============================================
    Boss Rush / Endless mode
@@ -1169,7 +1194,7 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .tooltip-stat {
   display: flex;
@@ -1177,23 +1202,151 @@ button {
   background: var(--bg-panel);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  padding: 7px 10px;
 }
-.tooltip-stat-label { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
-.tooltip-stat-val { font-size: 15px; font-weight: 700; color: var(--success); font-family: var(--font-display); }
-.tooltip-actions { display: flex; gap: 8px; margin-top: 4px; }
-.tooltip-actions button {
+.tooltip-stat-label { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.tooltip-stat-val { font-size: 14px; font-weight: 700; color: var(--success); font-family: var(--font-display); }
+.tooltip-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.tooltip-actions-row { display: flex; gap: 6px; }
+.tooltip-actions-row.secondary { gap: 6px; }
+
+/* Primary action button (สวม / ถอด) — minimal outline with soft glow */
+.tooltip-btn-equip {
   flex: 1;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 11px 8px;
+  padding: 9px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(124,92,252,0.55);
+  background: rgba(124,92,252,0.08);
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 0 0 1px rgba(124,92,252,0.12), 0 0 14px rgba(124,92,252,0.22);
+}
+.tooltip-btn-equip:hover { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(124,92,252,0.2), 0 0 18px rgba(124,92,252,0.32); background: rgba(124,92,252,0.13); }
+.tooltip-btn-equip:active { box-shadow: 0 0 0 1px rgba(124,92,252,0.12), 0 0 8px rgba(124,92,252,0.18); }
+
+/* Reroll button */
+.tooltip-btn-reroll {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 8px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(75,216,232,0.4);
+  background: rgba(75,216,232,0.06);
+  color: var(--gem);
+  letter-spacing: 0.01em;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 0 10px rgba(75,216,232,0.14);
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.tooltip-btn-reroll:hover:not(:disabled) { border-color: var(--gem); background: rgba(75,216,232,0.12); box-shadow: 0 0 14px rgba(75,216,232,0.22); }
+.tooltip-btn-reroll:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Lock / Sell small buttons */
+.tooltip-btn-lock {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 8px 8px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong);
   background: var(--bg-panel);
-  color: var(--text-primary);
-  transition: border-color 0.15s, background 0.15s;
+  color: var(--text-muted);
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
 }
-.tooltip-actions button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.tooltip-btn-lock:hover { border-color: var(--accent); color: var(--text-primary); background: var(--accent-soft); box-shadow: 0 0 10px rgba(124,92,252,0.18); }
+.tooltip-btn-lock.is-locked {
+  border-color: rgba(246,196,83,0.45);
+  color: var(--gold);
+  background: rgba(246,196,83,0.06);
+  box-shadow: 0 0 10px rgba(246,196,83,0.16);
+}
+.tooltip-btn-sell {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 8px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,107,91,0.32);
+  background: transparent;
+  color: var(--danger);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.tooltip-btn-sell:hover { background: rgba(255,107,91,0.1); box-shadow: 0 0 10px rgba(255,107,91,0.2); }
+
+/* Compare section */
+.tooltip-compare {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.tooltip-compare-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+.tooltip-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.tooltip-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltip-compare-col-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin-bottom: 3px;
+}
+.tooltip-compare-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: var(--bg-panel);
+}
+.tooltip-compare-stat-key { color: var(--text-muted); }
+.tooltip-compare-stat-val { font-weight: 700; font-family: var(--font-display); }
+.cmp-better { color: var(--success); }
+.cmp-worse  { color: var(--danger); }
+.cmp-same   { color: var(--text-faint); }
+.tooltip-compare-vs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 18px;
+}
+.tooltip-compare-diff {
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  text-align: center;
+  padding: 4px 2px;
+  line-height: 1.8;
+  min-width: 32px;
+}
+.diff-up   { color: var(--success); }
+.diff-down { color: var(--danger); }
+.diff-eq   { color: var(--text-faint); }
+.tooltip-compare-empty {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 11.5px;
+  padding: 10px 0;
+}
 
 .tooltip-enchant {
   margin-top: 14px;
@@ -1209,15 +1362,17 @@ button {
 }
 .tooltip-enchant-btn {
   width: 100%;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 11px 8px;
+  padding: 9px 8px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(246,196,83,0.45);
-  background: rgba(246,196,83,0.1);
+  border: 1px solid rgba(246,196,83,0.4);
+  background: rgba(246,196,83,0.06);
   color: var(--gold);
+  box-shadow: 0 0 10px rgba(246,196,83,0.16);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
-.tooltip-enchant-btn:hover:not(:disabled) { background: rgba(246,196,83,0.2); }
+.tooltip-enchant-btn:hover:not(:disabled) { border-color: var(--gold); background: rgba(246,196,83,0.12); box-shadow: 0 0 14px rgba(246,196,83,0.26); }
 .tooltip-enchant-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .tooltip-enchant.maxed {
   margin-top: 14px;
@@ -2724,9 +2879,14 @@ function renderEquipSlots(player, onSlotClick) {
     const el = document.createElement("div");
     el.className = "equip-slot" + (item ? " filled" : "");
     if (item) {
-      el.style.borderColor = RARITY[item.rarity].color;
-      el.style.boxShadow = `0 0 10px ${RARITY[item.rarity].glow}`;
-      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
+      el.style.borderColor = RARITY[item.rarity].color + "70";
+      el.style.boxShadow = `0 0 8px ${RARITY[item.rarity].glow}`;
+      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) +
+        `<span class="equip-slot-info">
+          <span class="equip-slot-name" style="color:${RARITY[item.rarity].color}">${itemDisplayName(item)}</span>
+          <span class="equip-slot-type">${SLOT_LABEL[slot]}</span>
+        </span>` +
+        enchantBadgeHtml(item);
     } else {
       el.innerHTML = `<span class="equip-slot-label">${SLOT_LABEL[slot]}</span>`;
     }
@@ -3024,6 +3184,66 @@ function performReroll() {
 // ---------- Tooltip ----------
 let tooltipCtx = null;
 
+function renderCompareHtml(item, ctx) {
+  // Only show compare for inventory items that have a corresponding equipped slot
+  if (!ctx.inventoryItem) return "";
+  const equippedItem = player.equipment[item.slot];
+  if (!equippedItem) {
+    return `<div class="tooltip-compare">
+      <div class="tooltip-compare-title">เปรียบเทียบอุปกรณ์</div>
+      <div class="tooltip-compare-empty">ยังไม่มีอุปกรณ์ที่สวมในช่อง ${SLOT_LABEL[item.slot] || item.slot}</div>
+    </div>`;
+  }
+  const multNew = enchantStatMultiplier(item);
+  const multEq  = enchantStatMultiplier(equippedItem);
+  const allKeys = [...new Set([...Object.keys(item.stats), ...Object.keys(equippedItem.stats)])];
+  const eqRarity = RARITY[equippedItem.rarity];
+
+  const newCols  = allKeys.map(k => {
+    const v = (item.stats[k] || 0) * multNew;
+    const ve = (equippedItem.stats[k] || 0) * multEq;
+    const diff = v - ve;
+    const cls = diff > 0 ? "cmp-better" : diff < 0 ? "cmp-worse" : "cmp-same";
+    return `<div class="tooltip-compare-stat">
+      <span class="tooltip-compare-stat-key">${statLabel(k)}</span>
+      <span class="tooltip-compare-stat-val ${cls}">${statValueDisplay(k, v)}</span>
+    </div>`;
+  }).join("");
+
+  const eqCols = allKeys.map(k => {
+    const ve = (equippedItem.stats[k] || 0) * multEq;
+    return `<div class="tooltip-compare-stat">
+      <span class="tooltip-compare-stat-key">${statLabel(k)}</span>
+      <span class="tooltip-compare-stat-val cmp-same">${statValueDisplay(k, ve)}</span>
+    </div>`;
+  }).join("");
+
+  const diffCols = allKeys.map(k => {
+    const v  = (item.stats[k] || 0) * multNew;
+    const ve = (equippedItem.stats[k] || 0) * multEq;
+    const diff = v - ve;
+    if (diff === 0) return `<div class="tooltip-compare-diff diff-eq">—</div>`;
+    const sign = diff > 0 ? "+" : "";
+    const cls  = diff > 0 ? "diff-up" : "diff-down";
+    return `<div class="tooltip-compare-diff ${cls}">${sign}${k === "crit" || k === "spd" ? diff.toFixed(1) : Math.round(diff)}</div>`;
+  }).join("");
+
+  return `<div class="tooltip-compare">
+    <div class="tooltip-compare-title">เปรียบเทียบกับที่ใส่อยู่</div>
+    <div class="tooltip-compare-grid">
+      <div class="tooltip-compare-col">
+        <div class="tooltip-compare-col-label" style="color:${RARITY[item.rarity].color}">ไอเทมนี้</div>
+        ${newCols}
+      </div>
+      <div class="tooltip-compare-vs">${diffCols}</div>
+      <div class="tooltip-compare-col">
+        <div class="tooltip-compare-col-label" style="color:${eqRarity.color}">${itemDisplayName(equippedItem)}</div>
+        ${eqCols}
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderTooltipContent(item, ctx) {
   const body = document.getElementById("itemTooltipBody");
   const rarityInfo = RARITY[item.rarity];
@@ -3034,16 +3254,34 @@ function renderTooltipContent(item, ctx) {
 
   let actionsHtml = "";
   if (ctx.inventoryItem) {
+    const cost = rerollCost(item);
+    const canAffordReroll = (player.gems || 0) >= cost;
     actionsHtml = `<div class="tooltip-actions">
-      <button data-act="equip">สวม</button>
-      <button data-act="lock">${item.locked ? "ปลดล็อก" : "ล็อก"}</button>
-      <button data-act="sell">ขาย ${sellValue(item)}g</button>
+      <div class="tooltip-actions-row">
+        <button class="tooltip-btn-equip" data-act="equip">สวมใส่</button>
+      </div>
+      <div class="tooltip-actions-row secondary">
+        <button class="tooltip-btn-reroll" data-act="reroll" ${canAffordReroll ? "" : "disabled"}>
+          รีรอล · ${fmtNum(cost)}
+        </button>
+      </div>
+      <div class="tooltip-actions-row secondary">
+        <button class="tooltip-btn-lock ${item.locked ? "is-locked" : ""}" data-act="lock">
+          ${item.locked ? "ปลดล็อก" : "ล็อก"}
+        </button>
+        <button class="tooltip-btn-sell" data-act="sell">ขาย ${sellValue(item)}g</button>
+      </div>
     </div>`;
   } else if (ctx.equippedSlot) {
-    actionsHtml = `<div class="tooltip-actions"><button data-act="unequip">ถอด</button></div>`;
+    actionsHtml = `<div class="tooltip-actions">
+      <div class="tooltip-actions-row">
+        <button class="tooltip-btn-equip" style="border-color:rgba(255,107,91,0.55);background:rgba(255,107,91,0.08);box-shadow:0 0 0 1px rgba(255,107,91,0.12),0 0 14px rgba(255,107,91,0.22)" data-act="unequip">ถอดออก</button>
+      </div>
+    </div>`;
   }
 
   const enchantHtml = renderEnchantSectionHtml(item);
+  const compareHtml = renderCompareHtml(item, ctx);
 
   body.innerHTML = `
     <div class="tooltip-head">
@@ -3056,6 +3294,7 @@ function renderTooltipContent(item, ctx) {
     ${statsHtml}
     ${actionsHtml}
     ${enchantHtml}
+    ${compareHtml}
   `;
 
   body.querySelectorAll("button").forEach(btn => {
@@ -3937,6 +4176,23 @@ function attemptEnchantItem(item) {
   refreshOpenTooltip();
 }
 
+function attemptRerollFromTooltip(item) {
+  const cost = rerollCost(item);
+  if ((player.gems || 0) < cost) {
+    showToast("เพชรไม่พอสำหรับรีรอล");
+    return;
+  }
+  player.gems -= cost;
+  rerollItemStats(item);
+  renderHud(player);
+  renderStats(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  renderShop(player);
+  savePlayer(player);
+  showToast(`🎲 รีรอลค่าสถานะ ${itemDisplayName(item)} แล้ว!`);
+  refreshOpenTooltip();
+}
+
 function sellItem(item) {
   const value = sellValue(item);
   player.inventory = player.inventory.filter(i => i.id !== item.id);
@@ -4143,6 +4399,7 @@ function bindGlobalEvents() {
     if (act === "sell") sellItem(item);
     if (act === "unequip") unequipItem(item.slot);
     if (act === "enchant") attemptEnchantItem(item);
+    if (act === "reroll") attemptRerollFromTooltip(item);
   };
 
   // Bottom sheet is closed via backdrop click or close button — no global dismiss needed
