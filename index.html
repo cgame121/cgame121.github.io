@@ -2024,11 +2024,13 @@ button {
 .autosell-rarity-btn.active[data-rarity="rare"] { border-color: #5B9CFF; background: rgba(91,156,255,0.1); color: #5B9CFF; }
 .autosell-rarity-btn.active[data-rarity="epic"] { border-color: #B07CFC; background: rgba(176,124,252,0.1); color: #B07CFC; }
 .autosell-rarity-btn.active[data-rarity="legendary"] { border-color: #F6C453; background: rgba(246,196,83,0.1); color: #F6C453; }
+.autosell-rarity-btn.active[data-rarity="void"] { border-color: #FF2D2D; background: rgba(255,45,45,0.1); color: #FF2D2D; }
 .autosell-rarity-btn[data-rarity="common"] .rarity-dot { background: #9CA3AF; }
 .autosell-rarity-btn[data-rarity="uncommon"] .rarity-dot { background: #3DDC97; }
 .autosell-rarity-btn[data-rarity="rare"] .rarity-dot { background: #5B9CFF; }
 .autosell-rarity-btn[data-rarity="epic"] .rarity-dot { background: #B07CFC; }
 .autosell-rarity-btn[data-rarity="legendary"] .rarity-dot { background: #F6C453; box-shadow: 0 0 6px rgba(246,196,83,0.7); }
+.autosell-rarity-btn[data-rarity="void"] .rarity-dot { background: #FF2D2D; box-shadow: 0 0 8px rgba(255,45,45,0.9); }
 .autosell-preview {
   margin-top: 10px;
   font-size: 11.5px;
@@ -2448,6 +2450,9 @@ button {
               <button class="autosell-rarity-btn" data-rarity="legendary" id="autoSellLegendary">
                 <span class="rarity-dot"></span> ตำนาน
               </button>
+              <button class="autosell-rarity-btn" data-rarity="void" id="autoSellVoid">
+                <span class="rarity-dot"></span> เทพสังหาร
+              </button>
             </div>
             <p class="autosell-preview" id="autoSellPreview">เลือกระดับที่ต้องการขายอัตโนมัติ</p>
           </div>
@@ -2714,9 +2719,10 @@ const RARITY = {
   rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.85 },
   epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.6 },
   legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 3.8 },
+  void:      { label: "Void",      color: "#FF2D2D", glow: "rgba(255,45,45,0.85)",    weight: 0.4, mult: 5.5 },
 };
 
-const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary"];
+const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary", "void"];
 
 // Slot definitions
 const SLOTS = ["weapon", "head", "body", "hands", "feet", "trinket"];
@@ -2770,7 +2776,7 @@ const DUNGEONS = [
     monsterPool: ["หนูเงา", "ค้างคาวมืด", "หมาป่าซีด"],
     boss: { name: "ราชาหมาป่าเถ้า", hpMult: 4.5 },
     baseHp: 18, baseAtk: 4, baseDef: 1, goldMult: 1, expMult: 1,
-    dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0 },
+    dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0, void: 0 },
   },
   {
     id: "d2", name: "สุสานเสียงครวญ", minLevel: 4, tier: "normal",
@@ -2778,7 +2784,7 @@ const DUNGEONS = [
     monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "วิญญาณคร่ำครวญ"],
     boss: { name: "เจ้าสุสานไร้นาม", hpMult: 5 },
     baseHp: 32, baseAtk: 7, baseDef: 3, goldMult: 1.4, expMult: 1.3,
-    dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0 },
+    dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0, void: 0 },
   },
   {
     id: "d3", name: "เหมืองคริสตัลร้าง", minLevel: 8, tier: "normal",
@@ -2786,7 +2792,7 @@ const DUNGEONS = [
     monsterPool: ["โกเลมคริสตัล", "ค้างคาวพิษ", "แมงมุมเหมือง"],
     boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 5.5 },
     baseHp: 55, baseAtk: 11, baseDef: 6, goldMult: 1.9, expMult: 1.6,
-    dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0 },
+    dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0, void: 0 },
   },
   {
     id: "d4", name: "หอคอยกระจกแตก", minLevel: 13, tier: "normal",
@@ -2794,7 +2800,7 @@ const DUNGEONS = [
     monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
     boss: { name: "จอมเวทกระจกมืด", hpMult: 6 },
     baseHp: 88, baseAtk: 17, baseDef: 10, goldMult: 2.5, expMult: 2.1,
-    dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1 },
+    dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1, void: 0 },
   },
   {
     id: "d4b", name: "หุบเขาหมอกพิษ", minLevel: 17, tier: "normal",
@@ -2802,7 +2808,7 @@ const DUNGEONS = [
     monsterPool: ["ค้างคาวพิษ", "แมงมุมเหมือง", "ภูตแสงหัก"],
     boss: { name: "ราชินีแมงมุมพิษ", hpMult: 6.2 },
     baseHp: 110, baseAtk: 21, baseDef: 13, goldMult: 3.0, expMult: 2.5,
-    dropTable: { common: 30, uncommon: 40, rare: 22, epic: 7, legendary: 1 },
+    dropTable: { common: 30, uncommon: 40, rare: 22, epic: 7, legendary: 1, void: 0 },
   },
   {
     id: "d4c", name: "ซากปรักหักพังอาณาจักรเก่า", minLevel: 21, tier: "normal",
@@ -2810,7 +2816,7 @@ const DUNGEONS = [
     monsterPool: ["อัศวินกระจก", "โครงกระดูกพเนจร", "ทหารเหล็กพัง"],
     boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 6.5 },
     baseHp: 138, baseAtk: 26, baseDef: 16, goldMult: 3.6, expMult: 3.0,
-    dropTable: { common: 24, uncommon: 40, rare: 26, epic: 9, legendary: 1 },
+    dropTable: { common: 24, uncommon: 40, rare: 26, epic: 9, legendary: 1, void: 0 },
   },
   {
     id: "d4d", name: "ทุ่งหิมะนิรันดร์", minLevel: 25, tier: "normal",
@@ -2818,7 +2824,7 @@ const DUNGEONS = [
     monsterPool: ["วิญญาณพลัดถิ่น", "หมาป่าซีด", "โกเลมคริสตัล"],
     boss: { name: "เจ้าแม่หิมะอมตะ", hpMult: 6.8 },
     baseHp: 168, baseAtk: 32, baseDef: 20, goldMult: 4.2, expMult: 3.6,
-    dropTable: { common: 20, uncommon: 38, rare: 28, epic: 12, legendary: 2 },
+    dropTable: { common: 20, uncommon: 38, rare: 28, epic: 12, legendary: 2, void: 0 },
   },
   {
     id: "d5", name: "ทะเลทรายเลือดแห้ง", minLevel: 30, tier: "hard",
@@ -2826,7 +2832,7 @@ const DUNGEONS = [
     monsterPool: ["นักรบทรายผุ", "อสรพิษเพลิง", "หัวขโมยทะเลทราย"],
     boss: { name: "จอมทัพทรายเดือด", hpMult: 6.5 },
     baseHp: 210, baseAtk: 38, baseDef: 24, goldMult: 5.0, expMult: 4.2,
-    dropTable: { common: 18, uncommon: 36, rare: 28, epic: 15, legendary: 3 },
+    dropTable: { common: 18, uncommon: 36, rare: 28, epic: 15, legendary: 3, void: 0 },
   },
   {
     id: "d5b", name: "ป่าดึกดำบรรพ์วิปลาส", minLevel: 35, tier: "hard",
@@ -2834,7 +2840,7 @@ const DUNGEONS = [
     monsterPool: ["เงาผู้พิพากษา", "ภูตแสงหัก", "เทพปลอมแปลง"],
     boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 7.0 },
     baseHp: 290, baseAtk: 52, baseDef: 34, goldMult: 6.2, expMult: 5.2,
-    dropTable: { common: 12, uncommon: 32, rare: 30, epic: 20, legendary: 6 },
+    dropTable: { common: 12, uncommon: 32, rare: 30, epic: 20, legendary: 6, void: 0 },
   },
   {
     id: "d6", name: "วิหารใต้นทีดำ", minLevel: 40, tier: "hard",
@@ -2842,7 +2848,7 @@ const DUNGEONS = [
     monsterPool: ["นักบวชจมน้ำ", "งูทะเลลึก", "เทพปลอมแปลง"],
     boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 7 },
     baseHp: 380, baseAtk: 68, baseDef: 44, goldMult: 7.8, expMult: 6.5,
-    dropTable: { common: 8, uncommon: 28, rare: 32, epic: 24, legendary: 8 },
+    dropTable: { common: 8, uncommon: 28, rare: 32, epic: 24, legendary: 8, void: 0 },
   },
   {
     id: "d6b", name: "หอหมอกจักรกล", minLevel: 46, tier: "hard",
@@ -2850,7 +2856,7 @@ const DUNGEONS = [
     monsterPool: ["ปืนใหญ่วิญญาณ", "โกเลมคริสตัล", "หุ่นพิทักษ์บัลลังก์"],
     boss: { name: "จักรกลเทพสังหาร", hpMult: 7.5 },
     baseHp: 480, baseAtk: 86, baseDef: 56, goldMult: 9.5, expMult: 8.0,
-    dropTable: { common: 4, uncommon: 20, rare: 32, epic: 30, legendary: 14 },
+    dropTable: { common: 4, uncommon: 20, rare: 32, epic: 30, legendary: 14, void: 0 },
   },
   {
     id: "d6c", name: "ป้อมปราการเหล็กกล้า", minLevel: 52, tier: "hard",
@@ -2858,7 +2864,7 @@ const DUNGEONS = [
     monsterPool: ["ทหารเหล็กพัง", "ปืนใหญ่วิญญาณ", "แม่ทัพไร้หัว"],
     boss: { name: "จักรกลสงครามต้องสาป", hpMult: 7.5 },
     baseHp: 590, baseAtk: 108, baseDef: 70, goldMult: 11.5, expMult: 9.8,
-    dropTable: { common: 2, uncommon: 14, rare: 30, epic: 34, legendary: 20 },
+    dropTable: { common: 2, uncommon: 14, rare: 30, epic: 34, legendary: 20, void: 0 },
   },
   {
     id: "d7", name: "ห้วงดิ่งสุดท้าย", minLevel: 60, tier: "extreme",
@@ -2866,7 +2872,7 @@ const DUNGEONS = [
     monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "วิญญาณพลัดถิ่น"],
     boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 8.5 },
     baseHp: 750, baseAtk: 135, baseDef: 88, goldMult: 14, expMult: 12,
-    dropTable: { common: 1, uncommon: 9, rare: 28, epic: 36, legendary: 26 },
+    dropTable: { common: 1, uncommon: 9, rare: 27, epic: 35, legendary: 25, void: 3 },
   },
   {
     id: "d7b", name: "มิติแตกสลาย", minLevel: 67, tier: "extreme",
@@ -2874,7 +2880,7 @@ const DUNGEONS = [
     monsterPool: ["เงาสะท้อนวิปลาส", "ผู้เฝ้าห้วง", "อสูรแสงดับ"],
     boss: { name: "จอมอสูรมิติฉีก", hpMult: 9.0 },
     baseHp: 950, baseAtk: 170, baseDef: 112, goldMult: 17.5, expMult: 15,
-    dropTable: { common: 0, uncommon: 6, rare: 22, epic: 38, legendary: 34 },
+    dropTable: { common: 0, uncommon: 5, rare: 20, epic: 36, legendary: 32, void: 7 },
   },
   {
     id: "d8", name: "นรกเหวลึกไร้สิ้นสุด", minLevel: 75, tier: "extreme",
@@ -2882,7 +2888,7 @@ const DUNGEONS = [
     monsterPool: ["อสูรเหวเพลิง", "เงาผู้พิพากษา", "ปีศาจกลืนวิญญาณ"],
     boss: { name: "จอมเทพอเวจี", hpMult: 10 },
     baseHp: 1200, baseAtk: 215, baseDef: 142, goldMult: 22, expMult: 19,
-    dropTable: { common: 0, uncommon: 3, rare: 17, epic: 38, legendary: 42 },
+    dropTable: { common: 0, uncommon: 2, rare: 14, epic: 34, legendary: 38, void: 12 },
   },
   {
     id: "d8b", name: "สวรรค์ที่ถูกสาป", minLevel: 84, tier: "extreme",
@@ -2890,7 +2896,7 @@ const DUNGEONS = [
     monsterPool: ["ทวยเทพพลัดถิ่น", "วิญญาณครวญ", "ภูตแสงหัก"],
     boss: { name: "เทพจุติผู้ทรยศ", hpMult: 11 },
     baseHp: 1550, baseAtk: 278, baseDef: 184, goldMult: 28, expMult: 24,
-    dropTable: { common: 0, uncommon: 1, rare: 12, epic: 37, legendary: 50 },
+    dropTable: { common: 0, uncommon: 0, rare: 9, epic: 33, legendary: 40, void: 18 },
   },
   {
     id: "d9", name: "บัลลังก์เทพจุติล่มสลาย", minLevel: 92, tier: "extreme",
@@ -2898,7 +2904,7 @@ const DUNGEONS = [
     monsterPool: ["ทวยเทพพลัดถิ่น", "อสูรแสงดับ", "หุ่นพิทักษ์บัลลังก์"],
     boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 12 },
     baseHp: 1950, baseAtk: 352, baseDef: 234, goldMult: 35, expMult: 30,
-    dropTable: { common: 0, uncommon: 0, rare: 8, epic: 35, legendary: 57 },
+    dropTable: { common: 0, uncommon: 0, rare: 5, epic: 28, legendary: 42, void: 25 },
   },
   // ── TRANSCENDENT TIER ──────────────────────────────────────────────────────
   {
@@ -2907,7 +2913,7 @@ const DUNGEONS = [
     monsterPool: ["อสูรอนันต์", "เศษเสี้ยวความว่างเปล่า", "ผู้พิทักษ์นิรันดร์"],
     boss: { name: "เจ้าแห่งอนันต์", hpMult: 13 },
     baseHp: 2500, baseAtk: 448, baseDef: 298, goldMult: 44, expMult: 38,
-    dropTable: { common: 0, uncommon: 0, rare: 4, epic: 32, legendary: 64 },
+    dropTable: { common: 0, uncommon: 0, rare: 2, epic: 24, legendary: 40, void: 34 },
   },
   {
     id: "d10b", name: "แกนกลางแห่งความว่างเปล่า", minLevel: 112, tier: "transcendent",
@@ -2915,7 +2921,7 @@ const DUNGEONS = [
     monsterPool: ["เศษเสี้ยวความว่างเปล่า", "จิตวิญญาณสูญสลาย", "อสูรสาปแช่ง"],
     boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 13.5 },
     baseHp: 3200, baseAtk: 572, baseDef: 380, goldMult: 56, expMult: 48,
-    dropTable: { common: 0, uncommon: 0, rare: 2, epic: 28, legendary: 70 },
+    dropTable: { common: 0, uncommon: 0, rare: 1, epic: 18, legendary: 38, void: 43 },
   },
   {
     id: "d10c", name: "วังวนนิรันดร์แห่งวิญญาณ", minLevel: 123, tier: "transcendent",
@@ -2923,7 +2929,7 @@ const DUNGEONS = [
     monsterPool: ["วิญญาณนักรบอมตะ", "ผู้พิทักษ์นิรันดร์", "อสูรอนันต์"],
     boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 14 },
     baseHp: 4100, baseAtk: 728, baseDef: 484, goldMult: 70, expMult: 60,
-    dropTable: { common: 0, uncommon: 0, rare: 1, epic: 24, legendary: 75 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 12, legendary: 36, void: 52 },
   },
   {
     id: "d11", name: "ดาวมรณะแห่งจักรวาล", minLevel: 135, tier: "transcendent",
@@ -2931,7 +2937,7 @@ const DUNGEONS = [
     monsterPool: ["อสูรดาวเพลิง", "หินอุกกาบาตจิตวิญญาณ", "อสูรอนันต์"],
     boss: { name: "จอมอสูรดาวมรณะ", hpMult: 14.5 },
     baseHp: 5200, baseAtk: 924, baseDef: 614, goldMult: 88, expMult: 75,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 20, legendary: 80 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 7, legendary: 30, void: 63 },
   },
   {
     id: "d11b", name: "สุสานเทพจักรวาล", minLevel: 148, tier: "transcendent",
@@ -2939,7 +2945,7 @@ const DUNGEONS = [
     monsterPool: ["วิญญาณเทพผู้สร้าง", "ผู้พิทักษ์สุสานศักดิ์สิทธิ์", "จิตวิญญาณสูญสลาย"],
     boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 15 },
     baseHp: 6600, baseAtk: 1170, baseDef: 778, goldMult: 110, expMult: 94,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 15, legendary: 85 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 24, void: 73 },
   },
   {
     id: "d12", name: "มิติต้นกำเนิดแห่งความมืด", minLevel: 162, tier: "transcendent",
@@ -2947,7 +2953,7 @@ const DUNGEONS = [
     monsterPool: ["ความมืดดั้งเดิม", "อสูรสาปแช่ง", "วิญญาณเทพผู้สร้าง"],
     boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 15.5 },
     baseHp: 8400, baseAtk: 1484, baseDef: 988, goldMult: 138, expMult: 118,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 10, legendary: 90 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 1, legendary: 17, void: 82 },
   },
   {
     id: "d12b", name: "ป้อมปราการเหนือกาลเวลา", minLevel: 177, tier: "transcendent",
@@ -2955,7 +2961,7 @@ const DUNGEONS = [
     monsterPool: ["เงานักรบจากทุกยุคสมัย", "ผู้พิทักษ์เหนือกาลเวลา", "ความมืดดั้งเดิม"],
     boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 16 },
     baseHp: 10600, baseAtk: 1880, baseDef: 1252, goldMult: 172, expMult: 148,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 6, legendary: 94 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 11, void: 89 },
   },
   {
     id: "d13", name: "บัลลังก์ผู้สร้างและผู้ทำลาย", minLevel: 193, tier: "transcendent",
@@ -2963,7 +2969,7 @@ const DUNGEONS = [
     monsterPool: ["อสูรแห่งการสร้าง", "อสูรแห่งการทำลาย", "เงานักรบจากทุกยุคสมัย"],
     boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 17 },
     baseHp: 13400, baseAtk: 2380, baseDef: 1584, goldMult: 215, expMult: 185,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 97 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 6, void: 94 },
   },
   {
     id: "d13b", name: "ห้วงลึกแห่งพลังงานดิบ", minLevel: 210, tier: "transcendent",
@@ -2971,7 +2977,7 @@ const DUNGEONS = [
     monsterPool: ["พลังงานดิบมีชีวิต", "อสูรแห่งการทำลาย", "ผู้พิทักษ์เหนือกาลเวลา"],
     boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 18 },
     baseHp: 17000, baseAtk: 3010, baseDef: 2006, goldMult: 270, expMult: 232,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 1, legendary: 99 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 2, void: 98 },
   },
   {
     id: "d14", name: "จุดสิ้นสุดก่อนการเริ่มต้น", minLevel: 230, tier: "transcendent",
@@ -2979,7 +2985,7 @@ const DUNGEONS = [
     monsterPool: ["สิ่งที่ไม่มีชื่อ", "พลังงานดิบมีชีวิต", "อสูรแห่งการสร้าง"],
     boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 20 },
     baseHp: 22000, baseAtk: 3900, baseDef: 2600, goldMult: 340, expMult: 292,
-    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 100 },
+    dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0, void: 100 },
   },
 ];
 
@@ -3097,7 +3103,7 @@ function rollItemStats(primaryKey, rarity, itemLevel) {
   stats[primaryKey] = roundStat(primaryKey, statBudget * 0.65);
 
   // secondary stats - pick 1-2 random extras depending on rarity
-  const extraCount = rarity === "common" ? 0 : rarity === "uncommon" ? 1 : rarity === "rare" ? 1 : 2;
+  const extraCount = rarity === "common" ? 0 : rarity === "uncommon" ? 1 : rarity === "rare" ? 1 : rarity === "void" ? 3 : 2;
   const possibleSecondary = ["atk", "def", "hp", "crit", "spd"].filter(k => k !== primaryKey);
   shuffleArray(possibleSecondary);
   for (let i = 0; i < extraCount; i++) {
@@ -3247,7 +3253,7 @@ const SHOP_DEFS = [
     icon: "gem",
     actionLabel: "เปิด",
     cost: 15,
-    dropTable: { common: 50, uncommon: 35, rare: 15, epic: 0, legendary: 0 },
+    dropTable: { common: 50, uncommon: 35, rare: 15, epic: 0, legendary: 0, void: 0 },
   },
   {
     id: "chest_large",
@@ -3257,7 +3263,7 @@ const SHOP_DEFS = [
     icon: "gem",
     actionLabel: "เปิด",
     cost: 60,
-    dropTable: { common: 0, uncommon: 10, rare: 45, epic: 35, legendary: 10 },
+    dropTable: { common: 0, uncommon: 10, rare: 45, epic: 35, legendary: 10, void: 0 },
   },
   {
     id: "gold_pouch",
@@ -4046,7 +4052,7 @@ const INV_SLOT_LABEL_TH = {
   all: "ทั้งหมด", weapon: "อาวุธ", head: "หัว", body: "ตัว", hands: "มือ", feet: "เท้า", trinket: "เครื่องประดับ",
 };
 const RARITY_LABEL_TH = {
-  common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน",
+  common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน", void: "เทพสังหาร",
 };
 
 function renderInventory(player, handlers) {
@@ -5770,7 +5776,7 @@ function renderAutoSellUI() {
   toggle.setAttribute("aria-checked", isOn ? "true" : "false");
 
   const rarities = settings.autoSellRarities || {};
-  ["common", "uncommon", "rare", "epic", "legendary"].forEach(r => {
+  ["common", "uncommon", "rare", "epic", "legendary", "void"].forEach(r => {
     const btn = document.getElementById("autoSell" + r.charAt(0).toUpperCase() + r.slice(1));
     if (btn) btn.classList.toggle("active", !!rarities[r]);
   });
@@ -5782,14 +5788,17 @@ function renderAutoSellUI() {
     preview.textContent = "ระบบขายอัตโนมัติปิดอยู่";
     return;
   }
-  const selected = ["common", "uncommon", "rare", "epic", "legendary"].filter(r => rarities[r]);
-  const labels = { common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน" };
+  const selected = ["common", "uncommon", "rare", "epic", "legendary", "void"].filter(r => rarities[r]);
+  const labels = { common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน", void: "เทพสังหาร" };
   if (selected.length === 0) {
     preview.textContent = "ยังไม่ได้เลือกระดับ — กดเลือกระดับที่ต้องการขายอัตโนมัติ";
   } else {
     preview.textContent = `จะขายอัตโนมัติ: ${selected.map(r => labels[r]).join(", ")}`;
     if (rarities["legendary"]) {
       preview.textContent += " ⚠️ รวมตำนาน!";
+    }
+    if (rarities["void"]) {
+      preview.textContent += " 🔴 รวมเทพสังหาร!!";
     }
   }
 }
@@ -5925,7 +5934,7 @@ function bindGlobalEvents() {
   });
 
   // Auto-sell rarity buttons (toggle individual rarities)
-  ["common", "uncommon", "rare", "epic", "legendary"].forEach(r => {
+  ["common", "uncommon", "rare", "epic", "legendary", "void"].forEach(r => {
     const btn = document.getElementById("autoSell" + r.charAt(0).toUpperCase() + r.slice(1));
     if (!btn) return;
     btn.addEventListener("click", () => {
