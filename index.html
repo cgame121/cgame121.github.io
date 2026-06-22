@@ -847,9 +847,94 @@ button {
 /* ============================================
    Inventory Panel
    ============================================ */
-.inv-header { display: flex; justify-content: space-between; align-items: center; }
+.inv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .inv-count { font-size: 12px; color: var(--text-faint); }
-.inv-actions { margin: 10px 0 14px; }
+
+/* Filter bar */
+.inv-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.inv-filter-btn {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel-raised);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+.inv-filter-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+.inv-filter-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+/* Sort + action row */
+.inv-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.inv-sort-select {
+  flex: 1;
+  min-width: 120px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel-raised);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%238B8FA3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.inv-sort-select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Section group header */
+.inv-section {
+  margin-bottom: 16px;
+}
+.inv-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.inv-section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.inv-section-count {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  font-weight: 600;
+  font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0;
+}
 
 .inv-grid {
   display: grid;
@@ -859,6 +944,13 @@ button {
 .inv-grid::-webkit-scrollbar { width: 5px; }
 .inv-grid::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
 
+.inv-empty-hint {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 13px;
+  padding: 28px 0;
+}
+
 .inv-slot {
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
@@ -867,17 +959,17 @@ button {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   position: relative;
-  transition: transform 0.15s, border-color 0.2s;
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
 }
-.inv-slot:hover { transform: translateY(-2px); }
+.inv-slot:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 .inv-slot .item-icon { width: 28px; height: 28px; }
 .inv-slot.locked::after {
-  content: '';
-  position: absolute; top: 3px; right: 3px;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--text-faint);
+  content: '🔒';
+  position: absolute; top: 2px; right: 3px;
+  font-size: 8px;
+  line-height: 1;
 }
+
 
 .enchant-badge {
   position: absolute;
@@ -1528,6 +1620,176 @@ button {
 }
 
 /* ============================================
+   Enchant Page
+   ============================================ */
+.enchant-workshop-gold {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.enchant-slot-pick {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.enchant-slot-btn {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+.enchant-slot-btn:hover { border-color: var(--gold); color: var(--gold); }
+.enchant-slot-btn.active {
+  border-color: var(--gold);
+  background: rgba(246,196,83,0.1);
+  color: var(--gold);
+}
+
+.enchant-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.enchant-item-list::-webkit-scrollbar { width: 4px; }
+.enchant-item-list::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+
+.enchant-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--bg-panel-raised);
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+.enchant-item-row:hover { border-color: rgba(246,196,83,0.35); background: rgba(246,196,83,0.04); }
+.enchant-item-row.selected {
+  border-color: var(--gold);
+  background: rgba(246,196,83,0.08);
+  box-shadow: 0 0 12px rgba(246,196,83,0.12);
+}
+.enchant-item-icon-wrap { position: relative; flex-shrink: 0; width: 36px; height: 36px; }
+.enchant-item-icon-wrap .item-icon { width: 36px; height: 36px; }
+.enchant-item-badge {
+  position: absolute;
+  bottom: -2px; right: -3px;
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  line-height: 1;
+}
+.enchant-item-info { flex: 1; min-width: 0; }
+.enchant-item-name {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.enchant-item-sub {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+  display: flex; align-items: center; gap: 6px;
+}
+.enchant-level-bar-wrap {
+  width: 56px; height: 4px;
+  background: var(--bg-void);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.enchant-level-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #FFA940);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.enchant-item-maxed { font-size: 10px; color: var(--gold); font-weight: 700; }
+
+.enchant-detail-panel {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--bg-void);
+  border: 1px solid rgba(246,196,83,0.2);
+  border-radius: var(--radius-sm);
+}
+.enchant-detail-name {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.enchant-detail-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.enchant-stat-chip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--bg-panel-raised);
+  font-size: 11.5px;
+}
+.enchant-stat-key { color: var(--text-muted); }
+.enchant-stat-val { font-weight: 700; font-family: var(--font-display); }
+.enchant-stat-delta { color: var(--success); font-size: 10.5px; margin-left: 4px; }
+
+.enchant-detail-info {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px; color: var(--text-muted);
+}
+.enchant-chance-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  background: rgba(61,220,151,0.12);
+  color: var(--success);
+}
+.enchant-chance-badge.risky {
+  background: rgba(246,196,83,0.12);
+  color: var(--gold);
+}
+.enchant-chance-badge.danger {
+  background: rgba(255,107,91,0.12);
+  color: var(--danger);
+}
+.enchant-do-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(246,196,83,0.5);
+  background: rgba(246,196,83,0.08);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 13.5px; font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.enchant-do-btn:hover:not(:disabled) {
+  background: rgba(246,196,83,0.16);
+  border-color: var(--gold);
+  box-shadow: 0 0 18px rgba(246,196,83,0.22);
+}
+.enchant-do-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.enchant-empty-hint {
+  font-size: 12.5px; color: var(--text-faint);
+  text-align: center; padding: 20px 0;
+}
+
+/* ============================================
    Settings Page — Section Cards
    ============================================ */
 .settings-panel .panel-title {
@@ -1802,6 +2064,10 @@ button {
         <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8V6a4 4 0 018 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
         <span>คลัง</span>
       </button>
+      <button class="tab-btn" data-tab="enchant" role="tab" aria-selected="false" aria-label="ตีบวก">
+        <svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.4L19 9l-4.3 3.9 1.3 5.8L12 15.6l-3.9 3.1 1.3-5.8L5 9l5.2-1.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span>ตีบวก</span>
+      </button>
       <button class="tab-btn tab-btn-settings" data-tab="settings" id="settingsBtn" role="tab" aria-selected="false" aria-label="ตั้งค่า" title="ตั้งค่า">
         <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
         <span>ตั้งค่า</span>
@@ -1945,13 +2211,42 @@ button {
     <!-- Inventory -->
     <section class="panel inv-panel tab-panel" data-tab-panel="inventory">
       <div class="inv-header">
-        <h2 class="panel-title">คลังไอเทม</h2>
+        <h2 class="panel-title" style="margin:0;">คลังไอเทม</h2>
         <span class="inv-count" id="invCount">0/60</span>
       </div>
-      <div class="inv-actions">
-        <button class="btn-small" id="sellJunkBtn">ขายของเก่า (ไม่ล็อก)</button>
+
+      <!-- Filter by slot -->
+      <div class="inv-filter-bar" id="invFilterBar"></div>
+
+      <!-- Sort + sell action -->
+      <div class="inv-action-row">
+        <select class="inv-sort-select" id="invSortSelect">
+          <option value="rarity">เรียงตาม: ความหายาก</option>
+          <option value="slot">เรียงตาม: ประเภท</option>
+          <option value="level">เรียงตาม: เลเวล</option>
+          <option value="enchant">เรียงตาม: ตีบวก</option>
+          <option value="value">เรียงตาม: มูลค่า</option>
+        </select>
+        <button class="btn-small" id="sellJunkBtn">ขายของเก่า</button>
       </div>
-      <div class="inv-grid" id="invGrid"></div>
+
+      <!-- Item sections rendered here -->
+      <div id="invSections"></div>
+    </section>
+
+    <!-- Enchant -->
+    <section class="panel tab-panel" data-tab-panel="enchant">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <h2 class="panel-title" style="margin:0;">✨ ตีบวกไอเทม</h2>
+        <span class="enchant-workshop-gold" style="margin-left:auto;">
+          <span class="gold-icon"></span>
+          <span id="enchantGoldDisplay" style="font-size:13px;font-weight:600;color:var(--text-muted);"></span>
+        </span>
+      </div>
+      <p class="hint-text">เลือกไอเทมจากคลังเพื่อตีบวกเพิ่มสเตตัส ใช้ทองคำเป็นค่าใช้จ่าย ระดับสูงขึ้นมีโอกาสล้มเหลว แต่ไม่ลดระดับ</p>
+      <div class="enchant-slot-pick" id="enchantSlotFilter"></div>
+      <div class="enchant-item-list" id="enchantItemList"></div>
+      <div class="enchant-detail-panel" id="enchantDetailPanel" style="display:none;margin-top:14px;"></div>
     </section>
 
     <!-- Settings -->
@@ -3459,19 +3754,140 @@ function renderEndlessIntro(player) {
 }
 
 // ---------- Inventory grid ----------
+// ── Inventory state ──
+let invFilterSlot = "all";
+let invSortMode   = "rarity";
+
+const INV_SLOT_ICONS = {
+  all: "🎒", weapon: "⚔️", head: "🪖", body: "🥋", hands: "🧤", feet: "👢", trinket: "💍",
+};
+const INV_SLOT_LABEL_TH = {
+  all: "ทั้งหมด", weapon: "อาวุธ", head: "หัว", body: "ตัว", hands: "มือ", feet: "เท้า", trinket: "เครื่องประดับ",
+};
+const RARITY_LABEL_TH = {
+  common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน",
+};
+
 function renderInventory(player, handlers) {
-  const grid = document.getElementById("invGrid");
-  document.getElementById("invCount").textContent = `${player.inventory.length}/${inventoryCapacity(player)}`;
-  grid.innerHTML = "";
-  player.inventory.forEach((item) => {
-    const el = document.createElement("div");
-    el.className = "inv-slot" + (item.locked ? " locked" : "");
-    el.style.borderColor = RARITY[item.rarity].color + "55";
-    el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
-    el.addEventListener("click", (e) => handlers.onEquip(item, e));
-    grid.appendChild(el);
+  // Update count
+  document.getElementById("invCount").textContent =
+    `${player.inventory.length}/${inventoryCapacity(player)}`;
+
+  // Build filter bar
+  const filterBar = document.getElementById("invFilterBar");
+  if (filterBar && !filterBar.dataset.bound) {
+    filterBar.dataset.bound = "1";
+    const slots = ["all", "weapon", "head", "body", "hands", "feet", "trinket"];
+    filterBar.innerHTML = slots.map(s => `
+      <button class="inv-filter-btn ${invFilterSlot === s ? "active" : ""}" data-slot="${s}">
+        ${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}
+      </button>`).join("");
+    filterBar.querySelectorAll(".inv-filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        invFilterSlot = btn.dataset.slot;
+        filterBar.querySelectorAll(".inv-filter-btn").forEach(b => b.classList.toggle("active", b.dataset.slot === invFilterSlot));
+        renderInventory(player, handlers);
+      });
+    });
+  } else if (filterBar) {
+    // refresh active state
+    filterBar.querySelectorAll(".inv-filter-btn").forEach(b => b.classList.toggle("active", b.dataset.slot === invFilterSlot));
+  }
+
+  // Bind sort select (once)
+  const sortSel = document.getElementById("invSortSelect");
+  if (sortSel && !sortSel.dataset.bound) {
+    sortSel.dataset.bound = "1";
+    sortSel.value = invSortMode;
+    sortSel.addEventListener("change", () => {
+      invSortMode = sortSel.value;
+      renderInventory(player, handlers);
+    });
+  }
+
+  // Filter
+  let items = player.inventory.filter(i =>
+    invFilterSlot === "all" || i.slot === invFilterSlot
+  );
+
+  // Sort comparator
+  const rarityRank = r => RARITY_ORDER.indexOf(r);
+  const comparators = {
+    rarity:  (a, b) => rarityRank(b.rarity) - rarityRank(a.rarity) || b.itemLevel - a.itemLevel,
+    slot:    (a, b) => SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) || rarityRank(b.rarity) - rarityRank(a.rarity),
+    level:   (a, b) => b.itemLevel - a.itemLevel || rarityRank(b.rarity) - rarityRank(a.rarity),
+    enchant: (a, b) => (b.enchant||0) - (a.enchant||0) || rarityRank(b.rarity) - rarityRank(a.rarity),
+    value:   (a, b) => sellValue(b) - sellValue(a),
+  };
+  items.sort(comparators[invSortMode] || comparators.rarity);
+
+  // Group items
+  const sections = document.getElementById("invSections");
+  sections.innerHTML = "";
+
+  if (items.length === 0) {
+    sections.innerHTML = `<div class="inv-empty-hint">ไม่มีไอเทมในคลัง</div>`;
+    return;
+  }
+
+  // Grouping logic by sort mode
+  let groups = [];
+  if (invSortMode === "slot") {
+    // group by slot
+    const bySlot = {};
+    items.forEach(i => { (bySlot[i.slot] = bySlot[i.slot] || []).push(i); });
+    SLOTS.filter(s => bySlot[s]).forEach(s => {
+      groups.push({ label: `${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}`, items: bySlot[s] });
+    });
+  } else if (invSortMode === "rarity") {
+    // group by rarity
+    const byRarity = {};
+    items.forEach(i => { (byRarity[i.rarity] = byRarity[i.rarity] || []).push(i); });
+    [...RARITY_ORDER].reverse().filter(r => byRarity[r]).forEach(r => {
+      const ri = RARITY[r];
+      groups.push({ label: RARITY_LABEL_TH[r], color: ri.color, items: byRarity[r] });
+    });
+  } else if (invSortMode === "enchant") {
+    // group: maxed / has enchant / unenchanted
+    const maxed = items.filter(i => (i.enchant||0) >= ENCHANT_MAX_LEVEL);
+    const enchanted = items.filter(i => (i.enchant||0) > 0 && (i.enchant||0) < ENCHANT_MAX_LEVEL);
+    const plain = items.filter(i => !(i.enchant||0));
+    if (maxed.length)     groups.push({ label: "✦ สูงสุด MAX", items: maxed });
+    if (enchanted.length) groups.push({ label: "✨ ตีบวกแล้ว", items: enchanted });
+    if (plain.length)     groups.push({ label: "ยังไม่ตีบวก", items: plain });
+  } else {
+    // level / value — single flat group
+    groups.push({ label: null, items });
+  }
+
+  // Render each group
+  groups.forEach(({ label, color, items: gItems }) => {
+    const section = document.createElement("div");
+    section.className = "inv-section";
+
+    if (label) {
+      const hdr = document.createElement("div");
+      hdr.className = "inv-section-label";
+      hdr.innerHTML = `<span style="${color ? `color:${color}` : ""}">${label}</span>
+        <span class="inv-section-count">${gItems.length}</span>`;
+      section.appendChild(hdr);
+    }
+
+    const grid = document.createElement("div");
+    grid.className = "inv-grid";
+    gItems.forEach(item => {
+      const el = document.createElement("div");
+      el.className = "inv-slot" + (item.locked ? " locked" : "");
+      el.style.borderColor = RARITY[item.rarity].color + "55";
+      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
+      el.addEventListener("click", (e) => handlers.onEquip(item, e));
+      grid.appendChild(el);
+    });
+    section.appendChild(grid);
+    sections.appendChild(section);
   });
 }
+
 
 // ---------- Shop: gem balance, chests/exchange ----------
 
@@ -3947,6 +4363,7 @@ function renderAll() {
   renderAutoToggle(player);
   renderKeepScreenOnToggle(player);
   renderAutoSellUI();
+  renderEnchantWorkshop();
 }
 
 function renderAutoToggle(player) {
@@ -4228,6 +4645,16 @@ function switchTab(tabName) {
     updateSaveStatusUI();
     renderKeepScreenOnToggle(player);
     renderAutoSellUI();
+  }
+  if (tabName === "inventory") {
+    const fb = document.getElementById("invFilterBar");
+    if (fb) delete fb.dataset.bound;
+    const ss = document.getElementById("invSortSelect");
+    if (ss) delete ss.dataset.bound;
+    renderInventory(player, { onEquip: onInventoryItemClick });
+  }
+  if (tabName === "enchant") {
+    renderEnchantWorkshop();
   }
   hideTooltip();
 }
@@ -4789,6 +5216,7 @@ function attemptEnchantItem(item) {
   renderStats(player);
   renderEquipSlots(player, onEquipSlotClick);
   renderInventory(player, { onEquip: onInventoryItemClick });
+  renderEnchantWorkshop();
   savePlayer(player);
   refreshOpenTooltip();
 }
@@ -4823,6 +5251,166 @@ function sellItem(item) {
   savePlayer(player);
   showToast(`ขาย ${itemDisplayName(item)} ได้ ${value}g`);
   hideTooltip();
+}
+
+// ============================================
+// Enchant Workshop UI
+// ============================================
+let enchantWorkshopSelectedItem = null;
+let enchantWorkshopSlotFilter = "all";
+
+const SLOT_LABEL_TH = {
+  all: "ทั้งหมด",
+  weapon: "อาวุธ", head: "หัว", body: "ตัว",
+  hands: "มือ", feet: "เท้า", trinket: "เครื่องประดับ",
+};
+
+function renderEnchantWorkshop() {
+  const goldEl = document.getElementById("enchantGoldDisplay");
+  if (goldEl) goldEl.textContent = fmtNum(player.gold);
+
+  const slotFilter = document.getElementById("enchantSlotFilter");
+  const itemList = document.getElementById("enchantItemList");
+  if (!slotFilter || !itemList) return;
+
+  // Build slot filter buttons
+  const slots = ["all", "weapon", "head", "body", "hands", "feet", "trinket"];
+  slotFilter.innerHTML = slots.map(s => `
+    <button class="enchant-slot-btn ${enchantWorkshopSlotFilter === s ? "active" : ""}" data-slot="${s}">
+      ${SLOT_LABEL_TH[s]}
+    </button>
+  `).join("");
+  slotFilter.querySelectorAll(".enchant-slot-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      enchantWorkshopSlotFilter = btn.dataset.slot;
+      enchantWorkshopSelectedItem = null;
+      renderEnchantWorkshop();
+    });
+  });
+
+  // Filter and sort inventory: non-maxed first, sorted by enchant level desc
+  const eligible = player.inventory
+    .filter(i => enchantWorkshopSlotFilter === "all" || i.slot === enchantWorkshopSlotFilter)
+    .sort((a, b) => {
+      const aMaxed = (a.enchant || 0) >= ENCHANT_MAX_LEVEL;
+      const bMaxed = (b.enchant || 0) >= ENCHANT_MAX_LEVEL;
+      if (aMaxed !== bMaxed) return aMaxed ? 1 : -1;
+      return (b.enchant || 0) - (a.enchant || 0);
+    });
+
+  if (eligible.length === 0) {
+    itemList.innerHTML = `<div class="enchant-empty-hint">ไม่มีไอเทมในคลัง</div>`;
+    document.getElementById("enchantDetailPanel").style.display = "none";
+    return;
+  }
+
+  const rarityInfo = item => RARITY[item.rarity] || RARITY.common;
+
+  itemList.innerHTML = eligible.map(item => {
+    const lvl = item.enchant || 0;
+    const maxed = lvl >= ENCHANT_MAX_LEVEL;
+    const pct = Math.round((lvl / ENCHANT_MAX_LEVEL) * 100);
+    const isSelected = enchantWorkshopSelectedItem && enchantWorkshopSelectedItem.id === item.id;
+    const ri = rarityInfo(item);
+    return `
+      <div class="enchant-item-row ${isSelected ? "selected" : ""}" data-item-id="${item.id}">
+        <div class="enchant-item-icon-wrap">
+          ${iconHtml(item.icon, ri.color)}
+          ${lvl > 0 ? `<span class="enchant-item-badge">+${lvl}</span>` : ""}
+        </div>
+        <div class="enchant-item-info">
+          <div class="enchant-item-name" style="color:${ri.color}">${item.name}</div>
+          <div class="enchant-item-sub">
+            <span>${ri.label}</span>
+            <span>·</span>
+            <span>Lv.${item.itemLevel}</span>
+            ${maxed ? `<span class="enchant-item-maxed">MAX ✦</span>` : `<span>+${lvl}/${ENCHANT_MAX_LEVEL}</span>`}
+          </div>
+        </div>
+        <div class="enchant-level-bar-wrap">
+          <div class="enchant-level-bar" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  itemList.querySelectorAll(".enchant-item-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const id = row.dataset.itemId;
+      const found = player.inventory.find(i => i.id === id);
+      if (!found) return;
+      enchantWorkshopSelectedItem = enchantWorkshopSelectedItem?.id === id ? null : found;
+      renderEnchantWorkshop();
+      if (enchantWorkshopSelectedItem) {
+        document.getElementById("enchantDetailPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  });
+
+  renderEnchantDetail();
+}
+
+function renderEnchantDetail() {
+  const panel = document.getElementById("enchantDetailPanel");
+  if (!panel) return;
+  const item = enchantWorkshopSelectedItem;
+  if (!item) { panel.style.display = "none"; return; }
+
+  panel.style.display = "block";
+  const ri = RARITY[item.rarity] || RARITY.common;
+  const lvl = item.enchant || 0;
+  const maxed = lvl >= ENCHANT_MAX_LEVEL;
+  const cost = enchantCost(item);
+  const chance = enchantSuccessChance(item);
+  const canAfford = player.gold >= cost;
+
+  // Show current stats + what they'd be at +1
+  const currentMult = enchantStatMultiplier(item);
+  const nextMult = 1 + (lvl + 1) * ENCHANT_STAT_BONUS_PER_LEVEL;
+  const statKeys = { atk: "โจมตี", def: "ป้องกัน", hp: "HP", spd: "ความเร็ว", crit: "คริติคอล" };
+
+  const statsHtml = Object.entries(item.stats || {}).map(([k, v]) => {
+    const cur = Math.round(v * currentMult);
+    const nxt = Math.round(v * nextMult);
+    return `
+      <div class="enchant-stat-chip">
+        <span class="enchant-stat-key">${statKeys[k] || k}</span>
+        <span class="enchant-stat-val">
+          ${cur}${!maxed ? `<span class="enchant-stat-delta">→${nxt}</span>` : ""}
+        </span>
+      </div>`;
+  }).join("");
+
+  const chanceClass = chance === 100 ? "" : chance >= 60 ? "risky" : "danger";
+  const chanceLabel = chance === 100 ? "สำเร็จแน่นอน" : `โอกาสสำเร็จ ${chance}%`;
+
+  panel.innerHTML = `
+    <div class="enchant-detail-name" style="color:${ri.color}">
+      ${item.name}${lvl > 0 ? ` <span style="color:var(--gold)">+${lvl}</span>` : ""}
+    </div>
+    <div class="enchant-detail-stats">${statsHtml}</div>
+    ${maxed
+      ? `<div style="text-align:center;color:var(--gold);font-weight:700;font-size:13px;padding:6px 0;">✦ ตีบวกถึงขั้นสูงสุด +${ENCHANT_MAX_LEVEL} แล้ว</div>`
+      : `
+        <div class="enchant-detail-info">
+          <span>ต้องใช้ทอง <strong style="color:var(--gold)">${fmtNum(cost)}g</strong></span>
+          <span class="enchant-chance-badge ${chanceClass}">${chanceLabel}</span>
+        </div>
+        <button class="enchant-do-btn" id="enchantDoBtn" ${canAfford ? "" : "disabled"}>
+          ${canAfford ? `✨ ตีบวก +${lvl} → +${lvl + 1}` : `ทองไม่พอ (ขาด ${fmtNum(cost - player.gold)}g)`}
+        </button>
+      `
+    }
+  `;
+
+  const doBtn = document.getElementById("enchantDoBtn");
+  if (doBtn) {
+    doBtn.addEventListener("click", () => {
+      if (!enchantWorkshopSelectedItem) return;
+      attemptEnchantItem(enchantWorkshopSelectedItem);
+      renderEnchantWorkshop();
+    });
+  }
 }
 
 function sellAllJunk() {
@@ -5157,7 +5745,7 @@ function bindGlobalEvents() {
     if (act === "lock") toggleLockItem(item);
     if (act === "sell") sellItem(item);
     if (act === "unequip") unequipItem(item.slot);
-    if (act === "enchant") attemptEnchantItem(item);
+    if (act === "enchant") { attemptEnchantItem(item); renderEnchantWorkshop(); }
     if (act === "reroll") attemptRerollFromTooltip(item);
   };
 
