@@ -1693,7 +1693,7 @@ button {
     <!-- Shop -->
     <section class="panel shop-panel tab-panel" data-tab-panel="shop">
       <h2 class="panel-title">ร้านค้า</h2>
-      <p class="hint-text">ใช้เพชรที่ได้จากการปราบบอสและความคืบหน้า แลกซื้อไอเทมพิเศษ หรือรีรอลค่าสถานะไอเทมในคลัง</p>
+      <p class="hint-text">ใช้เพชรที่ได้จากการปราบบอสและความคืบหน้า แลกซื้อไอเทมพิเศษ</p>
 
       <div class="shop-gem-balance">
         <span class="gem-icon"></span>
@@ -1704,17 +1704,7 @@ button {
       <h3 class="panel-subtitle">ไอเทมพิเศษ</h3>
       <div class="shop-grid" id="shopGrid"></div>
 
-      <h3 class="panel-subtitle">รีรอลค่าสถานะไอเทม</h3>
-      <p class="hint-text" id="rerollEmptyHint">คุณยังไม่มีไอเทมในคลังให้รีรอล ลุยดันเจี้ยนเพื่อเก็บไอเทมก่อน</p>
-      <div class="shop-reroll-grid hidden" id="shopRerollGrid"></div>
-      <div class="reroll-detail hidden" id="rerollDetail">
-        <div class="reroll-detail-head">
-          <span class="reroll-detail-name" id="rerollItemName">—</span>
-          <span class="reroll-detail-rarity" id="rerollItemRarity">—</span>
-        </div>
-        <div class="reroll-detail-stats" id="rerollItemStats"></div>
-        <button class="reroll-detail-btn" id="rerollBtn">รีรอลค่าสถานะ · <span id="rerollCostLabel">0</span> เพชร</button>
-      </div>
+
     </section>
 
     <!-- Inventory -->
@@ -3015,14 +3005,11 @@ function renderInventory(player, handlers) {
   });
 }
 
-// ---------- Shop: gem balance, chests/exchange, stat reroll ----------
-let selectedRerollItemId = null;
+// ---------- Shop: gem balance, chests/exchange ----------
 
 function renderShop(player) {
   renderShopGemBalance(player);
   renderShopGrid(player);
-  renderRerollPicker(player);
-  renderRerollDetail(player);
 }
 
 function renderShopGemBalance(player) {
@@ -3098,88 +3085,6 @@ function buyShopItem(id) {
   savePlayer(player);
 }
 
-function renderRerollPicker(player) {
-  const grid = document.getElementById("shopRerollGrid");
-  const emptyHint = document.getElementById("rerollEmptyHint");
-  if (!grid) return;
-
-  if (player.inventory.length === 0) {
-    grid.classList.add("hidden");
-    grid.innerHTML = "";
-    if (emptyHint) emptyHint.classList.remove("hidden");
-    selectedRerollItemId = null;
-    return;
-  }
-
-  if (emptyHint) emptyHint.classList.add("hidden");
-  grid.classList.remove("hidden");
-  grid.innerHTML = "";
-
-  // Keep a valid selection: drop it if the item no longer exists, otherwise
-  // default to the first item so the detail panel always has something to show.
-  if (!player.inventory.some(i => i.id === selectedRerollItemId)) {
-    selectedRerollItemId = player.inventory[0].id;
-  }
-
-  player.inventory.forEach((item) => {
-    const el = document.createElement("div");
-    el.className = "inv-slot" + (item.id === selectedRerollItemId ? " selected" : "");
-    el.style.borderColor = RARITY[item.rarity].color + "55";
-    el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
-    el.addEventListener("click", () => selectRerollItem(item.id));
-    grid.appendChild(el);
-  });
-}
-
-function selectRerollItem(itemId) {
-  selectedRerollItemId = itemId;
-  renderRerollPicker(player);
-  renderRerollDetail(player);
-}
-
-function renderRerollDetail(player) {
-  const box = document.getElementById("rerollDetail");
-  if (!box) return;
-  const item = player.inventory.find(i => i.id === selectedRerollItemId);
-  if (!item) {
-    box.classList.add("hidden");
-    return;
-  }
-  box.classList.remove("hidden");
-
-  const rarityInfo = RARITY[item.rarity];
-  const mult = enchantStatMultiplier(item);
-  document.getElementById("rerollItemName").textContent = itemDisplayName(item);
-  document.getElementById("rerollItemName").style.color = rarityInfo.color;
-  document.getElementById("rerollItemRarity").textContent = `${rarityInfo.label} · Lv.${item.itemLevel}`;
-  document.getElementById("rerollItemRarity").style.color = rarityInfo.color;
-
-  document.getElementById("rerollItemStats").innerHTML = Object.entries(item.stats).map(([k, v]) =>
-    `<div class="reroll-stat-row"><span>${statLabel(k)}</span><span>${statValueDisplay(k, v * mult)}</span></div>`
-  ).join("");
-
-  const cost = rerollCost(item);
-  const canAfford = (player.gems || 0) >= cost;
-  document.getElementById("rerollCostLabel").textContent = fmtNum(cost);
-  document.getElementById("rerollBtn").disabled = !canAfford;
-}
-
-function performReroll() {
-  const item = player.inventory.find(i => i.id === selectedRerollItemId);
-  if (!item) return;
-  const cost = rerollCost(item);
-  if ((player.gems || 0) < cost) {
-    showToast("เพชรไม่พอสำหรับรีรอล");
-    return;
-  }
-  player.gems -= cost;
-  rerollItemStats(item);
-
-  renderHud(player);
-  renderShop(player);
-  savePlayer(player);
-  showToast(`รีรอลค่าสถานะ ${itemDisplayName(item)} แล้ว!`);
-}
 
 // ---------- Tooltip ----------
 let tooltipCtx = null;
@@ -4280,8 +4185,6 @@ function bindGlobalEvents() {
   });
 
   document.getElementById("sellJunkBtn").addEventListener("click", sellAllJunk);
-
-  document.getElementById("rerollBtn").addEventListener("click", performReroll);
 
   document.getElementById("offlineCollectBtn").addEventListener("click", () => {
     document.getElementById("offlineModal").classList.add("hidden");
