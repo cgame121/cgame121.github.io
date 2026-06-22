@@ -124,6 +124,19 @@ button {
 }
 .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
+.tab-btn-settings {
+  position: relative;
+}
+.tab-btn-settings::before {
+  content: "";
+  position: absolute;
+  top: 8px; bottom: 8px;
+  left: 0;
+  width: 1px;
+  background: var(--line);
+}
+.tab-btn-settings.active::after { background: var(--text-muted); }
+
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-mark {
   width: 18px; height: 18px;
@@ -1549,9 +1562,6 @@ button {
         </div>
       </div>
 
-      <button class="icon-btn" id="settingsBtn" aria-label="ตั้งค่า" title="ตั้งค่า">
-        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-      </button>
     </header>
 
     <nav class="tab-bar" id="tabBar" role="tablist" aria-label="เมนูหลัก">
@@ -1570,6 +1580,10 @@ button {
       <button class="tab-btn" data-tab="inventory" role="tab" aria-selected="false">
         <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8V6a4 4 0 018 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
         <span>คลัง</span>
+      </button>
+      <button class="tab-btn tab-btn-settings" id="settingsBtn" aria-label="ตั้งค่า" title="ตั้งค่า">
+        <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <span>ตั้งค่า</span>
       </button>
     </nav>
   </div>
