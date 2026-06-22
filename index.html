@@ -1528,12 +1528,91 @@ button {
 }
 
 /* ============================================
+   Settings Page — Section Cards
+   ============================================ */
+.settings-panel .panel-title {
+  margin-bottom: 20px;
+}
+.settings-section {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.settings-section-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.settings-section-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+.settings-section-body {
+  padding: 14px 16px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-info { flex: 1; min-width: 0; }
+.settings-row-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.settings-row-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.45;
+}
+.settings-save-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-save-row:last-child { border-bottom: none; }
+.settings-save-row .btn-secondary,
+.settings-save-row .btn-danger {
+  flex: 1;
+  margin: 0;
+}
+.settings-danger-zone .settings-section-header {
+  border-bottom-color: rgba(255, 107, 91, 0.2);
+}
+.settings-danger-zone {
+  border-color: rgba(255, 107, 91, 0.25);
+}
+.settings-import-area {
+  padding-top: 8px;
+}
+
+/* ============================================
    Auto-Sell Settings UI
    ============================================ */
 .autosell-section {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
+  margin-top: 12px;
 }
 .autosell-title {
   font-family: var(--font-display);
@@ -1595,6 +1674,73 @@ button {
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   line-height: 1.5;
+}
+
+/* ============================================
+   Auto-Dungeon Settings UI
+   ============================================ */
+.autodungeon-section {
+  margin-top: 4px;
+}
+.autodungeon-section.disabled-look {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.autodungeon-option-block {
+  margin-top: 14px;
+}
+.autodungeon-option-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.autodungeon-option-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: -4px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.autodungeon-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.autodungeon-opt-btn {
+  flex: 1 1 auto;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.autodungeon-opt-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.autodungeon-preview {
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  padding: 9px 11px;
+  background: var(--bg-panel-raised);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  line-height: 1.6;
+}
+.autodungeon-preview strong { color: var(--text-primary); }
+.autodungeon-divider {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
 </style>
@@ -1812,48 +1958,148 @@ button {
     <section class="panel settings-panel tab-panel" data-tab-panel="settings">
       <h2 class="panel-title">ตั้งค่า</h2>
 
-      <div class="auto-toggle-row">
-        <span class="auto-toggle-label">ไม่ให้จอดับขณะเล่น</span>
-        <button class="auto-toggle" id="keepScreenOnToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดไม่ให้จอดับขณะเล่น">
-          <span class="auto-toggle-knob"></span>
-        </button>
-      </div>
-      <p class="hint-text" id="keepScreenOnHint"></p>
-
-      <div class="auto-toggle-row" style="margin-top:12px;">
-        <span class="auto-toggle-label">ขายไอเทมอัตโนมัติ</span>
-        <button class="auto-toggle" id="autoSellToggle" role="switch" aria-checked="false" aria-label="เปิด/ปิดขายไอเทมอัตโนมัติ">
-          <span class="auto-toggle-knob"></span>
-        </button>
-      </div>
-      <div class="autosell-section" id="autoSellSection">
-        <p class="autosell-desc">เลือกความหายากที่ต้องการขายอัตโนมัติทันทีเมื่อดรอป (ไอเทมที่ล็อกจะไม่ถูกขาย)</p>
-        <div class="autosell-rarity-grid">
-          <button class="autosell-rarity-btn" data-rarity="common" id="autoSellCommon">
-            <span class="rarity-dot"></span> ธรรมดา
-          </button>
-          <button class="autosell-rarity-btn" data-rarity="uncommon" id="autoSellUncommon">
-            <span class="rarity-dot"></span> ไม่ธรรมดา
-          </button>
-          <button class="autosell-rarity-btn" data-rarity="rare" id="autoSellRare">
-            <span class="rarity-dot"></span> หายาก
-          </button>
-          <button class="autosell-rarity-btn" data-rarity="epic" id="autoSellEpic">
-            <span class="rarity-dot"></span> มหากาพย์
-          </button>
-          <button class="autosell-rarity-btn" data-rarity="legendary" id="autoSellLegendary">
-            <span class="rarity-dot"></span> ตำนาน
+      <!-- ── หมวด: ออโต้ดันเจี้ยน ── -->
+      <div class="settings-section" id="autoDungeonSection">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">⚔️</span>
+          <span class="settings-section-title">ออโต้ดันเจี้ยน</span>
+          <button class="auto-toggle" id="autoDungeonMasterToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดระบบออโต้ดันเจี้ยน">
+            <span class="auto-toggle-knob"></span>
           </button>
         </div>
-        <p class="autosell-preview" id="autoSellPreview">เลือกระดับที่ต้องการขายอัตโนมัติ</p>
+
+        <div class="settings-section-body autodungeon-section" id="autoDungeonOptions">
+          <div class="autodungeon-option-block" style="margin-top:0;">
+            <p class="autodungeon-option-title">⏱️ ความเร็วดำเนินต่ออัตโนมัติ</p>
+            <p class="autodungeon-option-sub">ระยะเวลาหน่วงก่อนข้ามหน้าผลลัพธ์ไปยังห้อง/ดันเจี้ยนถัดไป</p>
+            <div class="autodungeon-btn-row">
+              <button class="autodungeon-opt-btn" data-speed="slow">ช้า</button>
+              <button class="autodungeon-opt-btn" data-speed="normal">ปานกลาง</button>
+              <button class="autodungeon-opt-btn" data-speed="fast">เร็ว</button>
+            </div>
+          </div>
+
+          <div class="autodungeon-option-block">
+            <p class="autodungeon-option-title">🏁 เมื่อพิชิตดันเจี้ยนสำเร็จ</p>
+            <p class="autodungeon-option-sub">เลือกการทำงานของระบบเมื่อเคลียร์ห้องบอสของดันเจี้ยนได้แล้ว</p>
+            <div class="autodungeon-btn-row">
+              <button class="autodungeon-opt-btn" data-clear="repeat">ลุยเดิมซ้ำ</button>
+              <button class="autodungeon-opt-btn" data-clear="next">ดันเจี้ยนถัดไป</button>
+              <button class="autodungeon-opt-btn" data-clear="stop">หยุดกลับเมือง</button>
+            </div>
+          </div>
+
+          <div class="autodungeon-divider">
+            <div class="settings-row">
+              <div class="settings-row-info">
+                <div class="settings-row-label">ลุยใหม่อัตโนมัติเมื่อพ่ายแพ้</div>
+                <div class="settings-row-desc">หากปิด เมื่อพ่ายแพ้ระบบจะพากลับเมืองให้กดเริ่มใหม่เอง</div>
+              </div>
+              <button class="auto-toggle" id="autoDungeonRetryToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดลุยใหม่อัตโนมัติเมื่อพ่ายแพ้">
+                <span class="auto-toggle-knob"></span>
+              </button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-info">
+                <div class="settings-row-label">หยุดออโต้เมื่อคลังไอเทมเต็ม</div>
+                <div class="settings-row-desc">ป้องกันไอเทมดรอปหายฟรีจากคลังเต็ม โดยพากลับเมืองให้จัดการก่อน</div>
+              </div>
+              <button class="auto-toggle" id="autoDungeonStopFullToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดหยุดออโต้เมื่อคลังไอเทมเต็ม">
+                <span class="auto-toggle-knob"></span>
+              </button>
+            </div>
+          </div>
+
+          <p class="autodungeon-preview" id="autoDungeonPreview"></p>
+        </div>
       </div>
 
-      <p class="save-status" id="saveStatusText"></p>
-      <button class="btn-secondary full-width" id="exportSaveBtn">คัดลอกข้อมูลเซฟ</button>
-      <button class="btn-secondary full-width" id="importSaveBtn">นำเข้าข้อมูลเซฟ</button>
-      <textarea class="import-textarea hidden" id="importSaveTextarea" placeholder="วางข้อมูลเซฟที่คัดลอกไว้ที่นี่"></textarea>
-      <button class="btn-primary full-width hidden" id="confirmImportBtn">ยืนยันการนำเข้า</button>
-      <button class="btn-danger full-width" id="resetSaveBtn">ล้างข้อมูลเซฟทั้งหมด</button>
+      <!-- ── หมวด: ขายไอเทม ── -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">💰</span>
+          <span class="settings-section-title">ขายไอเทมอัตโนมัติ</span>
+          <button class="auto-toggle" id="autoSellToggle" role="switch" aria-checked="false" aria-label="เปิด/ปิดขายไอเทมอัตโนมัติ">
+            <span class="auto-toggle-knob"></span>
+          </button>
+        </div>
+        <div class="settings-section-body">
+          <div class="autosell-section" id="autoSellSection">
+            <p class="autosell-desc">เลือกความหายากที่ต้องการขายอัตโนมัติทันทีเมื่อดรอป (ไอเทมที่ล็อกจะไม่ถูกขาย)</p>
+            <div class="autosell-rarity-grid">
+              <button class="autosell-rarity-btn" data-rarity="common" id="autoSellCommon">
+                <span class="rarity-dot"></span> ธรรมดา
+              </button>
+              <button class="autosell-rarity-btn" data-rarity="uncommon" id="autoSellUncommon">
+                <span class="rarity-dot"></span> ไม่ธรรมดา
+              </button>
+              <button class="autosell-rarity-btn" data-rarity="rare" id="autoSellRare">
+                <span class="rarity-dot"></span> หายาก
+              </button>
+              <button class="autosell-rarity-btn" data-rarity="epic" id="autoSellEpic">
+                <span class="rarity-dot"></span> มหากาพย์
+              </button>
+              <button class="autosell-rarity-btn" data-rarity="legendary" id="autoSellLegendary">
+                <span class="rarity-dot"></span> ตำนาน
+              </button>
+            </div>
+            <p class="autosell-preview" id="autoSellPreview">เลือกระดับที่ต้องการขายอัตโนมัติ</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── หมวด: การแสดงผล ── -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">📱</span>
+          <span class="settings-section-title">การแสดงผล</span>
+        </div>
+        <div class="settings-section-body">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label">ไม่ให้จอดับขณะเล่น</div>
+              <div class="settings-row-desc" id="keepScreenOnHint">ป้องกันหน้าจอปิดอัตโนมัติระหว่างเล่นเกม</div>
+            </div>
+            <button class="auto-toggle" id="keepScreenOnToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดไม่ให้จอดับขณะเล่น">
+              <span class="auto-toggle-knob"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── หมวด: ข้อมูลเซฟ ── -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">💾</span>
+          <span class="settings-section-title">ข้อมูลเซฟ</span>
+        </div>
+        <div class="settings-section-body">
+          <p class="save-status" id="saveStatusText"></p>
+          <div class="settings-save-row">
+            <button class="btn-secondary full-width" id="exportSaveBtn">📤 คัดลอกข้อมูลเซฟ</button>
+          </div>
+          <div class="settings-save-row">
+            <button class="btn-secondary full-width" id="importSaveBtn">📥 นำเข้าข้อมูลเซฟ</button>
+          </div>
+          <div class="settings-import-area">
+            <textarea class="import-textarea hidden" id="importSaveTextarea" placeholder="วางข้อมูลเซฟที่คัดลอกไว้ที่นี่"></textarea>
+            <button class="btn-primary full-width hidden" id="confirmImportBtn" style="margin-top:8px;">ยืนยันการนำเข้า</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── หมวด: โซนอันตราย ── -->
+      <div class="settings-section settings-danger-zone">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">⚠️</span>
+          <span class="settings-section-title" style="color: var(--danger);">โซนอันตราย</span>
+        </div>
+        <div class="settings-section-body">
+          <p class="settings-row-desc" style="margin-bottom:12px;">การกระทำด้านล่างไม่สามารถยกเลิกได้ โปรดใช้ความระมัดระวัง</p>
+          <button class="btn-danger full-width" id="resetSaveBtn">🗑️ ล้างข้อมูลเซฟทั้งหมด</button>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -2578,7 +2824,13 @@ function createNewPlayer() {
     currentHp: null, // set after computing maxHp
     lastSeenTimestamp: Date.now(),
     settings: {
-      autoMode: true, // auto-continue through rooms/dungeons without tapping
+      autoMode: true, // master switch: auto-continue through rooms/dungeons without tapping
+      autoDungeon: {
+        speed: "normal",        // 'slow' | 'normal' | 'fast' — delay before auto-continuing past a result screen
+        onClear: "repeat",      // 'repeat' | 'next' | 'stop' — what to do after clearing a dungeon's boss room
+        autoRetry: true,        // automatically re-enter the dungeon after a defeat
+        stopOnInventoryFull: true, // pause auto-farming and return to town once the inventory has no free slots
+      },
       keepScreenOn: true, // request a wake lock so the screen doesn't sleep during idle play
       autoSell: false, // auto-sell items below a rarity threshold
       autoSellRarities: { common: true, uncommon: false, rare: false, epic: false, legendary: false }, // which rarities to auto-sell
@@ -2775,6 +3027,21 @@ function repairPlayerShape(parsed) {
   if (typeof parsed.lastSeenTimestamp !== "number") parsed.lastSeenTimestamp = Date.now();
   if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
   if (typeof parsed.settings.autoMode !== "boolean") parsed.settings.autoMode = true;
+  if (!parsed.settings.autoDungeon || typeof parsed.settings.autoDungeon !== "object") {
+    parsed.settings.autoDungeon = {};
+  }
+  if (!["slow", "normal", "fast"].includes(parsed.settings.autoDungeon.speed)) {
+    parsed.settings.autoDungeon.speed = "normal";
+  }
+  if (!["repeat", "next", "stop"].includes(parsed.settings.autoDungeon.onClear)) {
+    parsed.settings.autoDungeon.onClear = "repeat";
+  }
+  if (typeof parsed.settings.autoDungeon.autoRetry !== "boolean") {
+    parsed.settings.autoDungeon.autoRetry = true;
+  }
+  if (typeof parsed.settings.autoDungeon.stopOnInventoryFull !== "boolean") {
+    parsed.settings.autoDungeon.stopOnInventoryFull = true;
+  }
   if (typeof parsed.settings.keepScreenOn !== "boolean") parsed.settings.keepScreenOn = true;
   if (typeof parsed.settings.autoSell !== "boolean") parsed.settings.autoSell = false;
   if (!parsed.settings.autoSellRarities || typeof parsed.settings.autoSellRarities !== "object") {
@@ -3684,9 +3951,63 @@ function renderAll() {
 
 function renderAutoToggle(player) {
   const isOn = !!(player.settings && player.settings.autoMode);
-  const toggle = document.getElementById("autoModeToggle");
-  toggle.classList.toggle("on", isOn);
-  toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+  // Two switches reflect the same underlying setting: the quick-access one on
+  // the battle screen, and the master switch inside the detailed Settings page.
+  ["autoModeToggle", "autoDungeonMasterToggle"].forEach(id => {
+    const toggle = document.getElementById(id);
+    if (!toggle) return;
+    toggle.classList.toggle("on", isOn);
+    toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+  });
+  renderAutoDungeonOptions(player);
+}
+
+function renderAutoDungeonOptions(player) {
+  const section = document.getElementById("autoDungeonSection");
+  const optionsBlock = document.getElementById("autoDungeonOptions");
+  if (!section || !optionsBlock) return;
+  const settings = player.settings || {};
+  const isOn = !!settings.autoMode;
+  const cfg = settings.autoDungeon || {};
+  optionsBlock.classList.toggle("disabled-look", !isOn);
+
+  document.querySelectorAll("#autoDungeonOptions [data-speed]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.speed === (cfg.speed || "normal"));
+  });
+  document.querySelectorAll("#autoDungeonOptions [data-clear]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.clear === (cfg.onClear || "repeat"));
+  });
+
+  const retryToggle = document.getElementById("autoDungeonRetryToggle");
+  if (retryToggle) {
+    const retryOn = cfg.autoRetry !== false;
+    retryToggle.classList.toggle("on", retryOn);
+    retryToggle.setAttribute("aria-checked", retryOn ? "true" : "false");
+  }
+  const stopFullToggle = document.getElementById("autoDungeonStopFullToggle");
+  if (stopFullToggle) {
+    const stopFullOn = cfg.stopOnInventoryFull !== false;
+    stopFullToggle.classList.toggle("on", stopFullOn);
+    stopFullToggle.setAttribute("aria-checked", stopFullOn ? "true" : "false");
+  }
+
+  const preview = document.getElementById("autoDungeonPreview");
+  if (!preview) return;
+  if (!isOn) {
+    preview.innerHTML = "ระบบออโต้ดันเจี้ยนปิดอยู่ — ต้องกดดำเนินต่อด้วยตัวเองทุกครั้ง";
+    return;
+  }
+  const speedLabel = { slow: "ช้า", normal: "ปานกลาง", fast: "เร็ว" }[cfg.speed || "normal"];
+  const clearLabel = {
+    repeat: "ลุยดันเจี้ยนเดิมซ้ำเรื่อยๆ",
+    next: "ไปดันเจี้ยนถัดไปที่ปลดล็อกแล้วโดยอัตโนมัติ",
+    stop: "หยุดและกลับเมืองให้เลือกเอง",
+  }[cfg.onClear || "repeat"];
+  const retryLabel = cfg.autoRetry !== false ? "ลุยใหม่อัตโนมัติ" : "กลับเมืองแล้วหยุดรอ";
+  const stopFullLabel = cfg.stopOnInventoryFull !== false ? "หยุดอัตโนมัติเมื่อคลังเต็ม" : "ไม่สนใจคลังไอเทมเต็ม";
+  preview.innerHTML =
+    `ความเร็ว: <strong>${speedLabel}</strong> • เคลียร์ดันเจี้ยนแล้ว: <strong>${clearLabel}</strong><br>` +
+    `พ่ายแพ้: <strong>${retryLabel}</strong> • คลังเต็ม: <strong>${stopFullLabel}</strong>`;
 }
 
 function renderKeepScreenOnToggle(player) {
@@ -3960,6 +4281,27 @@ function showEndlessIntroView() {
 // ============================================
 // Dungeon flow
 // ============================================
+
+// Returns true when the auto-dungeon system is configured to pause itself
+// (currently: inventory has no free slots left) so drops stop disappearing
+// silently while the player is away.
+function autoDungeonShouldHalt() {
+  const cfg = (player.settings && player.settings.autoDungeon) || {};
+  if (cfg.stopOnInventoryFull === false) return false;
+  return player.inventory.length >= inventoryCapacity(player);
+}
+
+// Call from a result-screen "continue" handler. If the auto system should
+// halt, this sends the player back to the dungeon select screen and returns
+// true so the caller can skip its normal auto-continue/auto-retry behavior.
+function handleAutoDungeonHalt() {
+  if (!(player.settings && player.settings.autoMode)) return false;
+  if (!autoDungeonShouldHalt()) return false;
+  showToast("⏸️ หยุดออโต้ดันเจี้ยน: คลังไอเทมเต็ม กรุณาขายหรือจัดการของก่อน");
+  showDungeonSelectView();
+  return true;
+}
+
 function enterDungeon(idx) {
   clearResultAutoTimer();
   gameMode = "dungeon";
@@ -4155,10 +4497,21 @@ function onMonsterDefeated() {
       gold, exp, gems,
       onContinue: () => {
         inBattleTransition = false;
-        if (player.settings && player.settings.autoMode) {
-          enterDungeon(currentDungeonIndex); // keep farming this dungeon automatically
-        } else {
+        if (handleAutoDungeonHalt()) return;
+        if (!(player.settings && player.settings.autoMode)) {
           showDungeonSelectView();
+          return;
+        }
+        const onClear = (player.settings.autoDungeon && player.settings.autoDungeon.onClear) || "repeat";
+        if (onClear === "stop") {
+          showDungeonSelectView();
+        } else if (onClear === "next") {
+          // Advance to the next dungeon only if it's actually unlocked already;
+          // otherwise fall back to repeating the current one.
+          const nextIdx = Math.min(currentDungeonIndex + 1, player.unlockedDungeonIndex, DUNGEONS.length - 1);
+          enterDungeon(nextIdx > currentDungeonIndex ? nextIdx : currentDungeonIndex);
+        } else {
+          enterDungeon(currentDungeonIndex); // repeat: keep farming this dungeon automatically
         }
       },
     });
@@ -4171,6 +4524,7 @@ function onMonsterDefeated() {
       gold, exp, gems,
       onContinue: () => {
         inBattleTransition = false;
+        if (handleAutoDungeonHalt()) return;
         currentRoomIndex += 1;
         document.getElementById("resultOverlay").classList.add("hidden");
         spawnRoom();
@@ -4199,7 +4553,9 @@ function onPlayerDefeated() {
       const stats = getTotalStats(player);
       player.currentHp = Math.round(stats.hp * 0.5);
       savePlayer(player);
-      if (player.settings && player.settings.autoMode) {
+      if (handleAutoDungeonHalt()) return;
+      const autoRetry = !(player.settings && player.settings.autoDungeon && player.settings.autoDungeon.autoRetry === false);
+      if (player.settings && player.settings.autoMode && autoRetry) {
         enterDungeon(currentDungeonIndex); // retry automatically
       } else {
         showDungeonSelectView();
@@ -4345,7 +4701,13 @@ function showResultOverlay({ win, title, subtitle, loot, gold, exp, gems, onCont
 
   if (player.settings && player.settings.autoMode) {
     autoHint.classList.remove("hidden");
-    resultAutoTimer = setTimeout(proceed, win ? 1100 : 1600);
+    const speed = (player.settings.autoDungeon && player.settings.autoDungeon.speed) || "normal";
+    const delayMs = ({
+      slow: { win: 2200, loss: 3000 },
+      normal: { win: 1100, loss: 1600 },
+      fast: { win: 500, loss: 800 },
+    })[speed] || { win: 1100, loss: 1600 };
+    resultAutoTimer = setTimeout(proceed, win ? delayMs.win : delayMs.loss);
   } else {
     autoHint.classList.add("hidden");
   }
@@ -4597,11 +4959,51 @@ function bindGlobalEvents() {
     }
   });
 
-  document.getElementById("autoModeToggle").addEventListener("click", () => {
+  const toggleAutoMode = () => {
     player.settings.autoMode = !(player.settings && player.settings.autoMode);
     renderAutoToggle(player);
     savePlayer(player);
-    showToast(player.settings.autoMode ? "เปิดออโต้ดำเนินต่อแล้ว" : "ปิดออโต้ดำเนินต่อแล้ว");
+    showToast(player.settings.autoMode ? "เปิดระบบออโต้ดันเจี้ยนแล้ว" : "ปิดระบบออโต้ดันเจี้ยนแล้ว");
+  };
+  document.getElementById("autoModeToggle").addEventListener("click", toggleAutoMode);
+  document.getElementById("autoDungeonMasterToggle").addEventListener("click", toggleAutoMode);
+
+  // Auto-continue speed buttons
+  document.querySelectorAll("#autoDungeonOptions [data-speed]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (!player.settings) player.settings = {};
+      if (!player.settings.autoDungeon) player.settings.autoDungeon = {};
+      player.settings.autoDungeon.speed = btn.dataset.speed;
+      renderAutoDungeonOptions(player);
+      savePlayer(player);
+    });
+  });
+
+  // "When dungeon is cleared" behavior buttons
+  document.querySelectorAll("#autoDungeonOptions [data-clear]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (!player.settings) player.settings = {};
+      if (!player.settings.autoDungeon) player.settings.autoDungeon = {};
+      player.settings.autoDungeon.onClear = btn.dataset.clear;
+      renderAutoDungeonOptions(player);
+      savePlayer(player);
+    });
+  });
+
+  document.getElementById("autoDungeonRetryToggle").addEventListener("click", () => {
+    if (!player.settings) player.settings = {};
+    if (!player.settings.autoDungeon) player.settings.autoDungeon = {};
+    player.settings.autoDungeon.autoRetry = !(player.settings.autoDungeon.autoRetry !== false);
+    renderAutoDungeonOptions(player);
+    savePlayer(player);
+  });
+
+  document.getElementById("autoDungeonStopFullToggle").addEventListener("click", () => {
+    if (!player.settings) player.settings = {};
+    if (!player.settings.autoDungeon) player.settings.autoDungeon = {};
+    player.settings.autoDungeon.stopOnInventoryFull = !(player.settings.autoDungeon.stopOnInventoryFull !== false);
+    renderAutoDungeonOptions(player);
+    savePlayer(player);
   });
 
   document.getElementById("keepScreenOnToggle").addEventListener("click", async () => {
