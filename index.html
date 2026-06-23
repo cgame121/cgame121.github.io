@@ -556,6 +556,188 @@ button {
    ============================================ */
 .stage-panel { min-height: 640px; position: relative; }
 
+/* ============================================
+   Daily Dungeon Card
+   ============================================ */
+.daily-dungeon-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(246,196,83,0.10), rgba(246,196,83,0.03));
+  border: 1px solid rgba(246,196,83,0.35);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.daily-dungeon-card:hover:not(.daily-done):not(.daily-locked) {
+  border-color: rgba(246,196,83,0.65);
+  box-shadow: 0 0 24px rgba(246,196,83,0.14);
+  transform: translateY(-1px);
+}
+.daily-dungeon-card.daily-done {
+  background: linear-gradient(135deg, rgba(61,220,151,0.08), rgba(61,220,151,0.02));
+  border-color: rgba(61,220,151,0.3);
+  cursor: default;
+}
+.daily-dungeon-card.daily-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.daily-dungeon-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -60%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(246,196,83,0.05), transparent);
+  animation: daily-shimmer 3.2s ease-in-out infinite;
+}
+.daily-dungeon-card.daily-done::before { animation: none; }
+@keyframes daily-shimmer {
+  0% { left: -60%; }
+  100% { left: 130%; }
+}
+.daily-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.daily-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.daily-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(246,196,83,0.16);
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.daily-badge.done-badge {
+  background: rgba(61,220,151,0.16);
+  color: var(--success);
+}
+.daily-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--gold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.daily-done .daily-name { color: var(--success); }
+.daily-streak-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(246,196,83,0.12);
+  border: 1px solid rgba(246,196,83,0.25);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.daily-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.daily-modifier-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.daily-modifier-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.daily-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.daily-timer {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.daily-action-btn {
+  background: var(--gold);
+  color: #1a1300;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.daily-action-btn:hover { opacity: 0.88; transform: scale(0.98); }
+.daily-action-btn:disabled { background: var(--bg-panel-raised); color: var(--text-faint); cursor: not-allowed; }
+.daily-done .daily-action-btn { background: var(--success); color: #001a0d; }
+.daily-rewards-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.daily-reward-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+/* Daily Dungeon result overlay additions */
+.daily-result-banner {
+  background: linear-gradient(135deg, rgba(246,196,83,0.15), rgba(246,196,83,0.04));
+  border: 1px solid rgba(246,196,83,0.4);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.daily-result-banner-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.daily-result-rewards {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .dungeon-list { display: flex; flex-direction: column; gap: 10px; }
 
 .tier-tabs {
@@ -2294,6 +2476,24 @@ button {
         <h2 class="panel-title">เลือกดันเจี้ยน</h2>
         <p class="hint-text">เลือกดันเจี้ยนเพื่อเริ่มลุยอัตโนมัติ ชนะแล้วจะได้ทองคำ, EXP และไอเทมดรอป</p>
 
+        <!-- Daily Dungeon Card -->
+        <div class="daily-dungeon-card" id="dailyDungeonCard">
+          <div class="daily-header">
+            <div class="daily-title-row">
+              <span class="daily-badge" id="dailyBadge">📅 รายวัน</span>
+              <span class="daily-name" id="dailyDungeonName">—</span>
+            </div>
+            <div class="daily-streak-pill" id="dailyStreakPill">🔥 0 วัน</div>
+          </div>
+          <p class="daily-desc" id="dailyDungeonDesc">—</p>
+          <div class="daily-modifier-row" id="dailyModifierRow"></div>
+          <div class="daily-rewards-preview" id="dailyRewardsPreview"></div>
+          <div class="daily-bottom-row">
+            <span class="daily-timer" id="dailyTimer">⏳ รีเซ็ตใน —</span>
+            <button class="daily-action-btn" id="dailyEnterBtn">ลุยเลย!</button>
+          </div>
+        </div>
+
         <button class="endless-entry-card" id="openEndlessBtn">
           <span class="endless-entry-title">⚔️ บอสรัช: ท้าทายไม่สิ้นสุด</span>
           <span class="endless-entry-sub">เผชิญหน้าบอสคลื่นแล้วคลื่นเล่า ไม่มีจุดจบ • สถิติของคุณ: คลื่นที่ <span id="endlessEntryBest">0</span></span>
@@ -3667,6 +3867,14 @@ function repairPlayerShape(parsed) {
   if (!parsed.endless || typeof parsed.endless !== "object") parsed.endless = {};
   if (typeof parsed.endless.bestWave !== "number" || parsed.endless.bestWave < 0) parsed.endless.bestWave = 0;
   if (!Array.isArray(parsed.endless.leaderboard)) parsed.endless.leaderboard = [];
+  if (!parsed.dailyDungeon || typeof parsed.dailyDungeon !== "object") {
+    parsed.dailyDungeon = { lastDate: "", streak: 0, completedToday: false, roomsCleared: 0 };
+  } else {
+    if (typeof parsed.dailyDungeon.streak !== "number") parsed.dailyDungeon.streak = 0;
+    if (typeof parsed.dailyDungeon.completedToday !== "boolean") parsed.dailyDungeon.completedToday = false;
+    if (typeof parsed.dailyDungeon.roomsCleared !== "number") parsed.dailyDungeon.roomsCleared = 0;
+    if (typeof parsed.dailyDungeon.lastDate !== "string") parsed.dailyDungeon.lastDate = "";
+  }
   return parsed;
 }
 
@@ -4745,6 +4953,7 @@ function renderAll() {
   renderEquipSlots(player, onEquipSlotClick);
   renderPrestigeBox(player);
   refreshDungeonSelectUI(player);
+  renderDailyDungeonCard(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   renderShop(player);
   renderAutoToggle(player);
@@ -5244,6 +5453,11 @@ function onMonsterDefeated() {
   stopBattleLoop();
   inBattleTransition = true;
 
+  if (isDailyMode) {
+    onDailyMonsterDefeated();
+    return;
+  }
+
   if (gameMode === "endless") {
     onEndlessWaveCleared();
     return;
@@ -5352,6 +5566,11 @@ function onPlayerDefeated() {
   inBattleTransition = true;
   appendCombatLog(`คุณพ่ายแพ้ต่อ ${currentMonster.name}...`, "log-line-defeat");
 
+  if (isDailyMode) {
+    onDailyPlayerDefeated();
+    return;
+  }
+
   if (gameMode === "endless") {
     onEndlessRunEnded();
     return;
@@ -5457,7 +5676,7 @@ function onEndlessRunEnded() {
   });
 }
 
-function showResultOverlay({ win, title, subtitle, loot, gold, exp, gems, onContinue }) {
+function showResultOverlay({ win, title, subtitle, loot, gold, exp, gems, bonusBanner, onContinue }) {
   const overlay = document.getElementById("resultOverlay");
   const card = document.getElementById("resultCard");
   card.classList.toggle("is-win", win);
@@ -5498,6 +5717,27 @@ function showResultOverlay({ win, title, subtitle, loot, gold, exp, gems, onCont
     el.innerHTML = iconHtml(loot.icon, RARITY[loot.rarity].color);
     el.addEventListener("click", (e) => showTooltip(loot, e, { inventoryItem: true }));
     lootContainer.appendChild(el);
+  }
+
+  // Daily dungeon bonus banner
+  let dailyBannerEl = document.getElementById("dailyResultBanner");
+  if (bonusBanner) {
+    if (!dailyBannerEl) {
+      dailyBannerEl = document.createElement("div");
+      dailyBannerEl.id = "dailyResultBanner";
+      dailyBannerEl.className = "daily-result-banner";
+      lootContainer.insertAdjacentElement("afterend", dailyBannerEl);
+    }
+    dailyBannerEl.style.display = "";
+    dailyBannerEl.innerHTML = `
+      <div class="daily-result-banner-title">🏆 รางวัล Daily Dungeon</div>
+      <div class="daily-result-rewards">
+        <span class="daily-reward-chip" style="color:var(--gem);border-color:rgba(75,216,232,0.4);background:rgba(75,216,232,0.08);">💎 +${fmtNum(bonusBanner.gems)} เพชร</span>
+        ${bonusBanner.streakBonus ? `<span class="daily-reward-chip" style="color:var(--gold);border-color:rgba(246,196,83,0.4);background:rgba(246,196,83,0.08);">${bonusBanner.streakBonus}</span>` : ""}
+      </div>
+    `;
+  } else if (dailyBannerEl) {
+    dailyBannerEl.style.display = "none";
   }
 
   overlay.classList.remove("hidden");
@@ -5885,10 +6125,438 @@ function renderAutoSellUI() {
 }
 
 // ============================================
+// VOIDFALL — Daily Dungeon System
+// A special dungeon that resets every calendar day (midnight local time).
+// Seeded from the date so all players fight the same layout. Rewards
+// bonus gems + a guaranteed rare+ item. Streak bonuses for consecutive days.
+// ============================================
+
+const DAILY_DUNGEON_ROOMS = 6; // 5 normal + 1 boss
+const DAILY_MODIFIER_DEFS = [
+  { id: "burning",    label: "🔥 เพลิงไหม้",     color: "#FF6B3B", bg: "rgba(255,107,59,0.14)",
+    desc: "มอนสเตอร์ดีล +20% แต่ drop rate เพิ่ม",
+    atkMult: 1.2, dropBonus: true },
+  { id: "gem_surge",  label: "💎 พลังเพชร",      color: "#4BD8E8", bg: "rgba(75,216,232,0.14)",
+    desc: "บอสให้เพชรเพิ่ม 3×",
+    gemMult: 3 },
+  { id: "fortified",  label: "🛡️ ป้อมปราการ",   color: "#7C5CFC", bg: "rgba(124,92,252,0.14)",
+    desc: "มอนสเตอร์ DEF +40% แต่ทองเพิ่ม 2×",
+    defMult: 1.4, goldMult: 2 },
+  { id: "cursed",     label: "☠️ สาปมืด",        color: "#FF6B5B", bg: "rgba(255,107,91,0.14)",
+    desc: "ทุกศัตรูเป็นบอส แต่ EXP เพิ่ม 3×",
+    allBoss: true, expMult: 3 },
+  { id: "blessed",    label: "✨ พรศักดิ์สิทธิ์", color: "#F6C453", bg: "rgba(246,196,83,0.14)",
+    desc: "HP ฟื้นฟูระหว่างห้อง ไอเทม drop rate 100%",
+    healBetweenRooms: true, fullDropRate: true },
+  { id: "void_rift",  label: "🌀 รอยแยกว่างเปล่า", color: "#B07CFC", bg: "rgba(176,124,252,0.14)",
+    desc: "รับประกัน Epic+ ทุกดรอป แต่ HP ไม่ฟื้น",
+    guaranteedEpic: true, noHealOnEntry: true },
+];
+
+// Simple seeded PRNG (mulberry32)
+function seededRng(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function getDailyDateString() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function getDailySeed() {
+  const s = getDailyDateString();
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash |= 0;
+  }
+  return hash;
+}
+
+function buildDailyDungeon(player) {
+  const rng = seededRng(getDailySeed());
+  // Pick a dungeon from unlocked range for scaling
+  const baseIdx = Math.min(
+    Math.floor(rng() * (player.unlockedDungeonIndex + 1)),
+    DUNGEONS.length - 1
+  );
+  const base = DUNGEONS[baseIdx];
+
+  // Pick 1-2 modifiers
+  const shuffled = [...DAILY_MODIFIER_DEFS].sort(() => rng() - 0.5);
+  const modCount = rng() < 0.4 ? 2 : 1;
+  const modifiers = shuffled.slice(0, modCount);
+
+  // Pick a themed name
+  const DAILY_NAMES = [
+    "ถ้ำสายฟ้าแห่งการพิสูจน์", "หอคอยแห่งโชคชะตา",
+    "ห้องทดสอบวิญญาณ", "ป่าต้องสาปของเทพ",
+    "ซากปรักหักพังลับแห่งวัน", "ห้วงอันตรายไม่รู้จบ",
+    "สนามทดสอบเอกภพ", "ตำนานดันเจียนประจำวัน",
+  ];
+  const nameIdx = Math.floor(rng() * DAILY_NAMES.length);
+  const name = DAILY_NAMES[nameIdx];
+
+  // Compute guaranteed gem reward based on player progress
+  const tierIndex = Math.max(0, DUNGEON_TIERS.findIndex(t => t.id === base.tier));
+  const baseGems = 15 + tierIndex * 8;
+
+  return { base, modifiers, name, baseGems };
+}
+
+function getDailyState(player) {
+  if (!player.dailyDungeon) {
+    player.dailyDungeon = { lastDate: "", streak: 0, completedToday: false, roomsCleared: 0 };
+  }
+  const today = getDailyDateString();
+  const dd = player.dailyDungeon;
+
+  // New day: update streak
+  if (dd.lastDate !== today) {
+    const yesterday = (() => {
+      const d = new Date(); d.setDate(d.getDate() - 1);
+      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    })();
+    if (dd.lastDate === yesterday && dd.completedToday) {
+      dd.streak = (dd.streak || 0) + 1;
+    } else if (dd.lastDate !== today) {
+      // missed a day or first time
+      dd.streak = 0;
+    }
+    dd.completedToday = false;
+    dd.roomsCleared = 0;
+    dd.lastDate = today;
+  }
+  return dd;
+}
+
+function getDailyStreakBonus(streak) {
+  if (streak >= 30) return { label: "30 วัน", gemMult: 2.5, guaranteedLegendary: true };
+  if (streak >= 7)  return { label: "7 วัน",  gemMult: 1.75, guaranteedEpic: true };
+  if (streak >= 3)  return { label: "3 วัน",  gemMult: 1.25 };
+  return null;
+}
+
+// Daily dungeon modifies monster generation
+function generateDailyMonster(daily, roomIndex) {
+  const { base, modifiers } = daily;
+  const isBoss = roomIndex === DAILY_DUNGEON_ROOMS - 1;
+  // All-boss modifier
+  const allBoss = modifiers.some(m => m.allBoss);
+  const effectiveIsBoss = isBoss || allBoss;
+  const scale = 1 + roomIndex * 0.28; // slightly tougher scaling than normal
+
+  const name = effectiveIsBoss
+    ? base.boss.name
+    : base.monsterPool[Math.floor(Math.random() * base.monsterPool.length)];
+
+  const hpMult = effectiveIsBoss ? base.boss.hpMult * 1.5 : 1;
+  const defExtraMult = modifiers.reduce((m, mod) => m * (mod.defMult || 1), 1);
+
+  return {
+    name,
+    isBoss: effectiveIsBoss,
+    isDaily: true,
+    maxHp: Math.round(base.baseHp * scale * hpMult),
+    hp:    Math.round(base.baseHp * scale * hpMult),
+    atk:   Math.round(base.baseAtk * scale * (effectiveIsBoss ? 1.6 : 1.08) *
+             modifiers.reduce((m, mod) => m * (mod.atkMult || 1), 1)),
+    def:   Math.round(base.baseDef * scale * (effectiveIsBoss ? 1.5 : 1.08) * defExtraMult),
+    spd:   0.85 + Math.random() * 0.3,
+  };
+}
+
+function rollDailyLoot(daily, forceEpicPlus) {
+  const { base, modifiers } = daily;
+  const guaranteedEpic = forceEpicPlus || modifiers.some(m => m.guaranteedEpic);
+  const dropTable = guaranteedEpic
+    ? { common: 0, uncommon: 0, rare: 0, epic: 40, legendary: 45, void: 15 }
+    : (modifiers.some(m => m.dropBonus)
+        ? { common: 5, uncommon: 15, rare: 45, epic: 30, legendary: 5, void: 0 }
+        : { common: 0, uncommon: 5, rare: 40, epic: 40, legendary: 13, void: 2 });
+  return generateItem(base, dropTable);
+}
+
+// ---------- Daily Dungeon UI ----------
+let dailyDungeonData = null; // built once per session / day change
+let dailyTimerInterval = null;
+
+function renderDailyDungeonCard(player) {
+  const card = document.getElementById("dailyDungeonCard");
+  if (!card) return;
+
+  const dd = getDailyState(player);
+  if (!dailyDungeonData || dailyDungeonData._dateKey !== getDailyDateString()) {
+    dailyDungeonData = buildDailyDungeon(player);
+    dailyDungeonData._dateKey = getDailyDateString();
+  }
+  const daily = dailyDungeonData;
+  const streak = dd.streak || 0;
+  const done = dd.completedToday;
+  const streakBonus = getDailyStreakBonus(streak);
+
+  card.className = "daily-dungeon-card" + (done ? " daily-done" : "");
+
+  document.getElementById("dailyBadge").textContent = done ? "✅ เสร็จแล้ววันนี้" : "📅 รายวัน";
+  document.getElementById("dailyBadge").className = "daily-badge" + (done ? " done-badge" : "");
+  document.getElementById("dailyDungeonName").textContent = daily.name;
+  document.getElementById("dailyDungeonName").style.color = done ? "var(--success)" : "var(--gold)";
+  document.getElementById("dailyStreakPill").textContent = `🔥 ${streak} วัน`;
+  document.getElementById("dailyStreakPill").style.display = streak > 0 ? "" : "none";
+
+  // Description
+  const modDesc = daily.modifiers.map(m => m.desc).join(" • ");
+  document.getElementById("dailyDungeonDesc").textContent =
+    `ดันเจียนพิเศษ ${DAILY_DUNGEON_ROOMS} ห้อง — ${modDesc}`;
+
+  // Modifiers
+  const modRow = document.getElementById("dailyModifierRow");
+  modRow.innerHTML = daily.modifiers.map(m =>
+    `<span class="daily-modifier-tag" style="color:${m.color};background:${m.bg};border:1px solid ${m.color}40;">${m.label}</span>`
+  ).join("");
+
+  // Rewards preview
+  const gemAmt = Math.round(daily.baseGems * (streakBonus ? streakBonus.gemMult : 1) * prestigeBonusMultiplier(player));
+  const rpEl = document.getElementById("dailyRewardsPreview");
+  rpEl.innerHTML = [
+    `<span class="daily-reward-chip" style="color:var(--gem);border-color:rgba(75,216,232,0.4);background:rgba(75,216,232,0.08);">💎 +${fmtNum(gemAmt)} เพชร</span>`,
+    streakBonus?.guaranteedLegendary
+      ? `<span class="daily-reward-chip" style="color:var(--gold);border-color:rgba(246,196,83,0.4);background:rgba(246,196,83,0.08);">🌟 Legendary รับประกัน</span>`
+      : streakBonus?.guaranteedEpic
+        ? `<span class="daily-reward-chip" style="color:#B07CFC;border-color:rgba(176,124,252,0.4);background:rgba(176,124,252,0.08);">💜 Epic+ รับประกัน</span>`
+        : `<span class="daily-reward-chip" style="color:#5B9CFF;border-color:rgba(91,156,255,0.4);background:rgba(91,156,255,0.08);">⚔️ Rare+ รับประกัน</span>`,
+    streakBonus ? `<span class="daily-reward-chip" style="color:var(--gold);border-color:rgba(246,196,83,0.35);background:rgba(246,196,83,0.07);">🔥 Streak ×${streakBonus.gemMult}</span>` : "",
+  ].join("");
+
+  // Countdown timer
+  if (dailyTimerInterval) clearInterval(dailyTimerInterval);
+  const updateTimer = () => {
+    const now = new Date();
+    const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+    const diffMs = midnight - now;
+    const h = Math.floor(diffMs / 3600000);
+    const m = Math.floor((diffMs % 3600000) / 60000);
+    const s = Math.floor((diffMs % 60000) / 1000);
+    const timerEl = document.getElementById("dailyTimer");
+    if (timerEl) timerEl.textContent = `⏳ รีเซ็ตใน ${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  };
+  updateTimer();
+  dailyTimerInterval = setInterval(updateTimer, 1000);
+
+  // Action button
+  const btn = document.getElementById("dailyEnterBtn");
+  if (done) {
+    btn.textContent = "✅ เสร็จแล้ว";
+    btn.disabled = true;
+  } else {
+    btn.textContent = "ลุยเลย!";
+    btn.disabled = false;
+  }
+}
+
+// ---------- Enter & play Daily Dungeon ----------
+let isDailyMode = false;   // true while player is inside the daily dungeon
+let dailyRoomIndex = 0;   // current room (0-based) within the daily dungeon
+
+function enterDailyDungeon() {
+  const dd = getDailyState(player);
+  if (dd.completedToday) { showToast("วันนี้คุณเคลียร์ Daily Dungeon แล้ว กลับมาพรุ่งนี้!"); return; }
+
+  clearResultAutoTimer();
+  isDailyMode = true;
+  gameMode = "dungeon";
+  currentDungeonIndex = null;
+  dailyRoomIndex = 0;
+  const stats = getTotalStats(player);
+  player.currentHp = stats.hp;
+
+  showBattleStageView();
+  clearCombatLog();
+  document.getElementById("stageDungeonName").textContent = `📅 ${dailyDungeonData.name}`;
+  spawnDailyRoom();
+}
+
+function spawnDailyRoom() {
+  document.getElementById("stageRoomIndicator").textContent =
+    dailyRoomIndex === DAILY_DUNGEON_ROOMS - 1
+      ? `ห้องบอสรายวัน (${DAILY_DUNGEON_ROOMS}/${DAILY_DUNGEON_ROOMS})`
+      : `ห้อง ${dailyRoomIndex + 1}/${DAILY_DUNGEON_ROOMS}`;
+
+  currentMonster = generateDailyMonster(dailyDungeonData, dailyRoomIndex);
+  setArenaCombatants(player, currentMonster);
+  appendCombatLog(`[รายวัน] พบ ${currentMonster.name}${currentMonster.isBoss ? " (บอสรายวัน)" : ""}`);
+  playRaynDash(document.getElementById("arenaPlayer"));
+  startBattleLoop();
+}
+
+function onDailyMonsterDefeated() {
+  stopBattleLoop();
+  inBattleTransition = true;
+
+  const daily = dailyDungeonData;
+  const dd = getDailyState(player);
+  const isBoss = dailyRoomIndex === DAILY_DUNGEON_ROOMS - 1;
+
+  player.stats.monstersKilled += 1;
+  if (isBoss) player.stats.bossesKilled += 1;
+
+  const base = daily.base;
+  const goldMult = daily.modifiers.reduce((m, mod) => m * (mod.goldMult || 1), 1);
+  const expMult  = daily.modifiers.reduce((m, mod) => m * (mod.expMult  || 1), 1);
+  const gold = Math.round(goldDropForKill(base, isBoss, player) * goldMult * 1.5);
+  const exp  = Math.round(expDropForKill(base, isBoss, player)  * expMult);
+  player.gold += gold;
+
+  let gems = 0;
+  let loot = null;
+  let bonusBanner = null;
+
+  if (isBoss) {
+    // Boss clear: compute full daily reward
+    const streakBonus = getDailyStreakBonus(dd.streak || 0);
+    const gemMult = daily.modifiers.reduce((m, mod) => m * (mod.gemMult || 1), 1)
+                  * (streakBonus ? streakBonus.gemMult : 1);
+    gems = Math.round(daily.baseGems * gemMult * prestigeBonusMultiplier(player));
+    player.gems = (player.gems || 0) + gems;
+
+    const forceEpic = !!(streakBonus?.guaranteedLegendary || streakBonus?.guaranteedEpic);
+    const dropTable = streakBonus?.guaranteedLegendary
+      ? { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 65, void: 35 }
+      : null; // null = use rollDailyLoot default
+
+    if (player.inventory.length < inventoryCapacity(player)) {
+      loot = dropTable
+        ? generateItem(base, dropTable)
+        : rollDailyLoot(daily, forceEpic);
+      player.inventory.push(loot);
+      player.stats.itemsFound += 1;
+      if (tryAutoSellItem(loot)) loot = null;
+    }
+
+    // Mark completed, update streak, update lastDate
+    dd.completedToday = true;
+    dd.roomsCleared = DAILY_DUNGEON_ROOMS;
+    const today = getDailyDateString();
+    if (dd.lastDate !== today) dd.streak = (dd.streak || 0) + 1;
+    dd.lastDate = today;
+    player.dailyDungeon = dd;
+
+    bonusBanner = {
+      gems,
+      streakDays: dd.streak,
+      streakBonus: streakBonus ? `🔥 Streak ${dd.streak} วัน — เพชร ×${streakBonus.gemMult}` : null,
+    };
+
+    appendCombatLog(`[รายวัน] เคลียร์แล้ว! +${gold}g +${exp}exp +${gems}เพชร`, "log-line-crit");
+  } else {
+    // Heal between rooms if blessed modifier
+    if (daily.modifiers.some(m => m.healBetweenRooms)) {
+      const stats = getTotalStats(player);
+      const heal = Math.round(stats.hp * 0.15);
+      player.currentHp = Math.min(stats.hp, player.currentHp + heal);
+      appendCombatLog(`[พรศักดิ์สิทธิ์] HP ฟื้นฟู +${heal}`, "log-line-crit");
+    }
+    // Loot from normal rooms
+    const fullDrop = daily.modifiers.some(m => m.fullDropRate);
+    if ((fullDrop || Math.random() < 0.75) && player.inventory.length < inventoryCapacity(player)) {
+      loot = rollDailyLoot(daily, false);
+      player.inventory.push(loot);
+      player.stats.itemsFound += 1;
+      if (tryAutoSellItem(loot)) loot = null;
+    }
+    appendCombatLog(`[รายวัน] กำจัด ${currentMonster.name} สำเร็จ! +${gold}g +${exp}exp`, "log-line-crit");
+  }
+
+  const leveledUp = gainExp(player, exp, () => {
+    showToast(`เลเวลอัพ! ตอนนี้คุณเลเวล ${player.level}`);
+  });
+
+  renderHud(player);
+  renderStats(player);
+  renderPrestigeBox(player);
+  renderInventory(player, { onEquip: onInventoryItemClick });
+  renderShop(player);
+  renderDailyDungeonCard(player);
+  savePlayer(player);
+
+  if (isBoss) {
+    showResultOverlay({
+      win: true,
+      title: "🏆 พิชิต Daily Dungeon!",
+      subtitle: `คุณเคลียร์ ${daily.name} ได้สำเร็จ — กลับมาพรุ่งนี้เพื่อ streak!`,
+      loot,
+      gold, exp, gems,
+      bonusBanner,
+      onContinue: () => {
+        inBattleTransition = false;
+        isDailyMode = false;
+        showDungeonSelectView();
+      },
+    });
+  } else {
+    showResultOverlay({
+      win: true,
+      title: "ชนะการต่อสู้",
+      subtitle: `กำจัด ${currentMonster.name} แล้ว (ห้อง ${dailyRoomIndex + 1}/${DAILY_DUNGEON_ROOMS})`,
+      loot,
+      gold, exp, gems: 0,
+      onContinue: () => {
+        inBattleTransition = false;
+        dailyRoomIndex += 1;
+        document.getElementById("resultOverlay").classList.add("hidden");
+        spawnDailyRoom();
+      },
+    });
+  }
+}
+
+function onDailyPlayerDefeated() {
+  stopBattleLoop();
+  inBattleTransition = true;
+  isDailyMode = false;
+  appendCombatLog(`[รายวัน] คุณพ่ายแพ้... Daily Dungeon ยังรอคุณอยู่วันนี้`, "log-line-defeat");
+
+  showResultOverlay({
+    win: false,
+    title: "พ่ายแพ้ใน Daily Dungeon",
+    subtitle: `ตัวละครล้มลงในห้อง ${dailyRoomIndex + 1}/${DAILY_DUNGEON_ROOMS} — ลองใหม่ได้เลย!`,
+    loot: null,
+    onContinue: () => {
+      inBattleTransition = false;
+      const stats = getTotalStats(player);
+      player.currentHp = Math.round(stats.hp * 0.5);
+      savePlayer(player);
+      // Daily dungeon allows retry (streak not broken by defeat, only by not completing)
+      if (player.settings && player.settings.autoMode) {
+        enterDailyDungeon();
+      } else {
+        showDungeonSelectView();
+      }
+    },
+  });
+}
+
+// ============================================
 // Global event bindings
 // ============================================
 function bindGlobalEvents() {
+  document.getElementById("dailyEnterBtn").addEventListener("click", () => {
+    enterDailyDungeon();
+  });
+  document.getElementById("dailyDungeonCard").addEventListener("click", (e) => {
+    if (e.target.closest("#dailyEnterBtn")) return; // handled by button
+    const dd = getDailyState(player);
+    if (!dd.completedToday) enterDailyDungeon();
+  });
+
   document.getElementById("retreatBtn").addEventListener("click", () => {
+    isDailyMode = false;
     stopBattleLoop();
     inBattleTransition = false;
     if (gameMode === "endless") {
