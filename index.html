@@ -48,6 +48,8 @@ html, body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  touch-action: manipulation; /* blocks double-tap-to-zoom and pinch-zoom gestures */
+  -webkit-text-size-adjust: none; /* stop iOS from auto-resizing text/zoom on rotate */
 }
 
 body {
@@ -3400,8 +3402,8 @@ const DUNGEON_TIERS = [
   { id: "transcendent", label: "เหนือมิติ", color: "#CC88FF" },
 ];
 
-// Dungeons - 42 total, each with 14 normal rooms + 1 boss room (3x original).
-// Grouped into 4 difficulty tiers: normal (7) -> hard (20) -> extreme (5) -> transcendent (10).
+// Dungeons - 45 total, each with 14 normal rooms + 1 boss room (3x original).
+// Grouped into 4 difficulty tiers: normal (20) -> hard (10) -> extreme (5) -> transcendent (10).
 const DUNGEONS = [
   {
     id: "d1", name: "ป่าเถ้าจาง", minLevel: 1, tier: "normal",
@@ -3412,12 +3414,36 @@ const DUNGEONS = [
     dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0, void: 0 },
   },
   {
+    id: "d1x1", name: "ทุ่งหญ้าเถ้าถ่าน", minLevel: 2, tier: "normal",
+    desc: "ทุ่งหญ้าเล็กๆชายป่าเถ้าจาง ที่สัตว์ตัวเล็กกลายพันธุ์เพราะฝุ่นเถ้าปกคลุม",
+    monsterPool: ["หนูเงาน้อย", "ค้างคาวมืดอ่อน", "แมงมุมเถ้า"],
+    boss: { name: "หัวหน้าฝูงหนูเงา", hpMult: 3.0 },
+    baseHp: 21.8, baseAtk: 4.8, baseDef: 1.4, goldMult: 1.12, expMult: 1.09,
+    dropTable: { common: 65, uncommon: 27, rare: 7, epic: 1, legendary: 0, void: 0 },
+  },
+  {
+    id: "d1x2", name: "ถ้ำหมาป่าซีด", minLevel: 3, tier: "normal",
+    desc: "ถ้ำมืดที่หมาป่าซีดใช้เป็นที่หลบซ่อนจากแสงแดด นักล่าหน้าใหม่มักพลาดท่าที่นี่",
+    monsterPool: ["หมาป่าซีด", "ค้างคาวมืด", "หนูเงา"],
+    boss: { name: "จ่าฝูงหมาป่าซีด", hpMult: 3.05 },
+    baseHp: 26.4, baseAtk: 5.8, baseDef: 2.1, goldMult: 1.25, expMult: 1.19,
+    dropTable: { common: 60, uncommon: 30, rare: 9, epic: 1, legendary: 0, void: 0 },
+  },
+  {
     id: "d2", name: "สุสานเสียงครวญ", minLevel: 4, tier: "normal",
     desc: "หลุมศพเก่าที่ไม่มีใครจดจำชื่อผู้ตาย เสียงครวญลอยมาตามลม",
     monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "วิญญาณคร่ำครวญ"],
     boss: { name: "เจ้าสุสานไร้นาม", hpMult: 3.3 },
     baseHp: 32, baseAtk: 7, baseDef: 3, goldMult: 1.4, expMult: 1.3,
     dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0, void: 0 },
+  },
+  {
+    id: "d2x1", name: "ทางเดินสุสานเก่า", minLevel: 6, tier: "normal",
+    desc: "ทางเดินแคบๆ ระหว่างหลุมศพที่ยังไม่มีใครสำรวจ เสียงครวญดังแว่วมาตลอดเวลา",
+    monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "หนูเงา"],
+    boss: { name: "ผู้ดูแลสุสานเก่า", hpMult: 3.15 },
+    baseHp: 42.0, baseAtk: 8.8, baseDef: 4.2, goldMult: 1.63, expMult: 1.44,
+    dropTable: { common: 49, uncommon: 34, rare: 14, epic: 3, legendary: 0, void: 0 },
   },
   {
     id: "d3", name: "เหมืองคริสตัลร้าง", minLevel: 8, tier: "normal",
@@ -3428,12 +3454,44 @@ const DUNGEONS = [
     dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0, void: 0 },
   },
   {
+    id: "d3x1", name: "ปล่องเหมืองลึก", minLevel: 10, tier: "normal",
+    desc: "ปล่องเหมืองที่ขุดลึกลงไปอีกชั้น คริสตัลที่นี่เปล่งแสงประหลาดในความมืด",
+    monsterPool: ["โกเลมคริสตัล", "แมงมุมเหมือง", "ค้างคาวพิษ"],
+    boss: { name: "ประกายคริสตัลคลั่ง", hpMult: 3.25 },
+    baseHp: 66.4, baseAtk: 13.1, baseDef: 7.4, goldMult: 2.12, expMult: 1.78,
+    dropTable: { common: 41, uncommon: 36, rare: 18, epic: 5, legendary: 0, void: 0 },
+  },
+  {
+    id: "d3x2", name: "ห้องแร่ต้องสาป", minLevel: 11, tier: "normal",
+    desc: "ห้องเก็บแร่ที่คนงานเหมืองทิ้งไว้ก่อนหายตัวไปอย่างไร้สาเหตุ",
+    monsterPool: ["แมงมุมเหมือง", "โกเลมคริสตัล", "ค้างคาวพิษ"],
+    boss: { name: "ผู้คุมแร่ต้องสาป", hpMult: 3.3 },
+    baseHp: 72.9, baseAtk: 14.3, baseDef: 8.2, goldMult: 2.24, expMult: 1.88,
+    dropTable: { common: 39, uncommon: 37, rare: 18, epic: 5, legendary: 1, void: 0 },
+  },
+  {
     id: "d4", name: "หอคอยกระจกแตก", minLevel: 13, tier: "normal",
     desc: "หอคอยที่กระจกทุกบานสะท้อนภาพไม่ตรงกับความจริง",
     monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
     boss: { name: "จอมเวทกระจกมืด", hpMult: 3.96 },
     baseHp: 88, baseAtk: 17, baseDef: 10, goldMult: 2.5, expMult: 2.1,
     dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1, void: 0 },
+  },
+  {
+    id: "d4x1", name: "ระเบียงกระจกเงา", minLevel: 15, tier: "normal",
+    desc: "ระเบียงที่กระจกทุกบานสะท้อนภาพผู้บุกรุกเป็นศัตรู ก่อนจะก้าวออกมาสู้จริงๆ",
+    monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
+    boss: { name: "ภาพสะท้อนจอมเวท", hpMult: 3.4 },
+    baseHp: 98.4, baseAtk: 18.9, baseDef: 11.4, goldMult: 2.74, expMult: 2.29,
+    dropTable: { common: 32, uncommon: 39, rare: 21, epic: 7, legendary: 1, void: 0 },
+  },
+  {
+    id: "d4x2", name: "ห้องเก็บเสียงสะท้อน", minLevel: 16, tier: "normal",
+    desc: "ห้องที่เสียงทุกอย่างสะท้อนกลับมาบิดเบือน ทำให้ผู้บุกรุกหลงทิศจนหาทางออกไม่ได้",
+    monsterPool: ["อัศวินกระจก", "ภูตแสงหัก", "เงาสะท้อนวิปลาส"],
+    boss: { name: "เสียงสะท้อนหลอนจิต", hpMult: 3.45 },
+    baseHp: 104.0, baseAtk: 19.9, baseDef: 12.2, goldMult: 2.87, expMult: 2.39,
+    dropTable: { common: 31, uncommon: 40, rare: 22, epic: 6, legendary: 1, void: 0 },
   },
   {
     id: "d4b", name: "หุบเขาหมอกพิษ", minLevel: 17, tier: "normal",
@@ -3444,12 +3502,44 @@ const DUNGEONS = [
     dropTable: { common: 30, uncommon: 40, rare: 22, epic: 7, legendary: 1, void: 0 },
   },
   {
+    id: "d4bx1", name: "ปากหุบเขาหมอกพิษ", minLevel: 19, tier: "normal",
+    desc: "จุดเริ่มต้นของหุบเขาหมอกพิษ ที่อากาศเริ่มกัดกร่อนผิวหนังของผู้มาเยือน",
+    monsterPool: ["ค้างคาวพิษ", "แมงมุมเหมือง", "ภูตแสงหัก"],
+    boss: { name: "ผู้พิทักษ์ปากหุบเขา", hpMult: 3.55 },
+    baseHp: 123.2, baseAtk: 23.4, baseDef: 14.4, goldMult: 3.29, expMult: 2.74,
+    dropTable: { common: 27, uncommon: 40, rare: 24, epic: 8, legendary: 1, void: 0 },
+  },
+  {
+    id: "d4bx2", name: "รังแมงมุมพิษเก่า", minLevel: 20, tier: "normal",
+    desc: "รังเก่าที่แมงมุมพิษนับร้อยอาศัยอยู่ ใยพิษคลุมทุกซอกทุกมุมของหุบเขา",
+    monsterPool: ["แมงมุมเหมือง", "ค้างคาวพิษ", "ภูตแสงหัก"],
+    boss: { name: "แม่รังแมงมุมพิษเก่า", hpMult: 3.6 },
+    baseHp: 130.4, baseAtk: 24.7, baseDef: 15.2, goldMult: 3.44, expMult: 2.87,
+    dropTable: { common: 26, uncommon: 40, rare: 25, epic: 8, legendary: 1, void: 0 },
+  },
+  {
     id: "d4c", name: "ซากปรักหักพังอาณาจักรเก่า", minLevel: 21, tier: "normal",
     desc: "เมืองโบราณที่ถูกกลืนกินโดยธรรมชาติ วิญญาณนักรบผู้ปกป้องยังคงลาดตระเวนอยู่",
     monsterPool: ["อัศวินกระจก", "โครงกระดูกพเนจร", "ทหารเหล็กพัง"],
     boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 4.29 },
     baseHp: 138, baseAtk: 26, baseDef: 16, goldMult: 3.6, expMult: 3.0,
     dropTable: { common: 24, uncommon: 40, rare: 26, epic: 9, legendary: 1, void: 0 },
+  },
+  {
+    id: "d4cx1", name: "ลานฝึกซากปรักหักพัง", minLevel: 23, tier: "normal",
+    desc: "ลานฝึกของอาณาจักรเก่าที่วิญญาณนักรบยังคงฝึกซ้อมท่ารบเดิมซ้ำไปซ้ำมา",
+    monsterPool: ["อัศวินกระจก", "โครงกระดูกพเนจร", "ทหารเหล็กพัง"],
+    boss: { name: "ครูฝึกวิญญาณซากปรักหักพัง", hpMult: 3.7 },
+    baseHp: 152.3, baseAtk: 28.8, baseDef: 17.9, goldMult: 3.89, expMult: 3.29,
+    dropTable: { common: 22, uncommon: 39, rare: 27, epic: 10, legendary: 2, void: 0 },
+  },
+  {
+    id: "d4cx2", name: "ห้องบัลลังก์ร้าง", minLevel: 24, tier: "normal",
+    desc: "ห้องบัลลังก์ของอาณาจักรที่ล่มสลายไปนานแล้ว เหลือเพียงเงาผู้ปกครองคอยเฝ้า",
+    monsterPool: ["ทหารเหล็กพัง", "อัศวินกระจก", "โครงกระดูกพเนจร"],
+    boss: { name: "เงาผู้ปกครองซากปรักหักพัง", hpMult: 3.75 },
+    baseHp: 159.9, baseAtk: 30.4, baseDef: 18.9, goldMult: 4.04, expMult: 3.44,
+    dropTable: { common: 21, uncommon: 38, rare: 28, epic: 11, legendary: 2, void: 0 },
   },
   {
     id: "d4d", name: "ทุ่งหิมะนิรันดร์", minLevel: 25, tier: "normal",
@@ -3460,20 +3550,28 @@ const DUNGEONS = [
     dropTable: { common: 20, uncommon: 38, rare: 28, epic: 12, legendary: 2, void: 0 },
   },
   {
+    id: "d4dx1", name: "ธารน้ำแข็งนิรันดร์", minLevel: 27, tier: "normal",
+    desc: "ธารน้ำแข็งที่ไม่เคยละลายแม้แสงแดดจะแรงเพียงใด สิ่งมีชีวิตที่นี่ปรับตัวจนแข็งแกร่งผิดธรรมดา",
+    monsterPool: ["วิญญาณพลัดถิ่น", "หมาป่าซีด", "โกเลมคริสตัล"],
+    boss: { name: "เจ้าธารน้ำแข็งหลับใหล", hpMult: 3.85 },
+    baseHp: 183.7, baseAtk: 34.3, baseDef: 21.5, goldMult: 4.5, expMult: 3.83,
+    dropTable: { common: 19, uncommon: 38, rare: 27, epic: 13, legendary: 2, void: 1 },
+  },
+  {
+    id: "d4dx2", name: "ยอดเขาหิมะสุดท้าย", minLevel: 28, tier: "normal",
+    desc: "ยอดเขาสูงสุดของทุ่งหิมะนิรันดร์ จุดที่อากาศเบาบางจนแทบหายใจไม่ออก ก่อนจะเข้าสู่เขตอันตรายถัดไป",
+    monsterPool: ["โกเลมคริสตัล", "วิญญาณพลัดถิ่น", "หมาป่าซีด"],
+    boss: { name: "ผู้พิทักษ์ยอดเขาสุดท้าย", hpMult: 3.9 },
+    baseHp: 192.1, baseAtk: 35.5, baseDef: 22.3, goldMult: 4.66, expMult: 3.95,
+    dropTable: { common: 18, uncommon: 37, rare: 28, epic: 14, legendary: 3, void: 0 },
+  },
+  {
     id: "d5", name: "ทะเลทรายเลือดแห้ง", minLevel: 30, tier: "hard",
     desc: "ทรายสีแดงคล้ำที่จดจำสงครามครั้งใหญ่ในอดีต",
     monsterPool: ["นักรบทรายผุ", "อสรพิษเพลิง", "หัวขโมยทะเลทราย"],
     boss: { name: "จอมทัพทรายเดือด", hpMult: 4.29 },
     baseHp: 210, baseAtk: 38, baseDef: 24, goldMult: 5.0, expMult: 4.2,
     dropTable: { common: 18, uncommon: 36, rare: 28, epic: 15, legendary: 3, void: 0 },
-  },
-  {
-    id: "d5x1", name: "คุกใต้ดินทรายเลือด", minLevel: 31, tier: "hard",
-    desc: "คุกที่ฝังอยู่ใต้ทะเลทรายเลือดแห้ง นักโทษเก่าแก่ยังคงคลั่งคลุ้มอยู่ในความมืด",
-    monsterPool: ["นักโทษคลั่งทราย", "แมงป่องยักษ์พิษ", "ผู้คุมซากศพ"],
-    boss: { name: "ผู้บัญชาการคุกทรายเดือด", hpMult: 4.36 },
-    baseHp: 224, baseAtk: 40.5, baseDef: 25.6, goldMult: 5.26, expMult: 4.43,
-    dropTable: { common: 17, uncommon: 35, rare: 28, epic: 16, legendary: 4, void: 0 },
   },
   {
     id: "d5x2", name: "ออเอซิสมายา", minLevel: 33, tier: "hard",
@@ -3484,28 +3582,12 @@ const DUNGEONS = [
     dropTable: { common: 16, uncommon: 33, rare: 28, epic: 17, legendary: 5, void: 1 },
   },
   {
-    id: "d5x3", name: "ปิรามิดเงาทมิฬ", minLevel: 34, tier: "hard",
-    desc: "ปิรามิดโบราณที่ฝาผนังเต็มไปด้วยคำสาป ทุกย่างก้าวปลุกผู้พิทักษ์ให้ตื่นขึ้น",
-    monsterPool: ["มัมมี่ทรายผุ", "หัวขโมยทะเลทราย", "งูพิษทอง"],
-    boss: { name: "ฟาโรห์เถ้าถ่าน", hpMult: 4.44 },
-    baseHp: 254, baseAtk: 46.0, baseDef: 29.2, goldMult: 5.84, expMult: 4.92,
-    dropTable: { common: 15, uncommon: 32, rare: 28, epic: 18, legendary: 6, void: 1 },
-  },
-  {
     id: "d5b", name: "ป่าดึกดำบรรพ์วิปลาส", minLevel: 35, tier: "hard",
     desc: "ป่าที่ต้นไม้มีจิตใจ รากไม้คือกับดัก และเงาของต้นไม้คือสิ่งมีชีวิต",
     monsterPool: ["เงาผู้พิพากษา", "ภูตแสงหัก", "เทพปลอมแปลง"],
     boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 4.62 },
     baseHp: 290, baseAtk: 52, baseDef: 34, goldMult: 6.2, expMult: 5.2,
     dropTable: { common: 12, uncommon: 32, rare: 30, epic: 20, legendary: 6, void: 0 },
-  },
-  {
-    id: "d5bx1", name: "รากไม้สังหาร", minLevel: 37, tier: "hard",
-    desc: "ส่วนลึกของป่าดึกดำบรรพ์ที่รากไม้เลื้อยคลานหาเหยื่ออยู่ตลอดเวลา",
-    monsterPool: ["รากไม้กระหายเลือด", "เงาผู้พิพากษา", "แมงมุมเหมือง"],
-    boss: { name: "เจ้าป่ารากเหล็ก", hpMult: 4.58 },
-    baseHp: 289, baseAtk: 52.2, baseDef: 33.2, goldMult: 6.47, expMult: 5.46,
-    dropTable: { common: 14, uncommon: 29, rare: 28, epic: 20, legendary: 8, void: 1 },
   },
   {
     id: "d5bx2", name: "หนองบึงวิญญาณ", minLevel: 38, tier: "hard",
@@ -3516,28 +3598,12 @@ const DUNGEONS = [
     dropTable: { common: 13, uncommon: 27, rare: 28, epic: 21, legendary: 10, void: 1 },
   },
   {
-    id: "d6", name: "วิหารใต้นทีดำ", minLevel: 40, tier: "hard",
-    desc: "วิหารจมอยู่ใต้แม่น้ำที่ไม่มีแสงใดส่องถึง",
-    monsterPool: ["นักบวชจมน้ำ", "งูทะเลลึก", "เทพปลอมแปลง"],
-    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 4.62 },
-    baseHp: 380, baseAtk: 68, baseDef: 44, goldMult: 7.8, expMult: 6.5,
-    dropTable: { common: 8, uncommon: 28, rare: 32, epic: 24, legendary: 8, void: 0 },
-  },
-  {
     id: "d6x1", name: "ทางเดินใต้น้ำมืด", minLevel: 41, tier: "hard",
     desc: "อุโมงค์จมน้ำที่เชื่อมไปสู่วิหารใต้นที ความดันน้ำบีบขยี้ทุกสิ่งที่มีชีวิต",
     monsterPool: ["งูทะเลลึก", "นักบวชจมน้ำ", "ปลาผีดิบ"],
     boss: { name: "ผู้เฝ้าทางจมน้ำ", hpMult: 4.66 },
     baseHp: 349, baseAtk: 63.1, baseDef: 40.4, goldMult: 7.55, expMult: 6.39,
     dropTable: { common: 11, uncommon: 25, rare: 28, epic: 23, legendary: 12, void: 1 },
-  },
-  {
-    id: "d6x2", name: "ห้องบูชาจมน้ำ", minLevel: 43, tier: "hard",
-    desc: "ห้องพิธีกรรมโบราณที่จมอยู่ใต้นที เทพปลอมแปลงยังคงเฝ้ารอผู้บูชารายต่อไป",
-    monsterPool: ["เทพปลอมแปลง", "นักบวชจมน้ำ", "งูทะเลลึก"],
-    boss: { name: "นักบวชใหญ่ผู้จมน้ำ", hpMult: 4.7 },
-    baseHp: 372, baseAtk: 67.2, baseDef: 43.1, goldMult: 7.95, expMult: 6.74,
-    dropTable: { common: 10, uncommon: 24, rare: 28, epic: 24, legendary: 13, void: 1 },
   },
   {
     id: "d6x3", name: "คลังเครื่องจักรลึก", minLevel: 44, tier: "hard",
@@ -3548,28 +3614,12 @@ const DUNGEONS = [
     dropTable: { common: 10, uncommon: 21, rare: 28, epic: 25, legendary: 14, void: 2 },
   },
   {
-    id: "d6b", name: "หอหมอกจักรกล", minLevel: 46, tier: "hard",
-    desc: "หอคอยที่สร้างขึ้นด้วยเวทมนตร์และเครื่องจักร สิ่งประดิษฐ์ทุกชิ้นมีจิตใจ",
-    monsterPool: ["ปืนใหญ่วิญญาณ", "โกเลมคริสตัล", "หุ่นพิทักษ์บัลลังก์"],
-    boss: { name: "จักรกลเทพสังหาร", hpMult: 4.95 },
-    baseHp: 480, baseAtk: 86, baseDef: 56, goldMult: 9.5, expMult: 8.0,
-    dropTable: { common: 4, uncommon: 20, rare: 32, epic: 30, legendary: 14, void: 0 },
-  },
-  {
     id: "d6bx1", name: "ลานประลองจักรกล", minLevel: 48, tier: "hard",
     desc: "ลานประลองที่หุ่นยนต์เวทมนตร์ถูกสร้างมาเพื่อทดสอบและกำจัดผู้บุกรุกทุกคน",
     monsterPool: ["หุ่นพิทักษ์บัลลังก์", "ปืนใหญ่วิญญาณ", "โกเลมคริสตัล"],
     boss: { name: "แชมป์เปี้ยนจักรกลเหล็กกล้า", hpMult: 4.88 },
     baseHp: 451, baseAtk: 81.3, baseDef: 52.3, goldMult: 9.27, expMult: 7.89,
     dropTable: { common: 8, uncommon: 20, rare: 27, epic: 27, legendary: 16, void: 2 },
-  },
-  {
-    id: "d6bx2", name: "ห้องควบคุมจักรกลเทพ", minLevel: 49, tier: "hard",
-    desc: "ศูนย์บังคับการของเครื่องจักรเทพสังหาร ที่ยังคงประมวลผลคำสั่งทำลายล้างอยู่เสมอ",
-    monsterPool: ["จักรกลเทพสังหารรอง", "หุ่นพิทักษ์บัลลังก์", "ปืนใหญ่วิญญาณ"],
-    boss: { name: "ปัญญาประดิษฐ์ผู้ตื่นรู้", hpMult: 4.92 },
-    baseHp: 480, baseAtk: 86.6, baseDef: 55.8, goldMult: 9.76, expMult: 8.31,
-    dropTable: { common: 7, uncommon: 19, rare: 27, epic: 28, legendary: 17, void: 2 },
   },
   {
     id: "d6cx1", name: "กำแพงเหล็กชั้นนอก", minLevel: 51, tier: "hard",
@@ -3580,14 +3630,6 @@ const DUNGEONS = [
     dropTable: { common: 6, uncommon: 18, rare: 27, epic: 29, legendary: 18, void: 2 },
   },
   {
-    id: "d6c", name: "ป้อมปราการเหล็กกล้า", minLevel: 52, tier: "hard",
-    desc: "ป้อมที่ครั้งหนึ่งปกป้องอาณาจักร บัดนี้กลับหันมาทำลายผู้บุกรุก",
-    monsterPool: ["ทหารเหล็กพัง", "ปืนใหญ่วิญญาณ", "แม่ทัพไร้หัว"],
-    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 4.95 },
-    baseHp: 590, baseAtk: 108, baseDef: 70, goldMult: 11.5, expMult: 9.8,
-    dropTable: { common: 2, uncommon: 14, rare: 30, epic: 34, legendary: 20, void: 0 },
-  },
-  {
     id: "d6cx2", name: "คลังอาวุธต้องสาป", minLevel: 53, tier: "hard",
     desc: "คลังอาวุธของป้อมปราการที่ถูกคำสาปปลุกให้อาวุธทุกชิ้นมีชีวิตและกระหายเลือด",
     monsterPool: ["อาวุธสาปแช่ง", "แม่ทัพไร้หัว", "ทหารเหล็กพัง"],
@@ -3596,28 +3638,12 @@ const DUNGEONS = [
     dropTable: { common: 4, uncommon: 15, rare: 27, epic: 31, legendary: 21, void: 2 },
   },
   {
-    id: "d6cx3", name: "ห้องบัลลังก์จอมพล", minLevel: 55, tier: "hard",
-    desc: "ห้องบัลลังก์เดิมของจอมพลผู้พิทักษ์ป้อม บัดนี้เหลือเพียงเงาแห่งความแค้นปกครองอยู่",
-    monsterPool: ["แม่ทัพไร้หัว", "ทหารเหล็กพัง", "อาวุธสาปแช่ง"],
-    boss: { name: "จอมพลเงาแห่งป้อมล่ม", hpMult: 5.12 },
-    baseHp: 620, baseAtk: 111.6, baseDef: 72.4, goldMult: 12.00, expMult: 10.25,
-    dropTable: { common: 4, uncommon: 12, rare: 27, epic: 32, legendary: 22, void: 3 },
-  },
-  {
     id: "d6cx4", name: "ประตูสุดท้ายก่อนห้วงดิ่ง", minLevel: 57, tier: "hard",
     desc: "ประตูสุดท้ายของโลกที่ยังมีแสง ก่อนทุกสิ่งจะดิ่งลงสู่ความมืดมิดไม่มีที่สิ้นสุด",
     monsterPool: ["ผู้เฝ้าประตูสุดท้าย", "เศษเสี้ยวความมืด", "แม่ทัพไร้หัว"],
     boss: { name: "ผู้พิทักษ์ประตูแห่งความสิ้นหวัง", hpMult: 5.2 },
     baseHp: 660, baseAtk: 118.9, baseDef: 77.3, goldMult: 12.63, expMult: 10.80,
     dropTable: { common: 3, uncommon: 11, rare: 27, epic: 33, legendary: 23, void: 3 },
-  },
-  {
-    id: "d6cx5", name: "เงื้อมผาก่อนความมืด", minLevel: 59, tier: "hard",
-    desc: "เงื้อมผาสุดท้ายที่มองเห็นห้วงดิ่งสุดท้ายอยู่เบื้องล่าง นักรบที่มาถึงนี่ไม่มีทางถอยกลับ",
-    monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "ผู้เฝ้าประตูสุดท้าย"],
-    boss: { name: "ผู้พิทักษ์เงื้อมผาก่อนห้วงดิ่ง", hpMult: 5.3 },
-    baseHp: 704, baseAtk: 126.7, baseDef: 82.5, goldMult: 13.30, expMult: 11.39,
-    dropTable: { common: 2, uncommon: 10, rare: 27, epic: 34, legendary: 24, void: 3 },
   },
   {
     id: "d7", name: "ห้วงดิ่งสุดท้าย", minLevel: 60, tier: "extreme",
@@ -5657,7 +5683,46 @@ let endlessRunGold = 0;
 
 const BATTLE_TICK_MS = 850; // pace of auto-battle exchanges shown to the player
 
+// ============================================
+// VOIDFALL - Zoom Lock
+// During fast tapping (battle, dungeon select, etc.) iOS Safari can still
+// trigger double-tap-to-zoom and pinch-zoom even with user-scalable=no.
+// This blocks both gestures at the JS level so the layout never zooms.
+// ============================================
+function preventViewportZoom() {
+  // Block pinch-zoom (two-finger gesture) and the Safari-only gesture events.
+  document.addEventListener("gesturestart", (e) => e.preventDefault());
+  document.addEventListener("gesturechange", (e) => e.preventDefault());
+  document.addEventListener("gestureend", (e) => e.preventDefault());
+
+  document.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 1) e.preventDefault(); // multi-touch pinch
+  }, { passive: false });
+
+  // Block double-tap-to-zoom: only swallow the second tap if it lands close in
+  // both time AND position to the previous one (the actual zoom trigger).
+  // Rapid taps on different buttons (e.g. mashing battle/skip buttons) are untouched.
+  let lastTouchEnd = 0;
+  let lastTouchX = 0;
+  let lastTouchY = 0;
+  document.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    const touch = e.changedTouches && e.changedTouches[0];
+    const x = touch ? touch.clientX : 0;
+    const y = touch ? touch.clientY : 0;
+    const dist = Math.hypot(x - lastTouchX, y - lastTouchY);
+    if (now - lastTouchEnd <= 350 && dist < 30) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+    lastTouchX = x;
+    lastTouchY = y;
+  }, { passive: false });
+}
+
 function init() {
+  preventViewportZoom();
+
   // ensure currentHp is valid
   const stats = getTotalStats(player);
   if (player.currentHp == null || player.currentHp <= 0) player.currentHp = stats.hp;
