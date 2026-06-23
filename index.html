@@ -2216,6 +2216,10 @@ button {
         <div class="prestige-row"><span>คะแนนสะสม</span><span id="prestigePoints">0</span></div>
         <div class="prestige-row"><span>โบนัสสเตตัส/รางวัลถาวร</span><span id="prestigeBonusPct">+0%</span></div>
         <div class="prestige-row"><span>ฟื้นคืนชีพแล้ว</span><span id="prestigeCount">0</span></div>
+        <div class="prestige-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px;">
+          <span style="color:var(--gem);font-weight:600;">💎 แปลงทอง→เพชร</span>
+        </div>
+        <p class="hint-text" id="rebirthGemPreview" style="color:var(--gem);margin-bottom:8px;font-size:12px;"></p>
         <p class="hint-text" id="prestigeHint"></p>
         <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
       </div>
@@ -3011,6 +3015,8 @@ function expForLevel(level) {
 // ============================================
 const REBIRTH_MIN_LEVEL = 20;        // minimum level required to rebirth
 const REBIRTH_BONUS_PER_POINT = 0.02; // +2% to atk/def/hp/gold/exp per prestige point
+const REBIRTH_GOLD_PER_GEM = 10000;  // gold cost per 1 gem converted on rebirth
+const REBIRTH_GEM_CAP = 10000;       // max gems earnable per rebirth (anti-inflation cap)
 
 function prestigeBonusMultiplier(player) {
   const points = (player.prestige && player.prestige.points) || 0;
@@ -3024,7 +3030,10 @@ function getRebirthInfo(player) {
   // with next time, capped at half the dungeon list so progression still matters.
   const shortcutCap = Math.floor((DUNGEONS.length - 1) / 2);
   const nextShortcutIndex = Math.min((player.prestige.rebirths || 0) + 1, shortcutCap);
-  return { eligible, pointsGain, nextShortcutIndex };
+  // Gold → gem conversion preview (capped to prevent inflation)
+  const rawGems = Math.floor((player.gold || 0) / REBIRTH_GOLD_PER_GEM);
+  const gemsFromGold = Math.min(rawGems, REBIRTH_GEM_CAP);
+  return { eligible, pointsGain, nextShortcutIndex, gemsFromGold };
 }
 
 function doRebirth(player) {
@@ -3033,6 +3042,11 @@ function doRebirth(player) {
 
   player.prestige.points += info.pointsGain;
   player.prestige.rebirths += 1;
+
+  // Convert gold → gems before wiping gold (capped)
+  if (info.gemsFromGold > 0) {
+    player.gems = (player.gems || 0) + info.gemsFromGold;
+  }
 
   player.level = 1;
   player.exp = 0;
@@ -4008,11 +4022,18 @@ function renderPrestigeBox(player) {
 
   const hint = document.getElementById("prestigeHint");
   const btn = document.getElementById("rebirthBtn");
+  const gemPreviewEl = document.getElementById("rebirthGemPreview");
+
   if (info.eligible) {
-    hint.textContent = `รีเซ็ตเลเวลกลับเป็น 1 เพื่อรับคะแนนสะสม +${info.pointsGain} (เพิ่มโบนัสถาวร) และเริ่มใหม่พร้อมดันเจี้ยนที่ปลดล็อกไว้แล้ว ${info.nextShortcutIndex + 1} แห่งทันที — ไอเทมและอุปกรณ์จะไม่หายไป`;
+    const gemText = info.gemsFromGold > 0
+      ? `ทอง ${fmtNum(player.gold)} จะแปลงเป็น ${info.gemsFromGold} เพชร (สูงสุด ${REBIRTH_GEM_CAP} เพชร/ครั้ง)`
+      : `ไม่มีทองเพียงพอสำหรับแปลงเพชร (ต้องการ ${REBIRTH_GOLD_PER_GEM}+ ทอง)`;
+    hint.textContent = `รีเซ็ตเลเวลกลับเป็น 1 เพื่อรับคะแนนสะสม +${info.pointsGain} และเริ่มใหม่พร้อมดันเจี้ยนที่ปลดล็อกไว้แล้ว ${info.nextShortcutIndex + 1} แห่ง — ไอเทมและอุปกรณ์จะไม่หายไป`;
+    if (gemPreviewEl) gemPreviewEl.textContent = gemText;
     btn.disabled = false;
   } else {
     hint.textContent = `ต้องถึงเลเวล ${REBIRTH_MIN_LEVEL} ก่อนจึงจะฟื้นคืนชีพได้ (ปัจจุบันเลเวล ${player.level})`;
+    if (gemPreviewEl) gemPreviewEl.textContent = `สะสมทองไว้ก่อน Rebirth เพื่อแปลงเป็นเพชร (ทุก ${REBIRTH_GOLD_PER_GEM} ทอง = 1 เพชร, สูงสุด ${REBIRTH_GEM_CAP} เพชร)`;
     btn.disabled = true;
   }
 }
@@ -5837,13 +5858,15 @@ function bindGlobalEvents() {
     const btn = document.getElementById("rebirthBtn");
     if (btn.dataset.confirming === "1") {
       const gain = info.pointsGain;
+      const gems = info.gemsFromGold;
       doRebirth(player);
       btn.dataset.confirming = "0";
       btn.textContent = "ฟื้นคืนชีพ (รีเซ็ตเลเวล)";
       savePlayer(player, { immediate: true });
       renderAll();
       showDungeonSelectView();
-      showToast(`ฟื้นคืนชีพสำเร็จ! ได้รับคะแนนสะสม +${gain}`);
+      const gemMsg = gems > 0 ? ` + ${gems} เพชร จากทอง` : "";
+      showToast(`ฟื้นคืนชีพสำเร็จ! ได้รับคะแนนสะสม +${gain}${gemMsg}`);
     } else {
       btn.dataset.confirming = "1";
       btn.textContent = "กดอีกครั้งเพื่อยืนยันการฟื้นคืนชีพ";
