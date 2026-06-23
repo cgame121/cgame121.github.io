@@ -415,6 +415,64 @@ button {
 .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
 .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
 
+.char-name-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.char-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-void);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.char-name-input:focus { border-color: var(--accent); }
+.char-name-input::placeholder { color: var(--text-faint); font-family: var(--font-body); font-weight: 400; }
+.char-name-input:disabled { opacity: 0.5; cursor: not-allowed; }
+.char-name-hint {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: -8px;
+  margin-bottom: 14px;
+}
+.char-name-hint-locked { color: var(--gold); }
+.btn-dice {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: border-color 0.2s, transform 0.15s;
+}
+.btn-dice:hover { border-color: var(--accent); transform: rotate(-8deg); }
+.btn-dice:active { transform: scale(0.92) rotate(-8deg); }
+.btn-dice:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-name-save {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.4);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--accent);
+  transition: filter 0.2s;
+}
+.btn-name-save:hover { filter: brightness(1.25); }
+.btn-name-save:disabled { opacity: 0.4; }
+
 .cp-banner {
   display: flex;
   align-items: center;
@@ -555,6 +613,93 @@ button {
    Stage / Battle Panel
    ============================================ */
 .stage-panel { min-height: 640px; position: relative; }
+
+/* ============================================
+   Leaderboard Settings Section
+   ============================================ */
+.lb-submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.lb-submit-btn:hover { opacity: 0.85; }
+.lb-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.lb-status {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-height: 18px;
+  margin-bottom: 10px;
+}
+.lb-status.ok  { color: var(--success); }
+.lb-status.err { color: var(--danger); }
+.lb-preview-card {
+  background: var(--bg-void);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.lb-preview-rank {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-faint);
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lb-preview-info { flex: 1; min-width: 0; }
+.lb-preview-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-preview-stats {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.lb-preview-cp {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lb-link-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+.lb-open-btn {
+  flex: 1;
+  background: rgba(124,92,252,0.12);
+  border: 1px solid rgba(124,92,252,0.35);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.18s;
+}
+.lb-open-btn:hover { background: rgba(124,92,252,0.22); }
 
 /* ============================================
    Daily Dungeon Card
@@ -2403,6 +2548,10 @@ button {
         <svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.4L19 9l-4.3 3.9 1.3 5.8L12 15.6l-3.9 3.1 1.3-5.8L5 9l5.2-1.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         <span>ตีบวก</span>
       </button>
+      <button class="tab-btn" data-tab="leaderboard" role="tab" aria-selected="false" aria-label="Leaderboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="2" y="14" width="4" height="8" rx="1"/><rect x="10" y="9" width="4" height="13" rx="1"/><rect x="18" y="4" width="4" height="18" rx="1"/></svg>
+        <span>อันดับ</span>
+      </button>
       <button class="tab-btn tab-btn-settings" data-tab="settings" id="settingsBtn" role="tab" aria-selected="false" aria-label="ตั้งค่า" title="ตั้งค่า">
         <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
         <span>ตั้งค่า</span>
@@ -2421,6 +2570,13 @@ button {
         <div class="char-aura" id="charAura"></div>
         <img class="char-figure" id="charFigure" src="" alt="Rayn the swordsman" draggable="false">
       </div>
+
+      <div class="char-name-row">
+        <input class="char-name-input" id="charNameInput" maxlength="28" placeholder="ตั้งชื่อตัวละครของคุณ..." autocomplete="off" spellcheck="false">
+        <button class="btn-dice" id="charNameRandomBtn" title="สุ่มชื่อแฟนตาซีมืด" aria-label="สุ่มชื่อ">🎲</button>
+        <button class="btn-name-save" id="charNameSaveBtn" title="บันทึกชื่อ" aria-label="บันทึกชื่อ" disabled>✓</button>
+      </div>
+      <div class="char-name-hint" id="charNameHint"></div>
 
       <div class="cp-banner">
         <span class="cp-banner-label">พลังรวม (CP)</span>
@@ -2619,6 +2775,47 @@ button {
       <div class="enchant-slot-pick" id="enchantSlotFilter"></div>
       <div class="enchant-item-list" id="enchantItemList"></div>
       <div class="enchant-detail-panel" id="enchantDetailPanel" style="display:none;margin-top:14px;"></div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="panel tab-panel" data-tab-panel="leaderboard" style="padding-bottom:32px;">
+      <h2 class="panel-title">🏆 Leaderboard</h2>
+
+      <!-- How it works -->
+      <div style="background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text-muted);line-height:1.6;">
+        <strong style="color:var(--accent);">วิธีใช้งาน</strong><br>
+        1️⃣ ตั้งชื่อตัวละครในแท็บ <strong>ตัวละคร</strong> แล้วกด <strong>ส่งขึ้น Leaderboard</strong> ที่นี่ เพื่อบันทึกสถิติของคุณขึ้นออนไลน์<br>
+        2️⃣ เพื่อนที่เปิดลิงก์เกมเดียวกัน (ผ่าน GitHub Pages) จะเห็นชื่อคุณในตารางทันที — ไม่ต้องส่งไฟล์ให้กันแล้ว<br>
+        3️⃣ ตารางจะรีเฟรชอัตโนมัติทุก 30 วินาที เพื่ออัปเดตสถิติของทุกคน ✅
+      </div>
+
+      <!-- Register row -->
+      <div style="background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:14px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">ส่งสถิติของคุณ: CP · เลเวล · Boss Rush · Daily Streak</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="flex:1;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--text-primary);" id="lbCurrentCharName">—</div>
+          <button class="lb-submit-btn" id="lbSubmitBtn">ส่งขึ้น Leaderboard</button>
+        </div>
+        <div class="lb-status" id="lbStatus" style="margin-top:8px;margin-bottom:0;"></div>
+      </div>
+
+      <!-- Sort tabs -->
+      <div id="lbSortTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
+
+      <!-- Search -->
+      <input id="lbSearchInput" placeholder="🔍 ค้นหาชื่อ..." autocomplete="off"
+        style="width:100%;background:var(--bg-void);border:1px solid var(--line-strong);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:13px;padding:9px 12px;margin-bottom:12px;outline:none;">
+
+      <!-- Status bar -->
+      <div id="lbStatusBar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span id="lbCount" style="font-size:12px;color:var(--text-faint);">—</span>
+        <button id="lbRefreshBtn" style="background:transparent;border:1px solid var(--line-strong);color:var(--text-muted);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;">🔄 รีเฟรช</button>
+      </div>
+
+      <!-- Entry list -->
+      <div id="lbList"></div>
+
+      <p style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:16px;">ข้อมูลเก็บออนไลน์ผ่าน Firebase · รีเฟรชอัตโนมัติทุก 30 วินาที</p>
     </section>
 
     <!-- Settings -->
@@ -3553,6 +3750,15 @@ const SHOP_DEFS = [
     actionLabel: "ซื้อ",
     cost: (player) => nextInvExpandCost(player),
   },
+  {
+    id: "name_scroll",
+    type: "name_scroll",
+    name: "ใบเปลี่ยนชื่อ",
+    desc: (player) => `ใช้เปลี่ยนชื่อตัวละครได้อีก 1 ครั้ง (ปัจจุบันเหลือ ${player.nameChangesAvailable || 0} ครั้ง)`,
+    icon: "scroll",
+    actionLabel: "ซื้อ",
+    cost: 40,
+  },
 ];
 
 function shopItemCost(def, player) {
@@ -3572,8 +3778,60 @@ const SAVE_KEY = "voidfall_save_v1";
 const SAVE_BACKUP_KEY = "voidfall_save_v1_corrupt_backup";
 const SAVE_VERSION = 1;
 
+// ============================================
+// VOIDFALL - Character Name Generator
+// Dark-fantasy names built from syllable pools, with an optional
+// epithet ("the Hollow", "of the Void") tacked on for flavor. Pools
+// are split so combinations stay pronounceable instead of just
+// concatenating random consonants.
+// ============================================
+// Generous enough that base name + " " + the longest epithet (16 chars)
+// always fits without truncation; also used as the input's maxlength
+// and as the cap when saving/migrating a player-typed name.
+const CHAR_NAME_MAX_LEN = 28;
+const NAME_SYLLABLES_FIRST = [
+  "Kael", "Var", "Mor", "Thal", "Drev", "Syn", "Ash", "Vor", "Rae",
+  "Lys", "Grim", "Nyx", "Cor", "Sera", "Vael", "Dusk", "Riv", "Os",
+  "Eth", "Mal", "Quor", "Ysa", "Bren", "Sol", "Vesh", "Cain", "Adri",
+];
+const NAME_SYLLABLES_LAST = [
+  "wyn", "dris", "thorne", "mir", "ux", "ara", "rin", "vane", "oth",
+  "ais", "und", "yra", "ek", "ial", "or", "essa", "ynn", "ade",
+  "ius", "ka", "ven", "ros", "lith", "an", "yth",
+];
+const NAME_EPITHETS = [
+  "the Hollow", "the Forsaken", "of the Void", "the Ashen", "the Unbound",
+  "Nightfallen", "the Pale", "of Voidfall", "the Cursed Blade",
+  "the Last Ember", "the Grim", "Shadowbound", "the Wanderer",
+  "of the Deep Dark", "the Oathbreaker", "the Silent",
+];
+// Roughly one in three generated names gets an epithet, so most rolls
+// stay short and clean while still surfacing the flavorful ones often
+// enough to feel like a real option.
+const NAME_EPITHET_CHANCE = 0.35;
+
+function generateDarkFantasyName() {
+  const first = NAME_SYLLABLES_FIRST[Math.floor(Math.random() * NAME_SYLLABLES_FIRST.length)];
+  const last = NAME_SYLLABLES_LAST[Math.floor(Math.random() * NAME_SYLLABLES_LAST.length)];
+  const base = first + last;
+  if (Math.random() < NAME_EPITHET_CHANCE) {
+    // Only attach an epithet if the full result still fits the name
+    // length limit — slicing it after the fact would cut a word in half
+    // ("...the Last Em"), so we just skip the epithet for that roll
+    // instead and fall back to the base name on its own.
+    const candidates = NAME_EPITHETS.filter(e => (base + " " + e).length <= CHAR_NAME_MAX_LEN);
+    if (candidates.length) {
+      const epithet = candidates[Math.floor(Math.random() * candidates.length)];
+      return base + " " + epithet;
+    }
+  }
+  return base;
+}
+
 function createNewPlayer() {
   return {
+    name: generateDarkFantasyName(),
+    nameChangesAvailable: 1, // free renames left; buy "ใบเปลี่ยนชื่อ" in the Shop for more
     level: 1,
     exp: 0,
     gold: 0,
@@ -3804,6 +4062,17 @@ function repairItemShape(item) {
 }
 
 function repairPlayerShape(parsed) {
+  if (typeof parsed.name !== "string" || !parsed.name.trim()) {
+    parsed.name = generateDarkFantasyName();
+  } else {
+    parsed.name = parsed.name.trim().slice(0, CHAR_NAME_MAX_LEN);
+  }
+  // Saves from before the one-time naming limit existed get 0 free changes
+  // left (they've already had unlimited renaming); going forward they buy
+  // scrolls in the Shop like everyone else.
+  if (typeof parsed.nameChangesAvailable !== "number" || parsed.nameChangesAvailable < 0) {
+    parsed.nameChangesAvailable = 0;
+  }
   if (!parsed.equipment || typeof parsed.equipment !== "object") parsed.equipment = {};
   for (const slot of SLOTS) {
     if (parsed.equipment[slot] === undefined) parsed.equipment[slot] = null;
@@ -3867,6 +4136,7 @@ function repairPlayerShape(parsed) {
   if (!parsed.endless || typeof parsed.endless !== "object") parsed.endless = {};
   if (typeof parsed.endless.bestWave !== "number" || parsed.endless.bestWave < 0) parsed.endless.bestWave = 0;
   if (!Array.isArray(parsed.endless.leaderboard)) parsed.endless.leaderboard = [];
+  if (typeof parsed.lbName !== "string") parsed.lbName = "";
   if (!parsed.dailyDungeon || typeof parsed.dailyDungeon !== "object") {
     parsed.dailyDungeon = { lastDate: "", streak: 0, completedToday: false, roomsCleared: 0 };
   } else {
@@ -4139,6 +4409,7 @@ const ICONS = {
   gloves: `<svg viewBox="0 0 24 24"><path d="M7 21V11a2 2 0 114 0v3M11 14v-5a2 2 0 114 0v5M15 14v-3a2 2 0 114 0v6c0 3-2 5-5 5H9a4 4 0 01-4-4v-3l2-2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   boots: `<svg viewBox="0 0 24 24"><path d="M8 3v9l-5 4v3h17c0-4-3-5-6-6V3H8z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg>`,
   gem: `<svg viewBox="0 0 24 24"><path d="M6 9l6-6 6 6-6 12-6-12z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M6 9h12M9 9l3 12M15 9l-3 12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
+  scroll: `<svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v1H8a3 3 0 00-3 3v9a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M8 11h11v6a3 3 0 01-3 3H8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M9 14h7M9 17h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
 };
 
 function iconHtml(icon, color) {
@@ -4537,11 +4808,16 @@ function buyShopItem(id) {
     player.gems -= cost;
     player.inventoryCapacityBonus = (player.inventoryCapacityBonus || 0) + INV_EXPAND_STEP;
     showToast(`ขยายคลังไอเทม +${INV_EXPAND_STEP} ช่อง (รวม ${inventoryCapacity(player)} ช่อง)`);
+  } else if (def.type === "name_scroll") {
+    player.gems -= cost;
+    player.nameChangesAvailable = (player.nameChangesAvailable || 0) + 1;
+    showToast("ได้รับใบเปลี่ยนชื่อ 1 ใบ — ไปเปลี่ยนชื่อได้ที่แท็บตัวละคร");
   }
 
   renderHud(player);
   renderShop(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
+  renderCharName(player);
   savePlayer(player);
 }
 
@@ -4918,6 +5194,7 @@ function init() {
 
   renderAll();
   bindGlobalEvents();
+  lbInitUI(player);
   initTabNav();
   showDungeonSelectView();
 
@@ -4949,6 +5226,7 @@ function init() {
 
 function renderAll() {
   renderHud(player);
+  renderCharName(player);
   renderStats(player);
   renderEquipSlots(player, onEquipSlotClick);
   renderPrestigeBox(player);
@@ -4960,6 +5238,33 @@ function renderAll() {
   renderKeepScreenOnToggle(player);
   renderAutoSellUI();
   renderEnchantWorkshop();
+}
+
+// Reflects the saved player name into the character-name input.
+// Skipped while the box is mid-edit (focused) so a background re-render
+// (e.g. from the autosave loop) can't yank the cursor or stomp on text
+// the player hasn't saved yet.
+function renderCharName(player) {
+  const input = document.getElementById("charNameInput");
+  const saveBtn = document.getElementById("charNameSaveBtn");
+  const randomBtn = document.getElementById("charNameRandomBtn");
+  const hint = document.getElementById("charNameHint");
+  renderLbCurrentCharName(player);
+  if (!input) return;
+  const changesLeft = player.nameChangesAvailable || 0;
+  const locked = changesLeft <= 0;
+  if (document.activeElement !== input) {
+    input.value = player.name || "";
+  }
+  input.disabled = locked;
+  if (randomBtn) randomBtn.disabled = locked;
+  if (saveBtn) saveBtn.disabled = true;
+  if (hint) {
+    hint.textContent = locked
+      ? "ใช้สิทธิ์เปลี่ยนชื่อหมดแล้ว — ซื้อ \"ใบเปลี่ยนชื่อ\" ได้ที่ร้านค้า"
+      : `เปลี่ยนชื่อได้อีก ${changesLeft} ครั้ง`;
+    hint.classList.toggle("char-name-hint-locked", locked);
+  }
 }
 
 function renderAutoToggle(player) {
@@ -6125,6 +6430,319 @@ function renderAutoSellUI() {
 }
 
 // ============================================
+// VOIDFALL — Leaderboard System v3 (ออนไลน์จริงผ่าน Firebase Realtime Database)
+// ผู้เล่นทุกคนที่เปิดลิงก์ GitHub Pages เดียวกันจะเห็น leaderboard เดียวกัน
+// โดยไม่ต้องส่งไฟล์เกมให้กันเอง — ไม่ต้องใช้ Anthropic API ในการเก็บข้อมูลอีกต่อไป
+//
+// วิธีตั้งค่า (ทำครั้งเดียวก่อนอัพขึ้น GitHub Pages):
+// 1. ไปที่ https://console.firebase.google.com → "Add project" สร้างโครงการใหม่ (ฟรี)
+// 2. เมนูซ้าย Build > Realtime Database > "Create Database"
+//    - เลือก location ที่ใกล้ผู้เล่น (เช่น asia-southeast1)
+//    - เลือก "Start in test mode" (เปิดให้อ่าน/เขียนได้เลย เหมาะกับ leaderboard เล็กๆ)
+// 3. คัดลอก "Database URL" ที่ได้ เช่น
+//    https://voidfall-xxxxx-default-rtdb.asia-southeast1.firebasedatabase.app
+// 4. นำมาแทนค่าว่างของ FIREBASE_DB_URL ด้านล่างนี้ แล้ว commit/push ขึ้น GitHub Pages
+//    (ใส่ค่านี้ "ก่อน" อัพขึ้น GitHub ครั้งล่าสุด — ทุกคนที่เปิดลิงก์จะใช้ฐานข้อมูลเดียวกัน)
+//
+// ข้อควรรู้: โหมด "test mode" ของ Firebase เปิดให้ใครก็เขียนข้อมูลได้ (ไม่ต้อง login)
+// เหมาะกับ leaderboard เกมเล็กๆ ระหว่างเพื่อน แต่ไม่เหมาะกับข้อมูลสำคัญ/ละเอียดอ่อน
+// ============================================
+
+const FIREBASE_DB_URL = "https://github-1c9e8-default-rtdb.asia-southeast1.firebasedatabase.app"; // <-- ตั้งค่าแล้ว
+
+const LB_PREFIX = "lb:player:";
+const LB_COOLDOWN_MS = 60_000;
+const LB_STORAGE_KEY = "voidfall_leaderboard";
+
+let lbLastSubmitTs = 0;
+let lbCurrentName = null;
+
+function lbConfigured() { return !!FIREBASE_DB_URL; }
+
+// Firebase keys can't contain . $ # [ ] /
+function lbSafeKey(name) {
+  return encodeURIComponent(String(name).replace(/[.$#\[\]\/]/g, "_"));
+}
+
+// --- Build entry object from current player ---
+function lbBuildEntry(player, name) {
+  const cp = getCombatPower(player);
+  const dd = player.dailyDungeon || {};
+  const deepestName = player.stats && player.stats.deepestDungeon != null
+    ? (DUNGEONS[Math.min(player.stats.deepestDungeon, DUNGEONS.length - 1)] || {}).name || "—"
+    : "—";
+  return { name, cp, level: player.level,
+    rebirths: (player.prestige && player.prestige.rebirths) || 0,
+    bestWave: (player.endless && player.endless.bestWave) || 0,
+    deepestDungeon: deepestName, dailyStreak: dd.streak || 0, ts: Date.now() };
+}
+
+// --- localStorage helpers ---
+function lbLocalLoad() {
+  try { return JSON.parse(localStorage.getItem(LB_STORAGE_KEY) || "{}"); } catch { return {}; }
+}
+function lbLocalSave(db) {
+  try { localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(db)); } catch {}
+}
+function lbLocalGetAll() {
+  const db = lbLocalLoad();
+  return Object.values(db);
+}
+function lbLocalUpsert(entry) {
+  const db = lbLocalLoad();
+  db[entry.name] = entry;
+  lbLocalSave(db);
+}
+
+// --- Firebase Realtime Database REST API: submit & fetch (real shared storage) ---
+async function lbApiSubmit(entry) {
+  if (!lbConfigured()) {
+    throw new Error("ยังไม่เชื่อมต่อออนไลน์ (ผู้พัฒนาเกมยังไม่ตั้งค่า FIREBASE_DB_URL)");
+  }
+  const key = lbSafeKey(entry.name);
+  const res = await fetch(`${FIREBASE_DB_URL}/leaderboard/${key}.json`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry)
+  });
+  if (!res.ok) throw new Error("ส่งข้อมูลขึ้นออนไลน์ไม่สำเร็จ ลองใหม่อีกครั้ง");
+  return entry;
+}
+
+async function lbApiFetch() {
+  if (!lbConfigured()) return [];
+  const res = await fetch(`${FIREBASE_DB_URL}/leaderboard.json`);
+  if (!res.ok) throw new Error("โหลดข้อมูลออนไลน์ไม่สำเร็จ");
+  const data = await res.json();
+  if (!data || typeof data !== "object") return [];
+  return Object.values(data).filter(Boolean);
+}
+
+// --- Submit flow ---
+async function lbSubmit(player, name) {
+  const statusEl = document.getElementById("lbStatus");
+  const btn = document.getElementById("lbSubmitBtn");
+
+  const now = Date.now();
+  if (now - lbLastSubmitTs < LB_COOLDOWN_MS) {
+    const wait = Math.ceil((LB_COOLDOWN_MS - (now - lbLastSubmitTs)) / 1000);
+    statusEl.textContent = `⏳ รอ ${wait} วินาทีก่อนส่งใหม่`;
+    statusEl.className = "lb-status err"; return;
+  }
+  if (!name || name.trim().length < 2) {
+    statusEl.textContent = "กรุณาตั้งชื่อตัวละครในแท็บ \"ตัวละคร\" ก่อน (อย่างน้อย 2 ตัวอักษร)";
+    statusEl.className = "lb-status err"; return;
+  }
+  const cleanName = name.trim().slice(0, CHAR_NAME_MAX_LEN);
+  const entry = lbBuildEntry(player, cleanName);
+
+  btn.disabled = true;
+  statusEl.textContent = "⏳ กำลังบันทึก...";
+  statusEl.className = "lb-status";
+
+  try {
+    // เก็บสำรองไว้ในเครื่องเสมอ (ใช้งานได้แม้ออฟไลน์)
+    lbLocalUpsert(entry);
+    // ส่งขึ้นออนไลน์ ให้ทุกคนที่เปิดลิงก์เกมเห็นข้อมูลเดียวกัน
+    await lbApiSubmit(entry);
+    lbLastSubmitTs = Date.now();
+    lbCurrentName = cleanName;
+    player.lbName = cleanName;
+    savePlayer(player);
+    statusEl.textContent = `✅ ส่งขึ้นออนไลน์แล้ว! ${cleanName} | CP ${fmtNum(entry.cp)}`;
+    statusEl.className = "lb-status ok";
+    lbFetch();
+  } catch(e) {
+    statusEl.textContent = `❌ ${e.message || "บันทึกไม่สำเร็จ"}`;
+    statusEl.className = "lb-status err";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ---------- In-game Leaderboard Rendering ----------
+const LB_SORT_OPTS = [
+  { key: "cp",           label: "⚡ CP",        color: "#7C5CFC" },
+  { key: "level",        label: "📈 เลเวล",     color: "#F6C453" },
+  { key: "bestWave",     label: "🌊 Boss Rush", color: "#FF6B5B" },
+  { key: "dailyStreak",  label: "🔥 Streak",    color: "#3DDC97" },
+];
+let lbSortKey = "cp";
+let lbEntries = [];
+let lbRefreshInterval = null;
+let lbSearchVal = "";
+
+function lbTimeAgo(ts) {
+  const d = Date.now() - ts;
+  const m = Math.floor(d / 60000);
+  if (m < 1) return "เมื่อกี้";
+  if (m < 60) return `${m} นาทีที่แล้ว`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ชม.ที่แล้ว`;
+  return `${Math.floor(h/24)} วันที่แล้ว`;
+}
+
+async function lbFetch() {
+  const listEl = document.getElementById("lbList");
+  const countEl = document.getElementById("lbCount");
+  if (!listEl) return;
+
+  if (!lbConfigured()) {
+    countEl && (countEl.textContent = "⚠️ ยังไม่เชื่อมต่อออนไลน์");
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--text-faint);font-size:13px;line-height:1.6;">
+      ⚠️ ผู้พัฒนาเกมยังไม่ตั้งค่าฐานข้อมูลออนไลน์<br>
+      (ต้องใส่ FIREBASE_DB_URL ในโค้ดก่อน deploy)
+    </div>`;
+    return;
+  }
+
+  countEl && (countEl.textContent = "⏳ กำลังโหลด...");
+
+  // Load from localStorage cache first so UI isn't empty while waiting
+  lbEntries = lbLocalGetAll();
+  lbRender();
+
+  // Fetch the real shared data from the online database
+  try {
+    const apiEntries = await lbApiFetch();
+    if (Array.isArray(apiEntries) && apiEntries.length > 0) {
+      const merged = {};
+      apiEntries.forEach(e => { if (e && e.name) merged[e.name] = e; });
+      lbEntries = Object.values(merged);
+      lbLocalSave(Object.fromEntries(lbEntries.map(e => [e.name, e])));
+      lbRender();
+    }
+  } catch { /* โหลดออนไลน์ล้มเหลว ใช้ข้อมูล local cache แทนชั่วคราว */ }
+}
+
+function lbRender() {
+  const listEl = document.getElementById("lbList");
+  const countEl = document.getElementById("lbCount");
+  if (!listEl) return;
+
+  const q = lbSearchVal.toLowerCase();
+  const sorted = [...lbEntries]
+    .filter(e => !q || e.name.toLowerCase().includes(q))
+    .sort((a,b) => (b[lbSortKey]||0) - (a[lbSortKey]||0));
+
+  countEl && (countEl.textContent = `${sorted.length} ผู้เล่น`);
+
+  if (sorted.length === 0) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--text-faint);font-size:13px;">
+      📭 ${q ? `ไม่พบ "${q}"` : `ยังไม่มีผู้เล่น — ใส่ชื่อแล้วกด "ส่งขึ้น" เพื่อเป็นคนแรก!`}
+    </div>`;
+    return;
+  }
+
+  const { color } = LB_SORT_OPTS.find(o => o.key === lbSortKey);
+  const RANK_ICONS  = ["🥇","🥈","🥉"];
+  const RANK_COLORS = ["#F6C453","#C0C0D0","#CD7F32"];
+  const myName = lbCurrentName;
+
+  listEl.innerHTML = sorted.map((e, i) => {
+    const rank = i + 1;
+    const isTop = rank <= 3;
+    const isMe  = e.name === myName;
+    const val = e[lbSortKey] || 0;
+    const displayVal = lbSortKey === "cp" ? fmtNum(val) : val;
+    return `
+    <div style="display:flex;align-items:center;gap:12px;
+      background:${isMe ? "rgba(124,92,252,0.12)" : isTop ? `rgba(${rank===1?"246,196,83":rank===2?"180,180,200":"180,120,60"},0.10)` : (i%2===0?"var(--bg-panel)":"var(--bg-panel-raised)")};
+      border:1px solid ${isMe ? "rgba(124,92,252,0.45)" : isTop ? `rgba(${rank===1?"246,196,83":rank===2?"200,200,220":"200,140,80"},0.35)` : "var(--line)"};
+      border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;">
+      <div style="width:32px;text-align:center;font-size:${isTop?17:13}px;font-weight:700;
+        color:${isTop?RANK_COLORS[i]:"var(--text-faint)"};flex-shrink:0;">
+        ${isTop ? RANK_ICONS[i] : `#${rank}`}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:13.5px;color:${isMe?"var(--accent)":"var(--text-primary)"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          ${e.name}${isMe?" 👤":""}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:0 8px;">
+          <span>Lv.${e.level}</span><span>Rebirth ${e.rebirths||0}</span><span>🌊${e.bestWave||0}</span><span>🔥${e.dailyStreak||0}วัน</span>
+        </div>
+        <div style="font-size:10px;color:var(--text-faint);margin-top:1px;">${e.deepestDungeon||"—"} · ${lbTimeAgo(e.ts)}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:${color};">${displayVal}</div>
+        ${lbSortKey!=="cp"?`<div style="font-size:11px;color:var(--text-faint);margin-top:1px;">${fmtNum(e.cp)} CP</div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function lbRenderSortTabs() {
+  const el = document.getElementById("lbSortTabs");
+  if (!el) return;
+  el.innerHTML = LB_SORT_OPTS.map(({ key, label, color }) => `
+    <button onclick="lbSetSort('${key}')" style="
+      padding:6px 12px;border-radius:999px;border:1px solid ${lbSortKey===key?color:"var(--line-strong)"};
+      background:${lbSortKey===key?`color-mix(in srgb,${color} 18%,transparent)`:"transparent"};
+      color:${lbSortKey===key?color:"var(--text-muted)"};
+      font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;">
+      ${label}
+    </button>`).join("");
+}
+
+function lbSetSort(key) {
+  lbSortKey = key;
+  lbRenderSortTabs();
+  lbRender();
+}
+window.lbSetSort = lbSetSort;
+
+// Shows the character's current name in the leaderboard registration
+// row so it's clear what name will be submitted — there's no separate
+// input anymore, the name lives on the character (Character tab).
+function renderLbCurrentCharName(player) {
+  const el = document.getElementById("lbCurrentCharName");
+  if (el) el.textContent = player.name || "—";
+}
+
+function lbInitUI(player) {
+  const nameDisplay = document.getElementById("lbCurrentCharName");
+  const btn         = document.getElementById("lbSubmitBtn");
+  const status      = document.getElementById("lbStatus");
+  const search      = document.getElementById("lbSearchInput");
+  const refreshBtn  = document.getElementById("lbRefreshBtn");
+  if (!btn) return;
+
+  renderLbCurrentCharName(player);
+
+  // If we'd already submitted under a name and the character has since
+  // been renamed, surface that so the player knows the board still
+  // shows the old name until they press submit again.
+  if (player.lbName && player.lbName !== player.name) {
+    lbCurrentName = player.lbName;
+    if (status) {
+      status.textContent = `ตารางแสดงชื่อเดิม "${player.lbName}" อยู่ — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตเป็นชื่อปัจจุบัน`;
+      status.className = "lb-status";
+    }
+  } else if (player.lbName) {
+    lbCurrentName = player.lbName;
+  }
+
+  btn.addEventListener("click", () => lbSubmit(player, player.name));
+  if (search) search.addEventListener("input", e => { lbSearchVal = e.target.value; lbRender(); });
+  if (refreshBtn) refreshBtn.addEventListener("click", lbFetch);
+
+  lbRenderSortTabs();
+
+  // Load when switching to leaderboard tab
+  document.querySelector("[data-tab='leaderboard']")?.addEventListener("click", () => {
+    lbFetch();
+  });
+
+  // Auto-refresh every 30s when leaderboard tab is active
+  if (lbRefreshInterval) clearInterval(lbRefreshInterval);
+  lbRefreshInterval = setInterval(() => {
+    const panel = document.querySelector("[data-tab-panel='leaderboard']");
+    if (panel && panel.classList.contains("active")) lbFetch();
+  }, 30000);
+}
+
+
+// ============================================
 // VOIDFALL — Daily Dungeon System
 // A special dungeon that resets every calendar day (midnight local time).
 // Seeded from the date so all players fight the same layout. Rewards
@@ -6580,6 +7198,64 @@ function bindGlobalEvents() {
     enterEndlessMode();
   });
 
+  // --- Character name: random suggestion + manual save ---
+  const charNameInput = document.getElementById("charNameInput");
+  const charNameSaveBtn = document.getElementById("charNameSaveBtn");
+  if (charNameInput && charNameSaveBtn) {
+    const commitName = () => {
+      if ((player.nameChangesAvailable || 0) <= 0) {
+        showToast("ใช้สิทธิ์เปลี่ยนชื่อหมดแล้ว — ซื้อใบเปลี่ยนชื่อได้ที่ร้านค้า");
+        charNameInput.value = player.name || "";
+        renderCharName(player);
+        return;
+      }
+      const cleaned = charNameInput.value.trim().slice(0, CHAR_NAME_MAX_LEN);
+      if (!cleaned) {
+        showToast("กรุณาตั้งชื่ออย่างน้อย 1 ตัวอักษร");
+        charNameInput.value = player.name || "";
+        charNameSaveBtn.disabled = true;
+        return;
+      }
+      const hadSubmittedBefore = !!player.lbName;
+      player.name = cleaned;
+      player.nameChangesAvailable = Math.max(0, (player.nameChangesAvailable || 0) - 1);
+      charNameInput.value = cleaned;
+      charNameSaveBtn.disabled = true;
+      savePlayer(player);
+      renderLbCurrentCharName(player);
+      renderCharName(player);
+      showToast(
+        hadSubmittedBefore
+          ? `ตั้งชื่อตัวละครเป็น "${cleaned}" แล้ว — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตชื่อบนตาราง`
+          : `ตั้งชื่อตัวละครเป็น "${cleaned}" แล้ว`
+      );
+    };
+
+    charNameInput.addEventListener("input", () => {
+      const cleaned = charNameInput.value.trim();
+      charNameSaveBtn.disabled = !cleaned || cleaned === (player.name || "");
+    });
+    charNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); commitName(); }
+    });
+    charNameSaveBtn.addEventListener("click", commitName);
+
+    document.getElementById("charNameRandomBtn").addEventListener("click", () => {
+      // Re-roll until we get a suggestion that differs from whatever's
+      // currently typed, so the button always feels like it did something —
+      // important since the pool is small enough to repeat by chance.
+      let suggestion = generateDarkFantasyName();
+      let attempts = 0;
+      while (suggestion === charNameInput.value && attempts < 5) {
+        suggestion = generateDarkFantasyName();
+        attempts++;
+      }
+      charNameInput.value = suggestion;
+      charNameSaveBtn.disabled = suggestion === (player.name || "");
+      charNameInput.focus();
+    });
+  }
+
   document.getElementById("rebirthBtn").addEventListener("click", () => {
     const info = getRebirthInfo(player);
     if (!info.eligible) return;
@@ -6813,7 +7489,6 @@ function bindGlobalEvents() {
 }
 
 init();
-
 </script>
 </body>
 </html>
