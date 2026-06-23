@@ -1355,6 +1355,7 @@ button {
 .combat-log::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
 .log-line-crit { color: var(--gold); }
 .log-line-defeat { color: var(--danger); font-weight: 600; }
+.pvp-opponent-row:hover { border-color: var(--accent) !important; }
 
 /* result panel — docked at the bottom of the battle stage instead of
    popping up as a centered modal. Slides in from below so it never
@@ -2711,6 +2712,10 @@ button {
         <svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.4L19 9l-4.3 3.9 1.3 5.8L12 15.6l-3.9 3.1 1.3-5.8L5 9l5.2-1.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         <span>ตีบวก</span>
       </button>
+      <button class="tab-btn" data-tab="pvp" role="tab" aria-selected="false" aria-label="PvP">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.3"/><circle cx="17.5" cy="17.5" r="2.3"/></svg>
+        <span>PvP</span>
+      </button>
       <button class="tab-btn" data-tab="leaderboard" role="tab" aria-selected="false" aria-label="Leaderboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="2" y="14" width="4" height="8" rx="1"/><rect x="10" y="9" width="4" height="13" rx="1"/><rect x="18" y="4" width="4" height="18" rx="1"/></svg>
         <span>อันดับ</span>
@@ -2954,6 +2959,86 @@ button {
       <div class="enchant-slot-pick" id="enchantSlotFilter"></div>
       <div class="enchant-item-list" id="enchantItemList"></div>
       <div class="enchant-detail-panel" id="enchantDetailPanel" style="display:none;margin-top:14px;"></div>
+    </section>
+
+    <!-- PvP Arena -->
+    <section class="panel tab-panel" data-tab-panel="pvp" style="padding-bottom:32px;">
+
+      <!-- Opponent select view -->
+      <div id="pvpSelectView">
+        <h2 class="panel-title">⚔️ สังเวียน PvP</h2>
+        <div style="background:rgba(255,107,91,0.06);border:1px solid rgba(255,107,91,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text-muted);line-height:1.6;">
+          <strong style="color:var(--danger);">วิธีใช้งาน</strong><br>
+          ท้าสู้กับสแน็ปช็อตสถิติของผู้เล่นจริงจาก Leaderboard (ไม่กระทบเกมของฝั่งตรงข้าม) ชนะเพื่อรับทอง, เพชร และอันดับ PvP — ต้องส่งสถิติของคุณขึ้น Leaderboard ก่อน (แท็บ "อันดับ") เพื่อให้คนอื่นท้าได้ด้วย
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          <div style="flex:1;background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:12px 14px;text-align:center;">
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">RATING</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--accent);" id="pvpRatingValue">1000</div>
+          </div>
+          <div style="flex:1;background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:12px 14px;text-align:center;">
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">ชนะ / แพ้</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:20px;" id="pvpRecordValue"><span style="color:var(--success);">0</span> / <span style="color:var(--danger);">0</span></div>
+          </div>
+          <div style="flex:1;background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:12px 14px;text-align:center;">
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">โอกาสท้าวันนี้</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--gold);" id="pvpAttemptsValue">5/5</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <h3 class="panel-subtitle" style="margin:0;">เลือกคู่ต่อสู้</h3>
+          <button id="pvpRefreshBtn" style="background:transparent;border:1px solid var(--line-strong);color:var(--text-muted);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;">🔄 รีเฟรช</button>
+        </div>
+        <p class="hint-text" style="margin-bottom:10px;">แสดงคู่ต่อสู้ที่มีพลัง (CP) ใกล้เคียงคุณที่สุด</p>
+        <div id="pvpOpponentList"></div>
+      </div>
+
+      <!-- Battle view -->
+      <div class="hidden" id="pvpBattleView">
+        <button class="btn-text retreat-btn" id="pvpBackBtn">← ย้อนกลับ</button>
+        <h2 class="panel-title" style="margin-bottom:10px;">⚔️ ดวลกับ <span id="pvpOpponentNameLabel">—</span></h2>
+
+        <div class="arena" id="pvpArena" style="margin-bottom:14px;">
+          <div class="combatant combatant-player" id="pvpArenaPlayerWrap">
+            <div class="combatant-aura aura-player" id="pvpArenaPlayerAura"></div>
+            <img class="combatant-figure figure-player" id="pvpArenaPlayer" src="" alt="" draggable="false">
+            <div class="hpbar"><div class="hpbar-fill hpbar-fill-player" id="pvpPlayerHpFill"></div></div>
+            <span class="hpbar-label" id="pvpPlayerHpLabel">0/0</span>
+            <span class="monster-name" id="pvpPlayerNameTag">—</span>
+          </div>
+
+          <div class="vs-mark">VS</div>
+
+          <div class="combatant combatant-monster" id="pvpArenaOpponentWrap">
+            <div class="combatant-aura aura-monster" id="pvpArenaOpponentAura"></div>
+            <img class="combatant-figure figure-monster" id="pvpArenaOpponent" src="" alt="" draggable="false">
+            <div class="hpbar"><div class="hpbar-fill hpbar-fill-monster" id="pvpOpponentHpFill"></div></div>
+            <span class="hpbar-label" id="pvpOpponentHpLabel">0/0</span>
+            <span class="monster-name" id="pvpOpponentNameTag">—</span>
+          </div>
+
+          <div class="fx-layer" id="pvpFxLayer"></div>
+        </div>
+
+        <div class="combat-log" id="pvpCombatLog"></div>
+      </div>
+
+      <!-- Result overlay -->
+      <div class="result-dock hidden" id="pvpResultOverlay">
+        <div class="result-card" id="pvpResultCard">
+          <div class="result-card-status"></div>
+          <div class="result-card-body">
+            <h3 id="pvpResultTitle">ชัยชนะ</h3>
+            <p id="pvpResultSubtitle"></p>
+            <div class="result-rewards" id="pvpResultRewards"></div>
+          </div>
+          <div class="result-actions">
+            <button class="btn-primary" id="pvpResultContinueBtn">ดำเนินต่อ</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Leaderboard -->
@@ -4352,6 +4437,13 @@ function createNewPlayer() {
       bestWave: 0,      // best wave ever reached in Boss Rush
       leaderboard: [],  // top runs: { wave, gold, ts }
     },
+    pvp: {
+      rating: 1000,       // simple Elo-ish rating, shown on the PvP tab
+      wins: 0,
+      losses: 0,
+      attemptsToday: 0,   // resets daily; limits how many PvP fights can be started
+      lastAttemptDate: "", // YYYY-MM-DD of attemptsToday's count
+    },
   };
 }
 
@@ -4635,6 +4727,12 @@ function repairPlayerShape(parsed) {
   if (!parsed.endless || typeof parsed.endless !== "object") parsed.endless = {};
   if (typeof parsed.endless.bestWave !== "number" || parsed.endless.bestWave < 0) parsed.endless.bestWave = 0;
   if (!Array.isArray(parsed.endless.leaderboard)) parsed.endless.leaderboard = [];
+  if (!parsed.pvp || typeof parsed.pvp !== "object") parsed.pvp = {};
+  if (typeof parsed.pvp.rating !== "number" || parsed.pvp.rating <= 0) parsed.pvp.rating = 1000;
+  if (typeof parsed.pvp.wins !== "number" || parsed.pvp.wins < 0) parsed.pvp.wins = 0;
+  if (typeof parsed.pvp.losses !== "number" || parsed.pvp.losses < 0) parsed.pvp.losses = 0;
+  if (typeof parsed.pvp.attemptsToday !== "number" || parsed.pvp.attemptsToday < 0) parsed.pvp.attemptsToday = 0;
+  if (typeof parsed.pvp.lastAttemptDate !== "string") parsed.pvp.lastAttemptDate = "";
   if (typeof parsed.lbName !== "string") parsed.lbName = "";
   if (!parsed.dailyDungeon || typeof parsed.dailyDungeon !== "object") {
     parsed.dailyDungeon = { lastDate: "", streak: 0, completedToday: false, roomsCleared: 0 };
@@ -5737,6 +5835,7 @@ function init() {
   renderAll();
   bindGlobalEvents();
   lbInitUI(player);
+  initPvpUI(player);
   initTabNav();
   showDungeonSelectView();
 
@@ -7012,6 +7111,7 @@ function lbSafeKey(name) {
 // --- Build entry object from current player ---
 function lbBuildEntry(player, name) {
   const cp = getCombatPower(player);
+  const stats = getTotalStats(player);
   const dd = player.dailyDungeon || {};
   const deepestName = player.stats && player.stats.deepestDungeon != null
     ? (DUNGEONS[Math.min(player.stats.deepestDungeon, DUNGEONS.length - 1)] || {}).name || "—"
@@ -7019,7 +7119,11 @@ function lbBuildEntry(player, name) {
   return { name, cp, level: player.level,
     rebirths: (player.prestige && player.prestige.rebirths) || 0,
     bestWave: (player.endless && player.endless.bestWave) || 0,
-    deepestDungeon: deepestName, dailyStreak: dd.streak || 0, ts: Date.now() };
+    deepestDungeon: deepestName, dailyStreak: dd.streak || 0, ts: Date.now(),
+    // Full combat stat snapshot — lets the PvP arena simulate a fight against
+    // this player's actual build instead of only their summarized CP number.
+    pvpStats: { hp: stats.hp, atk: stats.atk, def: stats.def, crit: stats.crit, spd: stats.spd },
+    pvpRating: (player.pvp && player.pvp.rating) || 1000 };
 }
 
 // --- localStorage helpers ---
@@ -7284,6 +7388,356 @@ function lbInitUI(player) {
     const panel = document.querySelector("[data-tab-panel='leaderboard']");
     if (panel && panel.classList.contains("active")) lbFetch();
   }, 30000);
+}
+
+
+// ============================================
+// VOIDFALL — PvP Arena
+// Asynchronous PvP: instead of a live connection between two players,
+// the player picks an opponent from the shared online Leaderboard (a
+// snapshot of someone else's real stats submitted earlier) and fights
+// a local simulation against that snapshot using the exact same combat
+// math as normal dungeon battles (resolveAttack). Nothing here ever
+// writes to the opponent's save — only the attacker's local result and
+// rating are updated, plus their own leaderboard entry's pvpRating.
+// ============================================
+const PVP_DAILY_ATTEMPTS = 5;
+const PVP_K_FACTOR = 24; // Elo-style rating sensitivity
+
+let pvpOpponents = [];      // candidate opponents pulled from the leaderboard pool
+let pvpCurrentOpponent = null;
+let pvpBattleTimer = null;
+let pvpExchangeState = null;
+let pvpResultAutoTimer = null;
+
+// Resets the daily attempt counter if the stored date doesn't match today.
+function pvpEnsureDailyReset(player) {
+  if (!player.pvp) player.pvp = { rating: 1000, wins: 0, losses: 0, attemptsToday: 0, lastAttemptDate: "" };
+  const today = getDailyDateString();
+  if (player.pvp.lastAttemptDate !== today) {
+    player.pvp.lastAttemptDate = today;
+    player.pvp.attemptsToday = 0;
+  }
+}
+
+function pvpAttemptsLeft(player) {
+  pvpEnsureDailyReset(player);
+  return Math.max(0, PVP_DAILY_ATTEMPTS - player.pvp.attemptsToday);
+}
+
+// Pulls the shared leaderboard pool (same Firebase data source as the
+// Leaderboard tab) and keeps everyone except the current player, sorted
+// by closeness in CP so the default list is roughly fair matchmaking.
+async function pvpFetchOpponents(player) {
+  let pool = [];
+  try {
+    pool = await lbApiFetch();
+  } catch {
+    // offline or not configured — fall back to whatever's cached locally
+    pool = lbLocalGetAll();
+  }
+  if (!Array.isArray(pool) || pool.length === 0) pool = lbLocalGetAll();
+
+  const myName = player.lbName || player.name;
+  const myCp = getCombatPower(player);
+  pvpOpponents = pool
+    .filter(e => e && e.name && e.name !== myName && e.pvpStats)
+    .sort((a, b) => Math.abs((a.cp || 0) - myCp) - Math.abs((b.cp || 0) - myCp))
+    .slice(0, 20);
+  return pvpOpponents;
+}
+
+function pvpRenderHeader(player) {
+  pvpEnsureDailyReset(player);
+  const pvp = player.pvp || { rating: 1000, wins: 0, losses: 0 };
+  const ratingEl = document.getElementById("pvpRatingValue");
+  const recordEl = document.getElementById("pvpRecordValue");
+  const attemptsEl = document.getElementById("pvpAttemptsValue");
+  if (ratingEl) ratingEl.textContent = Math.round(pvp.rating || 1000);
+  if (recordEl) recordEl.innerHTML = `<span style="color:var(--success);">${pvp.wins || 0}</span> / <span style="color:var(--danger);">${pvp.losses || 0}</span>`;
+  if (attemptsEl) attemptsEl.textContent = `${pvpAttemptsLeft(player)}/${PVP_DAILY_ATTEMPTS}`;
+}
+
+function pvpRenderOpponentList(player) {
+  const listEl = document.getElementById("pvpOpponentList");
+  if (!listEl) return;
+
+  if (!lbConfigured() && pvpOpponents.length === 0) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--text-faint);font-size:13px;line-height:1.6;">
+      ⚠️ ผู้พัฒนาเกมยังไม่ตั้งค่าฐานข้อมูลออนไลน์ ระบบ PvP ต้องใช้ Leaderboard ออนไลน์
+    </div>`;
+    return;
+  }
+  if (pvpOpponents.length === 0) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--text-faint);font-size:13px;line-height:1.6;">
+      📭 ยังไม่มีคู่ต่อสู้ — ให้เพื่อนของคุณส่งสถิติขึ้น Leaderboard ก่อน หรือกด "ส่งขึ้น Leaderboard" ในแท็บอันดับเพื่อให้คนอื่นท้าคุณได้
+    </div>`;
+    return;
+  }
+
+  const myCp = getCombatPower(player);
+  const attemptsLeft = pvpAttemptsLeft(player);
+
+  listEl.innerHTML = pvpOpponents.map((opp, i) => {
+    const diff = (opp.cp || 0) - myCp;
+    const diffLabel = diff === 0 ? "เท่ากัน" : (diff > 0 ? `+${fmtNum(diff)} CP` : `${fmtNum(diff)} CP`);
+    const diffColor = Math.abs(diff) < myCp * 0.1 ? "var(--success)" : (diff > 0 ? "var(--danger)" : "var(--text-muted)");
+    return `
+    <div class="pvp-opponent-row" data-idx="${i}" style="display:flex;align-items:center;gap:12px;
+      background:${i % 2 === 0 ? "var(--bg-panel)" : "var(--bg-panel-raised)"};
+      border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:7px;cursor:pointer;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:13.5px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          ${opp.name}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
+          Lv.${opp.level || 1} · Rating ${Math.round(opp.pvpRating || 1000)}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--accent);">${fmtNum(opp.cp || 0)} CP</div>
+        <div style="font-size:11px;margin-top:1px;color:${diffColor};">${diffLabel}</div>
+      </div>
+      <button class="btn-small pvp-challenge-btn" data-idx="${i}" style="width:auto;flex-shrink:0;${attemptsLeft <= 0 ? "opacity:0.4;" : ""}"
+        ${attemptsLeft <= 0 ? "disabled" : ""}>ท้าสู้</button>
+    </div>`;
+  }).join("");
+
+  listEl.querySelectorAll(".pvp-challenge-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx, 10);
+      pvpStartBattle(player, pvpOpponents[idx]);
+    });
+  });
+}
+
+async function pvpRefreshOpponents(player) {
+  const listEl = document.getElementById("pvpOpponentList");
+  if (listEl) listEl.innerHTML = `<div style="text-align:center;padding:30px 16px;color:var(--text-faint);font-size:13px;">⏳ กำลังโหลดคู่ต่อสู้...</div>`;
+  await pvpFetchOpponents(player);
+  pvpRenderHeader(player);
+  pvpRenderOpponentList(player);
+}
+
+// ---------- Battle flow ----------
+function pvpShowSelectView() {
+  clearPvpResultAutoTimer();
+  pvpStopBattleLoop();
+  document.getElementById("pvpSelectView").classList.remove("hidden");
+  document.getElementById("pvpBattleView").classList.add("hidden");
+  document.getElementById("pvpResultOverlay").classList.add("hidden");
+  pvpRenderHeader(player);
+  pvpRenderOpponentList(player);
+}
+
+function pvpShowBattleView() {
+  document.getElementById("pvpSelectView").classList.add("hidden");
+  document.getElementById("pvpBattleView").classList.remove("hidden");
+}
+
+function clearPvpResultAutoTimer() {
+  if (pvpResultAutoTimer) { clearTimeout(pvpResultAutoTimer); pvpResultAutoTimer = null; }
+}
+
+function pvpStartBattle(activePlayer, opponent) {
+  if (pvpAttemptsLeft(activePlayer) <= 0) {
+    showToast("หมดโอกาสท้าสู้ PvP สำหรับวันนี้แล้ว พรุ่งนี้มาใหม่นะ");
+    return;
+  }
+  pvpCurrentOpponent = opponent;
+  activePlayer.pvp.attemptsToday = (activePlayer.pvp.attemptsToday || 0) + 1;
+  savePlayer(activePlayer);
+
+  const stats = getTotalStats(activePlayer);
+  activePlayer.currentHp = stats.hp; // full heal before a PvP duel
+
+  pvpShowBattleView();
+  document.getElementById("pvpOpponentNameLabel").textContent = opponent.name;
+  document.getElementById("pvpPlayerNameTag").textContent = activePlayer.name || "คุณ";
+  document.getElementById("pvpOpponentNameTag").textContent = opponent.name;
+
+  const playerImg = document.getElementById("pvpArenaPlayer");
+  const oppImg = document.getElementById("pvpArenaOpponent");
+  if (playerImg) playerImg.src = RAYN_SPRITES.idle;
+  if (oppImg) oppImg.src = RAYN_SPRITES.idle;
+
+  document.getElementById("pvpCombatLog").innerHTML = "";
+  pvpAppendLog(`เริ่มดวล! ${activePlayer.name || "คุณ"} VS ${opponent.name}`);
+
+  pvpExchangeState = {
+    playerHp: stats.hp, playerMaxHp: stats.hp,
+    oppHp: opponent.pvpStats.hp, oppMaxHp: opponent.pvpStats.hp,
+    playerSpdAcc: 0, oppSpdAcc: 0,
+  };
+  pvpUpdateHpBars();
+
+  pvpStopBattleLoop();
+  pvpBattleTimer = setInterval(pvpBattleTick, BATTLE_TICK_MS);
+}
+
+function pvpStopBattleLoop() {
+  if (pvpBattleTimer) clearInterval(pvpBattleTimer);
+  pvpBattleTimer = null;
+}
+
+function pvpAppendLog(text, cls) {
+  const log = document.getElementById("pvpCombatLog");
+  if (!log) return;
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = text;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+  while (log.children.length > 40) log.removeChild(log.firstChild);
+}
+
+function pvpUpdateHpBars() {
+  const s = pvpExchangeState;
+  if (!s) return;
+  const pPct = Math.max(0, (s.playerHp / s.playerMaxHp) * 100);
+  const oPct = Math.max(0, (s.oppHp / s.oppMaxHp) * 100);
+  document.getElementById("pvpPlayerHpFill").style.width = pPct + "%";
+  document.getElementById("pvpPlayerHpLabel").textContent = `${fmtNum(Math.max(0, s.playerHp))}/${fmtNum(s.playerMaxHp)}`;
+  document.getElementById("pvpOpponentHpFill").style.width = oPct + "%";
+  document.getElementById("pvpOpponentHpLabel").textContent = `${fmtNum(Math.max(0, s.oppHp))}/${fmtNum(s.oppMaxHp)}`;
+}
+
+function pvpPlayAttackAnim(actor) {
+  const playerEl = document.getElementById("pvpArenaPlayer").closest(".combatant");
+  const oppEl = document.getElementById("pvpArenaOpponent").closest(".combatant");
+  const attacker = actor === "player" ? playerEl : oppEl;
+  const defender = actor === "player" ? oppEl : playerEl;
+  const attackCls = actor === "player" ? "attack-player" : "attack-monster";
+  attacker.classList.add(attackCls);
+  setTimeout(() => attacker.classList.remove(attackCls), 450);
+  setTimeout(() => {
+    defender.classList.add("hit-flash", "shake");
+    setTimeout(() => defender.classList.remove("hit-flash", "shake"), 320);
+  }, 190);
+}
+
+function pvpBattleTick() {
+  const s = pvpExchangeState;
+  if (!s) return;
+  const stats = getTotalStats(player);
+  const opp = pvpCurrentOpponent.pvpStats;
+
+  s.playerSpdAcc += stats.spd;
+  s.oppSpdAcc += opp.spd;
+
+  if (s.playerSpdAcc >= 1) {
+    s.playerSpdAcc -= 1;
+    const result = resolveAttack(stats.atk, opp.def, stats.crit);
+    s.oppHp = Math.max(0, s.oppHp - result.damage);
+    pvpPlayAttackAnim("player");
+    pvpAppendLog(`${player.name || "คุณ"} โจมตี${result.isCrit ? " (คริติคอล!)" : ""} -${fmtNum(result.damage)}`, result.isCrit ? "log-line-crit" : "");
+    pvpUpdateHpBars();
+    if (s.oppHp <= 0) { pvpEndBattle(true); return; }
+  }
+  if (s.oppSpdAcc >= 1) {
+    s.oppSpdAcc -= 1;
+    const result = resolveAttack(opp.atk, stats.def, opp.crit);
+    s.playerHp = Math.max(0, s.playerHp - result.damage);
+    pvpPlayAttackAnim("opponent");
+    pvpAppendLog(`${pvpCurrentOpponent.name} โจมตี${result.isCrit ? " (คริติคอล!)" : ""} -${fmtNum(result.damage)}`, result.isCrit ? "log-line-crit" : "");
+    pvpUpdateHpBars();
+    if (s.playerHp <= 0) { pvpEndBattle(false); return; }
+  }
+}
+
+// Simple Elo-style rating update: K-factor scaled exchange based on the
+// pre-fight rating gap between the two players.
+function pvpComputeRatingDelta(myRating, oppRating, won) {
+  const expected = 1 / (1 + Math.pow(10, (oppRating - myRating) / 400));
+  const score = won ? 1 : 0;
+  return Math.round(PVP_K_FACTOR * (score - expected));
+}
+
+function pvpEndBattle(won) {
+  pvpStopBattleLoop();
+  player.currentHp = won ? player.currentHp : Math.max(1, Math.round(getTotalStats(player).hp * 0.3));
+  // a PvP loss isn't meant to be a punishing dungeon-style defeat — leave the
+  // player with a small sliver of HP instead of fully depleting their pool
+
+  pvpEnsureDailyReset(player);
+  const oldRating = player.pvp.rating || 1000;
+  const oppRating = pvpCurrentOpponent.pvpRating || 1000;
+  const delta = pvpComputeRatingDelta(oldRating, oppRating, won);
+  player.pvp.rating = Math.max(0, oldRating + delta);
+  if (won) player.pvp.wins = (player.pvp.wins || 0) + 1;
+  else player.pvp.losses = (player.pvp.losses || 0) + 1;
+
+  let goldReward = 0, gemReward = 0;
+  if (won) {
+    const cp = getCombatPower(player);
+    goldReward = Math.round(8 + cp * 0.05 * (0.85 + Math.random() * 0.3));
+    if (Math.random() < 0.25) gemReward = 1;
+    player.gold += goldReward;
+    if (gemReward) player.gems = (player.gems || 0) + gemReward;
+  }
+
+  savePlayer(player, { immediate: true });
+  renderHud(player);
+
+  pvpAppendLog(won ? "🏆 คุณชนะการดวล!" : "💀 คุณแพ้การดวล", won ? "log-line-crit" : "log-line-defeat");
+  pvpShowResult(won, delta, goldReward, gemReward);
+}
+
+function pvpShowResult(won, ratingDelta, gold, gems) {
+  const overlay = document.getElementById("pvpResultOverlay");
+  const title = document.getElementById("pvpResultTitle");
+  const subtitle = document.getElementById("pvpResultSubtitle");
+  const rewardsEl = document.getElementById("pvpResultRewards");
+
+  title.textContent = won ? "🏆 ชัยชนะ!" : "💀 พ่ายแพ้";
+  title.style.color = won ? "var(--success)" : "var(--danger)";
+  subtitle.textContent = `Rating ${ratingDelta >= 0 ? "+" : ""}${ratingDelta} (ตอนนี้ ${Math.round(player.pvp.rating)})`;
+
+  let rewardsHtml = "";
+  if (won) {
+    if (gold > 0) rewardsHtml += `<span style="color:var(--gold);font-weight:600;">+${fmtNum(gold)} ทอง</span>`;
+    if (gems > 0) rewardsHtml += `<span style="color:var(--gem);font-weight:600;margin-left:10px;">+${gems} เพชร</span>`;
+  } else {
+    rewardsHtml = `<span style="color:var(--text-muted);">ไม่มีรางวัล — ลองใหม่กับคู่ต่อสู้อื่นได้</span>`;
+  }
+  rewardsEl.innerHTML = rewardsHtml;
+
+  overlay.classList.remove("hidden");
+
+  const continueBtn = document.getElementById("pvpResultContinueBtn");
+  continueBtn.onclick = () => {
+    overlay.classList.add("hidden");
+    pvpShowSelectView();
+  };
+}
+
+function initPvpUI(player) {
+  const refreshBtn = document.getElementById("pvpRefreshBtn");
+  const backBtn = document.getElementById("pvpBackBtn");
+  if (!refreshBtn) return;
+
+  refreshBtn.addEventListener("click", () => pvpRefreshOpponents(player));
+  backBtn.addEventListener("click", () => {
+    pvpStopBattleLoop();
+    pvpShowSelectView();
+  });
+
+  pvpRenderHeader(player);
+
+  // Load opponents the first time the PvP tab is opened, then keep them
+  // fresh on subsequent visits without spamming requests every render.
+  let pvpTabLoadedOnce = false;
+  document.querySelector("[data-tab='pvp']")?.addEventListener("click", () => {
+    pvpShowSelectView();
+    if (!pvpTabLoadedOnce) {
+      pvpTabLoadedOnce = true;
+      pvpRefreshOpponents(player);
+    } else {
+      pvpRenderHeader(player);
+      pvpRenderOpponentList(player);
+    }
+  });
 }
 
 
