@@ -554,6 +554,167 @@ button {
 .stat-key { color: var(--text-muted); letter-spacing: 0.01em; }
 .stat-val { font-weight: 600; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.02em; }
 
+/* ============================================
+   Stat Point Allocation System
+   ============================================ */
+.statpts-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(61,220,151,0.14), rgba(61,220,151,0.04));
+  border: 1px solid rgba(61,220,151,0.35);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  animation: statpts-pulse 2s ease-in-out infinite;
+}
+.statpts-banner.no-points {
+  background: var(--bg-panel-raised);
+  border-color: var(--line);
+  animation: none;
+  opacity: 0.7;
+}
+@keyframes statpts-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61,220,151,0); }
+  50% { box-shadow: 0 0 10px rgba(61,220,151,0.2); }
+}
+.statpts-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.statpts-badge {
+  background: rgba(61,220,151,0.18);
+  color: var(--success);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.statpts-badge.no-points {
+  background: var(--bg-panel-raised);
+  color: var(--text-faint);
+  font-size: 14px;
+}
+.statpts-info-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+  line-height: 1.2;
+}
+.statpts-banner.no-points .statpts-info-title { color: var(--text-muted); }
+.statpts-info-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+.statpts-reset-btn {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.18s, color 0.18s;
+}
+.statpts-reset-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.statpts-alloc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.statpts-alloc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  transition: border-color 0.18s;
+}
+.statpts-alloc-row:hover { border-color: var(--line-strong); }
+.statpts-alloc-icon {
+  font-size: 15px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.statpts-alloc-info {
+  flex: 1;
+  min-width: 0;
+}
+.statpts-alloc-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.statpts-alloc-bonus {
+  font-size: 11px;
+  color: var(--success);
+  margin-top: 2px;
+}
+.statpts-alloc-bonus.zero { color: var(--text-faint); }
+.statpts-alloc-val {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+  min-width: 38px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.statpts-btn-group {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.statpts-btn {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.statpts-btn.plus {
+  background: rgba(61,220,151,0.1);
+  border-color: rgba(61,220,151,0.4);
+  color: var(--success);
+}
+.statpts-btn.plus:hover:not(:disabled) {
+  background: rgba(61,220,151,0.22);
+  border-color: var(--success);
+  transform: scale(1.08);
+}
+.statpts-btn.minus {
+  background: rgba(255,107,91,0.08);
+  border-color: rgba(255,107,91,0.3);
+  color: var(--danger);
+}
+.statpts-btn.minus:hover:not(:disabled) {
+  background: rgba(255,107,91,0.18);
+  border-color: var(--danger);
+  transform: scale(1.08);
+}
+.statpts-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+.statpts-btn:active:not(:disabled) { transform: scale(0.93); }
+
 .equip-slots {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
@@ -2593,6 +2754,22 @@ button {
         </div>
       </div>
 
+      <!-- Stat Point Allocation -->
+      <h3 class="panel-subtitle">กระจายค่าสเตตัส</h3>
+      <div id="statptsBanner" class="statpts-banner no-points">
+        <div class="statpts-banner-left">
+          <div class="statpts-badge no-points" id="statptsCount">0</div>
+          <div>
+            <div class="statpts-info-title" id="statptsBannerTitle">ไม่มีแต้มสเตตัส</div>
+            <div class="statpts-info-sub">ได้รับ 3 แต้มต่อเลเวล — ใช้เพิ่มพลังตัวละคร</div>
+          </div>
+        </div>
+        <button class="statpts-reset-btn" id="statptsResetBtn" title="รีเซ็ตแต้มสเตตัส (ใช้เพชร)">↺ รีเซ็ต</button>
+      </div>
+      <div class="statpts-alloc-grid" id="statptsAllocGrid">
+        <!-- filled by renderStatPoints() -->
+      </div>
+
       <div class="stat-list">
         <div class="stat-row"><span class="stat-key">พลังชีวิต</span><span class="stat-val" id="statHp">—</span></div>
         <div class="stat-row"><span class="stat-key">พลังโจมตี</span><span class="stat-val" id="statAtk">—</span></div>
@@ -3171,11 +3348,11 @@ function playRaynDash(el) {
 
 const RARITY = {
   common:    { label: "Common",    color: "#9CA3AF", glow: "rgba(156,163,175,0.45)", weight: 100, mult: 1.0 },
-  uncommon:  { label: "Uncommon",  color: "#3DDC97", glow: "rgba(61,220,151,0.5)",    weight: 55,  mult: 1.35 },
-  rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.85 },
-  epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.6 },
-  legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 3.8 },
-  void:      { label: "Void",      color: "#FF2D2D", glow: "rgba(255,45,45,0.85)",    weight: 0.4, mult: 5.5 },
+  uncommon:  { label: "Uncommon",  color: "#3DDC97", glow: "rgba(61,220,151,0.5)",    weight: 55,  mult: 1.25 },
+  rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.6 },
+  epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.1 },
+  legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 2.8 },
+  void:      { label: "Void",      color: "#FF2D2D", glow: "rgba(255,45,45,0.85)",    weight: 0.4, mult: 3.6 },
 };
 
 const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary", "void"];
@@ -3223,14 +3400,14 @@ const DUNGEON_TIERS = [
   { id: "transcendent", label: "เหนือมิติ", color: "#CC88FF" },
 ];
 
-// Dungeons - 30 total, each with 14 normal rooms + 1 boss room (3x original).
-// Grouped into 4 difficulty tiers: normal (7) -> hard (5) -> extreme (5) -> transcendent (10).
+// Dungeons - 42 total, each with 14 normal rooms + 1 boss room (3x original).
+// Grouped into 4 difficulty tiers: normal (7) -> hard (20) -> extreme (5) -> transcendent (10).
 const DUNGEONS = [
   {
     id: "d1", name: "ป่าเถ้าจาง", minLevel: 1, tier: "normal",
     desc: "ป่าที่แสงแดดไม่เคยลอดผ่าน เถ้าฝุ่นลอยอยู่กลางอากาศตลอดเวลา",
     monsterPool: ["หนูเงา", "ค้างคาวมืด", "หมาป่าซีด"],
-    boss: { name: "ราชาหมาป่าเถ้า", hpMult: 5.4 },
+    boss: { name: "ราชาหมาป่าเถ้า", hpMult: 2.97 },
     baseHp: 18, baseAtk: 4, baseDef: 1, goldMult: 1, expMult: 1,
     dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0, void: 0 },
   },
@@ -3238,7 +3415,7 @@ const DUNGEONS = [
     id: "d2", name: "สุสานเสียงครวญ", minLevel: 4, tier: "normal",
     desc: "หลุมศพเก่าที่ไม่มีใครจดจำชื่อผู้ตาย เสียงครวญลอยมาตามลม",
     monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "วิญญาณคร่ำครวญ"],
-    boss: { name: "เจ้าสุสานไร้นาม", hpMult: 6 },
+    boss: { name: "เจ้าสุสานไร้นาม", hpMult: 3.3 },
     baseHp: 32, baseAtk: 7, baseDef: 3, goldMult: 1.4, expMult: 1.3,
     dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0, void: 0 },
   },
@@ -3246,7 +3423,7 @@ const DUNGEONS = [
     id: "d3", name: "เหมืองคริสตัลร้าง", minLevel: 8, tier: "normal",
     desc: "เหมืองที่ขุดลึกเกินไปจนปลุกสิ่งที่หลับใหลขึ้นมา",
     monsterPool: ["โกเลมคริสตัล", "ค้างคาวพิษ", "แมงมุมเหมือง"],
-    boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 6.6 },
+    boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 3.63 },
     baseHp: 55, baseAtk: 11, baseDef: 6, goldMult: 1.9, expMult: 1.6,
     dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0, void: 0 },
   },
@@ -3254,7 +3431,7 @@ const DUNGEONS = [
     id: "d4", name: "หอคอยกระจกแตก", minLevel: 13, tier: "normal",
     desc: "หอคอยที่กระจกทุกบานสะท้อนภาพไม่ตรงกับความจริง",
     monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
-    boss: { name: "จอมเวทกระจกมืด", hpMult: 7.2 },
+    boss: { name: "จอมเวทกระจกมืด", hpMult: 3.96 },
     baseHp: 88, baseAtk: 17, baseDef: 10, goldMult: 2.5, expMult: 2.1,
     dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1, void: 0 },
   },
@@ -3262,7 +3439,7 @@ const DUNGEONS = [
     id: "d4b", name: "หุบเขาหมอกพิษ", minLevel: 17, tier: "normal",
     desc: "หุบเขาที่หมอกพิษปกคลุมตลอดกาล สิ่งมีชีวิตที่รอดได้ล้วนกลายพันธุ์ไปแล้ว",
     monsterPool: ["ค้างคาวพิษ", "แมงมุมเหมือง", "ภูตแสงหัก"],
-    boss: { name: "ราชินีแมงมุมพิษ", hpMult: 7.44 },
+    boss: { name: "ราชินีแมงมุมพิษ", hpMult: 4.09 },
     baseHp: 110, baseAtk: 21, baseDef: 13, goldMult: 3.0, expMult: 2.5,
     dropTable: { common: 30, uncommon: 40, rare: 22, epic: 7, legendary: 1, void: 0 },
   },
@@ -3270,7 +3447,7 @@ const DUNGEONS = [
     id: "d4c", name: "ซากปรักหักพังอาณาจักรเก่า", minLevel: 21, tier: "normal",
     desc: "เมืองโบราณที่ถูกกลืนกินโดยธรรมชาติ วิญญาณนักรบผู้ปกป้องยังคงลาดตระเวนอยู่",
     monsterPool: ["อัศวินกระจก", "โครงกระดูกพเนจร", "ทหารเหล็กพัง"],
-    boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 7.8 },
+    boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 4.29 },
     baseHp: 138, baseAtk: 26, baseDef: 16, goldMult: 3.6, expMult: 3.0,
     dropTable: { common: 24, uncommon: 40, rare: 26, epic: 9, legendary: 1, void: 0 },
   },
@@ -3278,7 +3455,7 @@ const DUNGEONS = [
     id: "d4d", name: "ทุ่งหิมะนิรันดร์", minLevel: 25, tier: "normal",
     desc: "ทุ่งกว้างที่หิมะไม่เคยละลาย อุณหภูมิต่ำจนกระดูกแตก ผู้รอดชีวิตมีน้อยมาก",
     monsterPool: ["วิญญาณพลัดถิ่น", "หมาป่าซีด", "โกเลมคริสตัล"],
-    boss: { name: "เจ้าแม่หิมะอมตะ", hpMult: 8.16 },
+    boss: { name: "เจ้าแม่หิมะอมตะ", hpMult: 4.49 },
     baseHp: 168, baseAtk: 32, baseDef: 20, goldMult: 4.2, expMult: 3.6,
     dropTable: { common: 20, uncommon: 38, rare: 28, epic: 12, legendary: 2, void: 0 },
   },
@@ -3286,47 +3463,167 @@ const DUNGEONS = [
     id: "d5", name: "ทะเลทรายเลือดแห้ง", minLevel: 30, tier: "hard",
     desc: "ทรายสีแดงคล้ำที่จดจำสงครามครั้งใหญ่ในอดีต",
     monsterPool: ["นักรบทรายผุ", "อสรพิษเพลิง", "หัวขโมยทะเลทราย"],
-    boss: { name: "จอมทัพทรายเดือด", hpMult: 7.8 },
+    boss: { name: "จอมทัพทรายเดือด", hpMult: 4.29 },
     baseHp: 210, baseAtk: 38, baseDef: 24, goldMult: 5.0, expMult: 4.2,
     dropTable: { common: 18, uncommon: 36, rare: 28, epic: 15, legendary: 3, void: 0 },
+  },
+  {
+    id: "d5x1", name: "คุกใต้ดินทรายเลือด", minLevel: 31, tier: "hard",
+    desc: "คุกที่ฝังอยู่ใต้ทะเลทรายเลือดแห้ง นักโทษเก่าแก่ยังคงคลั่งคลุ้มอยู่ในความมืด",
+    monsterPool: ["นักโทษคลั่งทราย", "แมงป่องยักษ์พิษ", "ผู้คุมซากศพ"],
+    boss: { name: "ผู้บัญชาการคุกทรายเดือด", hpMult: 4.36 },
+    baseHp: 224, baseAtk: 40.5, baseDef: 25.6, goldMult: 5.26, expMult: 4.43,
+    dropTable: { common: 17, uncommon: 35, rare: 28, epic: 16, legendary: 4, void: 0 },
+  },
+  {
+    id: "d5x2", name: "ออเอซิสมายา", minLevel: 33, tier: "hard",
+    desc: "โอเอซิสลวงตาที่ดึงดูดนักเดินทางให้หลงทาง ก่อนจะกลืนกินพวกเขาไปทั้งเป็น",
+    monsterPool: ["ภูตลวงตาทราย", "อสรพิษเพลิง", "นักรบทรายผุ"],
+    boss: { name: "จอมมายาแห่งโอเอซิส", hpMult: 4.4 },
+    baseHp: 239, baseAtk: 43.1, baseDef: 27.3, goldMult: 5.54, expMult: 4.66,
+    dropTable: { common: 16, uncommon: 33, rare: 28, epic: 17, legendary: 5, void: 1 },
+  },
+  {
+    id: "d5x3", name: "ปิรามิดเงาทมิฬ", minLevel: 34, tier: "hard",
+    desc: "ปิรามิดโบราณที่ฝาผนังเต็มไปด้วยคำสาป ทุกย่างก้าวปลุกผู้พิทักษ์ให้ตื่นขึ้น",
+    monsterPool: ["มัมมี่ทรายผุ", "หัวขโมยทะเลทราย", "งูพิษทอง"],
+    boss: { name: "ฟาโรห์เถ้าถ่าน", hpMult: 4.44 },
+    baseHp: 254, baseAtk: 46.0, baseDef: 29.2, goldMult: 5.84, expMult: 4.92,
+    dropTable: { common: 15, uncommon: 32, rare: 28, epic: 18, legendary: 6, void: 1 },
   },
   {
     id: "d5b", name: "ป่าดึกดำบรรพ์วิปลาส", minLevel: 35, tier: "hard",
     desc: "ป่าที่ต้นไม้มีจิตใจ รากไม้คือกับดัก และเงาของต้นไม้คือสิ่งมีชีวิต",
     monsterPool: ["เงาผู้พิพากษา", "ภูตแสงหัก", "เทพปลอมแปลง"],
-    boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 8.4 },
+    boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 4.62 },
     baseHp: 290, baseAtk: 52, baseDef: 34, goldMult: 6.2, expMult: 5.2,
     dropTable: { common: 12, uncommon: 32, rare: 30, epic: 20, legendary: 6, void: 0 },
+  },
+  {
+    id: "d5bx1", name: "รากไม้สังหาร", minLevel: 37, tier: "hard",
+    desc: "ส่วนลึกของป่าดึกดำบรรพ์ที่รากไม้เลื้อยคลานหาเหยื่ออยู่ตลอดเวลา",
+    monsterPool: ["รากไม้กระหายเลือด", "เงาผู้พิพากษา", "แมงมุมเหมือง"],
+    boss: { name: "เจ้าป่ารากเหล็ก", hpMult: 4.58 },
+    baseHp: 289, baseAtk: 52.2, baseDef: 33.2, goldMult: 6.47, expMult: 5.46,
+    dropTable: { common: 14, uncommon: 29, rare: 28, epic: 20, legendary: 8, void: 1 },
+  },
+  {
+    id: "d5bx2", name: "หนองบึงวิญญาณ", minLevel: 38, tier: "hard",
+    desc: "หนองน้ำเน่าที่วิญญาณผู้จมน้ำลอยเวียนวนหาทางออกมาเป็นพันปี",
+    monsterPool: ["วิญญาณจมบึง", "ภูตแสงหัก", "เทพปลอมแปลง"],
+    boss: { name: "เจ้าหนองวิญญาณเปื้อนเลือด", hpMult: 4.6 },
+    baseHp: 308, baseAtk: 55.6, baseDef: 35.4, goldMult: 6.81, expMult: 5.75,
+    dropTable: { common: 13, uncommon: 27, rare: 28, epic: 21, legendary: 10, void: 1 },
   },
   {
     id: "d6", name: "วิหารใต้นทีดำ", minLevel: 40, tier: "hard",
     desc: "วิหารจมอยู่ใต้แม่น้ำที่ไม่มีแสงใดส่องถึง",
     monsterPool: ["นักบวชจมน้ำ", "งูทะเลลึก", "เทพปลอมแปลง"],
-    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 8.4 },
+    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 4.62 },
     baseHp: 380, baseAtk: 68, baseDef: 44, goldMult: 7.8, expMult: 6.5,
     dropTable: { common: 8, uncommon: 28, rare: 32, epic: 24, legendary: 8, void: 0 },
+  },
+  {
+    id: "d6x1", name: "ทางเดินใต้น้ำมืด", minLevel: 41, tier: "hard",
+    desc: "อุโมงค์จมน้ำที่เชื่อมไปสู่วิหารใต้นที ความดันน้ำบีบขยี้ทุกสิ่งที่มีชีวิต",
+    monsterPool: ["งูทะเลลึก", "นักบวชจมน้ำ", "ปลาผีดิบ"],
+    boss: { name: "ผู้เฝ้าทางจมน้ำ", hpMult: 4.66 },
+    baseHp: 349, baseAtk: 63.1, baseDef: 40.4, goldMult: 7.55, expMult: 6.39,
+    dropTable: { common: 11, uncommon: 25, rare: 28, epic: 23, legendary: 12, void: 1 },
+  },
+  {
+    id: "d6x2", name: "ห้องบูชาจมน้ำ", minLevel: 43, tier: "hard",
+    desc: "ห้องพิธีกรรมโบราณที่จมอยู่ใต้นที เทพปลอมแปลงยังคงเฝ้ารอผู้บูชารายต่อไป",
+    monsterPool: ["เทพปลอมแปลง", "นักบวชจมน้ำ", "งูทะเลลึก"],
+    boss: { name: "นักบวชใหญ่ผู้จมน้ำ", hpMult: 4.7 },
+    baseHp: 372, baseAtk: 67.2, baseDef: 43.1, goldMult: 7.95, expMult: 6.74,
+    dropTable: { common: 10, uncommon: 24, rare: 28, epic: 24, legendary: 13, void: 1 },
+  },
+  {
+    id: "d6x3", name: "คลังเครื่องจักรลึก", minLevel: 44, tier: "hard",
+    desc: "ห้องเก็บเครื่องจักรเวทมนตร์ใต้หอหมอก ที่ยังคงทำงานสร้างหุ่นพิทักษ์ไม่หยุดยั้ง",
+    monsterPool: ["หุ่นพิทักษ์บัลลังก์", "โกเลมคริสตัล", "ปืนใหญ่วิญญาณ"],
+    boss: { name: "ผู้ควบคุมคลังจักรกล", hpMult: 4.75 },
+    baseHp: 397, baseAtk: 71.6, baseDef: 46.0, goldMult: 8.37, expMult: 7.10,
+    dropTable: { common: 10, uncommon: 21, rare: 28, epic: 25, legendary: 14, void: 2 },
   },
   {
     id: "d6b", name: "หอหมอกจักรกล", minLevel: 46, tier: "hard",
     desc: "หอคอยที่สร้างขึ้นด้วยเวทมนตร์และเครื่องจักร สิ่งประดิษฐ์ทุกชิ้นมีจิตใจ",
     monsterPool: ["ปืนใหญ่วิญญาณ", "โกเลมคริสตัล", "หุ่นพิทักษ์บัลลังก์"],
-    boss: { name: "จักรกลเทพสังหาร", hpMult: 9 },
+    boss: { name: "จักรกลเทพสังหาร", hpMult: 4.95 },
     baseHp: 480, baseAtk: 86, baseDef: 56, goldMult: 9.5, expMult: 8.0,
     dropTable: { common: 4, uncommon: 20, rare: 32, epic: 30, legendary: 14, void: 0 },
+  },
+  {
+    id: "d6bx1", name: "ลานประลองจักรกล", minLevel: 48, tier: "hard",
+    desc: "ลานประลองที่หุ่นยนต์เวทมนตร์ถูกสร้างมาเพื่อทดสอบและกำจัดผู้บุกรุกทุกคน",
+    monsterPool: ["หุ่นพิทักษ์บัลลังก์", "ปืนใหญ่วิญญาณ", "โกเลมคริสตัล"],
+    boss: { name: "แชมป์เปี้ยนจักรกลเหล็กกล้า", hpMult: 4.88 },
+    baseHp: 451, baseAtk: 81.3, baseDef: 52.3, goldMult: 9.27, expMult: 7.89,
+    dropTable: { common: 8, uncommon: 20, rare: 27, epic: 27, legendary: 16, void: 2 },
+  },
+  {
+    id: "d6bx2", name: "ห้องควบคุมจักรกลเทพ", minLevel: 49, tier: "hard",
+    desc: "ศูนย์บังคับการของเครื่องจักรเทพสังหาร ที่ยังคงประมวลผลคำสั่งทำลายล้างอยู่เสมอ",
+    monsterPool: ["จักรกลเทพสังหารรอง", "หุ่นพิทักษ์บัลลังก์", "ปืนใหญ่วิญญาณ"],
+    boss: { name: "ปัญญาประดิษฐ์ผู้ตื่นรู้", hpMult: 4.92 },
+    baseHp: 480, baseAtk: 86.6, baseDef: 55.8, goldMult: 9.76, expMult: 8.31,
+    dropTable: { common: 7, uncommon: 19, rare: 27, epic: 28, legendary: 17, void: 2 },
+  },
+  {
+    id: "d6cx1", name: "กำแพงเหล็กชั้นนอก", minLevel: 51, tier: "hard",
+    desc: "กำแพงป้อมปราการที่แข็งแกร่งที่สุด ทหารผู้พังทลายยังคงยืนเฝ้าตามคำสั่งเดิม",
+    monsterPool: ["ทหารเหล็กพัง", "แม่ทัพไร้หัว", "ปืนใหญ่วิญญาณ"],
+    boss: { name: "นายทวารเหล็กกล้าไร้วิญญาณ", hpMult: 5.0 },
+    baseHp: 512, baseAtk: 92.3, baseDef: 59.6, goldMult: 10.28, expMult: 8.76,
+    dropTable: { common: 6, uncommon: 18, rare: 27, epic: 29, legendary: 18, void: 2 },
   },
   {
     id: "d6c", name: "ป้อมปราการเหล็กกล้า", minLevel: 52, tier: "hard",
     desc: "ป้อมที่ครั้งหนึ่งปกป้องอาณาจักร บัดนี้กลับหันมาทำลายผู้บุกรุก",
     monsterPool: ["ทหารเหล็กพัง", "ปืนใหญ่วิญญาณ", "แม่ทัพไร้หัว"],
-    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 9 },
+    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 4.95 },
     baseHp: 590, baseAtk: 108, baseDef: 70, goldMult: 11.5, expMult: 9.8,
     dropTable: { common: 2, uncommon: 14, rare: 30, epic: 34, legendary: 20, void: 0 },
+  },
+  {
+    id: "d6cx2", name: "คลังอาวุธต้องสาป", minLevel: 53, tier: "hard",
+    desc: "คลังอาวุธของป้อมปราการที่ถูกคำสาปปลุกให้อาวุธทุกชิ้นมีชีวิตและกระหายเลือด",
+    monsterPool: ["อาวุธสาปแช่ง", "แม่ทัพไร้หัว", "ทหารเหล็กพัง"],
+    boss: { name: "ผู้คุมคลังอาวุธวิปริต", hpMult: 5.05 },
+    baseHp: 581, baseAtk: 104.8, baseDef: 67.9, goldMult: 11.39, expMult: 9.73,
+    dropTable: { common: 4, uncommon: 15, rare: 27, epic: 31, legendary: 21, void: 2 },
+  },
+  {
+    id: "d6cx3", name: "ห้องบัลลังก์จอมพล", minLevel: 55, tier: "hard",
+    desc: "ห้องบัลลังก์เดิมของจอมพลผู้พิทักษ์ป้อม บัดนี้เหลือเพียงเงาแห่งความแค้นปกครองอยู่",
+    monsterPool: ["แม่ทัพไร้หัว", "ทหารเหล็กพัง", "อาวุธสาปแช่ง"],
+    boss: { name: "จอมพลเงาแห่งป้อมล่ม", hpMult: 5.12 },
+    baseHp: 620, baseAtk: 111.6, baseDef: 72.4, goldMult: 12.00, expMult: 10.25,
+    dropTable: { common: 4, uncommon: 12, rare: 27, epic: 32, legendary: 22, void: 3 },
+  },
+  {
+    id: "d6cx4", name: "ประตูสุดท้ายก่อนห้วงดิ่ง", minLevel: 57, tier: "hard",
+    desc: "ประตูสุดท้ายของโลกที่ยังมีแสง ก่อนทุกสิ่งจะดิ่งลงสู่ความมืดมิดไม่มีที่สิ้นสุด",
+    monsterPool: ["ผู้เฝ้าประตูสุดท้าย", "เศษเสี้ยวความมืด", "แม่ทัพไร้หัว"],
+    boss: { name: "ผู้พิทักษ์ประตูแห่งความสิ้นหวัง", hpMult: 5.2 },
+    baseHp: 660, baseAtk: 118.9, baseDef: 77.3, goldMult: 12.63, expMult: 10.80,
+    dropTable: { common: 3, uncommon: 11, rare: 27, epic: 33, legendary: 23, void: 3 },
+  },
+  {
+    id: "d6cx5", name: "เงื้อมผาก่อนความมืด", minLevel: 59, tier: "hard",
+    desc: "เงื้อมผาสุดท้ายที่มองเห็นห้วงดิ่งสุดท้ายอยู่เบื้องล่าง นักรบที่มาถึงนี่ไม่มีทางถอยกลับ",
+    monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "ผู้เฝ้าประตูสุดท้าย"],
+    boss: { name: "ผู้พิทักษ์เงื้อมผาก่อนห้วงดิ่ง", hpMult: 5.3 },
+    baseHp: 704, baseAtk: 126.7, baseDef: 82.5, goldMult: 13.30, expMult: 11.39,
+    dropTable: { common: 2, uncommon: 10, rare: 27, epic: 34, legendary: 24, void: 3 },
   },
   {
     id: "d7", name: "ห้วงดิ่งสุดท้าย", minLevel: 60, tier: "extreme",
     desc: "จุดสิ้นสุดของดันเจี้ยนทั้งมวล ที่ความมืดไม่มีก้นบึ้ง",
     monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "วิญญาณพลัดถิ่น"],
-    boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 10.2 },
+    boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 5.61 },
     baseHp: 750, baseAtk: 135, baseDef: 88, goldMult: 14, expMult: 12,
     dropTable: { common: 1, uncommon: 9, rare: 27, epic: 35, legendary: 25, void: 3 },
   },
@@ -3334,7 +3631,7 @@ const DUNGEONS = [
     id: "d7b", name: "มิติแตกสลาย", minLevel: 67, tier: "extreme",
     desc: "ช่องโหว่มิติที่พังทลาย สิ่งมีชีวิตจากโลกอื่นหลั่งไหลเข้ามาไม่หยุด",
     monsterPool: ["เงาสะท้อนวิปลาส", "ผู้เฝ้าห้วง", "อสูรแสงดับ"],
-    boss: { name: "จอมอสูรมิติฉีก", hpMult: 10.8 },
+    boss: { name: "จอมอสูรมิติฉีก", hpMult: 5.94 },
     baseHp: 950, baseAtk: 170, baseDef: 112, goldMult: 17.5, expMult: 15,
     dropTable: { common: 0, uncommon: 5, rare: 20, epic: 36, legendary: 32, void: 7 },
   },
@@ -3342,7 +3639,7 @@ const DUNGEONS = [
     id: "d8", name: "นรกเหวลึกไร้สิ้นสุด", minLevel: 75, tier: "extreme",
     desc: "ดันเจียนระดับยากสุดขั้ว สำหรับนักรบที่ทะลวงผ่านห้วงดิ่งสุดท้ายมาแล้วเท่านั้น มอนสเตอร์ที่นี่แข็งแกร่งและโหดร้ายเกินจินตนาการ",
     monsterPool: ["อสูรเหวเพลิง", "เงาผู้พิพากษา", "ปีศาจกลืนวิญญาณ"],
-    boss: { name: "จอมเทพอเวจี", hpMult: 12 },
+    boss: { name: "จอมเทพอเวจี", hpMult: 6.6 },
     baseHp: 1200, baseAtk: 215, baseDef: 142, goldMult: 22, expMult: 19,
     dropTable: { common: 0, uncommon: 2, rare: 14, epic: 34, legendary: 38, void: 12 },
   },
@@ -3350,7 +3647,7 @@ const DUNGEONS = [
     id: "d8b", name: "สวรรค์ที่ถูกสาป", minLevel: 84, tier: "extreme",
     desc: "แดนสวรรค์ที่ครั้งหนึ่งเต็มไปด้วยแสงสว่าง แต่บัดนี้ถูกคำสาปปกคลุม เทพผู้ตกสวรรค์พเนจรอยู่ทั่วทุกหนแห่ง",
     monsterPool: ["ทวยเทพพลัดถิ่น", "วิญญาณครวญ", "ภูตแสงหัก"],
-    boss: { name: "เทพจุติผู้ทรยศ", hpMult: 13.2 },
+    boss: { name: "เทพจุติผู้ทรยศ", hpMult: 7.26 },
     baseHp: 1550, baseAtk: 278, baseDef: 184, goldMult: 28, expMult: 24,
     dropTable: { common: 0, uncommon: 0, rare: 9, epic: 33, legendary: 40, void: 18 },
   },
@@ -3358,7 +3655,7 @@ const DUNGEONS = [
     id: "d9", name: "บัลลังก์เทพจุติล่มสลาย", minLevel: 92, tier: "extreme",
     desc: "จุดสูงสุดของห้วงมิติทั้งปวง บัลลังก์ที่เทพจุติผู้ล่มสลายเฝ้ารออยู่ ท้าทายเฉพาะผู้กล้าที่แข็งแกร่งที่สุดเท่านั้น",
     monsterPool: ["ทวยเทพพลัดถิ่น", "อสูรแสงดับ", "หุ่นพิทักษ์บัลลังก์"],
-    boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 14.4 },
+    boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 7.92 },
     baseHp: 1950, baseAtk: 352, baseDef: 234, goldMult: 35, expMult: 30,
     dropTable: { common: 0, uncommon: 0, rare: 5, epic: 28, legendary: 42, void: 25 },
   },
@@ -3367,7 +3664,7 @@ const DUNGEONS = [
     id: "d10", name: "ห้วงอนันต์เหนือมิติ", minLevel: 102, tier: "transcendent",
     desc: "พื้นที่ที่อยู่เหนือกฎของมิติทั้งปวง ไม่มีแสง ไม่มีเวลา มีเพียงพลังงานแห่งการทำลายล้าง",
     monsterPool: ["อสูรอนันต์", "เศษเสี้ยวความว่างเปล่า", "ผู้พิทักษ์นิรันดร์"],
-    boss: { name: "เจ้าแห่งอนันต์", hpMult: 15.6 },
+    boss: { name: "เจ้าแห่งอนันต์", hpMult: 8.58 },
     baseHp: 2500, baseAtk: 448, baseDef: 298, goldMult: 44, expMult: 38,
     dropTable: { common: 0, uncommon: 0, rare: 2, epic: 24, legendary: 40, void: 34 },
   },
@@ -3375,7 +3672,7 @@ const DUNGEONS = [
     id: "d10b", name: "แกนกลางแห่งความว่างเปล่า", minLevel: 112, tier: "transcendent",
     desc: "ศูนย์กลางของจักรวาลที่ถูกกัดกร่อนจนเหลือแต่ความว่างเปล่า สิ่งมีชีวิตที่เข้ามาจะสูญสลายทีละส่วน",
     monsterPool: ["เศษเสี้ยวความว่างเปล่า", "จิตวิญญาณสูญสลาย", "อสูรสาปแช่ง"],
-    boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 16.2 },
+    boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 8.91 },
     baseHp: 3200, baseAtk: 572, baseDef: 380, goldMult: 56, expMult: 48,
     dropTable: { common: 0, uncommon: 0, rare: 1, epic: 18, legendary: 38, void: 43 },
   },
@@ -3383,7 +3680,7 @@ const DUNGEONS = [
     id: "d10c", name: "วังวนนิรันดร์แห่งวิญญาณ", minLevel: 123, tier: "transcendent",
     desc: "วังวนที่กักขังวิญญาณนักรบผู้แข็งแกร่งที่สุดตลอดกาล พวกเขาถูกบังคับให้สู้รบไปชั่วนิรันดร์",
     monsterPool: ["วิญญาณนักรบอมตะ", "ผู้พิทักษ์นิรันดร์", "อสูรอนันต์"],
-    boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 16.8 },
+    boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 9.24 },
     baseHp: 4100, baseAtk: 728, baseDef: 484, goldMult: 70, expMult: 60,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 12, legendary: 36, void: 52 },
   },
@@ -3391,7 +3688,7 @@ const DUNGEONS = [
     id: "d11", name: "ดาวมรณะแห่งจักรวาล", minLevel: 135, tier: "transcendent",
     desc: "ดาวที่กำลังจะระเบิดสลาย แต่ก่อนจะสูญสิ้น มันกลับให้กำเนิดอสูรร้ายที่แข็งแกร่งที่สุดในจักรวาล",
     monsterPool: ["อสูรดาวเพลิง", "หินอุกกาบาตจิตวิญญาณ", "อสูรอนันต์"],
-    boss: { name: "จอมอสูรดาวมรณะ", hpMult: 17.4 },
+    boss: { name: "จอมอสูรดาวมรณะ", hpMult: 9.57 },
     baseHp: 5200, baseAtk: 924, baseDef: 614, goldMult: 88, expMult: 75,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 7, legendary: 30, void: 63 },
   },
@@ -3399,7 +3696,7 @@ const DUNGEONS = [
     id: "d11b", name: "สุสานเทพจักรวาล", minLevel: 148, tier: "transcendent",
     desc: "สุสานที่ฝังพระศพของเทพผู้สร้างจักรวาล วิญญาณของพวกเขาลุกขึ้นมาเพื่อทดสอบผู้บุกรุก",
     monsterPool: ["วิญญาณเทพผู้สร้าง", "ผู้พิทักษ์สุสานศักดิ์สิทธิ์", "จิตวิญญาณสูญสลาย"],
-    boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 18 },
+    boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 9.9 },
     baseHp: 6600, baseAtk: 1170, baseDef: 778, goldMult: 110, expMult: 94,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 24, void: 73 },
   },
@@ -3407,7 +3704,7 @@ const DUNGEONS = [
     id: "d12", name: "มิติต้นกำเนิดแห่งความมืด", minLevel: 162, tier: "transcendent",
     desc: "มิติแรกที่มีก่อนจักรวาลจะถือกำเนิด ความมืดที่นี่มีจิตใจและหิวโหยพลังงานชีวิต",
     monsterPool: ["ความมืดดั้งเดิม", "อสูรสาปแช่ง", "วิญญาณเทพผู้สร้าง"],
-    boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 18.6 },
+    boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 10.23 },
     baseHp: 8400, baseAtk: 1484, baseDef: 988, goldMult: 138, expMult: 118,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 1, legendary: 17, void: 82 },
   },
@@ -3415,7 +3712,7 @@ const DUNGEONS = [
     id: "d12b", name: "ป้อมปราการเหนือกาลเวลา", minLevel: 177, tier: "transcendent",
     desc: "ป้อมที่สร้างขึ้นนอกกรอบเวลา ผู้รักษาการณ์ที่นี่เป็นเงาของนักรบผู้ยิ่งใหญ่จากทุกยุคสมัย",
     monsterPool: ["เงานักรบจากทุกยุคสมัย", "ผู้พิทักษ์เหนือกาลเวลา", "ความมืดดั้งเดิม"],
-    boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 19.2 },
+    boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 10.56 },
     baseHp: 10600, baseAtk: 1880, baseDef: 1252, goldMult: 172, expMult: 148,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 11, void: 89 },
   },
@@ -3423,7 +3720,7 @@ const DUNGEONS = [
     id: "d13", name: "บัลลังก์ผู้สร้างและผู้ทำลาย", minLevel: 193, tier: "transcendent",
     desc: "สถานที่ที่พลังแห่งการสร้างและการทำลายล้างชนกัน ทุกสิ่งที่เข้ามาจะถูกกลืนกินและเกิดใหม่อีกครั้ง",
     monsterPool: ["อสูรแห่งการสร้าง", "อสูรแห่งการทำลาย", "เงานักรบจากทุกยุคสมัย"],
-    boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 20.4 },
+    boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 11.22 },
     baseHp: 13400, baseAtk: 2380, baseDef: 1584, goldMult: 215, expMult: 185,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 6, void: 94 },
   },
@@ -3431,7 +3728,7 @@ const DUNGEONS = [
     id: "d13b", name: "ห้วงลึกแห่งพลังงานดิบ", minLevel: 210, tier: "transcendent",
     desc: "แหล่งพลังงานบริสุทธิ์ดิบที่ไม่มีรูปร่าง ก่อนจักรวาลจะมีกฎใดๆ พลังงานที่นี่สามารถสร้างและทำลายจักรวาลได้",
     monsterPool: ["พลังงานดิบมีชีวิต", "อสูรแห่งการทำลาย", "ผู้พิทักษ์เหนือกาลเวลา"],
-    boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 21.6 },
+    boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 11.88 },
     baseHp: 17000, baseAtk: 3010, baseDef: 2006, goldMult: 270, expMult: 232,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 2, void: 98 },
   },
@@ -3439,7 +3736,7 @@ const DUNGEONS = [
     id: "d14", name: "จุดสิ้นสุดก่อนการเริ่มต้น", minLevel: 230, tier: "transcendent",
     desc: "จุดที่อยู่นอกเหนือความเป็นและความตาย ก่อนที่จักรวาลจะมีอยู่และหลังจากที่มันสูญสิ้นไปแล้ว มีเพียงสิ่งนี้เท่านั้นที่ดำรงอยู่",
     monsterPool: ["สิ่งที่ไม่มีชื่อ", "พลังงานดิบมีชีวิต", "อสูรแห่งการสร้าง"],
-    boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 24 },
+    boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 13.2 },
     baseHp: 22000, baseAtk: 3900, baseDef: 2600, goldMult: 340, expMult: 292,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0, void: 100 },
   },
@@ -3455,12 +3752,48 @@ const LEVEL_GROWTH = {
   hp: 8, atk: 1.6, def: 0.7, crit: 0.15,
 };
 
+// ============================================
+// VOIDFALL - Stat Point Allocation System
+// Players earn STAT_POINTS_PER_LEVEL per level-up and can freely
+// invest them into any stat. Refunding costs gems (first refund free).
+// ============================================
+const STAT_POINTS_PER_LEVEL = 3;
+const STAT_POINT_RESET_COST = 20; // gems — free on first reset ever
+
+// How much each stat point contributes per invested point
+// Tuned so max invested (~450 pts at cap Lv150) adds meaningful but not dominant power
+const STAT_POINT_GAINS = {
+  hp:   { perPoint: 14,   label: "พลังชีวิต",   icon: "❤️",  desc: "+14 HP ต่อแต้ม" },
+  atk:  { perPoint: 2.5,  label: "พลังโจมตี",  icon: "⚔️",  desc: "+2.5 ATK ต่อแต้ม" },
+  def:  { perPoint: 1.2,  label: "ป้องกัน",    icon: "🛡️",  desc: "+1.2 DEF ต่อแต้ม" },
+  crit: { perPoint: 0.8,  label: "คริติคอล",   icon: "🎯",  desc: "+0.8% CRIT ต่อแต้ม (สูงสุด 75%)" },
+  spd:  { perPoint: 0.025, label: "ความเร็ว",  icon: "💨",  desc: "+0.025 SPD ต่อแต้ม" },
+};
+
+function getStatPointsAvailable(player) {
+  const totalEarned = (player.level - 1) * STAT_POINTS_PER_LEVEL
+    + ((player.prestige && player.prestige.rebirths) || 0) * 10; // bonus 10 pts per rebirth
+  const spent = Object.values(player.statPoints || {}).reduce((s, v) => s + v, 0);
+  return Math.max(0, totalEarned - spent);
+}
+
+function getStatPointBonus(player) {
+  const pts = player.statPoints || {};
+  return {
+    hp:   Math.round((pts.hp   || 0) * STAT_POINT_GAINS.hp.perPoint),
+    atk:  Math.round((pts.atk  || 0) * STAT_POINT_GAINS.atk.perPoint * 10) / 10,
+    def:  Math.round((pts.def  || 0) * STAT_POINT_GAINS.def.perPoint * 10) / 10,
+    crit: Math.round((pts.crit || 0) * STAT_POINT_GAINS.crit.perPoint * 10) / 10,
+    spd:  Math.round((pts.spd  || 0) * STAT_POINT_GAINS.spd.perPoint * 1000) / 1000,
+  };
+}
+
 // EXP needed for next level: formula based
 // Each rebirth makes the climb steeper (+25% per rebirth, compounding) —
 // the permanent prestige bonuses are the trade-off for this growing cost.
 const REBIRTH_EXP_SCALING = 0.25;
 function expForLevel(level, rebirths = 0) {
-  const base = 34 * Math.pow(level, 1.72);
+  const base = 16 * Math.pow(level, 1.55);
   const rebirthMult = Math.pow(1 + REBIRTH_EXP_SCALING, rebirths);
   return Math.floor(base * rebirthMult);
 }
@@ -3513,6 +3846,10 @@ function doRebirth(player) {
   player.gold = 0;
   player.unlockedDungeonIndex = info.nextShortcutIndex;
   player.stats.deepestDungeon = Math.max(player.stats.deepestDungeon, info.nextShortcutIndex);
+  // Reset stat point investments — they'll be re-earnable at the new level
+  player.statPoints = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+  // Prestige gives a free reset on rebirth
+  player.statPointResets = 0;
 
   const stats = getTotalStats(player);
   player.currentHp = stats.hp;
@@ -3570,7 +3907,7 @@ function generateItem(dungeon, dropTable) {
 // rerolled item follows exactly the same distribution as a freshly dropped one.
 function rollItemStats(primaryKey, rarity, itemLevel) {
   const rarityInfo = RARITY[rarity];
-  const statBudget = (itemLevel * 1.8 + 4) * rarityInfo.mult;
+  const statBudget = (itemLevel * 1.2 + 3) * rarityInfo.mult;
   const stats = {};
 
   // Primary stat gets the bulk
@@ -3582,15 +3919,14 @@ function rollItemStats(primaryKey, rarity, itemLevel) {
   shuffleArray(possibleSecondary);
   for (let i = 0; i < extraCount; i++) {
     const key = possibleSecondary[i];
-    stats[key] = roundStat(key, statBudget * (0.18 + Math.random() * 0.1));
+    stats[key] = roundStat(key, statBudget * (0.14 + Math.random() * 0.08));
   }
   return stats;
 }
 
 function roundStat(key, value) {
-  if (key === "crit" || key === "spd") {
-    return Math.round(value * 10) / 10 / (key === "spd" ? 8 : 1);
-  }
+  if (key === "crit") return Math.round(value * 10) / 10 / 2.5;
+  if (key === "spd")  return Math.round(value * 10) / 10 / 8;
   return Math.max(1, Math.round(value));
 }
 
@@ -3603,6 +3939,116 @@ function shuffleArray(arr) {
 
 function statLabel(key) {
   return { atk: "พลังโจมตี", def: "ป้องกัน", hp: "พลังชีวิต", crit: "คริติคอล", spd: "ความเร็ว" }[key] || key;
+}
+
+// ============================================
+// Stat Point Allocation UI
+// ============================================
+function renderStatPoints(player) {
+  const avail = getStatPointsAvailable(player);
+  const pts = player.statPoints || {};
+
+  // Banner
+  const banner = document.getElementById("statptsBanner");
+  const badge  = document.getElementById("statptsCount");
+  const title  = document.getElementById("statptsBannerTitle");
+  if (banner && badge && title) {
+    if (avail > 0) {
+      banner.classList.remove("no-points");
+      badge.classList.remove("no-points");
+      badge.textContent = avail;
+      title.textContent = `มีแต้มสเตตัส ${avail} แต้ม — กระจายเพื่อเพิ่มพลัง!`;
+    } else {
+      banner.classList.add("no-points");
+      badge.classList.add("no-points");
+      badge.textContent = "0";
+      title.textContent = "ไม่มีแต้มสเตตัสคงเหลือ";
+    }
+  }
+
+  // Reset button hint
+  const resetBtn = document.getElementById("statptsResetBtn");
+  if (resetBtn) {
+    const totalSpent = Object.values(pts).reduce((s, v) => s + v, 0);
+    const isFree = (player.statPointResets || 0) === 0;
+    resetBtn.title = totalSpent === 0
+      ? "ยังไม่ได้ลงทุนแต้มใด"
+      : isFree
+        ? "รีเซ็ตฟรี (ครั้งแรก)"
+        : `รีเซ็ต (${STAT_POINT_RESET_COST} เพชร)`;
+    resetBtn.disabled = totalSpent === 0;
+    resetBtn.textContent = isFree ? "↺ รีเซ็ต (ฟรี)" : `↺ รีเซ็ต (${STAT_POINT_RESET_COST}💎)`;
+  }
+
+  // Allocation rows
+  const grid = document.getElementById("statptsAllocGrid");
+  if (!grid) return;
+
+  const statOrder = ["hp", "atk", "def", "crit", "spd"];
+  grid.innerHTML = statOrder.map(key => {
+    const cfg = STAT_POINT_GAINS[key];
+    const invested = pts[key] || 0;
+    const bonus = invested * cfg.perPoint;
+    const bonusStr = invested === 0 ? "ยังไม่ได้ลงทุน" :
+      key === "hp"   ? `+${Math.round(bonus)} HP` :
+      key === "atk"  ? `+${Math.round(bonus * 10) / 10} ATK` :
+      key === "def"  ? `+${Math.round(bonus * 10) / 10} DEF` :
+      key === "crit" ? `+${Math.round(bonus * 10) / 10}% CRIT` :
+                       `+${(bonus).toFixed(3)} SPD`;
+    return `
+      <div class="statpts-alloc-row">
+        <span class="statpts-alloc-icon">${cfg.icon}</span>
+        <div class="statpts-alloc-info">
+          <div class="statpts-alloc-name">${cfg.label}</div>
+          <div class="statpts-alloc-bonus ${invested === 0 ? "zero" : ""}">${bonusStr}</div>
+        </div>
+        <span class="statpts-alloc-val">${invested}</span>
+        <div class="statpts-btn-group">
+          <button class="statpts-btn minus" data-stat="${key}" data-delta="-1" ${invested === 0 ? "disabled" : ""}>−</button>
+          <button class="statpts-btn plus"  data-stat="${key}" data-delta="1"  ${avail === 0 ? "disabled" : ""}>+</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  // Event listeners
+  grid.querySelectorAll(".statpts-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const stat  = btn.dataset.stat;
+      const delta = parseInt(btn.dataset.delta, 10);
+      const curAvail = getStatPointsAvailable(player);
+      if (!player.statPoints) player.statPoints = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+      const cur = player.statPoints[stat] || 0;
+      if (delta > 0 && curAvail <= 0) return;
+      if (delta < 0 && cur <= 0) return;
+      player.statPoints[stat] = cur + delta;
+      const stats = getTotalStats(player);
+      player.currentHp = Math.min(player.currentHp || stats.hp, stats.hp);
+      renderStatPoints(player);
+      renderStats(player);
+      renderHud(player);
+      savePlayer(player);
+      if (delta > 0) showToast(`${STAT_POINT_GAINS[stat].icon} เพิ่ม ${STAT_POINT_GAINS[stat].label} แล้ว`);
+    });
+  });
+}
+
+function doStatPointReset(player) {
+  const isFree = (player.statPointResets || 0) === 0;
+  const cost = isFree ? 0 : STAT_POINT_RESET_COST;
+  if (!isFree && (player.gems || 0) < cost) {
+    showToast(`เพชรไม่พอ (ต้องการ ${cost} เพชร)`);
+    return;
+  }
+  if (!isFree) player.gems -= cost;
+  player.statPointResets = (player.statPointResets || 0) + 1;
+  player.statPoints = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+  const stats = getTotalStats(player);
+  player.currentHp = Math.min(player.currentHp || stats.hp, stats.hp);
+  renderStatPoints(player);
+  renderStats(player);
+  renderHud(player);
+  savePlayer(player);
+  showToast(isFree ? "รีเซ็ตแต้มสเตตัสฟรีแล้ว!" : `รีเซ็ตแต้มสเตตัส เสีย ${cost} เพชร`);
 }
 
 function statValueDisplay(key, value) {
@@ -3874,6 +4320,8 @@ function createNewPlayer() {
       points: 0,    // permanent currency earned from rebirths, boosts stats/rewards
       rebirths: 0,  // number of times the player has rebirthed
     },
+    statPoints: { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 }, // invested stat points
+    statPointResets: 0, // number of times the player has reset stat points (first is free)
     endless: {
       bestWave: 0,      // best wave ever reached in Boss Rush
       leaderboard: [],  // top runs: { wave, gold, ts }
@@ -3908,13 +4356,14 @@ function getEquipmentStats(player) {
 function getTotalStats(player) {
   const base = getPlayerBaseStats(player.level);
   const eq = getEquipmentStats(player);
+  const sp = getStatPointBonus(player);
   const mult = prestigeBonusMultiplier(player);
   return {
-    hp: Math.round((base.hp + (eq.hp || 0)) * mult),
-    atk: Math.round((base.atk + (eq.atk || 0)) * mult),
-    def: Math.round((base.def + (eq.def || 0)) * mult),
-    crit: Math.min(75, base.crit + (eq.crit || 0)),
-    spd: base.spd + (eq.spd || 0),
+    hp:   Math.round((base.hp  + (eq.hp  || 0) + sp.hp)  * mult),
+    atk:  Math.round((base.atk + (eq.atk || 0) + sp.atk) * mult),
+    def:  Math.round((base.def + (eq.def || 0) + sp.def) * mult),
+    crit: Math.min(75, base.crit + (eq.crit || 0) + sp.crit),
+    spd:  base.spd + (eq.spd || 0) + sp.spd,
   };
 }
 
@@ -4152,6 +4601,11 @@ function repairPlayerShape(parsed) {
   if (!parsed.prestige || typeof parsed.prestige !== "object") parsed.prestige = {};
   if (typeof parsed.prestige.points !== "number" || parsed.prestige.points < 0) parsed.prestige.points = 0;
   if (typeof parsed.prestige.rebirths !== "number" || parsed.prestige.rebirths < 0) parsed.prestige.rebirths = 0;
+  if (!parsed.statPoints || typeof parsed.statPoints !== "object") parsed.statPoints = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+  for (const k of ["hp", "atk", "def", "crit", "spd"]) {
+    if (typeof parsed.statPoints[k] !== "number" || parsed.statPoints[k] < 0) parsed.statPoints[k] = 0;
+  }
+  if (typeof parsed.statPointResets !== "number" || parsed.statPointResets < 0) parsed.statPointResets = 0;
   if (!parsed.endless || typeof parsed.endless !== "object") parsed.endless = {};
   if (typeof parsed.endless.bestWave !== "number" || parsed.endless.bestWave < 0) parsed.endless.bestWave = 0;
   if (!Array.isArray(parsed.endless.leaderboard)) parsed.endless.leaderboard = [];
@@ -4242,7 +4696,7 @@ function importSaveFromText(text) {
 // VOIDFALL - Combat Engine
 // ============================================
 
-const ROOMS_PER_DUNGEON = 15; // 14 normal + 1 boss (3x original)
+const ROOMS_PER_DUNGEON = 5; // 4 normal + 1 boss
 
 function generateMonster(dungeon, roomIndex, player) {
   const isBoss = roomIndex === ROOMS_PER_DUNGEON - 1;
@@ -4258,8 +4712,8 @@ function generateMonster(dungeon, roomIndex, player) {
     isBoss,
     maxHp: Math.round(dungeon.baseHp * scale * hpMult),
     hp: Math.round(dungeon.baseHp * scale * hpMult),
-    atk: Math.round(dungeon.baseAtk * scale * (isBoss ? 1.6 : 1.08)),
-    def: Math.round(dungeon.baseDef * scale * (isBoss ? 1.5 : 1.08)),
+    atk: Math.round(dungeon.baseAtk * scale * (isBoss ? 1.2 : 1.08)),
+    def: Math.round(dungeon.baseDef * scale * (isBoss ? 1.1 : 1.08)),
     spd: 0.85 + Math.random() * 0.3,
   };
 }
@@ -5251,6 +5705,7 @@ function renderAll() {
   renderHud(player);
   renderCharName(player);
   renderStats(player);
+  renderStatPoints(player);
   renderEquipSlots(player, onEquipSlotClick);
   renderPrestigeBox(player);
   refreshDungeonSelectUI(player);
@@ -5826,11 +6281,12 @@ function onMonsterDefeated() {
   }
 
   const leveledUp = gainExp(player, exp, () => {
-    showToast(`เลเวลอัพ! ตอนนี้คุณเลเวล ${player.level}`);
+    showToast(`🎉 เลเวลอัพ! เลเวล ${player.level} — ได้รับ ${STAT_POINTS_PER_LEVEL} แต้มสเตตัส`);
   });
 
   renderHud(player);
   renderStats(player);
+  renderStatPoints(player);
   renderPrestigeBox(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   renderShop(player);
@@ -5955,11 +6411,12 @@ function onEndlessWaveCleared() {
   }
 
   const leveledUp = gainExp(player, exp, () => {
-    showToast(`เลเวลอัพ! ตอนนี้คุณเลเวล ${player.level}`);
+    showToast(`🎉 เลเวลอัพ! เลเวล ${player.level} — ได้รับ ${STAT_POINTS_PER_LEVEL} แต้มสเตตัส`);
   });
 
   renderHud(player);
   renderStats(player);
+  renderStatPoints(player);
   renderPrestigeBox(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   renderShop(player);
@@ -7278,6 +7735,27 @@ function bindGlobalEvents() {
       charNameInput.focus();
     });
   }
+
+  document.getElementById("statptsResetBtn").addEventListener("click", () => {
+    const totalSpent = Object.values(player.statPoints || {}).reduce((s, v) => s + v, 0);
+    if (totalSpent === 0) { showToast("ยังไม่ได้ลงทุนแต้มสเตตัสใด"); return; }
+    const isFree = (player.statPointResets || 0) === 0;
+    const btn = document.getElementById("statptsResetBtn");
+    if (btn.dataset.confirming === "1") {
+      doStatPointReset(player);
+      btn.dataset.confirming = "0";
+    } else {
+      btn.dataset.confirming = "1";
+      const prevText = btn.textContent;
+      btn.textContent = "กดอีกครั้งเพื่อยืนยัน";
+      setTimeout(() => {
+        if (btn.dataset.confirming === "1") {
+          btn.dataset.confirming = "0";
+          renderStatPoints(player);
+        }
+      }, 2500);
+    }
+  });
 
   document.getElementById("rebirthBtn").addEventListener("click", () => {
     const info = getRebirthInfo(player);
