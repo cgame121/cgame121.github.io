@@ -3456,8 +3456,13 @@ const LEVEL_GROWTH = {
 };
 
 // EXP needed for next level: formula based
-function expForLevel(level) {
-  return Math.floor(34 * Math.pow(level, 1.72));
+// Each rebirth makes the climb steeper (+25% per rebirth, compounding) —
+// the permanent prestige bonuses are the trade-off for this growing cost.
+const REBIRTH_EXP_SCALING = 0.25;
+function expForLevel(level, rebirths = 0) {
+  const base = 34 * Math.pow(level, 1.72);
+  const rebirthMult = Math.pow(1 + REBIRTH_EXP_SCALING, rebirths);
+  return Math.floor(base * rebirthMult);
 }
 
 // Level cap — players stop gaining levels (and exp) once they hit this.
@@ -3959,14 +3964,15 @@ function itemCombatPower(item) {
 }
 
 function gainExp(player, amount, onLevelUp) {
+  const rebirths = (player.prestige && player.prestige.rebirths) || 0;
   if (player.level >= MAX_LEVEL) {
     player.exp = 0; // already maxed, no point hoarding exp
     return false;
   }
   player.exp += amount;
   let leveled = false;
-  while (player.level < MAX_LEVEL && player.exp >= expForLevel(player.level)) {
-    player.exp -= expForLevel(player.level);
+  while (player.level < MAX_LEVEL && player.exp >= expForLevel(player.level, rebirths)) {
+    player.exp -= expForLevel(player.level, rebirths);
     player.level += 1;
     leveled = true;
   }
@@ -4442,7 +4448,8 @@ function renderHud(player) {
   document.getElementById("hudLevel").textContent = player.level;
   document.getElementById("hudGold").textContent = fmtNum(player.gold);
   document.getElementById("hudGems").textContent = fmtNum(player.gems || 0);
-  const pct = player.level >= MAX_LEVEL ? 100 : Math.min(100, (player.exp / expForLevel(player.level)) * 100);
+  const rebirths = (player.prestige && player.prestige.rebirths) || 0;
+  const pct = player.level >= MAX_LEVEL ? 100 : Math.min(100, (player.exp / expForLevel(player.level, rebirths)) * 100);
   const circumference = 2 * Math.PI * 19; // r=19
   const offset = circumference * (1 - pct / 100);
   document.getElementById("hudExpFill").style.strokeDasharray = circumference;
@@ -4462,7 +4469,8 @@ function renderStats(player) {
   document.getElementById("cpValue").textContent = fmtNum(cp);
   document.getElementById("hudCP").textContent = fmtNum(cp);
 
-  const expNeeded = expForLevel(player.level);
+  const rebirths = (player.prestige && player.prestige.rebirths) || 0;
+  const expNeeded = expForLevel(player.level, rebirths);
   const expPct = player.level >= MAX_LEVEL ? 100 : Math.min(100, (player.exp / expNeeded) * 100);
   document.getElementById("charExpValue").textContent = player.level >= MAX_LEVEL
     ? "เลเวลสูงสุด"
