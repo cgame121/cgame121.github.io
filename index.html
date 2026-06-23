@@ -7213,6 +7213,7 @@ async function lbSubmit(player, name) {
 const LB_SORT_OPTS = [
   { key: "cp",           label: "⚡ CP",        color: "#7C5CFC" },
   { key: "level",        label: "📈 เลเวล",     color: "#F6C453" },
+  { key: "pvpRating",    label: "⚔️ PvP",       color: "#FF8A5C" },
   { key: "bestWave",     label: "🌊 Boss Rush", color: "#FF6B5B" },
   { key: "dailyStreak",  label: "🔥 Streak",    color: "#3DDC97" },
 ];
@@ -7264,6 +7265,15 @@ async function lbFetch() {
   } catch { /* โหลดออนไลน์ล้มเหลว ใช้ข้อมูล local cache แทนชั่วคราว */ }
 }
 
+// Some leaderboard stats default sensibly to 0 (bestWave, dailyStreak, rebirths),
+// but PvP rating's "neutral" value is 1000, not 0 — older entries submitted
+// before PvP existed have no pvpRating at all, and showing/sorting those as 0
+// would unfairly bury them at the bottom of the PvP sort.
+function lbStatValue(entry, key) {
+  if (key === "pvpRating") return entry.pvpRating != null ? entry.pvpRating : 1000;
+  return entry[key] || 0;
+}
+
 function lbRender() {
   const listEl = document.getElementById("lbList");
   const countEl = document.getElementById("lbCount");
@@ -7272,7 +7282,7 @@ function lbRender() {
   const q = lbSearchVal.toLowerCase();
   const sorted = [...lbEntries]
     .filter(e => !q || e.name.toLowerCase().includes(q))
-    .sort((a,b) => (b[lbSortKey]||0) - (a[lbSortKey]||0));
+    .sort((a,b) => lbStatValue(b, lbSortKey) - lbStatValue(a, lbSortKey));
 
   countEl && (countEl.textContent = `${sorted.length} ผู้เล่น`);
 
@@ -7292,8 +7302,8 @@ function lbRender() {
     const rank = i + 1;
     const isTop = rank <= 3;
     const isMe  = e.name === myName;
-    const val = e[lbSortKey] || 0;
-    const displayVal = lbSortKey === "cp" ? fmtNum(val) : val;
+    const val = lbStatValue(e, lbSortKey);
+    const displayVal = lbSortKey === "cp" ? fmtNum(val) : Math.round(val);
     return `
     <div style="display:flex;align-items:center;gap:12px;
       background:${isMe ? "rgba(124,92,252,0.12)" : isTop ? `rgba(${rank===1?"246,196,83":rank===2?"180,180,200":"180,120,60"},0.10)` : (i%2===0?"var(--bg-panel)":"var(--bg-panel-raised)")};
@@ -7308,7 +7318,7 @@ function lbRender() {
           ${e.name}${isMe?" 👤":""}
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:0 8px;">
-          <span>Lv.${e.level}</span><span>Rebirth ${e.rebirths||0}</span><span>🌊${e.bestWave||0}</span><span>🔥${e.dailyStreak||0}วัน</span>
+          <span>Lv.${e.level}</span><span>⚔️${Math.round(lbStatValue(e, "pvpRating"))}</span><span>Rebirth ${e.rebirths||0}</span><span>🌊${e.bestWave||0}</span><span>🔥${e.dailyStreak||0}วัน</span>
         </div>
         <div style="font-size:10px;color:var(--text-faint);margin-top:1px;">${e.deepestDungeon||"—"} · ${lbTimeAgo(e.ts)}</div>
       </div>
