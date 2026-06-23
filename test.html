@@ -415,6 +415,55 @@ button {
 .char-cloak { fill: #1F2333; stroke: var(--accent); stroke-width: 1.5; }
 .char-head { fill: #2A2F45; stroke: var(--accent); stroke-width: 1.5; }
 
+.char-name-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.char-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-void);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.char-name-input:focus { border-color: var(--accent); }
+.char-name-input::placeholder { color: var(--text-faint); font-family: var(--font-body); font-weight: 400; }
+.btn-dice {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: border-color 0.2s, transform 0.15s;
+}
+.btn-dice:hover { border-color: var(--accent); transform: rotate(-8deg); }
+.btn-dice:active { transform: scale(0.92) rotate(-8deg); }
+.btn-name-save {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.4);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--accent);
+  transition: filter 0.2s;
+}
+.btn-name-save:hover { filter: brightness(1.25); }
+.btn-name-save:disabled { opacity: 0.4; }
+
 .cp-banner {
   display: flex;
   align-items: center;
@@ -559,26 +608,6 @@ button {
 /* ============================================
    Leaderboard Settings Section
    ============================================ */
-.lb-name-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.lb-name-input {
-  flex: 1;
-  background: var(--bg-void);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 13px;
-  padding: 9px 12px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.lb-name-input:focus { border-color: var(--accent); }
-.lb-name-input::placeholder { color: var(--text-faint); }
 .lb-submit-btn {
   background: var(--accent);
   color: #fff;
@@ -2533,6 +2562,12 @@ button {
         <img class="char-figure" id="charFigure" src="" alt="Rayn the swordsman" draggable="false">
       </div>
 
+      <div class="char-name-row">
+        <input class="char-name-input" id="charNameInput" maxlength="28" placeholder="ตั้งชื่อตัวละครของคุณ..." autocomplete="off" spellcheck="false">
+        <button class="btn-dice" id="charNameRandomBtn" title="สุ่มชื่อแฟนตาซีมืด" aria-label="สุ่มชื่อ">🎲</button>
+        <button class="btn-name-save" id="charNameSaveBtn" title="บันทึกชื่อ" aria-label="บันทึกชื่อ" disabled>✓</button>
+      </div>
+
       <div class="cp-banner">
         <span class="cp-banner-label">พลังรวม (CP)</span>
         <span class="cp-banner-value" id="cpValue">0</span>
@@ -2739,7 +2774,7 @@ button {
       <!-- How it works -->
       <div style="background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text-muted);line-height:1.6;">
         <strong style="color:var(--accent);">วิธีใช้งาน</strong><br>
-        1️⃣ ใส่ชื่อผู้เล่น → กด <strong>ส่งขึ้น</strong> เพื่อบันทึกสถิติของคุณขึ้นออนไลน์<br>
+        1️⃣ ตั้งชื่อตัวละครในแท็บ <strong>ตัวละคร</strong> แล้วกด <strong>ส่งขึ้น Leaderboard</strong> ที่นี่ เพื่อบันทึกสถิติของคุณขึ้นออนไลน์<br>
         2️⃣ เพื่อนที่เปิดลิงก์เกมเดียวกัน (ผ่าน GitHub Pages) จะเห็นชื่อคุณในตารางทันที — ไม่ต้องส่งไฟล์ให้กันแล้ว<br>
         3️⃣ ตารางจะรีเฟรชอัตโนมัติทุก 30 วินาที เพื่ออัปเดตสถิติของทุกคน ✅
       </div>
@@ -2748,8 +2783,8 @@ button {
       <div style="background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:14px;">
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">ส่งสถิติของคุณ: CP · เลเวล · Boss Rush · Daily Streak</div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input class="lb-name-input" id="lbNameInput" maxlength="16" placeholder="ชื่อผู้เล่น (สูงสุด 16 ตัว)" autocomplete="off" spellcheck="false" style="flex:1;">
-          <button class="lb-submit-btn" id="lbSubmitBtn">ส่งขึ้น</button>
+          <div style="flex:1;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--text-primary);" id="lbCurrentCharName">—</div>
+          <button class="lb-submit-btn" id="lbSubmitBtn">ส่งขึ้น Leaderboard</button>
         </div>
         <div class="lb-status" id="lbStatus" style="margin-top:8px;margin-bottom:0;"></div>
       </div>
@@ -3724,8 +3759,59 @@ const SAVE_KEY = "voidfall_save_v1";
 const SAVE_BACKUP_KEY = "voidfall_save_v1_corrupt_backup";
 const SAVE_VERSION = 1;
 
+// ============================================
+// VOIDFALL - Character Name Generator
+// Dark-fantasy names built from syllable pools, with an optional
+// epithet ("the Hollow", "of the Void") tacked on for flavor. Pools
+// are split so combinations stay pronounceable instead of just
+// concatenating random consonants.
+// ============================================
+// Generous enough that base name + " " + the longest epithet (16 chars)
+// always fits without truncation; also used as the input's maxlength
+// and as the cap when saving/migrating a player-typed name.
+const CHAR_NAME_MAX_LEN = 28;
+const NAME_SYLLABLES_FIRST = [
+  "Kael", "Var", "Mor", "Thal", "Drev", "Syn", "Ash", "Vor", "Rae",
+  "Lys", "Grim", "Nyx", "Cor", "Sera", "Vael", "Dusk", "Riv", "Os",
+  "Eth", "Mal", "Quor", "Ysa", "Bren", "Sol", "Vesh", "Cain", "Adri",
+];
+const NAME_SYLLABLES_LAST = [
+  "wyn", "dris", "thorne", "mir", "ux", "ara", "rin", "vane", "oth",
+  "ais", "und", "yra", "ek", "ial", "or", "essa", "ynn", "ade",
+  "ius", "ka", "ven", "ros", "lith", "an", "yth",
+];
+const NAME_EPITHETS = [
+  "the Hollow", "the Forsaken", "of the Void", "the Ashen", "the Unbound",
+  "Nightfallen", "the Pale", "of Voidfall", "the Cursed Blade",
+  "the Last Ember", "the Grim", "Shadowbound", "the Wanderer",
+  "of the Deep Dark", "the Oathbreaker", "the Silent",
+];
+// Roughly one in three generated names gets an epithet, so most rolls
+// stay short and clean while still surfacing the flavorful ones often
+// enough to feel like a real option.
+const NAME_EPITHET_CHANCE = 0.35;
+
+function generateDarkFantasyName() {
+  const first = NAME_SYLLABLES_FIRST[Math.floor(Math.random() * NAME_SYLLABLES_FIRST.length)];
+  const last = NAME_SYLLABLES_LAST[Math.floor(Math.random() * NAME_SYLLABLES_LAST.length)];
+  const base = first + last;
+  if (Math.random() < NAME_EPITHET_CHANCE) {
+    // Only attach an epithet if the full result still fits the name
+    // length limit — slicing it after the fact would cut a word in half
+    // ("...the Last Em"), so we just skip the epithet for that roll
+    // instead and fall back to the base name on its own.
+    const candidates = NAME_EPITHETS.filter(e => (base + " " + e).length <= CHAR_NAME_MAX_LEN);
+    if (candidates.length) {
+      const epithet = candidates[Math.floor(Math.random() * candidates.length)];
+      return base + " " + epithet;
+    }
+  }
+  return base;
+}
+
 function createNewPlayer() {
   return {
+    name: generateDarkFantasyName(),
     level: 1,
     exp: 0,
     gold: 0,
@@ -3956,6 +4042,11 @@ function repairItemShape(item) {
 }
 
 function repairPlayerShape(parsed) {
+  if (typeof parsed.name !== "string" || !parsed.name.trim()) {
+    parsed.name = generateDarkFantasyName();
+  } else {
+    parsed.name = parsed.name.trim().slice(0, CHAR_NAME_MAX_LEN);
+  }
   if (!parsed.equipment || typeof parsed.equipment !== "object") parsed.equipment = {};
   for (const slot of SLOTS) {
     if (parsed.equipment[slot] === undefined) parsed.equipment[slot] = null;
@@ -5103,6 +5194,7 @@ function init() {
 
 function renderAll() {
   renderHud(player);
+  renderCharName(player);
   renderStats(player);
   renderEquipSlots(player, onEquipSlotClick);
   renderPrestigeBox(player);
@@ -5114,6 +5206,21 @@ function renderAll() {
   renderKeepScreenOnToggle(player);
   renderAutoSellUI();
   renderEnchantWorkshop();
+}
+
+// Reflects the saved player name into the character-name input.
+// Skipped while the box is mid-edit (focused) so a background re-render
+// (e.g. from the autosave loop) can't yank the cursor or stomp on text
+// the player hasn't saved yet.
+function renderCharName(player) {
+  const input = document.getElementById("charNameInput");
+  const saveBtn = document.getElementById("charNameSaveBtn");
+  renderLbCurrentCharName(player);
+  if (!input) return;
+  if (document.activeElement !== input) {
+    input.value = player.name || "";
+  }
+  if (saveBtn) saveBtn.disabled = true;
 }
 
 function renderAutoToggle(player) {
@@ -6379,10 +6486,10 @@ async function lbSubmit(player, name) {
     statusEl.className = "lb-status err"; return;
   }
   if (!name || name.trim().length < 2) {
-    statusEl.textContent = "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร";
+    statusEl.textContent = "กรุณาตั้งชื่อตัวละครในแท็บ \"ตัวละคร\" ก่อน (อย่างน้อย 2 ตัวอักษร)";
     statusEl.className = "lb-status err"; return;
   }
-  const cleanName = name.trim().slice(0, 16);
+  const cleanName = name.trim().slice(0, CHAR_NAME_MAX_LEN);
   const entry = lbBuildEntry(player, cleanName);
 
   btn.disabled = true;
@@ -6540,23 +6647,38 @@ function lbSetSort(key) {
 }
 window.lbSetSort = lbSetSort;
 
-function lbInitUI(player) {
-  const input      = document.getElementById("lbNameInput");
-  const btn        = document.getElementById("lbSubmitBtn");
-  const status     = document.getElementById("lbStatus");
-  const search     = document.getElementById("lbSearchInput");
-  const refreshBtn = document.getElementById("lbRefreshBtn");
-  if (!input || !btn) return;
+// Shows the character's current name in the leaderboard registration
+// row so it's clear what name will be submitted — there's no separate
+// input anymore, the name lives on the character (Character tab).
+function renderLbCurrentCharName(player) {
+  const el = document.getElementById("lbCurrentCharName");
+  if (el) el.textContent = player.name || "—";
+}
 
-  const savedName = player.lbName || "";
-  if (savedName) {
-    input.value = savedName;
-    lbCurrentName = savedName;
-    if (status) { status.textContent = `ชื่อปัจจุบัน: ${savedName} — กด "ส่งขึ้น" เพื่ออัปเดต`; status.className = "lb-status"; }
+function lbInitUI(player) {
+  const nameDisplay = document.getElementById("lbCurrentCharName");
+  const btn         = document.getElementById("lbSubmitBtn");
+  const status      = document.getElementById("lbStatus");
+  const search      = document.getElementById("lbSearchInput");
+  const refreshBtn  = document.getElementById("lbRefreshBtn");
+  if (!btn) return;
+
+  renderLbCurrentCharName(player);
+
+  // If we'd already submitted under a name and the character has since
+  // been renamed, surface that so the player knows the board still
+  // shows the old name until they press submit again.
+  if (player.lbName && player.lbName !== player.name) {
+    lbCurrentName = player.lbName;
+    if (status) {
+      status.textContent = `ตารางแสดงชื่อเดิม "${player.lbName}" อยู่ — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตเป็นชื่อปัจจุบัน`;
+      status.className = "lb-status";
+    }
+  } else if (player.lbName) {
+    lbCurrentName = player.lbName;
   }
 
-  btn.addEventListener("click", () => lbSubmit(player, input.value));
-  input.addEventListener("keydown", e => { if (e.key === "Enter") lbSubmit(player, input.value); });
+  btn.addEventListener("click", () => lbSubmit(player, player.name));
   if (search) search.addEventListener("input", e => { lbSearchVal = e.target.value; lbRender(); });
   if (refreshBtn) refreshBtn.addEventListener("click", lbFetch);
 
@@ -7031,6 +7153,56 @@ function bindGlobalEvents() {
   document.getElementById("endlessStartBtn").addEventListener("click", () => {
     enterEndlessMode();
   });
+
+  // --- Character name: random suggestion + manual save ---
+  const charNameInput = document.getElementById("charNameInput");
+  const charNameSaveBtn = document.getElementById("charNameSaveBtn");
+  if (charNameInput && charNameSaveBtn) {
+    const commitName = () => {
+      const cleaned = charNameInput.value.trim().slice(0, CHAR_NAME_MAX_LEN);
+      if (!cleaned) {
+        showToast("กรุณาตั้งชื่ออย่างน้อย 1 ตัวอักษร");
+        charNameInput.value = player.name || "";
+        charNameSaveBtn.disabled = true;
+        return;
+      }
+      const hadSubmittedBefore = !!player.lbName;
+      player.name = cleaned;
+      charNameInput.value = cleaned;
+      charNameSaveBtn.disabled = true;
+      savePlayer(player);
+      renderLbCurrentCharName(player);
+      showToast(
+        hadSubmittedBefore
+          ? `ตั้งชื่อตัวละครเป็น "${cleaned}" แล้ว — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตชื่อบนตาราง`
+          : `ตั้งชื่อตัวละครเป็น "${cleaned}" แล้ว`
+      );
+    };
+
+    charNameInput.addEventListener("input", () => {
+      const cleaned = charNameInput.value.trim();
+      charNameSaveBtn.disabled = !cleaned || cleaned === (player.name || "");
+    });
+    charNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); commitName(); }
+    });
+    charNameSaveBtn.addEventListener("click", commitName);
+
+    document.getElementById("charNameRandomBtn").addEventListener("click", () => {
+      // Re-roll until we get a suggestion that differs from whatever's
+      // currently typed, so the button always feels like it did something —
+      // important since the pool is small enough to repeat by chance.
+      let suggestion = generateDarkFantasyName();
+      let attempts = 0;
+      while (suggestion === charNameInput.value && attempts < 5) {
+        suggestion = generateDarkFantasyName();
+        attempts++;
+      }
+      charNameInput.value = suggestion;
+      charNameSaveBtn.disabled = suggestion === (player.name || "");
+      charNameInput.focus();
+    });
+  }
 
   document.getElementById("rebirthBtn").addEventListener("click", () => {
     const info = getRebirthInfo(player);
