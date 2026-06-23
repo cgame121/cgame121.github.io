@@ -441,6 +441,51 @@ button {
   letter-spacing: 0.01em;
 }
 
+.char-exp-block {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.char-exp-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.char-exp-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.char-exp-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.char-exp-bar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-void);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.char-exp-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--gem));
+  transition: width 0.4s ease;
+}
+
 .stat-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
 .stat-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -2200,6 +2245,16 @@ button {
         <span class="cp-banner-value" id="cpValue">0</span>
       </div>
 
+      <div class="char-exp-block">
+        <div class="char-exp-label-row">
+          <span class="char-exp-label">ค่าประสบการณ์ (EXP)</span>
+          <span class="char-exp-value" id="charExpValue">0 / 0</span>
+        </div>
+        <div class="char-exp-bar">
+          <div class="char-exp-bar-fill" id="charExpBarFill"></div>
+        </div>
+      </div>
+
       <div class="stat-list">
         <div class="stat-row"><span class="stat-key">พลังชีวิต</span><span class="stat-val" id="statHp">—</span></div>
         <div class="stat-row"><span class="stat-key">พลังโจมตี</span><span class="stat-val" id="statAtk">—</span></div>
@@ -2778,7 +2833,7 @@ const DUNGEONS = [
     id: "d1", name: "ป่าเถ้าจาง", minLevel: 1, tier: "normal",
     desc: "ป่าที่แสงแดดไม่เคยลอดผ่าน เถ้าฝุ่นลอยอยู่กลางอากาศตลอดเวลา",
     monsterPool: ["หนูเงา", "ค้างคาวมืด", "หมาป่าซีด"],
-    boss: { name: "ราชาหมาป่าเถ้า", hpMult: 4.5 },
+    boss: { name: "ราชาหมาป่าเถ้า", hpMult: 5.4 },
     baseHp: 18, baseAtk: 4, baseDef: 1, goldMult: 1, expMult: 1,
     dropTable: { common: 70, uncommon: 25, rare: 5, epic: 0, legendary: 0, void: 0 },
   },
@@ -2786,7 +2841,7 @@ const DUNGEONS = [
     id: "d2", name: "สุสานเสียงครวญ", minLevel: 4, tier: "normal",
     desc: "หลุมศพเก่าที่ไม่มีใครจดจำชื่อผู้ตาย เสียงครวญลอยมาตามลม",
     monsterPool: ["โครงกระดูกพเนจร", "ผีดิบไร้เสียง", "วิญญาณคร่ำครวญ"],
-    boss: { name: "เจ้าสุสานไร้นาม", hpMult: 5 },
+    boss: { name: "เจ้าสุสานไร้นาม", hpMult: 6 },
     baseHp: 32, baseAtk: 7, baseDef: 3, goldMult: 1.4, expMult: 1.3,
     dropTable: { common: 55, uncommon: 32, rare: 11, epic: 2, legendary: 0, void: 0 },
   },
@@ -2794,7 +2849,7 @@ const DUNGEONS = [
     id: "d3", name: "เหมืองคริสตัลร้าง", minLevel: 8, tier: "normal",
     desc: "เหมืองที่ขุดลึกเกินไปจนปลุกสิ่งที่หลับใหลขึ้นมา",
     monsterPool: ["โกเลมคริสตัล", "ค้างคาวพิษ", "แมงมุมเหมือง"],
-    boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 5.5 },
+    boss: { name: "ผู้พิทักษ์คริสตัล", hpMult: 6.6 },
     baseHp: 55, baseAtk: 11, baseDef: 6, goldMult: 1.9, expMult: 1.6,
     dropTable: { common: 45, uncommon: 35, rare: 16, epic: 4, legendary: 0, void: 0 },
   },
@@ -2802,7 +2857,7 @@ const DUNGEONS = [
     id: "d4", name: "หอคอยกระจกแตก", minLevel: 13, tier: "normal",
     desc: "หอคอยที่กระจกทุกบานสะท้อนภาพไม่ตรงกับความจริง",
     monsterPool: ["เงาสะท้อนวิปลาส", "อัศวินกระจก", "ภูตแสงหัก"],
-    boss: { name: "จอมเวทกระจกมืด", hpMult: 6 },
+    boss: { name: "จอมเวทกระจกมืด", hpMult: 7.2 },
     baseHp: 88, baseAtk: 17, baseDef: 10, goldMult: 2.5, expMult: 2.1,
     dropTable: { common: 35, uncommon: 38, rare: 20, epic: 6, legendary: 1, void: 0 },
   },
@@ -2810,7 +2865,7 @@ const DUNGEONS = [
     id: "d4b", name: "หุบเขาหมอกพิษ", minLevel: 17, tier: "normal",
     desc: "หุบเขาที่หมอกพิษปกคลุมตลอดกาล สิ่งมีชีวิตที่รอดได้ล้วนกลายพันธุ์ไปแล้ว",
     monsterPool: ["ค้างคาวพิษ", "แมงมุมเหมือง", "ภูตแสงหัก"],
-    boss: { name: "ราชินีแมงมุมพิษ", hpMult: 6.2 },
+    boss: { name: "ราชินีแมงมุมพิษ", hpMult: 7.44 },
     baseHp: 110, baseAtk: 21, baseDef: 13, goldMult: 3.0, expMult: 2.5,
     dropTable: { common: 30, uncommon: 40, rare: 22, epic: 7, legendary: 1, void: 0 },
   },
@@ -2818,7 +2873,7 @@ const DUNGEONS = [
     id: "d4c", name: "ซากปรักหักพังอาณาจักรเก่า", minLevel: 21, tier: "normal",
     desc: "เมืองโบราณที่ถูกกลืนกินโดยธรรมชาติ วิญญาณนักรบผู้ปกป้องยังคงลาดตระเวนอยู่",
     monsterPool: ["อัศวินกระจก", "โครงกระดูกพเนจร", "ทหารเหล็กพัง"],
-    boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 6.5 },
+    boss: { name: "จอมพลโบราณผู้ไม่ตาย", hpMult: 7.8 },
     baseHp: 138, baseAtk: 26, baseDef: 16, goldMult: 3.6, expMult: 3.0,
     dropTable: { common: 24, uncommon: 40, rare: 26, epic: 9, legendary: 1, void: 0 },
   },
@@ -2826,7 +2881,7 @@ const DUNGEONS = [
     id: "d4d", name: "ทุ่งหิมะนิรันดร์", minLevel: 25, tier: "normal",
     desc: "ทุ่งกว้างที่หิมะไม่เคยละลาย อุณหภูมิต่ำจนกระดูกแตก ผู้รอดชีวิตมีน้อยมาก",
     monsterPool: ["วิญญาณพลัดถิ่น", "หมาป่าซีด", "โกเลมคริสตัล"],
-    boss: { name: "เจ้าแม่หิมะอมตะ", hpMult: 6.8 },
+    boss: { name: "เจ้าแม่หิมะอมตะ", hpMult: 8.16 },
     baseHp: 168, baseAtk: 32, baseDef: 20, goldMult: 4.2, expMult: 3.6,
     dropTable: { common: 20, uncommon: 38, rare: 28, epic: 12, legendary: 2, void: 0 },
   },
@@ -2834,7 +2889,7 @@ const DUNGEONS = [
     id: "d5", name: "ทะเลทรายเลือดแห้ง", minLevel: 30, tier: "hard",
     desc: "ทรายสีแดงคล้ำที่จดจำสงครามครั้งใหญ่ในอดีต",
     monsterPool: ["นักรบทรายผุ", "อสรพิษเพลิง", "หัวขโมยทะเลทราย"],
-    boss: { name: "จอมทัพทรายเดือด", hpMult: 6.5 },
+    boss: { name: "จอมทัพทรายเดือด", hpMult: 7.8 },
     baseHp: 210, baseAtk: 38, baseDef: 24, goldMult: 5.0, expMult: 4.2,
     dropTable: { common: 18, uncommon: 36, rare: 28, epic: 15, legendary: 3, void: 0 },
   },
@@ -2842,7 +2897,7 @@ const DUNGEONS = [
     id: "d5b", name: "ป่าดึกดำบรรพ์วิปลาส", minLevel: 35, tier: "hard",
     desc: "ป่าที่ต้นไม้มีจิตใจ รากไม้คือกับดัก และเงาของต้นไม้คือสิ่งมีชีวิต",
     monsterPool: ["เงาผู้พิพากษา", "ภูตแสงหัก", "เทพปลอมแปลง"],
-    boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 7.0 },
+    boss: { name: "จิตวิญญาณป่าบิดเบี้ยว", hpMult: 8.4 },
     baseHp: 290, baseAtk: 52, baseDef: 34, goldMult: 6.2, expMult: 5.2,
     dropTable: { common: 12, uncommon: 32, rare: 30, epic: 20, legendary: 6, void: 0 },
   },
@@ -2850,7 +2905,7 @@ const DUNGEONS = [
     id: "d6", name: "วิหารใต้นทีดำ", minLevel: 40, tier: "hard",
     desc: "วิหารจมอยู่ใต้แม่น้ำที่ไม่มีแสงใดส่องถึง",
     monsterPool: ["นักบวชจมน้ำ", "งูทะเลลึก", "เทพปลอมแปลง"],
-    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 7 },
+    boss: { name: "เทพเจ้าผิดเพี้ยน", hpMult: 8.4 },
     baseHp: 380, baseAtk: 68, baseDef: 44, goldMult: 7.8, expMult: 6.5,
     dropTable: { common: 8, uncommon: 28, rare: 32, epic: 24, legendary: 8, void: 0 },
   },
@@ -2858,7 +2913,7 @@ const DUNGEONS = [
     id: "d6b", name: "หอหมอกจักรกล", minLevel: 46, tier: "hard",
     desc: "หอคอยที่สร้างขึ้นด้วยเวทมนตร์และเครื่องจักร สิ่งประดิษฐ์ทุกชิ้นมีจิตใจ",
     monsterPool: ["ปืนใหญ่วิญญาณ", "โกเลมคริสตัล", "หุ่นพิทักษ์บัลลังก์"],
-    boss: { name: "จักรกลเทพสังหาร", hpMult: 7.5 },
+    boss: { name: "จักรกลเทพสังหาร", hpMult: 9 },
     baseHp: 480, baseAtk: 86, baseDef: 56, goldMult: 9.5, expMult: 8.0,
     dropTable: { common: 4, uncommon: 20, rare: 32, epic: 30, legendary: 14, void: 0 },
   },
@@ -2866,7 +2921,7 @@ const DUNGEONS = [
     id: "d6c", name: "ป้อมปราการเหล็กกล้า", minLevel: 52, tier: "hard",
     desc: "ป้อมที่ครั้งหนึ่งปกป้องอาณาจักร บัดนี้กลับหันมาทำลายผู้บุกรุก",
     monsterPool: ["ทหารเหล็กพัง", "ปืนใหญ่วิญญาณ", "แม่ทัพไร้หัว"],
-    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 7.5 },
+    boss: { name: "จักรกลสงครามต้องสาป", hpMult: 9 },
     baseHp: 590, baseAtk: 108, baseDef: 70, goldMult: 11.5, expMult: 9.8,
     dropTable: { common: 2, uncommon: 14, rare: 30, epic: 34, legendary: 20, void: 0 },
   },
@@ -2874,7 +2929,7 @@ const DUNGEONS = [
     id: "d7", name: "ห้วงดิ่งสุดท้าย", minLevel: 60, tier: "extreme",
     desc: "จุดสิ้นสุดของดันเจี้ยนทั้งมวล ที่ความมืดไม่มีก้นบึ้ง",
     monsterPool: ["เศษเสี้ยวความมืด", "ผู้เฝ้าห้วง", "วิญญาณพลัดถิ่น"],
-    boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 8.5 },
+    boss: { name: "ผู้ครองห้วงดิ่ง", hpMult: 10.2 },
     baseHp: 750, baseAtk: 135, baseDef: 88, goldMult: 14, expMult: 12,
     dropTable: { common: 1, uncommon: 9, rare: 27, epic: 35, legendary: 25, void: 3 },
   },
@@ -2882,7 +2937,7 @@ const DUNGEONS = [
     id: "d7b", name: "มิติแตกสลาย", minLevel: 67, tier: "extreme",
     desc: "ช่องโหว่มิติที่พังทลาย สิ่งมีชีวิตจากโลกอื่นหลั่งไหลเข้ามาไม่หยุด",
     monsterPool: ["เงาสะท้อนวิปลาส", "ผู้เฝ้าห้วง", "อสูรแสงดับ"],
-    boss: { name: "จอมอสูรมิติฉีก", hpMult: 9.0 },
+    boss: { name: "จอมอสูรมิติฉีก", hpMult: 10.8 },
     baseHp: 950, baseAtk: 170, baseDef: 112, goldMult: 17.5, expMult: 15,
     dropTable: { common: 0, uncommon: 5, rare: 20, epic: 36, legendary: 32, void: 7 },
   },
@@ -2890,7 +2945,7 @@ const DUNGEONS = [
     id: "d8", name: "นรกเหวลึกไร้สิ้นสุด", minLevel: 75, tier: "extreme",
     desc: "ดันเจียนระดับยากสุดขั้ว สำหรับนักรบที่ทะลวงผ่านห้วงดิ่งสุดท้ายมาแล้วเท่านั้น มอนสเตอร์ที่นี่แข็งแกร่งและโหดร้ายเกินจินตนาการ",
     monsterPool: ["อสูรเหวเพลิง", "เงาผู้พิพากษา", "ปีศาจกลืนวิญญาณ"],
-    boss: { name: "จอมเทพอเวจี", hpMult: 10 },
+    boss: { name: "จอมเทพอเวจี", hpMult: 12 },
     baseHp: 1200, baseAtk: 215, baseDef: 142, goldMult: 22, expMult: 19,
     dropTable: { common: 0, uncommon: 2, rare: 14, epic: 34, legendary: 38, void: 12 },
   },
@@ -2898,7 +2953,7 @@ const DUNGEONS = [
     id: "d8b", name: "สวรรค์ที่ถูกสาป", minLevel: 84, tier: "extreme",
     desc: "แดนสวรรค์ที่ครั้งหนึ่งเต็มไปด้วยแสงสว่าง แต่บัดนี้ถูกคำสาปปกคลุม เทพผู้ตกสวรรค์พเนจรอยู่ทั่วทุกหนแห่ง",
     monsterPool: ["ทวยเทพพลัดถิ่น", "วิญญาณครวญ", "ภูตแสงหัก"],
-    boss: { name: "เทพจุติผู้ทรยศ", hpMult: 11 },
+    boss: { name: "เทพจุติผู้ทรยศ", hpMult: 13.2 },
     baseHp: 1550, baseAtk: 278, baseDef: 184, goldMult: 28, expMult: 24,
     dropTable: { common: 0, uncommon: 0, rare: 9, epic: 33, legendary: 40, void: 18 },
   },
@@ -2906,7 +2961,7 @@ const DUNGEONS = [
     id: "d9", name: "บัลลังก์เทพจุติล่มสลาย", minLevel: 92, tier: "extreme",
     desc: "จุดสูงสุดของห้วงมิติทั้งปวง บัลลังก์ที่เทพจุติผู้ล่มสลายเฝ้ารออยู่ ท้าทายเฉพาะผู้กล้าที่แข็งแกร่งที่สุดเท่านั้น",
     monsterPool: ["ทวยเทพพลัดถิ่น", "อสูรแสงดับ", "หุ่นพิทักษ์บัลลังก์"],
-    boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 12 },
+    boss: { name: "เทพจุติผู้ล่มสลาย", hpMult: 14.4 },
     baseHp: 1950, baseAtk: 352, baseDef: 234, goldMult: 35, expMult: 30,
     dropTable: { common: 0, uncommon: 0, rare: 5, epic: 28, legendary: 42, void: 25 },
   },
@@ -2915,7 +2970,7 @@ const DUNGEONS = [
     id: "d10", name: "ห้วงอนันต์เหนือมิติ", minLevel: 102, tier: "transcendent",
     desc: "พื้นที่ที่อยู่เหนือกฎของมิติทั้งปวง ไม่มีแสง ไม่มีเวลา มีเพียงพลังงานแห่งการทำลายล้าง",
     monsterPool: ["อสูรอนันต์", "เศษเสี้ยวความว่างเปล่า", "ผู้พิทักษ์นิรันดร์"],
-    boss: { name: "เจ้าแห่งอนันต์", hpMult: 13 },
+    boss: { name: "เจ้าแห่งอนันต์", hpMult: 15.6 },
     baseHp: 2500, baseAtk: 448, baseDef: 298, goldMult: 44, expMult: 38,
     dropTable: { common: 0, uncommon: 0, rare: 2, epic: 24, legendary: 40, void: 34 },
   },
@@ -2923,7 +2978,7 @@ const DUNGEONS = [
     id: "d10b", name: "แกนกลางแห่งความว่างเปล่า", minLevel: 112, tier: "transcendent",
     desc: "ศูนย์กลางของจักรวาลที่ถูกกัดกร่อนจนเหลือแต่ความว่างเปล่า สิ่งมีชีวิตที่เข้ามาจะสูญสลายทีละส่วน",
     monsterPool: ["เศษเสี้ยวความว่างเปล่า", "จิตวิญญาณสูญสลาย", "อสูรสาปแช่ง"],
-    boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 13.5 },
+    boss: { name: "ผู้คุมแกนกลางจักรวาล", hpMult: 16.2 },
     baseHp: 3200, baseAtk: 572, baseDef: 380, goldMult: 56, expMult: 48,
     dropTable: { common: 0, uncommon: 0, rare: 1, epic: 18, legendary: 38, void: 43 },
   },
@@ -2931,7 +2986,7 @@ const DUNGEONS = [
     id: "d10c", name: "วังวนนิรันดร์แห่งวิญญาณ", minLevel: 123, tier: "transcendent",
     desc: "วังวนที่กักขังวิญญาณนักรบผู้แข็งแกร่งที่สุดตลอดกาล พวกเขาถูกบังคับให้สู้รบไปชั่วนิรันดร์",
     monsterPool: ["วิญญาณนักรบอมตะ", "ผู้พิทักษ์นิรันดร์", "อสูรอนันต์"],
-    boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 14 },
+    boss: { name: "ราชาวิญญาณนักรบอมตะ", hpMult: 16.8 },
     baseHp: 4100, baseAtk: 728, baseDef: 484, goldMult: 70, expMult: 60,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 12, legendary: 36, void: 52 },
   },
@@ -2939,7 +2994,7 @@ const DUNGEONS = [
     id: "d11", name: "ดาวมรณะแห่งจักรวาล", minLevel: 135, tier: "transcendent",
     desc: "ดาวที่กำลังจะระเบิดสลาย แต่ก่อนจะสูญสิ้น มันกลับให้กำเนิดอสูรร้ายที่แข็งแกร่งที่สุดในจักรวาล",
     monsterPool: ["อสูรดาวเพลิง", "หินอุกกาบาตจิตวิญญาณ", "อสูรอนันต์"],
-    boss: { name: "จอมอสูรดาวมรณะ", hpMult: 14.5 },
+    boss: { name: "จอมอสูรดาวมรณะ", hpMult: 17.4 },
     baseHp: 5200, baseAtk: 924, baseDef: 614, goldMult: 88, expMult: 75,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 7, legendary: 30, void: 63 },
   },
@@ -2947,7 +3002,7 @@ const DUNGEONS = [
     id: "d11b", name: "สุสานเทพจักรวาล", minLevel: 148, tier: "transcendent",
     desc: "สุสานที่ฝังพระศพของเทพผู้สร้างจักรวาล วิญญาณของพวกเขาลุกขึ้นมาเพื่อทดสอบผู้บุกรุก",
     monsterPool: ["วิญญาณเทพผู้สร้าง", "ผู้พิทักษ์สุสานศักดิ์สิทธิ์", "จิตวิญญาณสูญสลาย"],
-    boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 15 },
+    boss: { name: "เทพผู้สร้างฟื้นคืน", hpMult: 18 },
     baseHp: 6600, baseAtk: 1170, baseDef: 778, goldMult: 110, expMult: 94,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 24, void: 73 },
   },
@@ -2955,7 +3010,7 @@ const DUNGEONS = [
     id: "d12", name: "มิติต้นกำเนิดแห่งความมืด", minLevel: 162, tier: "transcendent",
     desc: "มิติแรกที่มีก่อนจักรวาลจะถือกำเนิด ความมืดที่นี่มีจิตใจและหิวโหยพลังงานชีวิต",
     monsterPool: ["ความมืดดั้งเดิม", "อสูรสาปแช่ง", "วิญญาณเทพผู้สร้าง"],
-    boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 15.5 },
+    boss: { name: "ความมืดต้นกำเนิดผู้ตื่น", hpMult: 18.6 },
     baseHp: 8400, baseAtk: 1484, baseDef: 988, goldMult: 138, expMult: 118,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 1, legendary: 17, void: 82 },
   },
@@ -2963,7 +3018,7 @@ const DUNGEONS = [
     id: "d12b", name: "ป้อมปราการเหนือกาลเวลา", minLevel: 177, tier: "transcendent",
     desc: "ป้อมที่สร้างขึ้นนอกกรอบเวลา ผู้รักษาการณ์ที่นี่เป็นเงาของนักรบผู้ยิ่งใหญ่จากทุกยุคสมัย",
     monsterPool: ["เงานักรบจากทุกยุคสมัย", "ผู้พิทักษ์เหนือกาลเวลา", "ความมืดดั้งเดิม"],
-    boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 16 },
+    boss: { name: "ผู้บัญชาการเหนือกาลเวลา", hpMult: 19.2 },
     baseHp: 10600, baseAtk: 1880, baseDef: 1252, goldMult: 172, expMult: 148,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 11, void: 89 },
   },
@@ -2971,7 +3026,7 @@ const DUNGEONS = [
     id: "d13", name: "บัลลังก์ผู้สร้างและผู้ทำลาย", minLevel: 193, tier: "transcendent",
     desc: "สถานที่ที่พลังแห่งการสร้างและการทำลายล้างชนกัน ทุกสิ่งที่เข้ามาจะถูกกลืนกินและเกิดใหม่อีกครั้ง",
     monsterPool: ["อสูรแห่งการสร้าง", "อสูรแห่งการทำลาย", "เงานักรบจากทุกยุคสมัย"],
-    boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 17 },
+    boss: { name: "เทพแห่งวัฏจักรไม่สิ้นสุด", hpMult: 20.4 },
     baseHp: 13400, baseAtk: 2380, baseDef: 1584, goldMult: 215, expMult: 185,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 6, void: 94 },
   },
@@ -2979,7 +3034,7 @@ const DUNGEONS = [
     id: "d13b", name: "ห้วงลึกแห่งพลังงานดิบ", minLevel: 210, tier: "transcendent",
     desc: "แหล่งพลังงานบริสุทธิ์ดิบที่ไม่มีรูปร่าง ก่อนจักรวาลจะมีกฎใดๆ พลังงานที่นี่สามารถสร้างและทำลายจักรวาลได้",
     monsterPool: ["พลังงานดิบมีชีวิต", "อสูรแห่งการทำลาย", "ผู้พิทักษ์เหนือกาลเวลา"],
-    boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 18 },
+    boss: { name: "จิตสำนึกแห่งพลังงานดิบ", hpMult: 21.6 },
     baseHp: 17000, baseAtk: 3010, baseDef: 2006, goldMult: 270, expMult: 232,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 2, void: 98 },
   },
@@ -2987,7 +3042,7 @@ const DUNGEONS = [
     id: "d14", name: "จุดสิ้นสุดก่อนการเริ่มต้น", minLevel: 230, tier: "transcendent",
     desc: "จุดที่อยู่นอกเหนือความเป็นและความตาย ก่อนที่จักรวาลจะมีอยู่และหลังจากที่มันสูญสิ้นไปแล้ว มีเพียงสิ่งนี้เท่านั้นที่ดำรงอยู่",
     monsterPool: ["สิ่งที่ไม่มีชื่อ", "พลังงานดิบมีชีวิต", "อสูรแห่งการสร้าง"],
-    boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 20 },
+    boss: { name: "ผู้ที่มีอยู่ก่อนทุกสิ่ง", hpMult: 24 },
     baseHp: 22000, baseAtk: 3900, baseDef: 2600, goldMult: 340, expMult: 292,
     dropTable: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0, void: 100 },
   },
@@ -3005,7 +3060,7 @@ const LEVEL_GROWTH = {
 
 // EXP needed for next level: formula based
 function expForLevel(level) {
-  return Math.floor(25 * Math.pow(level, 1.55));
+  return Math.floor(34 * Math.pow(level, 1.72));
 }
 
 // ============================================
@@ -3694,7 +3749,7 @@ const ROOMS_PER_DUNGEON = 15; // 14 normal + 1 boss (3x original)
 
 function generateMonster(dungeon, roomIndex, player) {
   const isBoss = roomIndex === ROOMS_PER_DUNGEON - 1;
-  const scale = 1 + roomIndex * 0.18;
+  const scale = 1 + roomIndex * 0.22;
   const name = isBoss
     ? dungeon.boss.name
     : dungeon.monsterPool[Math.floor(Math.random() * dungeon.monsterPool.length)];
@@ -3706,8 +3761,8 @@ function generateMonster(dungeon, roomIndex, player) {
     isBoss,
     maxHp: Math.round(dungeon.baseHp * scale * hpMult),
     hp: Math.round(dungeon.baseHp * scale * hpMult),
-    atk: Math.round(dungeon.baseAtk * scale * (isBoss ? 1.4 : 1)),
-    def: Math.round(dungeon.baseDef * scale * (isBoss ? 1.3 : 1)),
+    atk: Math.round(dungeon.baseAtk * scale * (isBoss ? 1.6 : 1.08)),
+    def: Math.round(dungeon.baseDef * scale * (isBoss ? 1.5 : 1.08)),
     spd: 0.85 + Math.random() * 0.3,
   };
 }
@@ -3723,11 +3778,11 @@ function generateMonster(dungeon, roomIndex, player) {
 // every render.
 function getDungeonRecommendedCP(dungeon) {
   const bossRoomIndex = ROOMS_PER_DUNGEON - 1;
-  const scale = 1 + bossRoomIndex * 0.18;
+  const scale = 1 + bossRoomIndex * 0.22;
   const bossStats = {
     hp: dungeon.baseHp * scale * dungeon.boss.hpMult,
-    atk: dungeon.baseAtk * scale * 1.4,
-    def: dungeon.baseDef * scale * 1.3,
+    atk: dungeon.baseAtk * scale * 1.6,
+    def: dungeon.baseDef * scale * 1.5,
     spd: 1.0,
   };
   return combatPowerFromStats(bossStats);
@@ -3817,7 +3872,7 @@ function expDropForKill(dungeon, isBoss, player) {
 // saved mid-run — only the result (wave reached) is kept, in a small
 // personal leaderboard of best attempts.
 // ============================================
-const ENDLESS_WAVE_SCALE = 1.13;   // boss HP/ATK/DEF growth per wave
+const ENDLESS_WAVE_SCALE = 1.17;   // boss HP/ATK/DEF growth per wave
 const ENDLESS_REWARD_SCALE = 1.07; // gold/exp growth per wave
 const ENDLESS_LEADERBOARD_MAX = 10;
 
@@ -3838,8 +3893,8 @@ function generateEndlessBoss(wave, player) {
     isBoss: true,
     maxHp,
     hp: maxHp,
-    atk: Math.round(baseDungeon.baseAtk * 1.4 * scale),
-    def: Math.round(baseDungeon.baseDef * 1.3 * scale),
+    atk: Math.round(baseDungeon.baseAtk * 1.6 * scale),
+    def: Math.round(baseDungeon.baseDef * 1.5 * scale),
     spd: 0.85 + Math.random() * 0.3,
   };
 }
@@ -3914,6 +3969,11 @@ function renderStats(player) {
   const cp = combatPowerFromStats(s);
   document.getElementById("cpValue").textContent = fmtNum(cp);
   document.getElementById("hudCP").textContent = fmtNum(cp);
+
+  const expNeeded = expForLevel(player.level);
+  const expPct = Math.min(100, (player.exp / expNeeded) * 100);
+  document.getElementById("charExpValue").textContent = `${fmtNum(player.exp)} / ${fmtNum(expNeeded)}`;
+  document.getElementById("charExpBarFill").style.width = expPct + "%";
 }
 
 // ---------- Equipment slots ----------
