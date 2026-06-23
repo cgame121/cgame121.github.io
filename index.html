@@ -3164,14 +3164,14 @@ function computeItemPower(item) {
 // ============================================
 // VOIDFALL - Enchanting ("ตีบวก") system
 // Spends gold to permanently boost an item's stats.
-// Levels 0-4 always succeed; beyond that, success chance drops
+// Levels 0-1 always succeed; beyond that, success chance drops
 // and a failed attempt still consumes the gold but does not lower
 // the item's level (no risk of losing the item itself).
 // ============================================
 const ENCHANT_MAX_LEVEL = 15;
 const ENCHANT_STAT_BONUS_PER_LEVEL = 0.08; // +8% to all of the item's stats, per level, cumulative
-const ENCHANT_SAFE_LEVEL = 5; // attempts below this level always succeed
-const ENCHANT_MIN_CHANCE = 35; // success chance never drops below this
+const ENCHANT_SAFE_LEVEL = 2; // attempts below this level always succeed (was 5)
+const ENCHANT_MIN_CHANCE = 15; // success chance never drops below this (was 35)
 
 function enchantStatMultiplier(item) {
   return 1 + (item.enchant || 0) * ENCHANT_STAT_BONUS_PER_LEVEL;
@@ -3181,13 +3181,13 @@ function enchantCost(item) {
   const rarityInfo = RARITY[item.rarity];
   const level = item.enchant || 0;
   const base = 6 + item.itemLevel * 2.2;
-  return Math.max(4, Math.round(base * rarityInfo.mult * Math.pow(1.28, level)));
+  return Math.max(4, Math.round(base * rarityInfo.mult * Math.pow(1.55, level)));
 }
 
 function enchantSuccessChance(item) {
   const level = item.enchant || 0;
   if (level < ENCHANT_SAFE_LEVEL) return 100;
-  const chance = 100 - (level - (ENCHANT_SAFE_LEVEL - 1)) * 9;
+  const chance = 100 - (level - (ENCHANT_SAFE_LEVEL - 1)) * 12;
   return Math.max(ENCHANT_MIN_CHANCE, chance);
 }
 
