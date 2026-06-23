@@ -437,6 +437,14 @@ button {
 }
 .char-name-input:focus { border-color: var(--accent); }
 .char-name-input::placeholder { color: var(--text-faint); font-family: var(--font-body); font-weight: 400; }
+.char-name-input:disabled { opacity: 0.5; cursor: not-allowed; }
+.char-name-hint {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: -8px;
+  margin-bottom: 14px;
+}
+.char-name-hint-locked { color: var(--gold); }
 .btn-dice {
   flex-shrink: 0;
   width: 38px; height: 38px;
@@ -450,6 +458,7 @@ button {
 }
 .btn-dice:hover { border-color: var(--accent); transform: rotate(-8deg); }
 .btn-dice:active { transform: scale(0.92) rotate(-8deg); }
+.btn-dice:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .btn-name-save {
   flex-shrink: 0;
   width: 38px; height: 38px;
@@ -2567,6 +2576,7 @@ button {
         <button class="btn-dice" id="charNameRandomBtn" title="สุ่มชื่อแฟนตาซีมืด" aria-label="สุ่มชื่อ">🎲</button>
         <button class="btn-name-save" id="charNameSaveBtn" title="บันทึกชื่อ" aria-label="บันทึกชื่อ" disabled>✓</button>
       </div>
+      <div class="char-name-hint" id="charNameHint"></div>
 
       <div class="cp-banner">
         <span class="cp-banner-label">พลังรวม (CP)</span>
@@ -3740,6 +3750,15 @@ const SHOP_DEFS = [
     actionLabel: "ซื้อ",
     cost: (player) => nextInvExpandCost(player),
   },
+  {
+    id: "name_scroll",
+    type: "name_scroll",
+    name: "ใบเปลี่ยนชื่อ",
+    desc: (player) => `ใช้เปลี่ยนชื่อตัวละครได้อีก 1 ครั้ง (ปัจจุบันเหลือ ${player.nameChangesAvailable || 0} ครั้ง)`,
+    icon: "scroll",
+    actionLabel: "ซื้อ",
+    cost: 40,
+  },
 ];
 
 function shopItemCost(def, player) {
@@ -3812,6 +3831,7 @@ function generateDarkFantasyName() {
 function createNewPlayer() {
   return {
     name: generateDarkFantasyName(),
+    nameChangesAvailable: 1, // free renames left; buy "ใบเปลี่ยนชื่อ" in the Shop for more
     level: 1,
     exp: 0,
     gold: 0,
@@ -4046,6 +4066,12 @@ function repairPlayerShape(parsed) {
     parsed.name = generateDarkFantasyName();
   } else {
     parsed.name = parsed.name.trim().slice(0, CHAR_NAME_MAX_LEN);
+  }
+  // Saves from before the one-time naming limit existed get 0 free changes
+  // left (they've already had unlimited renaming); going forward they buy
+  // scrolls in the Shop like everyone else.
+  if (typeof parsed.nameChangesAvailable !== "number" || parsed.nameChangesAvailable < 0) {
+    parsed.nameChangesAvailable = 0;
   }
   if (!parsed.equipment || typeof parsed.equipment !== "object") parsed.equipment = {};
   for (const slot of SLOTS) {
@@ -4383,6 +4409,7 @@ const ICONS = {
   gloves: `<svg viewBox="0 0 24 24"><path d="M7 21V11a2 2 0 114 0v3M11 14v-5a2 2 0 114 0v5M15 14v-3a2 2 0 114 0v6c0 3-2 5-5 5H9a4 4 0 01-4-4v-3l2-2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   boots: `<svg viewBox="0 0 24 24"><path d="M8 3v9l-5 4v3h17c0-4-3-5-6-6V3H8z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg>`,
   gem: `<svg viewBox="0 0 24 24"><path d="M6 9l6-6 6 6-6 12-6-12z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M6 9h12M9 9l3 12M15 9l-3 12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
+  scroll: `<svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v1H8a3 3 0 00-3 3v9a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M8 11h11v6a3 3 0 01-3 3H8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M9 14h7M9 17h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
 };
 
 function iconHtml(icon, color) {
@@ -4781,11 +4808,16 @@ function buyShopItem(id) {
     player.gems -= cost;
     player.inventoryCapacityBonus = (player.inventoryCapacityBonus || 0) + INV_EXPAND_STEP;
     showToast(`ขยายคลังไอเทม +${INV_EXPAND_STEP} ช่อง (รวม ${inventoryCapacity(player)} ช่อง)`);
+  } else if (def.type === "name_scroll") {
+    player.gems -= cost;
+    player.nameChangesAvailable = (player.nameChangesAvailable || 0) + 1;
+    showToast("ได้รับใบเปลี่ยนชื่อ 1 ใบ — ไปเปลี่ยนชื่อได้ที่แท็บตัวละคร");
   }
 
   renderHud(player);
   renderShop(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
+  renderCharName(player);
   savePlayer(player);
 }
 
@@ -5215,12 +5247,24 @@ function renderAll() {
 function renderCharName(player) {
   const input = document.getElementById("charNameInput");
   const saveBtn = document.getElementById("charNameSaveBtn");
+  const randomBtn = document.getElementById("charNameRandomBtn");
+  const hint = document.getElementById("charNameHint");
   renderLbCurrentCharName(player);
   if (!input) return;
+  const changesLeft = player.nameChangesAvailable || 0;
+  const locked = changesLeft <= 0;
   if (document.activeElement !== input) {
     input.value = player.name || "";
   }
+  input.disabled = locked;
+  if (randomBtn) randomBtn.disabled = locked;
   if (saveBtn) saveBtn.disabled = true;
+  if (hint) {
+    hint.textContent = locked
+      ? "ใช้สิทธิ์เปลี่ยนชื่อหมดแล้ว — ซื้อ \"ใบเปลี่ยนชื่อ\" ได้ที่ร้านค้า"
+      : `เปลี่ยนชื่อได้อีก ${changesLeft} ครั้ง`;
+    hint.classList.toggle("char-name-hint-locked", locked);
+  }
 }
 
 function renderAutoToggle(player) {
@@ -7159,6 +7203,12 @@ function bindGlobalEvents() {
   const charNameSaveBtn = document.getElementById("charNameSaveBtn");
   if (charNameInput && charNameSaveBtn) {
     const commitName = () => {
+      if ((player.nameChangesAvailable || 0) <= 0) {
+        showToast("ใช้สิทธิ์เปลี่ยนชื่อหมดแล้ว — ซื้อใบเปลี่ยนชื่อได้ที่ร้านค้า");
+        charNameInput.value = player.name || "";
+        renderCharName(player);
+        return;
+      }
       const cleaned = charNameInput.value.trim().slice(0, CHAR_NAME_MAX_LEN);
       if (!cleaned) {
         showToast("กรุณาตั้งชื่ออย่างน้อย 1 ตัวอักษร");
@@ -7168,10 +7218,12 @@ function bindGlobalEvents() {
       }
       const hadSubmittedBefore = !!player.lbName;
       player.name = cleaned;
+      player.nameChangesAvailable = Math.max(0, (player.nameChangesAvailable || 0) - 1);
       charNameInput.value = cleaned;
       charNameSaveBtn.disabled = true;
       savePlayer(player);
       renderLbCurrentCharName(player);
+      renderCharName(player);
       showToast(
         hadSubmittedBefore
           ? `ตั้งชื่อตัวละครเป็น "${cleaned}" แล้ว — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตชื่อบนตาราง`
