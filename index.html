@@ -176,8 +176,8 @@ button {
 }
 .more-menu-sheet:not(.hidden) { transform: translateY(0); }
 .more-menu-sheet.dragging { transition: none; }
-.more-menu-handle { display: flex; justify-content: center; padding: 14px 0 8px; cursor: grab; touch-action: none; }
-.more-menu-handle-bar { width: 36px; height: 4px; background: var(--line-strong); border-radius: 2px; }
+.more-menu-handle { display: flex; justify-content: center; padding: 16px 0 14px; cursor: grab; touch-action: none; }
+.more-menu-handle-bar { width: 40px; height: 5px; background: var(--line-strong); border-radius: 3px; }
 .more-menu-title {
   font-family: var(--font-display);
   font-size: 13px;
@@ -1934,6 +1934,7 @@ button {
 .tooltip:not(.hidden) {
   transform: translateY(0);
 }
+.tooltip.dragging { transition: none; }
 .tooltip-backdrop {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.5);
@@ -1949,12 +1950,14 @@ button {
 .tooltip-handle {
   display: flex;
   justify-content: center;
-  padding: 10px 0 4px;
+  padding: 16px 0 14px;
+  cursor: grab;
+  touch-action: none;
 }
 .tooltip-handle-bar {
-  width: 36px; height: 4px;
+  width: 40px; height: 5px;
   background: var(--line-strong);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 .tooltip-body {
   padding: 4px 20px 28px;
@@ -5684,6 +5687,7 @@ function showTooltip(item, evt, ctx) {
   const tip = document.getElementById("itemTooltip");
   const backdrop = document.getElementById("itemTooltipBackdrop");
   tip.classList.remove("hidden");
+  tip.style.removeProperty("transform");
   backdrop.classList.add("visible");
 }
 
@@ -5709,7 +5713,9 @@ function refreshOpenTooltip() {
 
 function hideTooltip() {
   tooltipCtx = null;
-  document.getElementById("itemTooltip").classList.add("hidden");
+  const tip = document.getElementById("itemTooltip");
+  tip.classList.add("hidden");
+  tip.style.removeProperty("transform");
   document.getElementById("itemTooltipBackdrop").classList.remove("visible");
 }
 
@@ -5717,6 +5723,7 @@ function hideTooltip() {
 (function setupTooltipBackdrop() {
   document.getElementById("itemTooltipBackdrop").addEventListener("click", hideTooltip);
   document.getElementById("itemTooltip").addEventListener("click", (e) => e.stopPropagation());
+  initItemTooltipDrag();
 })();
 
 
@@ -6281,12 +6288,10 @@ function openMoreMenu() {
   document.getElementById("moreMenuBtn")?.setAttribute("aria-expanded", "true");
 }
 
-// Drag-to-dismiss for the "more" bottom sheet — works with touch, mouse, and pen
+// Generic drag-to-dismiss for bottom sheets — works with touch, mouse, and pen
 // via Pointer Events. Dragging the handle down past a threshold (or with enough
-// velocity) closes the sheet; otherwise it snaps back open.
-function initMoreMenuDrag() {
-  const sheet = document.getElementById("moreMenuSheet");
-  const handle = document.querySelector("#moreMenuSheet .more-menu-handle");
+// velocity) calls onClose; otherwise the sheet snaps back open.
+function initSheetDrag(sheet, handle, onClose) {
   if (!sheet || !handle) return;
 
   let startY = 0;
@@ -6321,9 +6326,12 @@ function initMoreMenuDrag() {
     sheet.classList.remove("dragging");
     const dy = Math.max(0, (e.clientY ?? lastY) - startY);
     const sheetHeight = sheet.offsetHeight || 1;
-    const shouldClose = dy > sheetHeight * 0.3 || velocity > 0.5;
+    // Whichever comes first: 15% of the sheet's height or 80px — so tall
+    // sheets don't require a huge drag — or a quick-enough downward flick.
+    const distanceThreshold = Math.min(sheetHeight * 0.15, 80);
+    const shouldClose = dy > distanceThreshold || velocity > 0.25;
     if (shouldClose) {
-      closeMoreMenu();
+      onClose();
     } else {
       sheet.style.transform = "translateY(0)";
     }
@@ -6333,6 +6341,22 @@ function initMoreMenuDrag() {
   handle.addEventListener("pointermove", onPointerMove);
   handle.addEventListener("pointerup", endDrag);
   handle.addEventListener("pointercancel", endDrag);
+}
+
+function initMoreMenuDrag() {
+  initSheetDrag(
+    document.getElementById("moreMenuSheet"),
+    document.querySelector("#moreMenuSheet .more-menu-handle"),
+    closeMoreMenu
+  );
+}
+
+function initItemTooltipDrag() {
+  initSheetDrag(
+    document.getElementById("itemTooltip"),
+    document.querySelector("#itemTooltip .tooltip-handle"),
+    hideTooltip
+  );
 }
 
 function switchTab(tabName) {
