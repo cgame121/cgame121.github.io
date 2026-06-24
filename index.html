@@ -4133,18 +4133,18 @@ const ITEM_TEMPLATES = {
     { name: "เสื้อคลุมหมอกควัน", primary: "hp", icon: "armor" },
   ],
   hands: [
-    { name: "ปลอกมือกระดูก", primary: "crit", icon: "gloves" },
+    { name: "ปลอกมือกระดูก", primary: "atk", icon: "gloves" },
     { name: "ถุงมือนักล่า", primary: "atk", icon: "gloves" },
   ],
   feet: [
-    { name: "รองเท้าสายลม", primary: "spd", icon: "boots" },
+    { name: "รองเท้าสายลม", primary: "hp", icon: "boots" },
     { name: "บูทเงาราตรี", primary: "def", icon: "boots" },
-    { name: "รองเท้านักหลบหนี", primary: "dodge", icon: "boots" },
+    { name: "รองเท้านักหลบหนี", primary: "def", icon: "boots" },
   ],
   trinket: [
-    { name: "หินวิญญาณ", primary: "crit", icon: "gem" },
+    { name: "หินวิญญาณ", primary: "hp", icon: "gem" },
     { name: "เศษแก้วต้องสาป", primary: "atk", icon: "gem" },
-    { name: "แหวนเงาจาง", primary: "dodge", icon: "gem" },
+    { name: "แหวนเงาจาง", primary: "atk", icon: "gem" },
   ],
 };
 
@@ -4557,10 +4557,10 @@ const STAT_POINT_GAINS = {
   hp:    { perPoint: 16,   label: "พลังชีวิต",   icon: "❤️",  desc: "+16 HP ต่อแต้ม" },
   atk:   { perPoint: 2.8,  label: "พลังโจมตี",  icon: "⚔️",  desc: "+2.8 ATK ต่อแต้ม" },
   def:   { perPoint: 1.6,  label: "ป้องกัน",    icon: "🛡️",  desc: "+1.6 DEF ต่อแต้ม" },
-  crit:  { perPoint: 1.0,  label: "คริติคอล",   icon: "🎯",  desc: "+1.0% CRIT ต่อแต้ม (สูงสุด 75%)" },
+  crit:  { perPoint: 0.3,  label: "คริติคอล",   icon: "🎯",  desc: "+0.3% CRIT ต่อแต้ม (สูงสุด 75%)" },
   spd:   { perPoint: 0.028, label: "ความเร็ว",  icon: "💨",  desc: "+0.028 SPD ต่อแต้ม" },
-  acc:   { perPoint: 0.7,  label: "ความแม่นยำ", icon: "🏹",  desc: "+0.7% ACC ต่อแต้ม (สูงสุด 100%)" },
-  dodge: { perPoint: 0.6,  label: "หลบหลีก",    icon: "🌀",  desc: "+0.6% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
+  acc:   { perPoint: 0.21, label: "ความแม่นยำ", icon: "🏹",  desc: "+0.21% ACC ต่อแต้ม (สูงสุด 100%)" },
+  dodge: { perPoint: 0.18, label: "หลบหลีก",    icon: "🌀",  desc: "+0.18% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
 };
 
 // Canonical list of all player stat keys, used anywhere code needs to loop
