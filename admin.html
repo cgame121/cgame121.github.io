@@ -9,7 +9,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   // ============================================================
@@ -86,24 +86,41 @@
   });
 
   // ---- Load all players ----
-  async function loadPlayers() {
-    setStatus("กำลังโหลด...");
+  let _unsubPlayers = null;
+
+  function loadPlayers() {
+    setStatus("กำลังเชื่อมต่อ...");
+    // ยกเลิก listener เก่าก่อน
+    if (_unsubPlayers) { _unsubPlayers(); _unsubPlayers = null; }
+
     try {
-      const snap = await getDocs(collection(db, "voidfall_saves"));
-      allPlayers = [];
-      snap.forEach(d => {
-        const data = d.data();
-        if (data && data.player) {
-          allPlayers.push({ uid: d.id, ...data });
+      _unsubPlayers = onSnapshot(
+        collection(db, "voidfall_saves"),
+        (snap) => {
+          allPlayers = [];
+          snap.forEach(d => {
+            const data = d.data();
+            if (data && data.player) {
+              allPlayers.push({ uid: d.id, ...data });
+            }
+          });
+          allPlayers.sort((a, b) => (b.player.level || 0) - (a.player.level || 0));
+          // รักษา filter ปัจจุบันไว้ (ถ้ามีการค้นหาอยู่)
+          const q = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toLowerCase().trim() : "";
+          filteredPlayers = q
+            ? allPlayers.filter(p => (p.player.name || "").toLowerCase().includes(q) || p.uid.toLowerCase().includes(q))
+            : [...allPlayers];
+          renderStats();
+          renderTable();
+          setStatus("🟢 เชื่อมต่อแบบ Realtime — " + allPlayers.length + " ผู้เล่น");
+        },
+        (e) => {
+          setStatus("❌ เชื่อมต่อไม่สำเร็จ: " + e.message);
+          console.error(e);
         }
-      });
-      allPlayers.sort((a, b) => (b.player.level || 0) - (a.player.level || 0));
-      filteredPlayers = [...allPlayers];
-      renderStats();
-      renderTable();
-      setStatus("โหลดสำเร็จ — " + allPlayers.length + " ผู้เล่น");
+      );
     } catch (e) {
-      setStatus("โหลดไม่สำเร็จ: " + e.message);
+      setStatus("❌ โหลดไม่สำเร็จ: " + e.message);
       console.error(e);
     }
   }

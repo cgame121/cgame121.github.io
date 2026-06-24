@@ -25,7 +25,7 @@
     setPersistence, browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, doc, getDoc, setDoc, serverTimestamp
+    getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ============================================
@@ -75,6 +75,7 @@
     getDoc,
     setDoc,
     serverTimestamp,
+    onSnapshot,
     ready: true,
   };
   // Let any code that loaded before this module finishes know it can proceed.
@@ -6525,6 +6526,41 @@ function initCloudAccount() {
         pushSaveToCloud(player, { immediate: true });
       }
     }
+
+    // ── Realtime listener: รับการแก้ไขจาก Admin แบบ realtime ──
+    // ยกเลิก listener เก่าก่อน (กรณี user เปลี่ยน)
+    if (window._adminRealtimeUnsub) {
+      window._adminRealtimeUnsub();
+      window._adminRealtimeUnsub = null;
+    }
+    const fb = getFB();
+    if (fb && fb.onSnapshot) {
+      let _firstSnapshot = true;
+      window._adminRealtimeUnsub = fb.onSnapshot(cloudDocRef(user.uid), (snap) => {
+        // skip snapshot แรก (คือข้อมูลที่เราเพิ่งโหลดอยู่แล้ว)
+        if (_firstSnapshot) { _firstSnapshot = false; return; }
+        if (!snap.exists()) return;
+        const data = snap.data();
+        // ถ้า admin เป็นคนแก้ (adminModified: true) ให้รับข้อมูลใหม่ทันที
+        if (!data.adminModified) return;
+        const adminPlayer = unwrapSavePayload(data);
+        if (!isPlausiblePlayer(adminPlayer)) return;
+        const repaired = repairPlayerShape(adminPlayer);
+        // อัปเดต player state โดยไม่ reset dungeon
+        player.gold = repaired.gold;
+        player.gems = repaired.gems;
+        player.level = repaired.level;
+        player.name = repaired.name;
+        if (repaired.prestige) player.prestige = repaired.prestige;
+        renderAll();
+        showToast("⚡ ข้อมูลถูกอัปเดตโดยแอดมิน");
+        // ล้าง flag adminModified เพื่อไม่ให้ trigger ซ้ำ
+        const safePlayer = JSON.parse(JSON.stringify(player));
+        fb.setDoc(cloudDocRef(user.uid), {
+          ...data, player: safePlayer, adminModified: false,
+        }).catch(() => {});
+      });
+    }
   });
 }
 
@@ -7693,66 +7729,6 @@ let currentDungeonIndex = null;
 let currentRoomIndex = 0;
 let currentMonster = null;
 let battleTimer = null;
-
-// ── Web Worker Timer ──────────────────────────────────────────────
-// ใช้ Worker แทน setInterval ธรรมดา เพื่อให้ทำงานได้แม้ tab ถูก throttle
-let _workerTimer = null;
-let _workerCallbacks = {};
-let _workerPendingId = null;
-
-function _getWorker() {
-  if (_workerTimer) return _workerTimer;
-  try {
-    _workerTimer = new Worker("voidfall-worker.js");
-    _workerTimer.onmessage = function(e) {
-      const { type, workerId, clientId } = e.data;
-      if (type === "created") {
-        // บันทึก mapping clientId -> workerId
-        _workerCallbacks["__id_" + clientId] = workerId;
-      }
-      if (type === "tick" && _workerCallbacks[workerId]) {
-        _workerCallbacks[workerId]();
-      }
-    };
-    _workerTimer.onerror = function() {
-      // fallback: ถ้า worker โหลดไม่ได้ (เช่น file:// protocol) ใช้ setInterval ปกติ
-      _workerTimer = null;
-    };
-  } catch(e) {
-    _workerTimer = null;
-  }
-  return _workerTimer;
-}
-
-function workerSetInterval(fn, ms) {
-  const worker = _getWorker();
-  if (!worker) return setInterval(fn, ms); // fallback
-  const clientId = Date.now() + Math.random();
-  worker.postMessage({ type: "setInterval", id: clientId, ms });
-  // รอ worker ตอบ workerId แล้วค่อย map callback
-  const checkReady = setInterval(() => {
-    const wid = _workerCallbacks["__id_" + clientId];
-    if (wid !== undefined) {
-      clearInterval(checkReady);
-      _workerCallbacks[wid] = fn;
-    }
-  }, 10);
-  // return handle object แทน numeric id
-  return { __worker: true, clientId };
-}
-
-function workerClearInterval(handle) {
-  if (!handle) return;
-  if (!handle.__worker) { clearInterval(handle); return; }
-  const worker = _getWorker();
-  const wid = _workerCallbacks["__id_" + handle.clientId];
-  if (worker && wid !== undefined) {
-    worker.postMessage({ type: "clearInterval", id: wid });
-    delete _workerCallbacks[wid];
-    delete _workerCallbacks["__id_" + handle.clientId];
-  }
-}
-// ─────────────────────────────────────────────────────────────────
 let inBattleTransition = false;
 let resultAutoTimer = null; // pending auto-continue from the win/loss overlay
 
@@ -8570,10 +8546,10 @@ function spawnRoom() {
 
 function startBattleLoop() {
   stopBattleLoop();
-  battleTimer = workerSetInterval(runBattleTick, BATTLE_TICK_MS);
+  battleTimer = setInterval(runBattleTick, BATTLE_TICK_MS);
 }
 function stopBattleLoop() {
-  if (battleTimer) workerClearInterval(battleTimer);
+  if (battleTimer) clearInterval(battleTimer);
   battleTimer = null;
 }
 
