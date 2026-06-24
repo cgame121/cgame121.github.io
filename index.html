@@ -7,6 +7,79 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--
+  ============================================
+  Firebase (Auth + Firestore) — modular v10 SDK via CDN
+  ============================================
+  These are ES module imports, so the scripts that use them further down
+  are also type="module". This is what lets cloud save work alongside the
+  existing localStorage save with no changes to the core game logic.
+-->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, signInAnonymously,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+    linkWithCredential, linkWithPopup, EmailAuthProvider, signOut,
+    setPersistence, browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ============================================
+  // !!! REPLACE WITH YOUR OWN FIREBASE PROJECT CONFIG !!!
+  // Get this from: Firebase Console → Project settings → General →
+  // "Your apps" → Web app → SDK setup and configuration → Config.
+  // ============================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyBNrvbjzVkV5ioZVFJcOXfkFbSeO-_cVoI",
+    authDomain: "github-1c9e8.firebaseapp.com",
+    projectId: "github-1c9e8",
+    storageBucket: "github-1c9e8.firebasestorage.app",
+    messagingSenderId: "990705202692",
+    appId: "1:990705202692:web:34b3b917593241375e2751",
+    // measurementId / databaseURL omitted on purpose: this game doesn't use
+    // Analytics or the Realtime Database, only Auth + Firestore below.
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const fbAuth = getAuth(fbApp);
+  const db = getFirestore(fbApp);
+
+  // Persist the login across browser restarts (not just the tab session).
+  setPersistence(fbAuth, browserLocalPersistence).catch((e) => {
+    console.warn("Firebase persistence setup failed", e);
+  });
+
+  // Expose a small surface to the classic (non-module) game script below.
+  // The rest of the game is written as plain <script> (not type="module"),
+  // so it can't `import` Firebase directly — this bridge object is how the
+  // two sides talk to each other without rewriting 10k lines of game code.
+  window.VOIDFALL_FIREBASE = {
+    auth: fbAuth,
+    db,
+    GoogleAuthProvider,
+    EmailAuthProvider,
+    onAuthStateChanged,
+    signInAnonymously,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signInWithRedirect,
+    linkWithCredential,
+    linkWithPopup,
+    signOut,
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp,
+    ready: true,
+  };
+  // Let any code that loaded before this module finishes know it can proceed.
+  window.dispatchEvent(new Event("voidfall-firebase-ready"));
+</script>
 <style>
 /* ============================================
    VOIDFALL — Design Tokens
@@ -2791,6 +2864,160 @@ button {
 }
 .save-status.is-error { color: var(--danger); }
 
+/* ============================================
+   VOIDFALL — Account / Cloud Save UI
+   ============================================ */
+.account-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+.account-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 17px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  overflow: hidden;
+}
+.account-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.account-info { flex: 1; min-width: 0; }
+.account-status-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.account-status-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.account-status-value.is-guest { color: var(--text-muted); font-weight: 600; }
+.account-sync-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-faint);
+}
+.account-sync-dot.synced { background: var(--success); }
+.account-sync-dot.syncing { background: var(--gold); animation: account-pulse 1s ease-in-out infinite; }
+.account-sync-dot.error { background: var(--danger); }
+@keyframes account-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.account-actions { display: flex; flex-direction: column; gap: 8px; }
+.btn-google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: #fff;
+  color: #1f1f1f;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: opacity 0.15s;
+}
+.btn-google:hover { opacity: 0.88; }
+.btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.account-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 4px 0;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.account-divider::before, .account-divider::after {
+  content: ""; flex: 1; height: 1px; background: var(--line);
+}
+
+.account-form { display: flex; flex-direction: column; gap: 8px; }
+.account-input {
+  width: 100%;
+  padding: 11px 13px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+}
+.account-input::placeholder { color: var(--text-faint); }
+.account-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.account-error {
+  font-size: 12px;
+  color: var(--danger);
+  margin: -2px 0 0;
+  line-height: 1.45;
+  display: none;
+}
+.account-error.visible { display: block; }
+
+.account-toggle-mode {
+  background: transparent; border: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 0;
+  align-self: center;
+}
+
+.account-link-card {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.3);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+.account-link-card .account-link-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.account-link-card .account-link-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: account-spin 0.7s linear infinite;
+  vertical-align: -2px;
+  margin-right: 6px;
+}
+@keyframes account-spin { to { transform: rotate(360deg); } }
+
+/* Sync-conflict modal: choose between cloud save and local/guest save */
+.sync-choice-row {
+  display: flex; flex-direction: column; gap: 10px;
+  margin: 16px 0 6px;
+}
+.sync-choice-btn {
+  text-align: left;
+  width: 100%;
+  padding: 13px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
+}
+.sync-choice-btn:hover { border-color: var(--accent); background: var(--bg-panel-raised); }
+.sync-choice-btn .sync-choice-title { font-size: 13.5px; font-weight: 700; margin-bottom: 3px; }
+.sync-choice-btn .sync-choice-desc { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+
 .import-textarea {
   width: 100%;
   min-height: 90px;
@@ -3908,6 +4135,56 @@ button {
         </div>
       </div>
 
+      <!-- ── หมวด: บัญชี & เซฟคลาวด์ ── -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">☁️</span>
+          <span class="settings-section-title">บัญชี & เซฟคลาวด์</span>
+        </div>
+        <div class="settings-section-body">
+
+          <!-- Current account status -->
+          <div class="account-card">
+            <div class="account-avatar" id="accountAvatar">?</div>
+            <div class="account-info">
+              <div class="account-status-label" id="accountStatusLabel">สถานะ</div>
+              <div class="account-status-value is-guest" id="accountStatusValue">กำลังโหลด...</div>
+            </div>
+            <div class="account-sync-dot" id="accountSyncDot" title="สถานะการซิงค์"></div>
+          </div>
+
+          <!-- Guest view: sign-in / sign-up forms -->
+          <div id="accountGuestPanel">
+            <p class="settings-row-desc" style="margin:-4px 0 12px;">
+              ตอนนี้คุณเล่นแบบ "เกสต์" — ข้อมูลเก็บไว้ในเครื่องนี้เท่านั้น เข้าสู่ระบบเพื่อสำรองข้อมูลขึ้นคลาวด์และเล่นต่อจากเครื่องอื่นได้
+            </p>
+            <div class="account-actions">
+              <button class="btn-google" id="googleSignInBtn" type="button">
+                <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                เข้าสู่ระบบด้วย Google
+              </button>
+            </div>
+            <div class="account-divider">หรือใช้อีเมล</div>
+            <div class="account-form">
+              <input class="account-input" id="accountEmailInput" type="email" placeholder="อีเมล" autocomplete="email">
+              <input class="account-input" id="accountPasswordInput" type="password" placeholder="รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)" autocomplete="current-password">
+              <p class="account-error" id="accountErrorMsg"></p>
+              <button class="btn-primary full-width" id="accountSubmitBtn" type="button">เข้าสู่ระบบ</button>
+              <button class="account-toggle-mode" id="accountToggleModeBtn" type="button">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+            </div>
+          </div>
+
+          <!-- Signed-in view -->
+          <div id="accountSignedInPanel" class="hidden">
+            <p class="settings-row-desc" style="margin:-4px 0 12px;">
+              ข้อมูลของคุณกำลังถูกสำรองขึ้นคลาวด์โดยอัตโนมัติ
+            </p>
+            <button class="btn-secondary full-width" id="accountSignOutBtn" type="button">ออกจากระบบ</button>
+          </div>
+
+        </div>
+      </div>
+
       <!-- ── หมวด: ข้อมูลเซฟ ── -->
       <div class="settings-section">
         <div class="settings-section-header">
@@ -4013,6 +4290,28 @@ button {
     <p class="offline-duration" id="offlineDuration">คุณไม่อยู่เป็นเวลา —</p>
     <div class="offline-rewards" id="offlineRewardsList"></div>
     <button class="btn-primary full-width" id="offlineCollectBtn">เก็บรางวัล</button>
+  </div>
+</div>
+
+<!-- ============ SYNC CONFLICT MODAL ============ -->
+<!-- Shown when a player signs in to an account that already has a cloud save,
+     so they choose which save to keep instead of silently overwriting either one. -->
+<div class="modal-backdrop hidden" id="syncConflictModal">
+  <div class="modal-card" style="width:340px;">
+    <h3>พบข้อมูลเซฟ 2 ชุด</h3>
+    <p class="settings-row-desc" style="margin:-6px 0 0;">
+      บัญชีนี้มีข้อมูลเซฟอยู่บนคลาวด์แล้ว และเครื่องนี้ก็มีข้อมูลเซฟอยู่ด้วย เลือกชุดที่ต้องการเก็บไว้ (อีกชุดจะถูกแทนที่)
+    </p>
+    <div class="sync-choice-row">
+      <button class="sync-choice-btn" id="syncChooseCloudBtn" type="button">
+        <div class="sync-choice-title">☁️ ใช้เซฟจากคลาวด์</div>
+        <div class="sync-choice-desc" id="syncCloudInfo">โหลดข้อมูลจากบัญชีนี้ และแทนที่ข้อมูลในเครื่องนี้</div>
+      </button>
+      <button class="sync-choice-btn" id="syncChooseLocalBtn" type="button">
+        <div class="sync-choice-title">📱 ใช้เซฟในเครื่องนี้</div>
+        <div class="sync-choice-desc" id="syncLocalInfo">อัปโหลดข้อมูลในเครื่องนี้ขึ้นไปแทนที่ข้อมูลบนคลาวด์</div>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -5784,6 +6083,455 @@ function importSaveFromText(text) {
   return repairPlayerShape(playerData);
 }
 
+// ============================================
+// VOIDFALL - Cloud Account & Sync (Firebase Auth + Firestore)
+// ============================================
+// Design: "play as guest first, sign in later, never lose progress."
+//
+// 1. On first load we sign in anonymously (silently, no UI). That gives us a
+//    stable Firebase uid immediately, which becomes the Firestore document
+//    id for this player's cloud save — even before they ever create a real
+//    account.
+// 2. localStorage remains the source of truth for instant reads/writes during
+//    play (same savePlayer()/loadPlayer() as before, completely unchanged).
+//    Cloud sync just mirrors that local save up to Firestore periodically
+//    and on important moments (sign-in, sign-out, page hide).
+// 3. When the player chooses to sign in with email or Google from Settings,
+//    we try to *link* that credential onto the existing anonymous uid first
+//    (linkWithCredential). If that succeeds, the uid never changes, so the
+//    cloud save document carries straight over with zero data loss.
+// 4. If linking fails because the email/Google account already exists
+//    (auth/credential-already-in-use / auth/email-already-in-use), that
+//    means there's a *different* uid with its own cloud save already tied
+//    to that account. We sign in to that existing account directly, fetch
+//    both saves, and let the player pick via the sync-conflict modal rather
+//    than silently overwriting either one.
+// 5. Signing out returns the player to a fresh anonymous session; their
+//    cloud save under the real account is untouched and waiting for them
+//    the next time they log back in on any device.
+
+const CLOUD_SYNC_DEBOUNCE_MS = 4000; // mirror local->cloud at most this often
+let cloudSyncTimer = null;
+let cloudUser = null; // current Firebase user object (anonymous or real)
+let cloudReady = false;
+let cloudSyncDot = null; // cached DOM ref, set in initAccountUI
+
+function getFB() {
+  return window.VOIDFALL_FIREBASE || null;
+}
+
+function setSyncDotState(state) {
+  // state: "idle" | "syncing" | "synced" | "error"
+  const dot = document.getElementById("accountSyncDot");
+  if (!dot) return;
+  dot.classList.remove("synced", "syncing", "error");
+  if (state === "syncing") dot.classList.add("syncing");
+  else if (state === "synced") dot.classList.add("synced");
+  else if (state === "error") dot.classList.add("error");
+  const titles = {
+    idle: "ยังไม่ได้ซิงค์",
+    syncing: "กำลังซิงค์ข้อมูลขึ้นคลาวด์...",
+    synced: "ซิงค์ข้อมูลล่าสุดแล้ว",
+    error: "ซิงค์ไม่สำเร็จ จะลองใหม่อัตโนมัติ",
+  };
+  dot.title = titles[state] || "";
+}
+
+// Builds the Firestore document path for a given uid's save.
+function cloudDocRef(uid) {
+  const fb = getFB();
+  return fb.doc(fb.db, "voidfall_saves", uid);
+}
+
+// Pushes the current local save up to Firestore. Debounced so that rapid
+// local saves (every autosave tick, every purchase, etc.) don't spam writes.
+function scheduleCloudSync(player) {
+  if (!cloudReady || !cloudUser) return;
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => pushSaveToCloud(player), CLOUD_SYNC_DEBOUNCE_MS);
+}
+
+async function pushSaveToCloud(player, { immediate = false } = {}) {
+  const fb = getFB();
+  if (!fb || !cloudUser) return;
+  if (cloudSyncTimer) {
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = null;
+  }
+  setSyncDotState("syncing");
+  try {
+    // JSON.parse(JSON.stringify(...)) strips any `undefined` values, which
+    // the Firestore SDK throws on (it only accepts null, not undefined).
+    const safePlayer = JSON.parse(JSON.stringify(player));
+    await fb.setDoc(cloudDocRef(cloudUser.uid), {
+      v: SAVE_VERSION,
+      player: safePlayer,
+      updatedAt: fb.serverTimestamp(),
+      isAnonymous: !!cloudUser.isAnonymous,
+    });
+    setSyncDotState("synced");
+  } catch (e) {
+    console.warn("Cloud sync failed", e);
+    setSyncDotState("error");
+    if (!immediate) {
+      // best-effort retry once after a short delay
+      setTimeout(() => pushSaveToCloud(player, { immediate: true }), 5000);
+    }
+  }
+}
+
+// Fetches the cloud save for a uid, if any. Returns the repaired player
+// object, or null if that uid has no cloud save yet.
+async function fetchCloudSave(uid) {
+  const fb = getFB();
+  try {
+    const snap = await fb.getDoc(cloudDocRef(uid));
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    const playerData = unwrapSavePayload(data);
+    if (!isPlausiblePlayer(playerData)) return null;
+    return repairPlayerShape(playerData);
+  } catch (e) {
+    console.warn("Cloud fetch failed", e);
+    return null;
+  }
+}
+
+// Wraps the existing savePlayer() so cloud sync rides along on every local
+// save without touching the original function or its callers.
+const _localSavePlayer = savePlayer;
+savePlayer = function (player, opts) {
+  _localSavePlayer(player, opts);
+  if (opts && opts.immediate) {
+    pushSaveToCloud(player, { immediate: true });
+  } else {
+    scheduleCloudSync(player);
+  }
+};
+
+// ---------- Account status summary used across the UI ----------
+function describeAccount(user) {
+  if (!user) return { isGuest: true, label: "เกสต์" };
+  if (user.isAnonymous) return { isGuest: true, label: "เกสต์" };
+  const email = user.email || "";
+  const name = user.displayName || email || "ผู้ใช้";
+  return { isGuest: false, label: name, email };
+}
+
+function renderAccountUI() {
+  const avatarEl = document.getElementById("accountAvatar");
+  const statusLabelEl = document.getElementById("accountStatusLabel");
+  const statusValueEl = document.getElementById("accountStatusValue");
+  const guestPanel = document.getElementById("accountGuestPanel");
+  const signedInPanel = document.getElementById("accountSignedInPanel");
+  if (!avatarEl) return; // settings panel not in DOM yet
+
+  const info = describeAccount(cloudUser);
+  statusLabelEl.textContent = info.isGuest ? "สถานะ" : "เข้าสู่ระบบเป็น";
+  statusValueEl.textContent = info.isGuest ? "เล่นแบบเกสต์ (ยังไม่สำรองข้อมูล)" : info.label;
+  statusValueEl.classList.toggle("is-guest", info.isGuest);
+  avatarEl.textContent = info.isGuest ? "?" : (info.label[0] || "?").toUpperCase();
+  if (cloudUser && cloudUser.photoURL) {
+    avatarEl.innerHTML = `<img src="${cloudUser.photoURL}" alt="">`;
+  }
+  guestPanel.classList.toggle("hidden", !info.isGuest);
+  signedInPanel.classList.toggle("hidden", info.isGuest);
+}
+
+function showAccountError(message) {
+  const el = document.getElementById("accountErrorMsg");
+  if (!el) return;
+  el.textContent = message;
+  el.classList.toggle("visible", !!message);
+}
+
+// ---------- Sync-conflict modal ----------
+// Shown only in the edge case where linking the new credential onto the
+// anonymous uid fails because that email/Google account already has its
+// own separate cloud save. The player explicitly chooses which save wins.
+function showSyncConflictModal(localPlayer, cloudPlayer, onChoose) {
+  const modal = document.getElementById("syncConflictModal");
+  const cloudInfo = document.getElementById("syncCloudInfo");
+  const localInfo = document.getElementById("syncLocalInfo");
+  const fmt = (p) => `เลเวล ${p.level} · ทอง ${Math.floor(p.gold || 0).toLocaleString("th-TH")} · เพชร ${Math.floor(p.gems || 0).toLocaleString("th-TH")}`;
+  cloudInfo.textContent = `โหลดข้อมูลจากบัญชีนี้ (${fmt(cloudPlayer)}) และแทนที่ข้อมูลในเครื่องนี้`;
+  localInfo.textContent = `อัปโหลดข้อมูลในเครื่องนี้ (${fmt(localPlayer)}) ขึ้นไปแทนที่ข้อมูลบนคลาวด์`;
+  modal.classList.remove("hidden");
+
+  const cloudBtn = document.getElementById("syncChooseCloudBtn");
+  const localBtn = document.getElementById("syncChooseLocalBtn");
+  const cleanup = () => {
+    modal.classList.add("hidden");
+    cloudBtn.replaceWith(cloudBtn.cloneNode(true));
+    localBtn.replaceWith(localBtn.cloneNode(true));
+  };
+  document.getElementById("syncChooseCloudBtn").addEventListener("click", () => {
+    cleanup();
+    onChoose("cloud");
+  });
+  document.getElementById("syncChooseLocalBtn").addEventListener("click", () => {
+    cleanup();
+    onChoose("local");
+  });
+}
+
+// Applies a chosen player object as the new active save (local + cloud),
+// then refreshes the whole game UI from it. Mirrors what resetSaveBtn /
+// confirmImportBtn already do elsewhere in the file.
+function adoptPlayerAsActive(newPlayer) {
+  player = newPlayer;
+  const stats = getTotalStats(player);
+  if (player.currentHp == null || player.currentHp <= 0) player.currentHp = stats.hp;
+  player.currentHp = Math.min(player.currentHp, stats.hp);
+  currentDungeonIndex = null;
+  currentRoomIndex = 0;
+  currentMonster = null;
+  exchangeState = null;
+  gameMode = "dungeon";
+  stopBattleLoop();
+  inBattleTransition = false;
+  savePlayer(player, { immediate: true });
+  renderAll();
+  showDungeonSelectView();
+  switchTab("battle");
+}
+
+// ---------- Sign-in / sign-up flow ----------
+let accountFormMode = "signin"; // "signin" | "signup"
+
+function renderAccountFormMode() {
+  const submitBtn = document.getElementById("accountSubmitBtn");
+  const toggleBtn = document.getElementById("accountToggleModeBtn");
+  if (!submitBtn) return;
+  if (accountFormMode === "signin") {
+    submitBtn.textContent = "เข้าสู่ระบบ";
+    toggleBtn.textContent = "ยังไม่มีบัญชี? สมัครสมาชิก";
+  } else {
+    submitBtn.textContent = "สมัครสมาชิก";
+    toggleBtn.textContent = "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ";
+  }
+}
+
+// After a successful sign-in to a *different* uid than the current
+// anonymous session, reconcile the two saves (auto if one is empty/fresh,
+// otherwise ask the player via the conflict modal).
+async function reconcileAfterSignIn(newUid, localPlayerSnapshot) {
+  const cloudPlayer = await fetchCloudSave(newUid);
+  if (!cloudPlayer) {
+    // Brand-new account with no cloud save yet — just adopt the local one.
+    await pushSaveToCloud(localPlayerSnapshot, { immediate: true });
+    return;
+  }
+  // A fresh, untouched local save (level 1, no playtime) isn't worth asking
+  // about — just take the cloud save without bothering the player.
+  const localIsFresh = localPlayerSnapshot.level <= 1 &&
+    (localPlayerSnapshot.gold || 0) === 0 &&
+    (localPlayerSnapshot.inventory || []).length === 0;
+  if (localIsFresh) {
+    adoptPlayerAsActive(cloudPlayer);
+    showToast("โหลดข้อมูลจากคลาวด์แล้ว");
+    return;
+  }
+  showSyncConflictModal(localPlayerSnapshot, cloudPlayer, async (choice) => {
+    if (choice === "cloud") {
+      adoptPlayerAsActive(cloudPlayer);
+      showToast("ใช้ข้อมูลจากคลาวด์แล้ว");
+    } else {
+      adoptPlayerAsActive(localPlayerSnapshot);
+      await pushSaveToCloud(localPlayerSnapshot, { immediate: true });
+      showToast("ใช้ข้อมูลในเครื่องนี้แล้ว");
+    }
+  });
+}
+
+async function handleEmailAuthSubmit() {
+  const fb = getFB();
+  if (!fb) { showAccountError("ระบบบัญชียังโหลดไม่เสร็จ กรุณารอสักครู่"); return; }
+  const emailInput = document.getElementById("accountEmailInput");
+  const passInput = document.getElementById("accountPasswordInput");
+  const submitBtn = document.getElementById("accountSubmitBtn");
+  const email = emailInput.value.trim();
+  const password = passInput.value;
+  showAccountError("");
+  if (!email || !password) {
+    showAccountError("กรุณากรอกอีเมลและรหัสผ่าน");
+    return;
+  }
+  if (password.length < 6) {
+    showAccountError("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+    return;
+  }
+  submitBtn.disabled = true;
+  const prevText = submitBtn.textContent;
+  submitBtn.innerHTML = `<span class="btn-spinner"></span>กำลังดำเนินการ...`;
+  const localSnapshot = JSON.parse(JSON.stringify(player));
+
+  try {
+    if (accountFormMode === "signup") {
+      // Try linking onto the existing anonymous uid first so the current
+      // save carries straight over with no uid change at all.
+      const cred = fb.EmailAuthProvider.credential(email, password);
+      try {
+        await fb.linkWithCredential(fb.auth.currentUser, cred);
+        showToast("สมัครสมาชิกสำเร็จ! ข้อมูลของคุณถูกสำรองไว้แล้ว");
+      } catch (linkErr) {
+        if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use") {
+          showAccountError("อีเมลนี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
+          accountFormMode = "signin";
+          renderAccountFormMode();
+        } else {
+          throw linkErr;
+        }
+      }
+    } else {
+      // Sign-in mode: try linking first (covers "guest decided to sign in
+      // to their own brand-new account they just made elsewhere isn't
+      // possible here, but linking is harmless and falls through cleanly").
+      const cred = fb.EmailAuthProvider.credential(email, password);
+      try {
+        await fb.linkWithCredential(fb.auth.currentUser, cred);
+        showToast("เข้าสู่ระบบสำเร็จ!");
+      } catch (linkErr) {
+        if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/invalid-credential" || linkErr.code === "auth/wrong-password" || linkErr.code === "auth/user-not-found") {
+          // This account already exists separately — sign into it directly,
+          // then reconcile the two saves explicitly.
+          const result = await fb.signInWithEmailAndPassword(fb.auth, email, password);
+          await reconcileAfterSignIn(result.user.uid, localSnapshot);
+          showToast("เข้าสู่ระบบสำเร็จ!");
+        } else {
+          throw linkErr;
+        }
+      }
+    }
+    emailInput.value = "";
+    passInput.value = "";
+  } catch (e) {
+    console.warn("Email auth failed", e);
+    const messages = {
+      "auth/invalid-email": "รูปแบบอีเมลไม่ถูกต้อง",
+      "auth/wrong-password": "รหัสผ่านไม่ถูกต้อง",
+      "auth/user-not-found": "ไม่พบบัญชีนี้ กรุณาสมัครสมาชิกก่อน",
+      "auth/weak-password": "รหัสผ่านสั้นเกินไป (อย่างน้อย 6 ตัวอักษร)",
+      "auth/network-request-failed": "เชื่อมต่อเครือข่ายไม่ได้ กรุณาลองใหม่",
+    };
+    showAccountError(messages[e.code] || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+  } finally {
+    submitBtn.disabled = false;
+    renderAccountFormMode();
+  }
+}
+
+async function handleGoogleSignIn() {
+  const fb = getFB();
+  if (!fb) { showAccountError("ระบบบัญชียังโหลดไม่เสร็จ กรุณารอสักครู่"); return; }
+  const btn = document.getElementById("googleSignInBtn");
+  const localSnapshot = JSON.parse(JSON.stringify(player));
+  const provider = new fb.GoogleAuthProvider();
+  btn.disabled = true;
+  try {
+    try {
+      // Try linking the Google credential onto the current anonymous uid
+      // first, so the uid (and its cloud save) never changes.
+      await fb.linkWithPopup(fb.auth.currentUser, provider);
+      showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
+    } catch (linkErr) {
+      if (linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/email-already-in-use") {
+        // This Google account is already tied to a different uid with its
+        // own cloud save — sign into it directly, then let the player pick.
+        const result = await fb.signInWithPopup(fb.auth, provider);
+        await reconcileAfterSignIn(result.user.uid, localSnapshot);
+        showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
+      } else if (linkErr.code === "auth/popup-blocked" || linkErr.code === "auth/cancelled-popup-request") {
+        await fb.signInWithRedirect(fb.auth, provider);
+        return; // page will reload after redirect completes
+      } else {
+        throw linkErr;
+      }
+    }
+  } catch (e) {
+    console.warn("Google sign-in failed", e);
+    if (e.code !== "auth/popup-closed-by-user") {
+      showToast("เข้าสู่ระบบด้วย Google ไม่สำเร็จ");
+    }
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function handleSignOut() {
+  const fb = getFB();
+  if (!fb) return;
+  try {
+    // Make sure the latest local progress is safely up in the cloud under
+    // the *current* (real) account before we drop back to anonymous.
+    await pushSaveToCloud(player, { immediate: true });
+    await fb.signOut(fb.auth);
+    showToast("ออกจากระบบแล้ว — กำลังเล่นแบบเกสต์");
+  } catch (e) {
+    console.warn("Sign out failed", e);
+    showToast("ออกจากระบบไม่สำเร็จ");
+  }
+}
+
+function bindAccountUIEvents() {
+  const submitBtn = document.getElementById("accountSubmitBtn");
+  if (!submitBtn || submitBtn.dataset.bound === "1") return; // bind once
+  submitBtn.dataset.bound = "1";
+
+  submitBtn.addEventListener("click", handleEmailAuthSubmit);
+  document.getElementById("accountToggleModeBtn").addEventListener("click", () => {
+    accountFormMode = accountFormMode === "signin" ? "signup" : "signin";
+    showAccountError("");
+    renderAccountFormMode();
+  });
+  document.getElementById("googleSignInBtn").addEventListener("click", handleGoogleSignIn);
+  document.getElementById("accountSignOutBtn").addEventListener("click", handleSignOut);
+  // Allow pressing Enter in the password field to submit.
+  document.getElementById("accountPasswordInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleEmailAuthSubmit();
+  });
+  renderAccountFormMode();
+}
+
+// ---------- Boot sequence ----------
+// Anonymous sign-in happens automatically and silently on load. The local
+// save (localStorage) keeps working exactly as before regardless of whether
+// this succeeds — cloud sync is a pure bonus layer on top.
+function initCloudAccount() {
+  const fb = getFB();
+  if (!fb) return;
+  cloudReady = true;
+
+  fb.onAuthStateChanged(fb.auth, async (user) => {
+    if (!user) {
+      // No session at all yet — start one anonymously, silently.
+      try {
+        await fb.signInAnonymously(fb.auth);
+      } catch (e) {
+        console.warn("Anonymous sign-in failed; continuing in local-only mode", e);
+      }
+      return; // onAuthStateChanged will fire again with the new user
+    }
+    cloudUser = user;
+    renderAccountUI();
+    bindAccountUIEvents();
+    // Pull any newer cloud save for this exact uid on (re)connect — covers
+    // the case of returning on a device that was logged in previously.
+    if (!user.isAnonymous) {
+      const cloudPlayer = await fetchCloudSave(user.uid);
+      if (cloudPlayer && cloudPlayer.lastSeenTimestamp > (player.lastSeenTimestamp || 0)) {
+        adoptPlayerAsActive(cloudPlayer);
+      } else {
+        pushSaveToCloud(player, { immediate: true });
+      }
+    }
+  });
+}
+
+window.addEventListener("voidfall-firebase-ready", initCloudAccount);
+// In case the module script already fired the event before this script ran.
+if (window.VOIDFALL_FIREBASE && window.VOIDFALL_FIREBASE.ready) initCloudAccount();
+
 
 // ============================================
 // VOIDFALL - Combat Engine
@@ -7013,6 +7761,12 @@ function init() {
   initTabNav();
   initCharSubTabs();
   showDungeonSelectView();
+
+  // Cloud account UI: bind the Settings > account buttons right away and
+  // show the current (likely "loading...") status; initCloudAccount() will
+  // call renderAccountUI() again once Firebase actually resolves a user.
+  bindAccountUIEvents();
+  renderAccountUI();
 
   // Bring the Rayn character art to life: set starting pose, then
   // keep a gentle idle/walk cycle going on both the character tab
