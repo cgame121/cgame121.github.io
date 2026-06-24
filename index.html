@@ -1924,12 +1924,15 @@ button {
   padding: 0;
   width: 100%;
   max-width: 100%;
-  max-height: 80vh;
+  max-height: 92vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   font-size: 13px;
   box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
   transform: translateY(100%);
-  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.42s cubic-bezier(0.4,0,0.2,1);
 }
 .tooltip:not(.hidden) {
   transform: translateY(0);
@@ -1961,6 +1964,8 @@ button {
 }
 .tooltip-body {
   padding: 4px 20px 28px;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
 }
 .tooltip-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .tooltip-close {
@@ -5642,7 +5647,7 @@ function renderTooltipContent(item, ctx) {
         <div class="tooltip-name" style="color:${rarityInfo.color}">${itemDisplayName(item)}</div>
         <div class="tooltip-rarity" style="color:${rarityInfo.color}">${rarityInfo.label} · Lv.${item.itemLevel}</div>
       </div>
-      <button class="tooltip-close" data-act="__close" aria-label="ปิด" title="ปิด">×</button>
+
     </div>
     ${statsHtml}
     ${cpLineHtml}
@@ -5689,6 +5694,7 @@ function showTooltip(item, evt, ctx) {
   tip.classList.remove("hidden");
   tip.style.removeProperty("transform");
   backdrop.classList.add("visible");
+  document.body.style.overflow = "hidden";
 }
 
 // Tapping the same item again while its tooltip is open closes it — this is
@@ -5717,6 +5723,7 @@ function hideTooltip() {
   tip.classList.add("hidden");
   tip.style.removeProperty("transform");
   document.getElementById("itemTooltipBackdrop").classList.remove("visible");
+  document.body.style.overflow = "";
 }
 
 // Close bottom sheet when tapping the backdrop
@@ -6278,6 +6285,7 @@ function closeMoreMenu() {
   sheet?.style.removeProperty("transform");
   document.getElementById("moreMenuBackdrop")?.classList.remove("visible");
   document.getElementById("moreMenuBtn")?.setAttribute("aria-expanded", "false");
+  document.body.style.overflow = "";
 }
 
 function openMoreMenu() {
@@ -6286,6 +6294,7 @@ function openMoreMenu() {
   sheet?.style.removeProperty("transform");
   document.getElementById("moreMenuBackdrop")?.classList.add("visible");
   document.getElementById("moreMenuBtn")?.setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
 }
 
 // Generic drag-to-dismiss for bottom sheets — works with touch, mouse, and pen
@@ -6344,19 +6353,135 @@ function initSheetDrag(sheet, handle, onClose) {
 }
 
 function initMoreMenuDrag() {
-  initSheetDrag(
-    document.getElementById("moreMenuSheet"),
-    document.querySelector("#moreMenuSheet .more-menu-handle"),
-    closeMoreMenu
-  );
+  const sheet = document.getElementById("moreMenuSheet");
+  const handle = document.querySelector("#moreMenuSheet .more-menu-handle");
+  if (!sheet) return;
+
+  let startX = 0, startY = 0, lastY = 0, lastT = 0;
+  let velocity = 0;
+  let mode = "none"; // "pending" | "dismiss" | "scroll" | "none"
+  const LOCK_PX = 8;
+
+  sheet.addEventListener("touchstart", (e) => {
+    if (sheet.classList.contains("hidden")) return;
+    if (e.touches.length !== 1) { mode = "none"; return; }
+    const t = e.touches[0];
+    startX = t.clientX; startY = lastY = t.clientY;
+    lastT = e.timeStamp; velocity = 0; mode = "pending";
+  }, { passive: true });
+
+  sheet.addEventListener("touchmove", (e) => {
+    if (mode === "none" || mode === "scroll") return;
+    if (e.touches.length !== 1) { mode = "none"; return; }
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - startX);
+    const dy = t.clientY - startY;
+    const dt = Math.max(1, e.timeStamp - lastT);
+    velocity = (t.clientY - lastY) / dt;
+    lastY = t.clientY; lastT = e.timeStamp;
+
+    if (mode === "pending") {
+      if (Math.abs(dy) < LOCK_PX && dx < LOCK_PX) return;
+      mode = (dx <= Math.abs(dy) && dy > 0) ? "dismiss" : "scroll";
+    }
+    if (mode === "dismiss") {
+      e.preventDefault();
+      sheet.classList.add("dragging");
+      sheet.style.transform = `translateY(${Math.max(0, dy)}px)`;
+    }
+  }, { passive: false });
+
+  const onTouchEnd = (e) => {
+    if (mode !== "dismiss") { mode = "none"; return; }
+    sheet.classList.remove("dragging");
+    const dy = Math.max(0, (e.changedTouches[0]?.clientY ?? lastY) - startY);
+    const threshold = Math.min(sheet.offsetHeight * 0.15, 80);
+    if (dy > threshold || velocity > 0.3) {
+      closeMoreMenu();
+    } else {
+      sheet.style.transform = "translateY(0)";
+    }
+    mode = "none";
+  };
+
+  sheet.addEventListener("touchend", onTouchEnd, { passive: true });
+  sheet.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+  // Keep mouse drag on handle for desktop
+  initSheetDrag(sheet, handle, closeMoreMenu);
 }
 
 function initItemTooltipDrag() {
-  initSheetDrag(
-    document.getElementById("itemTooltip"),
-    document.querySelector("#itemTooltip .tooltip-handle"),
-    hideTooltip
-  );
+  const sheet = document.getElementById("itemTooltip");
+  const handle = document.querySelector("#itemTooltip .tooltip-handle");
+  if (!sheet) return;
+
+  let startX = 0, startY = 0, lastY = 0, lastT = 0;
+  let velocity = 0;
+  // "pending" = touched but haven't decided yet; "dismiss" = dragging sheet down; "scroll" = let browser scroll; "none" = ignore
+  let mode = "none";
+
+  const DIRECTION_LOCK_PX = 8; // px moved before we commit to a mode
+
+  const onTouchStart = (e) => {
+    if (sheet.classList.contains("hidden")) return;
+    if (e.touches.length !== 1) { mode = "none"; return; }
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = lastY = t.clientY;
+    lastT = e.timeStamp;
+    velocity = 0;
+    mode = "pending";
+  };
+
+  const onTouchMove = (e) => {
+    if (mode === "none" || mode === "scroll") return;
+    if (e.touches.length !== 1) { mode = "none"; return; }
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - startX);
+    const dy = t.clientY - startY;
+    const dt = Math.max(1, e.timeStamp - lastT);
+    velocity = (t.clientY - lastY) / dt;
+    lastY = t.clientY;
+    lastT = e.timeStamp;
+
+    if (mode === "pending") {
+      if (Math.abs(dy) < DIRECTION_LOCK_PX && dx < DIRECTION_LOCK_PX) return; // wait
+      const isHorizontal = dx > Math.abs(dy);
+      const isDismiss = !isHorizontal && dy > 0 && sheet.scrollTop <= 0;
+      mode = isDismiss ? "dismiss" : "scroll";
+    }
+
+    if (mode === "dismiss") {
+      e.preventDefault(); // block native scroll while dismissing
+      sheet.classList.add("dragging");
+      sheet.style.transform = `translateY(${Math.max(0, dy)}px)`;
+    }
+  };
+
+  const onTouchEnd = (e) => {
+    if (mode !== "dismiss") { mode = "none"; return; }
+    sheet.classList.remove("dragging");
+    const dy = Math.max(0, (e.changedTouches[0]?.clientY ?? lastY) - startY);
+    const sheetHeight = sheet.offsetHeight || 1;
+    const threshold = Math.min(sheetHeight * 0.15, 80);
+    if (dy > threshold || velocity > 0.3) {
+      hideTooltip();
+    } else {
+      sheet.style.transform = "translateY(0)";
+    }
+    mode = "none";
+  };
+
+  // Use touch events (not pointer) so we can call preventDefault without
+  // needing a non-passive listener on the entire document.
+  sheet.addEventListener("touchstart", onTouchStart, { passive: true });
+  sheet.addEventListener("touchmove", onTouchMove, { passive: false });
+  sheet.addEventListener("touchend", onTouchEnd, { passive: true });
+  sheet.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+  // Keep mouse drag on handle for desktop
+  initSheetDrag(sheet, handle, hideTooltip);
 }
 
 function switchTab(tabName) {
