@@ -9,13 +9,13 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   // ============================================================
-  // !!! เปลี่ยน ADMIN_PASSWORD ก่อน deploy !!!
+  // !!! เปลี่ยน ADMIN_EMAIL ให้ตรงกับที่สร้างใน Firebase Auth !!!
   // ============================================================
-  const ADMIN_PASSWORD = "voidfall-admin-2025";
+  const ADMIN_EMAIL = "admin@voidfall.local";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBNrvbjzVkV5ioZVFJcOXfkFbSeO-_cVoI",
@@ -36,22 +36,52 @@
   let editingUid = null;
 
   // ---- Auth ----
-  window.adminLogin = function() {
-    const input = document.getElementById("pwInput").value;
+  window.adminLogin = async function() {
+    const email = document.getElementById("emailInput").value.trim();
+    const pw = document.getElementById("pwInput").value;
     const err = document.getElementById("loginError");
-    if (input === ADMIN_PASSWORD) {
+    const btn = document.getElementById("loginBtn");
+    err.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "กำลังเข้าสู่ระบบ...";
+    try {
+      await signInWithEmailAndPassword(auth, email, pw);
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
-      signInAnonymously(auth).then(() => loadPlayers()).catch(console.warn);
-    } else {
-      err.textContent = "รหัสผ่านไม่ถูกต้อง";
+      document.getElementById("adminEmail").textContent = email;
+      loadPlayers();
+    } catch (e) {
+      const msg =
+        (e.code === "auth/invalid-credential" || e.code === "auth/wrong-password")
+          ? "Email หรือรหัสผ่านไม่ถูกต้อง"
+          : e.code === "auth/user-not-found"
+          ? "ไม่พบบัญชีนี้ใน Firebase Auth"
+          : e.code === "auth/too-many-requests"
+          ? "ล็อกอินผิดหลายครั้ง กรุณารอสักครู่"
+          : "เข้าสู่ระบบไม่สำเร็จ: " + e.message;
+      err.textContent = msg;
       document.getElementById("pwInput").value = "";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "เข้าสู่ระบบ";
     }
   };
 
+  window.adminLogout = async function() {
+    if (!confirm("ออกจากระบบ?")) return;
+    await signOut(auth);
+    document.getElementById("appScreen").classList.add("hidden");
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("pwInput").value = "";
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("emailInput").value = ADMIN_EMAIL;
     document.getElementById("pwInput").addEventListener("keydown", e => {
       if (e.key === "Enter") window.adminLogin();
+    });
+    document.getElementById("emailInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("pwInput").focus();
     });
   });
 
@@ -71,7 +101,7 @@
       filteredPlayers = [...allPlayers];
       renderStats();
       renderTable();
-      setStatus(`โหลดสำเร็จ — ${allPlayers.length} ผู้เล่น`);
+      setStatus("โหลดสำเร็จ — " + allPlayers.length + " ผู้เล่น");
     } catch (e) {
       setStatus("โหลดไม่สำเร็จ: " + e.message);
       console.error(e);
@@ -87,7 +117,6 @@
     const avgLevel = total ? Math.round(levels.reduce((a,b)=>a+b,0)/total) : 0;
     const maxLevel = total ? Math.max(...levels) : 0;
     const banned = allPlayers.filter(p => p.banned).length;
-
     document.getElementById("statTotal").textContent = total;
     document.getElementById("statAnon").textContent = anon;
     document.getElementById("statRegistered").textContent = total - anon;
@@ -100,58 +129,58 @@
   function renderTable() {
     const tbody = document.getElementById("playerTableBody");
     if (!filteredPlayers.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty-row">ไม่พบผู้เล่น</td></tr>`;
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-row">ไม่พบผู้เล่น</td></tr>';
       return;
     }
     tbody.innerHTML = filteredPlayers.map(entry => {
       const p = entry.player;
       const banned = entry.banned ? '<span class="badge badge-ban">แบน</span>' : '';
-      const anonTag = entry.isAnonymous ? '<span class="badge badge-anon">ไม่ระบุตัวตน</span>' : '<span class="badge badge-reg">บัญชี</span>';
-      const updated = entry.updatedAt?.toDate ? entry.updatedAt.toDate().toLocaleDateString("th-TH") : "—";
-      return `<tr class="${entry.banned ? 'row-banned' : ''}">
-        <td class="uid-cell" title="${entry.uid}">${entry.uid.slice(0,10)}…</td>
-        <td><span class="player-name">${escHtml(p.name || "—")}</span> ${anonTag} ${banned}</td>
-        <td class="num">${p.level || 1}</td>
-        <td class="num">${fmtNum(p.gold || 0)}</td>
-        <td class="num gem-color">${fmtNum(p.gems || 0)}</td>
-        <td class="num">${(p.prestige?.rebirths || 0)}</td>
-        <td>${updated}</td>
-        <td>
-          <button class="btn-action btn-edit" onclick="openEdit('${entry.uid}')">แก้ไข</button>
-          <button class="btn-action btn-ban" onclick="toggleBan('${entry.uid}')">${entry.banned ? 'ปลดแบน' : 'แบน'}</button>
-          <button class="btn-action btn-del" onclick="deletePlayer('${entry.uid}')">ลบ</button>
-        </td>
-      </tr>`;
+      const anonTag = entry.isAnonymous
+        ? '<span class="badge badge-anon">ไม่ระบุตัวตน</span>'
+        : '<span class="badge badge-reg">บัญชี</span>';
+      const updated = entry.updatedAt && entry.updatedAt.toDate
+        ? entry.updatedAt.toDate().toLocaleDateString("th-TH")
+        : "—";
+      return '<tr class="' + (entry.banned ? 'row-banned' : '') + '">'
+        + '<td class="uid-cell" title="' + entry.uid + '">' + entry.uid.slice(0,10) + '…</td>'
+        + '<td><span class="player-name">' + escHtml(p.name || "—") + '</span> ' + anonTag + ' ' + banned + '</td>'
+        + '<td class="num">' + (p.level || 1) + '</td>'
+        + '<td class="num">' + fmtNum(p.gold || 0) + '</td>'
+        + '<td class="num gem-color">' + fmtNum(p.gems || 0) + '</td>'
+        + '<td class="num">' + (p.prestige && p.prestige.rebirths || 0) + '</td>'
+        + '<td>' + updated + '</td>'
+        + '<td>'
+        + '<button class="btn-action btn-edit" onclick="openEdit(\'' + entry.uid + '\')">แก้ไข</button>'
+        + '<button class="btn-action btn-ban" onclick="toggleBan(\'' + entry.uid + '\')">' + (entry.banned ? 'ปลดแบน' : 'แบน') + '</button>'
+        + '<button class="btn-action btn-del" onclick="deletePlayer(\'' + entry.uid + '\')">ลบ</button>'
+        + '</td></tr>';
     }).join("");
   }
 
-  // ---- Search / Filter ----
+  // ---- Search ----
   window.filterPlayers = function() {
     const q = document.getElementById("searchInput").value.toLowerCase().trim();
     filteredPlayers = q
       ? allPlayers.filter(p =>
-          (p.player.name || "").toLowerCase().includes(q) ||
-          p.uid.toLowerCase().includes(q)
-        )
+          (p.player.name || "").toLowerCase().includes(q) || p.uid.toLowerCase().includes(q))
       : [...allPlayers];
     renderTable();
-    document.getElementById("resultCount").textContent = `${filteredPlayers.length} / ${allPlayers.length} ผู้เล่น`;
+    document.getElementById("resultCount").textContent = filteredPlayers.length + " / " + allPlayers.length + " ผู้เล่น";
   };
 
   // ---- Edit Modal ----
-  window.openEdit = async function(uid) {
+  window.openEdit = function(uid) {
     editingUid = uid;
     const entry = allPlayers.find(p => p.uid === uid);
     if (!entry) return;
     const p = entry.player;
-
     document.getElementById("editUid").textContent = uid;
     document.getElementById("editName").value = p.name || "";
     document.getElementById("editLevel").value = p.level || 1;
     document.getElementById("editGold").value = p.gold || 0;
     document.getElementById("editGems").value = p.gems || 0;
-    document.getElementById("editRebirths").value = p.prestige?.rebirths || 0;
-    document.getElementById("editPoints").value = p.prestige?.points || 0;
+    document.getElementById("editRebirths").value = (p.prestige && p.prestige.rebirths) || 0;
+    document.getElementById("editPoints").value = (p.prestige && p.prestige.points) || 0;
     document.getElementById("editNote").textContent = "";
     document.getElementById("editModal").classList.remove("hidden");
   };
@@ -165,11 +194,9 @@
     if (!editingUid) return;
     const entry = allPlayers.find(p => p.uid === editingUid);
     if (!entry) return;
-
     const note = document.getElementById("editNote");
     note.textContent = "กำลังบันทึก...";
     note.style.color = "var(--text-muted)";
-
     try {
       const updated = JSON.parse(JSON.stringify(entry.player));
       updated.name = document.getElementById("editName").value.trim() || updated.name;
@@ -179,20 +206,12 @@
       if (!updated.prestige) updated.prestige = { points: 0, rebirths: 0 };
       updated.prestige.rebirths = Math.max(0, parseInt(document.getElementById("editRebirths").value) || 0);
       updated.prestige.points = Math.max(0, parseInt(document.getElementById("editPoints").value) || 0);
-
       await setDoc(doc(db, "saves", editingUid), {
-        ...entry,
-        player: updated,
-        updatedAt: serverTimestamp(),
-        adminModified: true,
+        ...entry, player: updated, updatedAt: serverTimestamp(), adminModified: true,
       });
-
-      // update local state
       entry.player = updated;
-      filteredPlayers = allPlayers.filter(p => filteredPlayers.includes(p));
       renderTable();
       renderStats();
-
       note.textContent = "✓ บันทึกสำเร็จ";
       note.style.color = "var(--success)";
       setTimeout(closeEdit, 800);
@@ -202,19 +221,18 @@
     }
   };
 
-  // ---- Ban / Unban ----
+  // ---- Ban ----
   window.toggleBan = async function(uid) {
     const entry = allPlayers.find(p => p.uid === uid);
     if (!entry) return;
     const newBanned = !entry.banned;
-    const action = newBanned ? "แบน" : "ปลดแบน";
-    if (!confirm(`ยืนยัน${action}ผู้เล่น ${entry.player.name}?`)) return;
+    if (!confirm((newBanned ? "แบน" : "ปลดแบน") + "ผู้เล่น " + entry.player.name + "?")) return;
     try {
       await setDoc(doc(db, "saves", uid), { ...entry, banned: newBanned, updatedAt: serverTimestamp() });
       entry.banned = newBanned;
       renderTable();
       renderStats();
-      setStatus(`${action}ผู้เล่น ${entry.player.name} สำเร็จ`);
+      setStatus((newBanned ? "แบน" : "ปลดแบน") + "ผู้เล่น " + entry.player.name + " สำเร็จ");
     } catch (e) {
       setStatus("เกิดข้อผิดพลาด: " + e.message);
     }
@@ -224,32 +242,29 @@
   window.deletePlayer = async function(uid) {
     const entry = allPlayers.find(p => p.uid === uid);
     if (!entry) return;
-    if (!confirm(`ลบข้อมูลผู้เล่น "${entry.player.name}" ถาวร?\nไม่สามารถกู้คืนได้`)) return;
+    if (!confirm('ลบข้อมูลผู้เล่น "' + entry.player.name + '" ถาวร?\nไม่สามารถกู้คืนได้')) return;
     try {
       await deleteDoc(doc(db, "saves", uid));
       allPlayers = allPlayers.filter(p => p.uid !== uid);
       filteredPlayers = filteredPlayers.filter(p => p.uid !== uid);
       renderTable();
       renderStats();
-      setStatus(`ลบผู้เล่น ${entry.player.name} แล้ว`);
+      setStatus("ลบผู้เล่น " + entry.player.name + " แล้ว");
     } catch (e) {
       setStatus("เกิดข้อผิดพลาด: " + e.message);
     }
   };
 
   // ---- Helpers ----
-  function setStatus(msg) {
-    document.getElementById("statusBar").textContent = msg;
-  }
+  function setStatus(msg) { document.getElementById("statusBar").textContent = msg; }
   function fmtNum(n) {
-    if (n >= 1_000_000) return (n/1_000_000).toFixed(1) + "M";
-    if (n >= 1_000) return (n/1_000).toFixed(1) + "K";
+    if (n >= 1000000) return (n/1000000).toFixed(1) + "M";
+    if (n >= 1000) return (n/1000).toFixed(1) + "K";
     return String(n);
   }
   function escHtml(s) {
     return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
-  window.fmtNum = fmtNum;
 </script>
 
 <style>
@@ -274,9 +289,7 @@
   --font: 'Inter', sans-serif;
   --r: 10px;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -287,10 +300,9 @@ body {
     radial-gradient(circle at 15% 0%, rgba(124,92,252,0.07), transparent 40%),
     radial-gradient(circle at 90% 100%, rgba(61,220,151,0.04), transparent 40%);
 }
-
 .hidden { display: none !important; }
 
-/* ---- Login ---- */
+/* Login */
 #loginScreen {
   display: flex; align-items: center; justify-content: center;
   min-height: 100vh;
@@ -300,7 +312,7 @@ body {
   border: 1px solid var(--border-strong);
   border-radius: 20px;
   padding: 48px 40px;
-  width: 360px;
+  width: 380px;
   text-align: center;
 }
 .login-icon {
@@ -311,43 +323,36 @@ body {
   margin: 0 auto 24px;
   font-size: 26px;
 }
-.login-title {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-}
+.login-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
 .login-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
-.login-box input {
+.login-field { text-align: left; margin-bottom: 12px; }
+.login-field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+.login-field input {
   width: 100%;
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--r);
   color: var(--text);
-  font-size: 15px; font-family: var(--font);
-  padding: 12px 14px;
+  font-size: 14px; font-family: var(--font);
+  padding: 11px 14px;
   outline: none;
-  margin-bottom: 12px;
   transition: border-color 0.2s;
 }
-.login-box input:focus { border-color: var(--accent); }
+.login-field input:focus { border-color: var(--accent); }
 .btn-login {
-  width: 100%;
-  background: var(--accent);
-  color: #fff;
+  width: 100%; margin-top: 8px;
+  background: var(--accent); color: #fff;
   border: none; border-radius: var(--r);
   font-size: 15px; font-weight: 600; font-family: var(--font);
-  padding: 13px;
-  cursor: pointer;
-  transition: opacity 0.2s;
+  padding: 13px; cursor: pointer; transition: opacity 0.2s;
 }
 .btn-login:hover { opacity: 0.88; }
-#loginError { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+#loginError { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 18px; }
 
-/* ---- App ---- */
+/* App */
 #appScreen { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* Header */
 .header {
   position: sticky; top: 0; z-index: 40;
   background: rgba(11,13,20,0.94);
@@ -359,303 +364,143 @@ body {
 }
 .header-brand {
   font-family: var(--font-display);
-  font-size: 17px; font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
   display: flex; align-items: center; gap: 10px;
 }
 .header-brand span { color: var(--accent); }
 .admin-badge {
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--accent-soft); color: var(--accent);
   border: 1px solid rgba(124,92,252,0.3);
-  border-radius: 6px;
-  padding: 3px 8px;
+  border-radius: 6px; padding: 3px 8px;
 }
 .header-right { display: flex; align-items: center; gap: 12px; }
 #statusBar { color: var(--muted); font-size: 13px; }
-.btn-reload {
-  background: var(--raised);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 7px 14px;
-  font-size: 13px; font-weight: 600; font-family: var(--font);
-  cursor: pointer;
-  transition: border-color 0.2s;
+#adminEmail { color: var(--faint); font-size: 12px; }
+.btn-sm {
+  background: var(--raised); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; transition: border-color 0.2s;
 }
-.btn-reload:hover { border-color: var(--accent); }
+.btn-sm:hover { border-color: var(--accent); }
+.btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
 
-/* Main */
 .main { padding: 28px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-/* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-  margin-bottom: 28px;
+  gap: 14px; margin-bottom: 28px;
 }
 @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(3,1fr); } }
 @media (max-width: 500px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
-
-.stat-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 18px 20px;
-}
+.stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; }
 .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
-.stat-value {
-  font-family: var(--font-display);
-  font-size: 26px; font-weight: 700;
-  letter-spacing: -0.02em;
-}
+.stat-value { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .stat-value.accent { color: var(--accent); }
 .stat-value.gold-c { color: var(--gold); }
 .stat-value.danger { color: var(--danger); }
 
-/* Toolbar */
-.toolbar {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
 .search-wrap { position: relative; flex: 1; min-width: 200px; }
-.search-wrap svg {
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-  width: 16px; height: 16px; color: var(--faint);
-}
+.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--faint); }
 #searchInput {
-  width: 100%;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text);
+  width: 100%; background: var(--panel); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
   font-size: 14px; font-family: var(--font);
-  padding: 10px 14px 10px 38px;
-  outline: none;
-  transition: border-color 0.2s;
+  padding: 10px 14px 10px 38px; outline: none; transition: border-color 0.2s;
 }
 #searchInput:focus { border-color: var(--accent); }
 #resultCount { color: var(--muted); font-size: 13px; white-space: nowrap; }
 
-/* Table */
-.table-wrap {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  overflow-x: auto;
-}
+.table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 thead { background: var(--raised); }
-th {
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
-  color: var(--muted);
-  text-transform: uppercase;
-  white-space: nowrap;
-  border-bottom: 1px solid var(--border);
-}
-td {
-  padding: 13px 16px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
+th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; white-space: nowrap; border-bottom: 1px solid var(--border); }
+td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(255,255,255,0.02); }
 tr.row-banned td { opacity: 0.5; }
-
 .uid-cell { color: var(--faint); font-size: 12px; font-family: monospace; }
 .player-name { font-weight: 600; }
-.num { font-variant-numeric: tabular-nums; color: var(--text); }
+.num { font-variant-numeric: tabular-nums; }
 .gem-color { color: var(--gem); }
 .empty-row { text-align: center; color: var(--faint); padding: 40px; }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
-  border-radius: 5px;
-  padding: 2px 6px;
-  vertical-align: middle;
-  margin-left: 4px;
-}
+.badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; border-radius: 5px; padding: 2px 6px; vertical-align: middle; margin-left: 4px; }
 .badge-ban { background: var(--danger-soft); color: var(--danger); }
 .badge-anon { background: rgba(255,255,255,0.06); color: var(--muted); }
 .badge-reg { background: var(--success-soft); color: var(--success); }
 
-/* Action buttons */
-.btn-action {
-  font-size: 12px; font-weight: 600; font-family: var(--font);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 10px;
-  cursor: pointer;
-  background: transparent;
-  color: var(--text);
-  margin-right: 4px;
-  transition: background 0.15s, border-color 0.15s;
-}
+.btn-action { font-size: 12px; font-weight: 600; font-family: var(--font); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; background: transparent; color: var(--text); margin-right: 4px; transition: background 0.15s, border-color 0.15s; }
 .btn-edit:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .btn-ban:hover { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
 .btn-del:hover { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
 
-/* Modal */
-.modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 100;
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
-}
-.modal {
-  background: var(--panel);
-  border: 1px solid var(--border-strong);
-  border-radius: 18px;
-  width: 100%; max-width: 460px;
-  padding: 32px;
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px;
-}
-.modal-title {
-  font-family: var(--font-display);
-  font-size: 18px; font-weight: 700;
-}
-.btn-close {
-  background: var(--raised);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  border-radius: 8px;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 16px;
-}
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.modal { background: var(--panel); border: 1px solid var(--border-strong); border-radius: 18px; width: 100%; max-width: 460px; padding: 32px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+.btn-close { background: var(--raised); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
 .btn-close:hover { color: var(--text); }
-
 .field { margin-bottom: 16px; }
-.field label {
-  display: block;
-  font-size: 12px; font-weight: 600; color: var(--muted);
-  letter-spacing: 0.04em; text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.uid-display {
-  font-family: monospace; font-size: 12px;
-  color: var(--faint); word-break: break-all;
-}
-.field input {
-  width: 100%;
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px; font-family: var(--font);
-  padding: 10px 12px;
-  outline: none;
-  transition: border-color 0.2s;
-}
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+.uid-display { font-family: monospace; font-size: 12px; color: var(--faint); word-break: break-all; }
+.field input { width: 100%; background: var(--raised); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); padding: 10px 12px; outline: none; transition: border-color 0.2s; }
 .field input:focus { border-color: var(--accent); }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.modal-actions {
-  display: flex; gap: 10px; margin-top: 24px;
-}
-.btn-save {
-  flex: 1;
-  background: var(--accent);
-  color: #fff;
-  border: none; border-radius: 8px;
-  font-size: 14px; font-weight: 600; font-family: var(--font);
-  padding: 12px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+.btn-save { flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: var(--font); padding: 12px; cursor: pointer; transition: opacity 0.2s; }
 .btn-save:hover { opacity: 0.88; }
-.btn-cancel {
-  flex: 0 0 auto;
-  background: var(--raised);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  border-radius: 8px;
-  font-size: 14px; font-weight: 600; font-family: var(--font);
-  padding: 12px 20px;
-  cursor: pointer;
-}
+.btn-cancel { flex: 0 0 auto; background: var(--raised); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; font-size: 14px; font-weight: 600; font-family: var(--font); padding: 12px 20px; cursor: pointer; }
 #editNote { font-size: 13px; margin-top: 10px; min-height: 18px; }
-
-/* Divider */
-.fields-divider {
-  border: none; border-top: 1px solid var(--border);
-  margin: 16px 0;
-}
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 </style>
 </head>
 <body>
 
-<!-- ==================== LOGIN ==================== -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-icon">🛡️</div>
     <div class="login-title">VOIDFALL Admin</div>
-    <div class="login-sub">เข้าสู่ระบบผู้ดูแล</div>
-    <input type="password" id="pwInput" placeholder="รหัสผ่านแอดมิน" autocomplete="current-password">
-    <button class="btn-login" onclick="adminLogin()">เข้าสู่ระบบ</button>
+    <div class="login-sub">เข้าสู่ระบบด้วย Firebase Account</div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="emailInput" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="pwInput" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="adminLogin()">เข้าสู่ระบบ</button>
     <div id="loginError"></div>
   </div>
 </div>
 
-<!-- ==================== APP ==================== -->
+<!-- APP -->
 <div id="appScreen" class="hidden">
-
-  <!-- Header -->
   <div class="header">
-    <div class="header-brand">
-      VOID<span>FALL</span>
-      <span class="admin-badge">ADMIN</span>
-    </div>
+    <div class="header-brand">VOID<span>FALL</span> <span class="admin-badge">ADMIN</span></div>
     <div class="header-right">
-      <span id="statusBar">กำลังโหลด...</span>
-      <button class="btn-reload" onclick="loadPlayers()">⟳ รีเฟรช</button>
+      <span id="adminEmail"></span>
+      <span id="statusBar"></span>
+      <button class="btn-sm" onclick="loadPlayers()">⟳ รีเฟรช</button>
+      <button class="btn-sm danger" onclick="adminLogout()">ออกจากระบบ</button>
     </div>
   </div>
 
-  <!-- Main -->
   <div class="main">
-
-    <!-- Stats -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">ผู้เล่นทั้งหมด</div>
-        <div class="stat-value accent" id="statTotal">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">มีบัญชี</div>
-        <div class="stat-value" id="statRegistered">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">ไม่ระบุตัวตน</div>
-        <div class="stat-value" id="statAnon">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">เลเวลเฉลี่ย</div>
-        <div class="stat-value gold-c" id="statAvgLevel">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">เลเวลสูงสุด</div>
-        <div class="stat-value gold-c" id="statMaxLevel">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">ถูกแบน</div>
-        <div class="stat-value danger" id="statBanned">—</div>
-      </div>
+      <div class="stat-card"><div class="stat-label">ผู้เล่นทั้งหมด</div><div class="stat-value accent" id="statTotal">—</div></div>
+      <div class="stat-card"><div class="stat-label">มีบัญชี</div><div class="stat-value" id="statRegistered">—</div></div>
+      <div class="stat-card"><div class="stat-label">ไม่ระบุตัวตน</div><div class="stat-value" id="statAnon">—</div></div>
+      <div class="stat-card"><div class="stat-label">เลเวลเฉลี่ย</div><div class="stat-value gold-c" id="statAvgLevel">—</div></div>
+      <div class="stat-card"><div class="stat-label">เลเวลสูงสุด</div><div class="stat-value gold-c" id="statMaxLevel">—</div></div>
+      <div class="stat-card"><div class="stat-label">ถูกแบน</div><div class="stat-value danger" id="statBanned">—</div></div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <div class="search-wrap">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -666,7 +511,6 @@ tr.row-banned td { opacity: 0.5; }
       <span id="resultCount"></span>
     </div>
 
-    <!-- Table -->
     <div class="table-wrap">
       <table>
         <thead>
@@ -686,57 +530,28 @@ tr.row-banned td { opacity: 0.5; }
         </tbody>
       </table>
     </div>
+  </div>
+</div>
 
-  </div><!-- /main -->
-</div><!-- /appScreen -->
-
-<!-- ==================== EDIT MODAL ==================== -->
+<!-- EDIT MODAL -->
 <div id="editModal" class="modal-backdrop hidden" onclick="if(event.target===this)closeEdit()">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">แก้ไขผู้เล่น</div>
       <button class="btn-close" onclick="closeEdit()">✕</button>
     </div>
-
-    <div class="field">
-      <label>UID</label>
-      <div class="uid-display" id="editUid"></div>
-    </div>
-
-    <div class="field">
-      <label>ชื่อผู้เล่น</label>
-      <input type="text" id="editName" maxlength="30">
-    </div>
-
-    <div class="field">
-      <label>เลเวล</label>
-      <input type="number" id="editLevel" min="1" max="9999">
-    </div>
-
-    <hr class="fields-divider">
-
+    <div class="field"><label>UID</label><div class="uid-display" id="editUid"></div></div>
+    <div class="field"><label>ชื่อผู้เล่น</label><input type="text" id="editName" maxlength="30"></div>
+    <div class="field"><label>เลเวล</label><input type="number" id="editLevel" min="1" max="9999"></div>
+    <hr class="divider">
     <div class="field-row">
-      <div class="field">
-        <label>ทอง (Gold)</label>
-        <input type="number" id="editGold" min="0">
-      </div>
-      <div class="field">
-        <label>เพชร (Gems)</label>
-        <input type="number" id="editGems" min="0">
-      </div>
+      <div class="field"><label>ทอง (Gold)</label><input type="number" id="editGold" min="0"></div>
+      <div class="field"><label>เพชร (Gems)</label><input type="number" id="editGems" min="0"></div>
     </div>
-
     <div class="field-row">
-      <div class="field">
-        <label>รีเบิร์ธ</label>
-        <input type="number" id="editRebirths" min="0">
-      </div>
-      <div class="field">
-        <label>Prestige Points</label>
-        <input type="number" id="editPoints" min="0">
-      </div>
+      <div class="field"><label>รีเบิร์ธ</label><input type="number" id="editRebirths" min="0"></div>
+      <div class="field"><label>Prestige Points</label><input type="number" id="editPoints" min="0"></div>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeEdit()">ยกเลิก</button>
       <button class="btn-save" onclick="saveEdit()">บันทึก</button>
