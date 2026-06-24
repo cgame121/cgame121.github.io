@@ -7693,6 +7693,66 @@ let currentDungeonIndex = null;
 let currentRoomIndex = 0;
 let currentMonster = null;
 let battleTimer = null;
+
+// ── Web Worker Timer ──────────────────────────────────────────────
+// ใช้ Worker แทน setInterval ธรรมดา เพื่อให้ทำงานได้แม้ tab ถูก throttle
+let _workerTimer = null;
+let _workerCallbacks = {};
+let _workerPendingId = null;
+
+function _getWorker() {
+  if (_workerTimer) return _workerTimer;
+  try {
+    _workerTimer = new Worker("voidfall-worker.js");
+    _workerTimer.onmessage = function(e) {
+      const { type, workerId, clientId } = e.data;
+      if (type === "created") {
+        // บันทึก mapping clientId -> workerId
+        _workerCallbacks["__id_" + clientId] = workerId;
+      }
+      if (type === "tick" && _workerCallbacks[workerId]) {
+        _workerCallbacks[workerId]();
+      }
+    };
+    _workerTimer.onerror = function() {
+      // fallback: ถ้า worker โหลดไม่ได้ (เช่น file:// protocol) ใช้ setInterval ปกติ
+      _workerTimer = null;
+    };
+  } catch(e) {
+    _workerTimer = null;
+  }
+  return _workerTimer;
+}
+
+function workerSetInterval(fn, ms) {
+  const worker = _getWorker();
+  if (!worker) return setInterval(fn, ms); // fallback
+  const clientId = Date.now() + Math.random();
+  worker.postMessage({ type: "setInterval", id: clientId, ms });
+  // รอ worker ตอบ workerId แล้วค่อย map callback
+  const checkReady = setInterval(() => {
+    const wid = _workerCallbacks["__id_" + clientId];
+    if (wid !== undefined) {
+      clearInterval(checkReady);
+      _workerCallbacks[wid] = fn;
+    }
+  }, 10);
+  // return handle object แทน numeric id
+  return { __worker: true, clientId };
+}
+
+function workerClearInterval(handle) {
+  if (!handle) return;
+  if (!handle.__worker) { clearInterval(handle); return; }
+  const worker = _getWorker();
+  const wid = _workerCallbacks["__id_" + handle.clientId];
+  if (worker && wid !== undefined) {
+    worker.postMessage({ type: "clearInterval", id: wid });
+    delete _workerCallbacks[wid];
+    delete _workerCallbacks["__id_" + handle.clientId];
+  }
+}
+// ─────────────────────────────────────────────────────────────────
 let inBattleTransition = false;
 let resultAutoTimer = null; // pending auto-continue from the win/loss overlay
 
@@ -8510,10 +8570,10 @@ function spawnRoom() {
 
 function startBattleLoop() {
   stopBattleLoop();
-  battleTimer = setInterval(runBattleTick, BATTLE_TICK_MS);
+  battleTimer = workerSetInterval(runBattleTick, BATTLE_TICK_MS);
 }
 function stopBattleLoop() {
-  if (battleTimer) clearInterval(battleTimer);
+  if (battleTimer) workerClearInterval(battleTimer);
   battleTimer = null;
 }
 
