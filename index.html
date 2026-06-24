@@ -1658,18 +1658,125 @@ button {
 }
 
 /* ============================================
-   Inventory Panel
+   Inventory Panel — Enhanced
    ============================================ */
-.inv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 .inv-count { font-size: 12px; color: var(--text-faint); }
+
+/* Capacity bar */
+.inv-capacity-bar-wrap {
+  margin-bottom: 12px;
+}
+.inv-capacity-bar-track {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--bg-void);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.inv-capacity-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--gem));
+  transition: width 0.4s ease;
+}
+.inv-capacity-bar-fill.near-full { background: linear-gradient(90deg, var(--gold), var(--danger)); }
+.inv-capacity-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+/* Quick stats bar */
+.inv-quick-stats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.inv-stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-raised);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.inv-stat-chip-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Search bar */
+.inv-search-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+.inv-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.inv-search {
+  width: 100%;
+  background: var(--bg-void);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  padding: 8px 10px 8px 32px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.inv-search:focus { border-color: var(--accent); }
+.inv-search::placeholder { color: var(--text-faint); }
+.inv-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: pointer;
+  display: none;
+}
+.inv-search-clear.visible { display: block; }
 
 /* Filter bar */
 .inv-filter-bar {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   margin-bottom: 10px;
+  padding-bottom: 2px;
 }
+.inv-filter-bar::-webkit-scrollbar { display: none; }
 .inv-filter-btn {
   padding: 5px 12px;
   border-radius: 999px;
@@ -1681,6 +1788,7 @@ button {
   cursor: pointer;
   transition: border-color 0.18s, color 0.18s, background 0.18s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .inv-filter-btn:hover { border-color: var(--accent); color: var(--text-primary); }
 .inv-filter-btn.active {
@@ -1717,6 +1825,108 @@ button {
   padding-right: 28px;
 }
 .inv-sort-select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Multi-select mode */
+.inv-multiselect-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(124,92,252,0.14), rgba(124,92,252,0.04));
+  border: 1px solid rgba(124,92,252,0.35);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  animation: tab-fade-in 0.15s ease;
+}
+.inv-multiselect-bar.visible { display: flex; }
+.inv-multiselect-count {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.inv-multiselect-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.inv-ms-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
+}
+.inv-ms-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.inv-ms-btn-sell {
+  border-color: rgba(255,107,91,0.45);
+  background: rgba(255,107,91,0.08);
+  color: var(--danger);
+}
+.inv-ms-btn-sell:hover:not(:disabled) { background: rgba(255,107,91,0.18); }
+.inv-ms-btn-lock {
+  border-color: rgba(246,196,83,0.45);
+  background: rgba(246,196,83,0.06);
+  color: var(--gold);
+}
+.inv-ms-btn-lock:hover:not(:disabled) { background: rgba(246,196,83,0.14); }
+.inv-ms-btn-cancel {
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--text-muted);
+}
+.inv-ms-btn-cancel:hover { background: var(--bg-panel-raised); }
+.inv-multiselect-toggle {
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.inv-multiselect-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.inv-multiselect-toggle.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Item slot — selected state in multi-select */
+.inv-slot.ms-selected {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(124,92,252,0.4), 0 0 12px rgba(124,92,252,0.2);
+  transform: scale(0.93);
+}
+.inv-slot.ms-mode:not(.ms-selected) { opacity: 0.6; }
+
+/* Item name tooltip on hover */
+.inv-slot-name-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(11,13,20,0.95);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inv-slot:hover .inv-slot-name-tip { opacity: 1; }
 
 /* Section group header */
 .inv-section {
@@ -1861,6 +2071,28 @@ button {
   width: 100%;
 }
 .btn-small:hover { border-color: var(--accent); color: var(--text-primary); }
+
+.inv-sell-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,107,91,0.45);
+  background: rgba(255,107,91,0.08);
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.inv-sell-all-btn:hover {
+  background: rgba(255,107,91,0.16);
+  border-color: var(--danger);
+  box-shadow: 0 0 12px rgba(255,107,91,0.25);
+}
+.inv-sell-all-btn:active { transform: scale(0.96); }
 
 .full-width { width: 100%; margin-top: 10px; }
 
@@ -3253,11 +3485,45 @@ button {
     <section class="panel inv-panel tab-panel" data-tab-panel="inventory">
       <div class="inv-header">
         <h2 class="panel-title" style="margin:0;">คลังไอเทม</h2>
-        <span class="inv-count" id="invCount">0/60</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="inv-multiselect-toggle" id="invMultiselectToggle">☑ เลือกหลายชิ้น</button>
+          <span class="inv-count" id="invCount">0/60</span>
+        </div>
+      </div>
+
+      <!-- Capacity progress bar -->
+      <div class="inv-capacity-bar-wrap">
+        <div class="inv-capacity-bar-track">
+          <div class="inv-capacity-bar-fill" id="invCapacityFill" style="width:0%"></div>
+        </div>
+        <div class="inv-capacity-info-row">
+          <span id="invCapacityLabel">ว่าง 60 ช่อง</span>
+          <span id="invRarityQuickStat"></span>
+        </div>
+      </div>
+
+      <!-- Quick rarity stats -->
+      <div class="inv-quick-stats" id="invQuickStats"></div>
+
+      <!-- Search -->
+      <div class="inv-search-wrap">
+        <span class="inv-search-icon">🔍</span>
+        <input class="inv-search" id="invSearch" placeholder="ค้นหาชื่อไอเทม..." autocomplete="off" type="search">
+        <button class="inv-search-clear" id="invSearchClear">✕</button>
       </div>
 
       <!-- Filter by slot -->
       <div class="inv-filter-bar" id="invFilterBar"></div>
+
+      <!-- Multi-select action bar -->
+      <div class="inv-multiselect-bar" id="invMultiselectBar">
+        <span class="inv-multiselect-count" id="invMsCount">เลือก 0 ชิ้น</span>
+        <div class="inv-multiselect-actions">
+          <button class="inv-ms-btn inv-ms-btn-sell" id="invMsSell">ขาย</button>
+          <button class="inv-ms-btn inv-ms-btn-lock" id="invMsLock">ล็อก</button>
+          <button class="inv-ms-btn inv-ms-btn-cancel" id="invMsCancel">ยกเลิก</button>
+        </div>
+      </div>
 
       <!-- Sort + sell action -->
       <div class="inv-action-row">
@@ -3268,7 +3534,9 @@ button {
           <option value="enchant">เรียงตาม: ตีบวก</option>
           <option value="value">เรียงตาม: มูลค่า</option>
         </select>
-        <button class="btn-small" id="sellJunkBtn">ขายของเก่า</button>
+        <button class="inv-sell-all-btn" id="sellJunkBtn">
+          <span class="inv-sell-all-icon">🪙</span> ขายทั้งหมด
+        </button>
       </div>
 
       <!-- Item sections rendered here -->
@@ -5743,9 +6011,13 @@ function renderEndlessIntro(player) {
 }
 
 // ---------- Inventory grid ----------
-// ── Inventory state ──
-let invFilterSlot = "all";
-let invSortMode   = "rarity";
+// ── Inventory state (module-level, not tied to any render call) ──
+let invFilterSlot  = "all";
+let invSortMode    = "rarity";
+let invSearchQuery = "";
+let invMultiselectMode = false;
+let invSelectedIds = new Set();   // item.id strings
+let _invHandlers   = null;        // saved once so ms actions can call without closure
 
 const INV_SLOT_ICONS = {
   all: "🎒", weapon: "⚔️", head: "🪖", body: "🥋", hands: "🧤", feet: "👢", trinket: "💍",
@@ -5757,49 +6029,174 @@ const RARITY_LABEL_TH = {
   common: "ธรรมดา", uncommon: "ไม่ธรรมดา", rare: "หายาก", epic: "มหากาพย์", legendary: "ตำนาน", void: "เทพสังหาร",
 };
 
-function renderInventory(player, handlers) {
-  // Update count
-  document.getElementById("invCount").textContent =
-    `${player.inventory.length}/${inventoryCapacity(player)}`;
+// ── Called once from bindGlobalEvents ──
+function bindInventoryEvents() {
+  // Search
+  const searchEl   = document.getElementById("invSearch");
+  const searchClear = document.getElementById("invSearchClear");
+  searchEl.addEventListener("input", () => {
+    invSearchQuery = searchEl.value.trim();
+    searchClear.classList.toggle("visible", !!invSearchQuery);
+    renderInventory(player, _invHandlers);
+  });
+  searchClear.addEventListener("click", () => {
+    invSearchQuery = "";
+    searchEl.value = "";
+    searchClear.classList.remove("visible");
+    renderInventory(player, _invHandlers);
+  });
 
-  // Build filter bar
+  // Filter bar
   const filterBar = document.getElementById("invFilterBar");
-  if (filterBar && !filterBar.dataset.bound) {
-    filterBar.dataset.bound = "1";
-    const slots = ["all", "weapon", "head", "body", "hands", "feet", "trinket"];
-    filterBar.innerHTML = slots.map(s => `
-      <button class="inv-filter-btn ${invFilterSlot === s ? "active" : ""}" data-slot="${s}">
-        ${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}
-      </button>`).join("");
-    filterBar.querySelectorAll(".inv-filter-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        invFilterSlot = btn.dataset.slot;
-        filterBar.querySelectorAll(".inv-filter-btn").forEach(b => b.classList.toggle("active", b.dataset.slot === invFilterSlot));
-        renderInventory(player, handlers);
-      });
-    });
-  } else if (filterBar) {
-    // refresh active state
+  const slots = ["all", "weapon", "head", "body", "hands", "feet", "trinket"];
+  filterBar.innerHTML = slots.map(s =>
+    `<button class="inv-filter-btn${invFilterSlot === s ? " active" : ""}" data-slot="${s}">${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}</button>`
+  ).join("");
+  filterBar.addEventListener("click", e => {
+    const btn = e.target.closest(".inv-filter-btn");
+    if (!btn) return;
+    invFilterSlot = btn.dataset.slot;
     filterBar.querySelectorAll(".inv-filter-btn").forEach(b => b.classList.toggle("active", b.dataset.slot === invFilterSlot));
-  }
+    renderInventory(player, _invHandlers);
+  });
 
-  // Bind sort select (once)
+  // Sort
   const sortSel = document.getElementById("invSortSelect");
-  if (sortSel && !sortSel.dataset.bound) {
-    sortSel.dataset.bound = "1";
-    sortSel.value = invSortMode;
-    sortSel.addEventListener("change", () => {
-      invSortMode = sortSel.value;
-      renderInventory(player, handlers);
-    });
-  }
+  sortSel.addEventListener("change", () => {
+    invSortMode = sortSel.value;
+    renderInventory(player, _invHandlers);
+  });
 
-  // Filter
+  // Multi-select toggle button
+  document.getElementById("invMultiselectToggle").addEventListener("click", () => {
+    invMultiselectMode = !invMultiselectMode;
+    if (!invMultiselectMode) invSelectedIds.clear();
+    renderInventory(player, _invHandlers);
+  });
+
+  // Multi-select sell
+  document.getElementById("invMsSell").addEventListener("click", () => {
+    const toSell = player.inventory.filter(i => invSelectedIds.has(i.id) && !i.locked);
+    if (toSell.length === 0) { showToast("ไม่มีไอเทมที่ขายได้ (ล็อกอยู่ทั้งหมด)"); return; }
+    let total = 0;
+    toSell.forEach(item => {
+      total += sellValue(item);
+      const idx = player.inventory.findIndex(i => i.id === item.id);
+      if (idx !== -1) player.inventory.splice(idx, 1);
+    });
+    player.gold += total;
+    invMultiselectMode = false;
+    invSelectedIds.clear();
+    renderInventory(player, _invHandlers);
+    renderHud(player);
+    savePlayer(player);
+    showToast(`ขายไป ${toSell.length} ชิ้น ได้ ${fmtNum(total)} ทอง 💰`);
+  });
+
+  // Multi-select lock toggle
+  document.getElementById("invMsLock").addEventListener("click", () => {
+    const selected = player.inventory.filter(i => invSelectedIds.has(i.id));
+    if (selected.length === 0) return;
+    const allLocked = selected.every(i => i.locked);
+    selected.forEach(i => { i.locked = !allLocked; });
+    invMultiselectMode = false;
+    invSelectedIds.clear();
+    renderInventory(player, _invHandlers);
+    savePlayer(player);
+    showToast(allLocked ? `🔓 ปลดล็อก ${selected.length} ชิ้น` : `🔒 ล็อก ${selected.length} ชิ้น`);
+  });
+
+  // Multi-select cancel
+  document.getElementById("invMsCancel").addEventListener("click", () => {
+    invMultiselectMode = false;
+    invSelectedIds.clear();
+    renderInventory(player, _invHandlers);
+  });
+}
+
+function _invUpdateCapacityBar() {
+  const cap  = inventoryCapacity(player);
+  const used = player.inventory.length;
+  const pct  = cap > 0 ? (used / cap) * 100 : 0;
+  const nearFull = pct >= 80;
+
+  document.getElementById("invCount").textContent = `${used}/${cap}`;
+  const fill = document.getElementById("invCapacityFill");
+  const lbl  = document.getElementById("invCapacityLabel");
+  if (fill) { fill.style.width = pct + "%"; fill.classList.toggle("near-full", nearFull); }
+  if (lbl)  {
+    lbl.textContent = nearFull ? `⚠️ คลังใกล้เต็ม — ว่างอีก ${cap - used} ช่อง` : `ว่าง ${cap - used} ช่อง`;
+    lbl.style.color = nearFull ? "var(--gold)" : "";
+  }
+}
+
+function _invUpdateQuickStats() {
+  const qs = document.getElementById("invQuickStats");
+  if (!qs) return;
+  if (player.inventory.length === 0) { qs.innerHTML = ""; return; }
+  const counts = {};
+  player.inventory.forEach(i => { counts[i.rarity] = (counts[i.rarity] || 0) + 1; });
+  const chips = [...RARITY_ORDER].reverse().filter(r => counts[r]).map(r => {
+    const c = RARITY[r].color;
+    return `<span class="inv-stat-chip"><span class="inv-stat-chip-dot" style="background:${c}"></span><span style="color:${c}">${counts[r]}</span>&nbsp;${RARITY_LABEL_TH[r]}</span>`;
+  });
+  const enchCnt = player.inventory.filter(i => (i.enchant||0) > 0).length;
+  const lockCnt = player.inventory.filter(i => i.locked).length;
+  if (enchCnt) chips.push(`<span class="inv-stat-chip">✨ ${enchCnt} ตีบวก</span>`);
+  if (lockCnt) chips.push(`<span class="inv-stat-chip">🔒 ${lockCnt} ล็อก</span>`);
+  qs.innerHTML = chips.join("");
+}
+
+function _invUpdateMultiselectBar() {
+  const bar    = document.getElementById("invMultiselectBar");
+  const toggle = document.getElementById("invMultiselectToggle");
+  const cnt    = document.getElementById("invMsCount");
+  const sellBtn = document.getElementById("invMsSell");
+  const lockBtn = document.getElementById("invMsLock");
+
+  toggle.classList.toggle("active", invMultiselectMode);
+  toggle.textContent = invMultiselectMode ? "✕ ออกจากโหมดเลือก" : "☑ เลือกหลายชิ้น";
+  bar.classList.toggle("visible", invMultiselectMode);
+
+  if (cnt) cnt.textContent = invSelectedIds.size > 0 ? `เลือก ${invSelectedIds.size} ชิ้น` : "แตะไอเทมเพื่อเลือก";
+
+  // Disable sell/lock when nothing selected
+  if (sellBtn) sellBtn.disabled = invSelectedIds.size === 0;
+  if (lockBtn) lockBtn.disabled = invSelectedIds.size === 0;
+}
+
+function renderInventory(p, handlers) {
+  // Always keep handlers fresh for ms callbacks
+  if (handlers) _invHandlers = handlers;
+
+  _invUpdateCapacityBar();
+  _invUpdateQuickStats();
+  _invUpdateMultiselectBar();
+
+  // Update sort select to match state
+  const sortSel = document.getElementById("invSortSelect");
+  if (sortSel && sortSel.value !== invSortMode) sortSel.value = invSortMode;
+
+  // Update filter bar active state
+  document.querySelectorAll("#invFilterBar .inv-filter-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.slot === invFilterSlot)
+  );
+
+  // ── Filter ──
   let items = player.inventory.filter(i =>
     invFilterSlot === "all" || i.slot === invFilterSlot
   );
 
-  // Sort comparator
+  if (invSearchQuery) {
+    const q = invSearchQuery.toLowerCase();
+    items = items.filter(i =>
+      (i.name || "").toLowerCase().includes(q) ||
+      (RARITY_LABEL_TH[i.rarity] || "").toLowerCase().includes(q) ||
+      (INV_SLOT_LABEL_TH[i.slot] || "").toLowerCase().includes(q)
+    );
+  }
+
+  // ── Sort ──
   const rarityRank = r => RARITY_ORDER.indexOf(r);
   const comparators = {
     rarity:  (a, b) => rarityRank(b.rarity) - rarityRank(a.rarity) || b.itemLevel - a.itemLevel,
@@ -5810,46 +6207,40 @@ function renderInventory(player, handlers) {
   };
   items.sort(comparators[invSortMode] || comparators.rarity);
 
-  // Group items
+  // ── Build groups ──
   const sections = document.getElementById("invSections");
   sections.innerHTML = "";
 
   if (items.length === 0) {
-    sections.innerHTML = `<div class="inv-empty-hint">ไม่มีไอเทมในคลัง</div>`;
+    sections.innerHTML = `<div class="inv-empty-hint">${invSearchQuery ? `ไม่พบ "${invSearchQuery}"` : "ไม่มีไอเทมในคลัง"}</div>`;
     return;
   }
 
-  // Grouping logic by sort mode
   let groups = [];
   if (invSortMode === "slot") {
-    // group by slot
     const bySlot = {};
     items.forEach(i => { (bySlot[i.slot] = bySlot[i.slot] || []).push(i); });
-    SLOTS.filter(s => bySlot[s]).forEach(s => {
-      groups.push({ label: `${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}`, items: bySlot[s] });
-    });
+    SLOTS.filter(s => bySlot[s]).forEach(s =>
+      groups.push({ label: `${INV_SLOT_ICONS[s]} ${INV_SLOT_LABEL_TH[s]}`, items: bySlot[s] })
+    );
   } else if (invSortMode === "rarity") {
-    // group by rarity
     const byRarity = {};
     items.forEach(i => { (byRarity[i.rarity] = byRarity[i.rarity] || []).push(i); });
-    [...RARITY_ORDER].reverse().filter(r => byRarity[r]).forEach(r => {
-      const ri = RARITY[r];
-      groups.push({ label: RARITY_LABEL_TH[r], color: ri.color, items: byRarity[r] });
-    });
+    [...RARITY_ORDER].reverse().filter(r => byRarity[r]).forEach(r =>
+      groups.push({ label: RARITY_LABEL_TH[r], color: RARITY[r].color, items: byRarity[r] })
+    );
   } else if (invSortMode === "enchant") {
-    // group: maxed / has enchant / unenchanted
-    const maxed = items.filter(i => (i.enchant||0) >= ENCHANT_MAX_LEVEL);
+    const maxed     = items.filter(i => (i.enchant||0) >= ENCHANT_MAX_LEVEL);
     const enchanted = items.filter(i => (i.enchant||0) > 0 && (i.enchant||0) < ENCHANT_MAX_LEVEL);
-    const plain = items.filter(i => !(i.enchant||0));
+    const plain     = items.filter(i => !(i.enchant||0));
     if (maxed.length)     groups.push({ label: "✦ สูงสุด MAX", items: maxed });
     if (enchanted.length) groups.push({ label: "✨ ตีบวกแล้ว", items: enchanted });
     if (plain.length)     groups.push({ label: "ยังไม่ตีบวก", items: plain });
   } else {
-    // level / value — single flat group
     groups.push({ label: null, items });
   }
 
-  // Render each group
+  // ── Render ──
   groups.forEach(({ label, color, items: gItems }) => {
     const section = document.createElement("div");
     section.className = "inv-section";
@@ -5857,21 +6248,41 @@ function renderInventory(player, handlers) {
     if (label) {
       const hdr = document.createElement("div");
       hdr.className = "inv-section-label";
-      hdr.innerHTML = `<span style="${color ? `color:${color}` : ""}">${label}</span>
-        <span class="inv-section-count">${gItems.length}</span>`;
+      hdr.innerHTML = `<span style="${color ? `color:${color}` : ""}">${label}</span><span class="inv-section-count">${gItems.length}</span>`;
       section.appendChild(hdr);
     }
 
     const grid = document.createElement("div");
     grid.className = "inv-grid";
+
     gItems.forEach(item => {
+      const isSel = invSelectedIds.has(item.id);
       const el = document.createElement("div");
-      el.className = "inv-slot" + (item.locked ? " locked" : "");
+      el.className = "inv-slot"
+        + (item.locked ? " locked" : "")
+        + (invMultiselectMode ? " ms-mode" : "")
+        + (isSel ? " ms-selected" : "");
       el.style.borderColor = RARITY[item.rarity].color + "55";
-      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color) + enchantBadgeHtml(item);
-      el.addEventListener("click", (e) => handlers.onEquip(item, e));
+      el.style.position = "relative";
+      el.innerHTML = iconHtml(item.icon, RARITY[item.rarity].color)
+        + enchantBadgeHtml(item)
+        + `<span class="inv-slot-name-tip">${item.name || ""}</span>`;
+
+      el.addEventListener("click", e => {
+        if (invMultiselectMode) {
+          if (isSel) invSelectedIds.delete(item.id);
+          else       invSelectedIds.add(item.id);
+          // Update just this element + bar (fast path — no full re-render)
+          el.classList.toggle("ms-selected", !isSel);
+          _invUpdateMultiselectBar();
+        } else {
+          if (_invHandlers) _invHandlers.onEquip(item, e);
+        }
+      });
+
       grid.appendChild(el);
     });
+
     section.appendChild(grid);
     sections.appendChild(section);
   });
@@ -7774,7 +8185,7 @@ function sellAllJunk() {
   renderHud(player);
   renderInventory(player, { onEquip: onInventoryItemClick });
   savePlayer(player);
-  showToast(`ขายไอเทม ${sellable.length} ชิ้น ได้ ${fmtNum(total)}g`);
+  showToast(`ขายทั้งหมด ${sellable.length} ชิ้น ได้ ${fmtNum(total)}g`);
 }
 
 // ============================================
@@ -9002,6 +9413,8 @@ function onDailyPlayerDefeated() {
 // Global event bindings
 // ============================================
 function bindGlobalEvents() {
+  bindInventoryEvents();
+
   document.getElementById("dailyEnterBtn").addEventListener("click", () => {
     enterDailyDungeon();
   });
