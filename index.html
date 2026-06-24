@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ============================================
    VOIDFALL — Design Tokens
@@ -3047,6 +3048,45 @@ button {
 }
 
 /* ============================================
+   Google Cloud Save UI
+   ============================================ */
+.google-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0 14px;
+}
+.google-account-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bg-void);
+  border: 1px solid var(--line-strong);
+  object-fit: cover;
+}
+.google-account-info { flex: 1; min-width: 0; }
+.google-account-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.google-account-email {
+  font-size: 11px;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#googleSignInBtn {
+  display: flex;
+  justify-content: center;
+  min-height: 40px;
+}
+
+/* ============================================
    Auto-Sell Settings UI
    ============================================ */
 .autosell-section {
@@ -3791,6 +3831,51 @@ button {
             <button class="auto-toggle" id="keepScreenOnToggle" role="switch" aria-checked="true" aria-label="เปิด/ปิดไม่ให้จอดับขณะเล่น">
               <span class="auto-toggle-knob"></span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── หมวด: เซฟผ่าน Google ── -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon">☁️</span>
+          <span class="settings-section-title">เซฟผ่าน Google</span>
+        </div>
+        <div class="settings-section-body">
+          <p class="hint-text" style="margin-bottom:12px;">
+            เข้าสู่ระบบด้วย Google เพื่อสำรองข้อมูลเซฟไว้ออนไลน์ และดึงกลับมาเล่นต่อได้จากเครื่องอื่น
+          </p>
+          <div id="googleSignedOutView">
+            <div id="googleSignInBtn"></div>
+            <p class="hint-text" id="googleUnavailableHint" style="display:none;margin-top:10px;margin-bottom:0;color:var(--danger);">
+              ไม่สามารถโหลดระบบเข้าสู่ระบบของ Google ได้ในขณะนี้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองรีเฟรชหน้านี้
+            </p>
+          </div>
+          <div id="googleSignedInView" class="hidden">
+            <div class="google-account-row">
+              <img id="googleAccountAvatar" class="google-account-avatar" src="" alt="">
+              <div class="google-account-info">
+                <div class="google-account-name" id="googleAccountName">—</div>
+                <div class="google-account-email" id="googleAccountEmail">—</div>
+              </div>
+              <button class="btn-text" id="googleSignOutBtn">ออกจากระบบ</button>
+            </div>
+            <p class="save-status" id="googleSyncStatusText"></p>
+            <div class="settings-save-row">
+              <button class="btn-primary full-width" id="googleUploadBtn">☁️⬆️ อัปโหลดเซฟนี้ขึ้น Google</button>
+            </div>
+            <div class="settings-save-row">
+              <button class="btn-secondary full-width" id="googleDownloadBtn">☁️⬇️ ดึงเซฟจาก Google มาใช้</button>
+            </div>
+            <div class="settings-row" style="margin-top:4px;">
+              <div class="settings-row-info">
+                <div class="settings-row-label">ซิงค์อัตโนมัติ</div>
+                <div class="settings-row-desc">อัปโหลดขึ้น Google ให้อัตโนมัติทุกครั้งที่เกมบันทึก</div>
+              </div>
+              <button class="auto-toggle" id="googleAutoSyncToggle" role="switch" aria-checked="false" aria-label="เปิด/ปิดซิงค์อัตโนมัติ">
+                <span class="auto-toggle-knob"></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -5412,6 +5497,7 @@ function savePlayer(player, { immediate = false } = {}) {
     saveDebounceTimer = setTimeout(() => writeRaw(payload), 300);
   }
   lastSavedAt = Date.now();
+  gsaveMaybeAutoSync();
 }
 
 // Adds defaults for fields introduced after older saves were created
@@ -6793,6 +6879,7 @@ function init() {
   renderAll();
   bindGlobalEvents();
   lbInitUI(player);
+  initGoogleSaveUI();
   initPvpUI(player);
   initTabNav();
   showDungeonSelectView();
@@ -9189,7 +9276,7 @@ function renderDailyDungeonCard(player) {
   ).join("");
 
   // Rewards preview
-  const gemAmt = Math.round(daily.baseGems * (streakBonus ? streakBonus.gemMult : 1));
+  const gemAmt = Math.round(daily.baseGems * (streakBonus ? streakBonus.gemMult : 1) * prestigeBonusMultiplier(player));
   const rpEl = document.getElementById("dailyRewardsPreview");
   rpEl.innerHTML = [
     `<span class="daily-reward-chip" style="color:var(--gem);border-color:rgba(75,216,232,0.4);background:rgba(75,216,232,0.08);">💎 +${fmtNum(gemAmt)} เพชร</span>`,
@@ -9289,7 +9376,7 @@ function onDailyMonsterDefeated() {
     const streakBonus = getDailyStreakBonus(dd.streak || 0);
     const gemMult = daily.modifiers.reduce((m, mod) => m * (mod.gemMult || 1), 1)
                   * (streakBonus ? streakBonus.gemMult : 1);
-    gems = Math.round(daily.baseGems * gemMult);
+    gems = Math.round(daily.baseGems * gemMult * prestigeBonusMultiplier(player));
     player.gems = (player.gems || 0) + gems;
 
     const forceEpic = !!(streakBonus?.guaranteedLegendary || streakBonus?.guaranteedEpic);
@@ -9782,6 +9869,288 @@ function bindGlobalEvents() {
   };
 
   // Bottom sheet is closed via backdrop click or close button — no global dismiss needed
+}
+
+// ============================================
+// VOIDFALL — Cloud Save via Google
+// Lets a player sign in with their Google account (via Google Identity
+// Services, client-side only — no server of our own) and back up their
+// save to the same Firebase Realtime Database the Leaderboard already
+// uses, keyed by their Google account ID. This is a convenience sync,
+// not a security boundary: anyone who has the save JSON can still import
+// it manually (see the "ข้อมูลเซฟ" section above), same as before.
+//
+// วิธีตั้งค่า (ทำครั้งเดียวก่อนอัพขึ้น GitHub Pages):
+// 1. ไปที่ https://console.cloud.google.com/ → สร้างโครงการใหม่ (ฟรี)
+// 2. เมนู "APIs & Services" > "Credentials" > "Create Credentials"
+//    > "OAuth client ID" > เลือกประเภท "Web application"
+// 3. ใส่โดเมนที่จะใช้เล่นเกมจริงใน "Authorized JavaScript origins"
+//    เช่น https://yourname.github.io (ห้ามมี path ต่อท้าย)
+// 4. คัดลอก "Client ID" ที่ได้ (ลงท้ายด้วย .apps.googleusercontent.com)
+//    มาแทนค่าว่างของ GOOGLE_CLIENT_ID ด้านล่างนี้ แล้ว commit/push ขึ้น GitHub Pages
+// 5. ต้องตั้งค่า FIREBASE_DB_URL ไว้แล้วด้วย (ดูคอมเมนต์ในระบบ Leaderboard ด้านบน)
+//    เพราะเซฟผ่าน Google ใช้ฐานข้อมูลเดียวกันในการเก็บไฟล์เซฟ
+// ============================================
+const GOOGLE_CLIENT_ID = "89445802671-i1l74vu2hit0qbg1nm3r7fv3aajel68f.apps.googleusercontent.com"; // <-- ตั้งค่าแล้ว
+
+const GSAVE_STORAGE_KEY = "voidfall_google_account";
+const GSAVE_AUTOSYNC_KEY = "voidfall_google_autosync";
+
+let gsaveAccount = null;     // { sub, name, email, picture } decoded from the Google credential
+let gsaveBusy = false;       // guards against overlapping upload/download requests
+
+function gsaveConfigured() { return !!GOOGLE_CLIENT_ID && lbConfigured(); }
+
+// Decodes the payload of a Google Identity Services JWT credential.
+// This is NOT a security check (we never verify the signature client-side) —
+// it's only used to read the account's stable user ID (sub) and profile
+// info so we have a key to store/retrieve this player's cloud save under.
+// The actual save data is never trusted to be "owned" by anyone; this is a
+// convenience backup, equivalent in trust level to the existing manual
+// copy/paste export.
+function gsaveDecodeJwt(credential) {
+  try {
+    const payload = credential.split(".")[1];
+    const json = decodeURIComponent(atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+      .split("").map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0")).join(""));
+    const data = JSON.parse(json);
+    return { sub: data.sub, name: data.name || "", email: data.email || "", picture: data.picture || "" };
+  } catch (e) {
+    console.warn("Could not decode Google credential", e);
+    return null;
+  }
+}
+
+function gsaveLocalSaveAccount(account) {
+  try { localStorage.setItem(GSAVE_STORAGE_KEY, JSON.stringify(account)); } catch {}
+}
+function gsaveLocalLoadAccount() {
+  try {
+    const raw = localStorage.getItem(GSAVE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+function gsaveLocalClearAccount() {
+  try { localStorage.removeItem(GSAVE_STORAGE_KEY); } catch {}
+}
+
+function gsaveAutoSyncEnabled() {
+  try { return localStorage.getItem(GSAVE_AUTOSYNC_KEY) === "1"; } catch { return false; }
+}
+function gsaveSetAutoSync(on) {
+  try { localStorage.setItem(GSAVE_AUTOSYNC_KEY, on ? "1" : "0"); } catch {}
+}
+
+// --- Firebase REST: store the save JSON under a path keyed by the
+// Google account's stable ID, separate from the leaderboard's own data.
+async function gsaveApiUpload(sub, payload) {
+  const key = lbSafeKey(sub);
+  const res = await fetch(`${FIREBASE_DB_URL}/cloudsaves/${key}.json`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("อัปโหลดไม่สำเร็จ ลองใหม่อีกครั้ง");
+}
+
+async function gsaveApiDownload(sub) {
+  const key = lbSafeKey(sub);
+  const res = await fetch(`${FIREBASE_DB_URL}/cloudsaves/${key}.json`);
+  if (!res.ok) throw new Error("ดึงข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง");
+  const data = await res.json();
+  return data || null;
+}
+
+function gsaveSetStatus(text, isError) {
+  const el = document.getElementById("googleSyncStatusText");
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle("is-error", !!isError);
+}
+
+function gsaveRenderSignedIn(account) {
+  document.getElementById("googleSignedOutView").classList.add("hidden");
+  const view = document.getElementById("googleSignedInView");
+  view.classList.remove("hidden");
+  document.getElementById("googleAccountName").textContent = account.name || account.email || "บัญชี Google";
+  document.getElementById("googleAccountEmail").textContent = account.email || "";
+  const avatar = document.getElementById("googleAccountAvatar");
+  if (account.picture) avatar.src = account.picture;
+  const toggle = document.getElementById("googleAutoSyncToggle");
+  const on = gsaveAutoSyncEnabled();
+  toggle.classList.toggle("on", on);
+  toggle.setAttribute("aria-checked", on ? "true" : "false");
+}
+
+function gsaveRenderSignedOut() {
+  document.getElementById("googleSignedOutView").classList.remove("hidden");
+  document.getElementById("googleSignedInView").classList.add("hidden");
+}
+
+async function gsaveHandleCredential(response) {
+  const account = gsaveDecodeJwt(response.credential);
+  if (!account || !account.sub) {
+    showToast("ไม่สามารถอ่านข้อมูลบัญชี Google ได้");
+    return;
+  }
+  gsaveAccount = account;
+  gsaveLocalSaveAccount(account);
+  gsaveRenderSignedIn(account);
+  gsaveSetStatus("เข้าสู่ระบบสำเร็จ — เลือกอัปโหลดหรือดึงเซฟด้านล่างนี้ได้เลย");
+  showToast(`เข้าสู่ระบบด้วย Google สำเร็จ: ${account.name || account.email}`);
+}
+
+function gsaveSignOut() {
+  gsaveAccount = null;
+  gsaveLocalClearAccount();
+  gsaveRenderSignedOut();
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    window.google.accounts.id.disableAutoSelect();
+  }
+  showToast("ออกจากระบบ Google แล้ว (ข้อมูลเซฟในเครื่องไม่ได้รับผลกระทบ)");
+}
+
+async function gsaveUpload(showFeedback = true) {
+  if (!gsaveAccount) return;
+  if (gsaveBusy) return;
+  gsaveBusy = true;
+  const btn = document.getElementById("googleUploadBtn");
+  if (btn) btn.disabled = true;
+  if (showFeedback) gsaveSetStatus("⏳ กำลังอัปโหลด...");
+  try {
+    const payload = {
+      v: SAVE_VERSION,
+      player,
+      account: { name: gsaveAccount.name, email: gsaveAccount.email },
+      ts: Date.now(),
+    };
+    await gsaveApiUpload(gsaveAccount.sub, payload);
+    if (showFeedback) {
+      gsaveSetStatus(`✅ อัปโหลดสำเร็จ เมื่อ ${new Date().toLocaleTimeString("th-TH")}`);
+      showToast("☁️ อัปโหลดเซฟขึ้น Google แล้ว");
+    }
+  } catch (e) {
+    if (showFeedback) {
+      gsaveSetStatus(`❌ ${e.message || "อัปโหลดไม่สำเร็จ"}`, true);
+      showToast("ไม่สามารถอัปโหลดเซฟขึ้น Google ได้ ลองใหม่อีกครั้ง");
+    }
+  } finally {
+    gsaveBusy = false;
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function gsaveDownload() {
+  if (!gsaveAccount) return;
+  if (gsaveBusy) return;
+  gsaveBusy = true;
+  const btn = document.getElementById("googleDownloadBtn");
+  if (btn) btn.disabled = true;
+  gsaveSetStatus("⏳ กำลังดึงข้อมูล...");
+  try {
+    const data = await gsaveApiDownload(gsaveAccount.sub);
+    if (!data || !data.player) {
+      gsaveSetStatus("ยังไม่มีเซฟของบัญชีนี้บน Google — ลองกด \"อัปโหลด\" ก่อน");
+      return;
+    }
+    const cloudTs = data.ts ? new Date(data.ts).toLocaleString("th-TH") : "ไม่ทราบเวลา";
+    const confirmMsg = `พบเซฟบน Google (อัปโหลดเมื่อ ${cloudTs})\nการดึงเซฟนี้มาใช้จะแทนที่ข้อมูลเกมปัจจุบันในเครื่องนี้ทั้งหมด ดำเนินการต่อหรือไม่?`;
+    if (!window.confirm(confirmMsg)) {
+      gsaveSetStatus("ยกเลิกการดึงเซฟแล้ว");
+      return;
+    }
+    const imported = repairPlayerShape(data.player);
+    player = imported;
+    const stats = getTotalStats(player);
+    if (player.currentHp == null || player.currentHp <= 0) player.currentHp = stats.hp;
+    player.currentHp = Math.min(player.currentHp, stats.hp);
+    currentDungeonIndex = null;
+    currentRoomIndex = 0;
+    currentMonster = null;
+    exchangeState = null;
+    gameMode = "dungeon";
+    stopBattleLoop();
+    inBattleTransition = false;
+    savePlayer(player, { immediate: true });
+    renderAll();
+    showDungeonSelectView();
+    switchTab("battle");
+    gsaveSetStatus(`✅ ดึงเซฟจาก Google สำเร็จ (${cloudTs})`);
+    showToast("☁️ ดึงเซฟจาก Google มาใช้แล้ว");
+  } catch (e) {
+    gsaveSetStatus(`❌ ${e.message || "ดึงข้อมูลไม่สำเร็จ"}`, true);
+    showToast("ไม่สามารถดึงเซฟจาก Google ได้ ลองใหม่อีกครั้ง");
+  } finally {
+    gsaveBusy = false;
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Called from savePlayer's normal flow so that, once a player has opted
+// into auto-sync, every local save quietly mirrors to Google too —
+// debounced the same way local saves already are.
+let gsaveAutoSyncDebounceTimer = null;
+function gsaveMaybeAutoSync() {
+  if (!gsaveAccount || !gsaveAutoSyncEnabled()) return;
+  if (gsaveAutoSyncDebounceTimer) clearTimeout(gsaveAutoSyncDebounceTimer);
+  gsaveAutoSyncDebounceTimer = setTimeout(() => gsaveUpload(false), 2000);
+}
+
+function initGoogleSaveUI() {
+  const signInDiv = document.getElementById("googleSignInBtn");
+  const unavailableHint = document.getElementById("googleUnavailableHint");
+  if (!signInDiv) return;
+
+  if (!gsaveConfigured()) {
+    unavailableHint.style.display = "block";
+    unavailableHint.textContent = !GOOGLE_CLIENT_ID
+      ? "ผู้พัฒนาเกมยังไม่ได้ตั้งค่าระบบเข้าสู่ระบบ Google (ต้องใส่ GOOGLE_CLIENT_ID ในโค้ดก่อน deploy) — ใช้ \"คัดลอกข้อมูลเซฟ\" ด้านล่างแทนได้"
+      : "ผู้พัฒนาเกมยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์ (FIREBASE_DB_URL) — ใช้ \"คัดลอกข้อมูลเซฟ\" ด้านล่างแทนได้";
+    return;
+  }
+
+  document.getElementById("googleSignOutBtn").addEventListener("click", gsaveSignOut);
+  document.getElementById("googleUploadBtn").addEventListener("click", () => gsaveUpload(true));
+  document.getElementById("googleDownloadBtn").addEventListener("click", gsaveDownload);
+  document.getElementById("googleAutoSyncToggle").addEventListener("click", () => {
+    const on = !gsaveAutoSyncEnabled();
+    gsaveSetAutoSync(on);
+    const toggle = document.getElementById("googleAutoSyncToggle");
+    toggle.classList.toggle("on", on);
+    toggle.setAttribute("aria-checked", on ? "true" : "false");
+    showToast(on ? "เปิดซิงค์อัตโนมัติกับ Google แล้ว" : "ปิดซิงค์อัตโนมัติกับ Google แล้ว");
+    if (on) gsaveUpload(true);
+  });
+
+  const restored = gsaveLocalLoadAccount();
+  if (restored && restored.sub) {
+    gsaveAccount = restored;
+    gsaveRenderSignedIn(restored);
+  }
+
+  const tryInitGis = () => {
+    if (!window.google || !window.google.accounts || !window.google.accounts.id) return false;
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: gsaveHandleCredential,
+      auto_select: false,
+    });
+    window.google.accounts.id.renderButton(signInDiv, {
+      type: "standard", theme: "filled_black", size: "large", shape: "pill", text: "signin_with",
+    });
+    return true;
+  };
+
+  if (!tryInitGis()) {
+    let attempts = 0;
+    const poll = setInterval(() => {
+      attempts++;
+      if (tryInitGis() || attempts > 20) clearInterval(poll);
+      if (attempts > 20 && !window.google) {
+        unavailableHint.style.display = "block";
+      }
+    }, 250);
+  }
 }
 
 init();
