@@ -628,6 +628,66 @@ button {
 .stat-val { font-weight: 600; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.02em; }
 
 /* ============================================
+   Character Page — Overview card + Sub-windows
+   ============================================ */
+.char-overview-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px 16px;
+  margin-bottom: 18px;
+}
+.char-overview-card .char-display { margin-bottom: 14px; }
+.char-overview-card .char-name-row { margin-bottom: 8px; }
+.char-overview-card .char-name-hint { margin-bottom: 14px; }
+.char-overview-card .cp-banner { margin-bottom: 12px; }
+.char-overview-card .char-exp-block { margin-bottom: 0; }
+
+.char-subnav {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.char-subtab-btn {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 10px 6px;
+  transition: background 0.18s, color 0.18s;
+}
+.char-subtab-btn .csb-icon { font-size: 14px; line-height: 1; }
+.char-subtab-btn:hover { color: var(--text-primary); }
+.char-subtab-btn.active {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+.char-subtab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.char-subwindow {
+  display: none;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px 16px 18px;
+}
+.char-subwindow.active { display: block; }
+.char-subwindow .panel-subtitle:first-child { margin-top: 0; }
+
+/* ============================================
    Stat Point Allocation System
    ============================================ */
 .statpts-banner {
@@ -3251,130 +3311,155 @@ button {
     <section class="panel char-panel tab-panel" data-tab-panel="character">
       <h2 class="panel-title">ตัวละคร</h2>
 
-      <div class="char-display">
-        <div class="char-aura" id="charAura"></div>
-        <img class="char-figure" id="charFigure" src="" alt="Rayn the swordsman" draggable="false">
-      </div>
-
-      <div class="char-name-row">
-        <input class="char-name-input" id="charNameInput" maxlength="28" placeholder="ตั้งชื่อตัวละครของคุณ..." autocomplete="off" spellcheck="false">
-        <button class="btn-dice" id="charNameRandomBtn" title="สุ่มชื่อแฟนตาซีมืด" aria-label="สุ่มชื่อ">🎲</button>
-        <button class="btn-name-save" id="charNameSaveBtn" title="บันทึกชื่อ" aria-label="บันทึกชื่อ" disabled>✓</button>
-      </div>
-      <div class="char-name-hint" id="charNameHint"></div>
-
-      <div class="cp-banner">
-        <span class="cp-banner-label">พลังรวม (CP)</span>
-        <span class="cp-banner-value" id="cpValue">0</span>
-      </div>
-
-      <div class="char-exp-block">
-        <div class="char-exp-label-row">
-          <span class="char-exp-label">ค่าประสบการณ์ (EXP)</span>
-          <span class="char-exp-value" id="charExpValue">0 / 0</span>
+      <!-- Overview card: portrait, name, CP, EXP -->
+      <div class="char-overview-card">
+        <div class="char-display">
+          <div class="char-aura" id="charAura"></div>
+          <img class="char-figure" id="charFigure" src="" alt="Rayn the swordsman" draggable="false">
         </div>
-        <div class="char-exp-bar">
-          <div class="char-exp-bar-fill" id="charExpBarFill"></div>
-        </div>
-      </div>
 
-      <!-- Stat Point Allocation -->
-      <h3 class="panel-subtitle">กระจายค่าสเตตัส</h3>
-      <div id="statptsBanner" class="statpts-banner no-points">
-        <div class="statpts-banner-left">
-          <div class="statpts-badge no-points" id="statptsCount">0</div>
-          <div>
-            <div class="statpts-info-title" id="statptsBannerTitle">ไม่มีแต้มสเตตัส</div>
-            <div class="statpts-info-sub">ได้รับ 3 แต้มต่อเลเวล — ใช้เพิ่มพลังตัวละคร</div>
+        <div class="char-name-row">
+          <input class="char-name-input" id="charNameInput" maxlength="28" placeholder="ตั้งชื่อตัวละครของคุณ..." autocomplete="off" spellcheck="false">
+          <button class="btn-dice" id="charNameRandomBtn" title="สุ่มชื่อแฟนตาซีมืด" aria-label="สุ่มชื่อ">🎲</button>
+          <button class="btn-name-save" id="charNameSaveBtn" title="บันทึกชื่อ" aria-label="บันทึกชื่อ" disabled>✓</button>
+        </div>
+        <div class="char-name-hint" id="charNameHint"></div>
+
+        <div class="cp-banner">
+          <span class="cp-banner-label">พลังรวม (CP)</span>
+          <span class="cp-banner-value" id="cpValue">0</span>
+        </div>
+
+        <div class="char-exp-block">
+          <div class="char-exp-label-row">
+            <span class="char-exp-label">ค่าประสบการณ์ (EXP)</span>
+            <span class="char-exp-value" id="charExpValue">0 / 0</span>
+          </div>
+          <div class="char-exp-bar">
+            <div class="char-exp-bar-fill" id="charExpBarFill"></div>
           </div>
         </div>
-        <button class="statpts-reset-btn" id="statptsResetBtn" title="รีเซ็ตแต้มสเตตัส (ใช้เพชร)">↺ รีเซ็ต</button>
       </div>
 
-      <div class="statpts-tools">
-        <div class="statpts-tools-row">
-          <div>
-            <div class="statpts-auto-title">🤖 ออโต้อัพสเตตัส</div>
-            <div class="statpts-auto-sub">ลงแต้มอัตโนมัติตามบิวด์ที่เลือกทุกครั้งที่มีแต้มใหม่</div>
+      <!-- Sub-tab navigation -->
+      <div class="char-subnav" id="charSubnav" role="tablist">
+        <button class="char-subtab-btn active" id="charSubtabStats" data-char-tab="stats" role="tab" aria-selected="true">
+          <span class="csb-icon">📊</span><span>สเตตัส</span>
+        </button>
+        <button class="char-subtab-btn" id="charSubtabEquip" data-char-tab="equip" role="tab" aria-selected="false">
+          <span class="csb-icon">🛡️</span><span>อุปกรณ์</span>
+        </button>
+        <button class="char-subtab-btn" id="charSubtabRebirth" data-char-tab="rebirth" role="tab" aria-selected="false">
+          <span class="csb-icon">🔁</span><span>ฟื้นคืนชีพ</span>
+        </button>
+      </div>
+
+      <!-- Sub-window: Stats -->
+      <div class="char-subwindow active" id="charSubwindowStats" data-char-tab="stats" role="tabpanel">
+        <h3 class="panel-subtitle">กระจายค่าสเตตัส</h3>
+        <div id="statptsBanner" class="statpts-banner no-points">
+          <div class="statpts-banner-left">
+            <div class="statpts-badge no-points" id="statptsCount">0</div>
+            <div>
+              <div class="statpts-info-title" id="statptsBannerTitle">ไม่มีแต้มสเตตัส</div>
+              <div class="statpts-info-sub">ได้รับ 3 แต้มต่อเลเวล — ใช้เพิ่มพลังตัวละคร</div>
+            </div>
           </div>
-          <div class="statpts-auto-switch" id="statptsAutoSwitch" role="switch" aria-checked="false" tabindex="0">
-            <span class="statpts-auto-track" id="statptsAutoTrack"><span class="statpts-auto-knob"></span></span>
-          </div>
+          <button class="statpts-reset-btn" id="statptsResetBtn" title="รีเซ็ตแต้มสเตตัส (ใช้เพชร)">↺ รีเซ็ต</button>
         </div>
-        <div class="statpts-tools-label">เลือกสายบิวด์</div>
-        <div class="statpts-preset-grid" id="statptsPresetGrid">
+
+        <div class="statpts-tools">
+          <div class="statpts-tools-row">
+            <div>
+              <div class="statpts-auto-title">🤖 ออโต้อัพสเตตัส</div>
+              <div class="statpts-auto-sub">ลงแต้มอัตโนมัติตามบิวด์ที่เลือกทุกครั้งที่มีแต้มใหม่</div>
+            </div>
+            <div class="statpts-auto-switch" id="statptsAutoSwitch" role="switch" aria-checked="false" tabindex="0">
+              <span class="statpts-auto-track" id="statptsAutoTrack"><span class="statpts-auto-knob"></span></span>
+            </div>
+          </div>
+          <div class="statpts-tools-label">เลือกสายบิวด์</div>
+          <div class="statpts-preset-grid" id="statptsPresetGrid">
+            <!-- filled by renderStatPoints() -->
+          </div>
+          <button class="statpts-apply-btn" id="statptsApplyBtn" disabled>✨ แนะนำ: ใช้บิวด์นี้กับแต้มที่มี</button>
+        </div>
+
+        <div class="statpts-alloc-grid" id="statptsAllocGrid">
           <!-- filled by renderStatPoints() -->
         </div>
-        <button class="statpts-apply-btn" id="statptsApplyBtn" disabled>✨ แนะนำ: ใช้บิวด์นี้กับแต้มที่มี</button>
+
+        <h3 class="panel-subtitle">สเตตัสรวม</h3>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-key">พลังชีวิต</span><span class="stat-val" id="statHp">—</span></div>
+          <div class="stat-row"><span class="stat-key">พลังโจมตี</span><span class="stat-val" id="statAtk">—</span></div>
+          <div class="stat-row"><span class="stat-key">ป้องกัน</span><span class="stat-val" id="statDef">—</span></div>
+          <div class="stat-row"><span class="stat-key">คริติคอล</span><span class="stat-val" id="statCrit">—</span></div>
+          <div class="stat-row"><span class="stat-key">ความเร็ว</span><span class="stat-val" id="statSpd">—</span></div>
+          <div class="stat-row"><span class="stat-key">ความแม่นยำ</span><span class="stat-val" id="statAcc">—</span></div>
+          <div class="stat-row"><span class="stat-key">หลบหลีก</span><span class="stat-val" id="statDodge">—</span></div>
+        </div>
       </div>
 
-      <div class="statpts-alloc-grid" id="statptsAllocGrid">
-        <!-- filled by renderStatPoints() -->
+      <!-- Sub-window: Equipment -->
+      <div class="char-subwindow" id="charSubwindowEquip" data-char-tab="equip" role="tabpanel">
+        <h3 class="panel-subtitle">อุปกรณ์ที่สวม</h3>
+        <div class="equip-slots" id="equipSlots"></div>
       </div>
 
-      <div class="stat-list">
-        <div class="stat-row"><span class="stat-key">พลังชีวิต</span><span class="stat-val" id="statHp">—</span></div>
-        <div class="stat-row"><span class="stat-key">พลังโจมตี</span><span class="stat-val" id="statAtk">—</span></div>
-        <div class="stat-row"><span class="stat-key">ป้องกัน</span><span class="stat-val" id="statDef">—</span></div>
-        <div class="stat-row"><span class="stat-key">คริติคอล</span><span class="stat-val" id="statCrit">—</span></div>
-        <div class="stat-row"><span class="stat-key">ความเร็ว</span><span class="stat-val" id="statSpd">—</span></div>
-        <div class="stat-row"><span class="stat-key">ความแม่นยำ</span><span class="stat-val" id="statAcc">—</span></div>
-        <div class="stat-row"><span class="stat-key">หลบหลีก</span><span class="stat-val" id="statDodge">—</span></div>
-      </div>
-
-      <h3 class="panel-subtitle">อุปกรณ์ที่สวม</h3>
-      <div class="equip-slots" id="equipSlots"></div>
-
-      <h3 class="panel-subtitle">ฟื้นคืนชีพ (Rebirth)</h3>
-      <div class="prestige-box" id="prestigeBox">
-        <!-- header: points + rebirth count -->
-        <div class="prestige-header">
-          <div class="prestige-header-left">
-            <span class="prestige-header-label">คะแนนสะสม</span>
-            <span class="prestige-header-points" id="prestigePoints">0</span>
-          </div>
-          <div class="prestige-header-right">
-            <div class="prestige-rebirth-count">
-              ฟื้นคืนชีพ <span class="prestige-rebirth-badge" id="prestigeCount">0</span> ครั้ง
+      <!-- Sub-window: Rebirth -->
+      <div class="char-subwindow" id="charSubwindowRebirth" data-char-tab="rebirth" role="tabpanel">
+        <h3 class="panel-subtitle">ฟื้นคืนชีพ (Rebirth)</h3>
+        <div class="prestige-box" id="prestigeBox">
+          <!-- header: points + rebirth count -->
+          <div class="prestige-header">
+            <div class="prestige-header-left">
+              <span class="prestige-header-label">คะแนนสะสม</span>
+              <span class="prestige-header-points" id="prestigePoints">0</span>
             </div>
-            <span class="prestige-bonus-tag" id="prestigeBonusPct">+0%</span>
-          </div>
-        </div>
-        <!-- stat bonus preview grid -->
-        <div class="prestige-stats-grid" id="prestigeStatsGrid">
-          <div class="prestige-stat-cell">
-            <span class="prestige-stat-icon">⚔️</span>
-            <span class="prestige-stat-val" id="pStatAtk">×1.00</span>
-            <span class="prestige-stat-lbl">ATK</span>
-          </div>
-          <div class="prestige-stat-cell">
-            <span class="prestige-stat-icon">🛡️</span>
-            <span class="prestige-stat-val" id="pStatDef">×1.00</span>
-            <span class="prestige-stat-lbl">DEF</span>
-          </div>
-          <div class="prestige-stat-cell">
-            <span class="prestige-stat-icon">❤️</span>
-            <span class="prestige-stat-val" id="pStatHp">×1.00</span>
-            <span class="prestige-stat-lbl">HP</span>
-          </div>
-        </div>
-        <!-- gem conversion -->
-        <div class="prestige-gem-block">
-          <div class="prestige-gem-left">
-            <span class="prestige-gem-icon">💎</span>
-            <div>
-              <div class="prestige-gem-label">แปลงทอง → เพชร</div>
-              <div class="prestige-gem-sub" id="rebirthGemSub">10,000 ทอง = 1 เพชร · สูงสุด 10,000/ครั้ง</div>
+            <div class="prestige-header-right">
+              <div class="prestige-rebirth-count">
+                ฟื้นคืนชีพ <span class="prestige-rebirth-badge" id="prestigeCount">0</span> ครั้ง
+              </div>
+              <span class="prestige-bonus-tag" id="prestigeBonusPct">+0%</span>
             </div>
           </div>
-          <span class="prestige-gem-val" id="rebirthGemPreview">+0 💎</span>
-        </div>
-        <!-- hints -->
-        <div class="prestige-hint-block" id="prestigeHintBlock"></div>
-        <!-- button -->
-        <div class="prestige-btn-wrap">
-          <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
-          <div class="prestige-next-pts" id="prestigeNextPts"></div>
+          <!-- stat bonus preview grid -->
+          <div class="prestige-stats-grid" id="prestigeStatsGrid">
+            <div class="prestige-stat-cell">
+              <span class="prestige-stat-icon">⚔️</span>
+              <span class="prestige-stat-val" id="pStatAtk">×1.00</span>
+              <span class="prestige-stat-lbl">ATK</span>
+            </div>
+            <div class="prestige-stat-cell">
+              <span class="prestige-stat-icon">🛡️</span>
+              <span class="prestige-stat-val" id="pStatDef">×1.00</span>
+              <span class="prestige-stat-lbl">DEF</span>
+            </div>
+            <div class="prestige-stat-cell">
+              <span class="prestige-stat-icon">❤️</span>
+              <span class="prestige-stat-val" id="pStatHp">×1.00</span>
+              <span class="prestige-stat-lbl">HP</span>
+            </div>
+          </div>
+          <!-- gem conversion -->
+          <div class="prestige-gem-block">
+            <div class="prestige-gem-left">
+              <span class="prestige-gem-icon">💎</span>
+              <div>
+                <div class="prestige-gem-label">แปลงทอง → เพชร</div>
+                <div class="prestige-gem-sub" id="rebirthGemSub">10,000 ทอง = 1 เพชร · สูงสุด 10,000/ครั้ง</div>
+              </div>
+            </div>
+            <span class="prestige-gem-val" id="rebirthGemPreview">+0 💎</span>
+          </div>
+          <!-- hints -->
+          <div class="prestige-hint-block" id="prestigeHintBlock"></div>
+          <!-- button -->
+          <div class="prestige-btn-wrap">
+            <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
+            <div class="prestige-next-pts" id="prestigeNextPts"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -6914,6 +6999,7 @@ function init() {
   lbInitUI(player);
   initPvpUI(player);
   initTabNav();
+  initCharSubTabs();
   showDungeonSelectView();
 
   // Bring the Rayn character art to life: set starting pose, then
@@ -7490,6 +7576,30 @@ function switchTab(tabName) {
   }
   hideTooltip();
   closeMoreMenu();
+}
+
+// Sub-tab navigation inside the Character page: switches between the
+// "stats", "equip", and "rebirth" sub-windows without affecting the
+// main bottom tab bar.
+function switchCharSubTab(tabName) {
+  document.querySelectorAll("#charSubnav .char-subtab-btn[data-char-tab]").forEach(btn => {
+    const isActive = btn.dataset.charTab === tabName;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+  document.querySelectorAll(".char-subwindow[data-char-tab]").forEach(win => {
+    win.classList.toggle("active", win.dataset.charTab === tabName);
+  });
+}
+
+function initCharSubTabs() {
+  const nav = document.getElementById("charSubnav");
+  if (!nav) return;
+  nav.addEventListener("click", (e) => {
+    const btn = e.target.closest(".char-subtab-btn[data-char-tab]");
+    if (!btn) return;
+    switchCharSubTab(btn.dataset.charTab);
+  });
 }
 
 function initTabNav() {
