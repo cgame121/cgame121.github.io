@@ -655,21 +655,24 @@ button {
 .char-subtab-btn {
   flex: 1 1 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
   font-family: var(--font-display);
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  padding: 10px 6px;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 9px 4px 8px;
   transition: background 0.18s, color 0.18s;
 }
-.char-subtab-btn .csb-icon { font-size: 14px; line-height: 1; }
+.char-subtab-btn .csb-icon { font-size: 16px; line-height: 1; }
 .char-subtab-btn:hover { color: var(--text-primary); }
 .char-subtab-btn.active {
   background: var(--accent-soft);
@@ -2867,6 +2870,15 @@ button {
     margin-top: 4px;
   }
   .result-actions .btn-primary { flex: 1; }
+
+  /* ---- Character tab: give wrapping room on narrow phones so
+     Thai text doesn't break mid-word and stack on top of itself ---- */
+  .char-subtab-btn { font-size: 10.5px; }
+  .char-subtab-btn .csb-icon { font-size: 15px; }
+
+  .statpts-banner { flex-wrap: wrap; row-gap: 8px; }
+  .statpts-banner-left { flex: 1 1 100%; }
+  .statpts-reset-btn { margin-left: auto; }
 }
 
 /* ============================================
