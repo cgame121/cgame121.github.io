@@ -89,7 +89,7 @@
   async function loadPlayers() {
     setStatus("กำลังโหลด...");
     try {
-      const snap = await getDocs(collection(db, "saves"));
+      const snap = await getDocs(collection(db, "voidfall_saves"));
       allPlayers = [];
       snap.forEach(d => {
         const data = d.data();
@@ -206,7 +206,7 @@
       if (!updated.prestige) updated.prestige = { points: 0, rebirths: 0 };
       updated.prestige.rebirths = Math.max(0, parseInt(document.getElementById("editRebirths").value) || 0);
       updated.prestige.points = Math.max(0, parseInt(document.getElementById("editPoints").value) || 0);
-      await setDoc(doc(db, "saves", editingUid), {
+      await setDoc(doc(db, "voidfall_saves", editingUid), {
         ...entry, player: updated, updatedAt: serverTimestamp(), adminModified: true,
       });
       entry.player = updated;
@@ -228,7 +228,7 @@
     const newBanned = !entry.banned;
     if (!confirm((newBanned ? "แบน" : "ปลดแบน") + "ผู้เล่น " + entry.player.name + "?")) return;
     try {
-      await setDoc(doc(db, "saves", uid), { ...entry, banned: newBanned, updatedAt: serverTimestamp() });
+      await setDoc(doc(db, "voidfall_saves", uid), { ...entry, banned: newBanned, updatedAt: serverTimestamp() });
       entry.banned = newBanned;
       renderTable();
       renderStats();
@@ -244,7 +244,7 @@
     if (!entry) return;
     if (!confirm('ลบข้อมูลผู้เล่น "' + entry.player.name + '" ถาวร?\nไม่สามารถกู้คืนได้')) return;
     try {
-      await deleteDoc(doc(db, "saves", uid));
+      await deleteDoc(doc(db, "voidfall_saves", uid));
       allPlayers = allPlayers.filter(p => p.uid !== uid);
       filteredPlayers = filteredPlayers.filter(p => p.uid !== uid);
       renderTable();
