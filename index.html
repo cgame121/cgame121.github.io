@@ -4100,11 +4100,11 @@ function playRaynDash(el) {
 
 const RARITY = {
   common:    { label: "Common",    color: "#9CA3AF", glow: "rgba(156,163,175,0.45)", weight: 100, mult: 1.0 },
-  uncommon:  { label: "Uncommon",  color: "#3DDC97", glow: "rgba(61,220,151,0.5)",    weight: 55,  mult: 1.25 },
-  rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.6 },
-  epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.1 },
-  legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 2.8 },
-  void:      { label: "Void",      color: "#FF2D2D", glow: "rgba(255,45,45,0.85)",    weight: 0.4, mult: 3.6 },
+  uncommon:  { label: "Uncommon",  color: "#3DDC97", glow: "rgba(61,220,151,0.5)",    weight: 55,  mult: 1.35 },
+  rare:      { label: "Rare",      color: "#5B9CFF", glow: "rgba(91,156,255,0.55)",   weight: 25,  mult: 1.75 },
+  epic:      { label: "Epic",      color: "#B07CFC", glow: "rgba(176,124,252,0.6)",   weight: 9,   mult: 2.3 },
+  legendary: { label: "Legendary", color: "#F6C453", glow: "rgba(246,196,83,0.75)",   weight: 2,   mult: 3.0 },
+  void:      { label: "Void",      color: "#FF2D2D", glow: "rgba(255,45,45,0.85)",    weight: 0.4, mult: 3.8 },
 };
 
 const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary", "void"];
@@ -4536,8 +4536,8 @@ const PLAYER_BASE = {
 const LEVEL_GROWTH = {
   hp:    { base: 8,    accel: 65 },
   atk:   { base: 1.6,  accel: 62 },
-  def:   { base: 0.7,  accel: 55 },
-  crit:  0.15,
+  def:   { base: 0.8,  accel: 58 },
+  crit:  0.18,
   spd:   0.002,
   acc:   0.05,
   dodge: 0.05,
@@ -4554,13 +4554,13 @@ const STAT_POINT_RESET_COST = 20; // gems — free on first reset ever
 // How much each stat point contributes per invested point
 // Tuned so max invested (~450 pts at cap Lv150) adds meaningful but not dominant power
 const STAT_POINT_GAINS = {
-  hp:    { perPoint: 14,   label: "พลังชีวิต",   icon: "❤️",  desc: "+14 HP ต่อแต้ม" },
-  atk:   { perPoint: 2.5,  label: "พลังโจมตี",  icon: "⚔️",  desc: "+2.5 ATK ต่อแต้ม" },
-  def:   { perPoint: 1.2,  label: "ป้องกัน",    icon: "🛡️",  desc: "+1.2 DEF ต่อแต้ม" },
-  crit:  { perPoint: 0.8,  label: "คริติคอล",   icon: "🎯",  desc: "+0.8% CRIT ต่อแต้ม (สูงสุด 75%)" },
-  spd:   { perPoint: 0.025, label: "ความเร็ว",  icon: "💨",  desc: "+0.025 SPD ต่อแต้ม" },
-  acc:   { perPoint: 0.6,  label: "ความแม่นยำ", icon: "🏹",  desc: "+0.6% ACC ต่อแต้ม (สูงสุด 100%)" },
-  dodge: { perPoint: 0.5,  label: "หลบหลีก",    icon: "🌀",  desc: "+0.5% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
+  hp:    { perPoint: 16,   label: "พลังชีวิต",   icon: "❤️",  desc: "+16 HP ต่อแต้ม" },
+  atk:   { perPoint: 2.8,  label: "พลังโจมตี",  icon: "⚔️",  desc: "+2.8 ATK ต่อแต้ม" },
+  def:   { perPoint: 1.6,  label: "ป้องกัน",    icon: "🛡️",  desc: "+1.6 DEF ต่อแต้ม" },
+  crit:  { perPoint: 1.0,  label: "คริติคอล",   icon: "🎯",  desc: "+1.0% CRIT ต่อแต้ม (สูงสุด 75%)" },
+  spd:   { perPoint: 0.028, label: "ความเร็ว",  icon: "💨",  desc: "+0.028 SPD ต่อแต้ม" },
+  acc:   { perPoint: 0.7,  label: "ความแม่นยำ", icon: "🏹",  desc: "+0.7% ACC ต่อแต้ม (สูงสุด 100%)" },
+  dodge: { perPoint: 0.6,  label: "หลบหลีก",    icon: "🌀",  desc: "+0.6% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
 };
 
 // Canonical list of all player stat keys, used anywhere code needs to loop
@@ -4782,11 +4782,12 @@ function generateItem(dungeon, dropTable) {
 // rerolled item follows exactly the same distribution as a freshly dropped one.
 function rollItemStats(primaryKey, rarity, itemLevel) {
   const rarityInfo = RARITY[rarity];
-  const statBudget = (itemLevel * 1.2 + 3) * rarityInfo.mult;
+  // Increased base budget so even level-1 items feel meaningful
+  const statBudget = (itemLevel * 1.5 + 5) * rarityInfo.mult;
   const stats = {};
 
-  // Primary stat gets the bulk
-  stats[primaryKey] = roundStat(primaryKey, statBudget * 0.65);
+  // Primary stat gets the bulk (slightly reduced to give secondaries more room)
+  stats[primaryKey] = roundStat(primaryKey, statBudget * 0.60);
 
   // secondary stats - pick 1-2 random extras depending on rarity
   const extraCount = rarity === "common" ? 0 : rarity === "uncommon" ? 1 : rarity === "rare" ? 1 : rarity === "void" ? 3 : 2;
@@ -4794,16 +4795,17 @@ function rollItemStats(primaryKey, rarity, itemLevel) {
   shuffleArray(possibleSecondary);
   for (let i = 0; i < extraCount; i++) {
     const key = possibleSecondary[i];
-    stats[key] = roundStat(key, statBudget * (0.14 + Math.random() * 0.08));
+    // Wider range for secondary stats so they're more impactful
+    stats[key] = roundStat(key, statBudget * (0.18 + Math.random() * 0.10));
   }
   return stats;
 }
 
 function roundStat(key, value) {
-  if (key === "crit")  return Math.round(value * 10) / 10 / 2.5;
-  if (key === "spd")   return Math.round(value * 10) / 10 / 8;
-  if (key === "acc")   return Math.round(value * 10) / 10 / 3;
-  if (key === "dodge") return Math.round(value * 10) / 10 / 4;
+  if (key === "crit")  return Math.max(0.5, Math.round(value * 10) / 10 / 1.8);
+  if (key === "spd")   return Math.max(0.01, Math.round(value * 100) / 100 / 6);
+  if (key === "acc")   return Math.max(0.5, Math.round(value * 10) / 10 / 2.2);
+  if (key === "dodge") return Math.max(0.5, Math.round(value * 10) / 10 / 2.8);
   return Math.max(1, Math.round(value));
 }
 
@@ -5011,9 +5013,9 @@ function computeItemPower(item) {
 // the item's level (no risk of losing the item itself).
 // ============================================
 const ENCHANT_MAX_LEVEL = 15;
-const ENCHANT_STAT_BONUS_PER_LEVEL = 0.08; // +8% to all of the item's stats, per level, cumulative
-const ENCHANT_SAFE_LEVEL = 2; // attempts below this level always succeed (was 5)
-const ENCHANT_MIN_CHANCE = 15; // success chance never drops below this (was 35)
+const ENCHANT_STAT_BONUS_PER_LEVEL = 0.06; // +6% to all of the item's stats, per level, cumulative (was 8%)
+const ENCHANT_SAFE_LEVEL = 3; // attempts below this level always succeed
+const ENCHANT_MIN_CHANCE = 15; // success chance never drops below this
 
 function enchantStatMultiplier(item) {
   return 1 + (item.enchant || 0) * ENCHANT_STAT_BONUS_PER_LEVEL;
