@@ -1746,17 +1746,111 @@ button {
   background: var(--bg-panel-raised);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  padding: 4px 16px;
+  overflow: hidden;
 }
-.prestige-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 12.5px;
-  padding: 10px 0;
+.prestige-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(124,92,252,0.03));
+  border-bottom: 1px solid var(--line);
 }
-.prestige-row:not(:last-child) { border-bottom: 1px solid var(--line); }
-.prestige-row span:first-child { color: var(--text-muted); }
-.prestige-row span:last-child { font-weight: 600; font-family: var(--font-display); color: var(--gold); letter-spacing: 0.02em; }
-.prestige-box .hint-text { margin: 14px 0 12px; }
+.prestige-header-left { display: flex; flex-direction: column; gap: 2px; }
+.prestige-header-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.prestige-header-points {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.prestige-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.prestige-rebirth-count {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+}
+.prestige-rebirth-badge {
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.35);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+.prestige-bonus-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(61,220,151,0.1);
+  border: 1px solid rgba(61,220,151,0.3);
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+}
+.prestige-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.prestige-stat-cell {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 8px;
+  gap: 3px;
+}
+.prestige-stat-cell:not(:last-child) { border-right: 1px solid var(--line); }
+.prestige-stat-icon { font-size: 14px; line-height: 1; }
+.prestige-stat-val {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--success);
+}
+.prestige-stat-lbl { font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+.prestige-gem-block {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.prestige-gem-left { display: flex; align-items: center; gap: 7px; }
+.prestige-gem-icon { font-size: 16px; }
+.prestige-gem-label { font-size: 11.5px; font-weight: 600; color: var(--gem); }
+.prestige-gem-sub { font-size: 10.5px; color: var(--text-faint); }
+.prestige-gem-val {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gem);
+  white-space: nowrap;
+}
+.prestige-hint-block {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.prestige-hint-row {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 11.5px; line-height: 1.5;
+  padding: 3px 0;
+  color: var(--text-muted);
+}
+.prestige-hint-row .phi { flex-shrink: 0; font-size: 13px; margin-top: 1px; }
+.prestige-hint-row.eligible { color: var(--text-primary); }
+.prestige-hint-row.warn { color: var(--gold); }
+.prestige-hint-row.danger { color: var(--danger); opacity: 0.85; }
+.prestige-btn-wrap { padding: 12px 16px; }
+.prestige-next-pts {
+  font-size: 10.5px; color: var(--text-faint);
+  text-align: center; margin-top: 6px;
+}
 
 /* ============================================
    Boss Rush / Endless mode
@@ -2834,15 +2928,55 @@ button {
 
       <h3 class="panel-subtitle">ฟื้นคืนชีพ (Rebirth)</h3>
       <div class="prestige-box" id="prestigeBox">
-        <div class="prestige-row"><span>คะแนนสะสม</span><span id="prestigePoints">0</span></div>
-        <div class="prestige-row"><span>โบนัสสเตตัส/รางวัลถาวร</span><span id="prestigeBonusPct">+0%</span></div>
-        <div class="prestige-row"><span>ฟื้นคืนชีพแล้ว</span><span id="prestigeCount">0</span></div>
-        <div class="prestige-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px;">
-          <span style="color:var(--gem);font-weight:600;">💎 แปลงทอง→เพชร</span>
+        <!-- header: points + rebirth count -->
+        <div class="prestige-header">
+          <div class="prestige-header-left">
+            <span class="prestige-header-label">คะแนนสะสม</span>
+            <span class="prestige-header-points" id="prestigePoints">0</span>
+          </div>
+          <div class="prestige-header-right">
+            <div class="prestige-rebirth-count">
+              ฟื้นคืนชีพ <span class="prestige-rebirth-badge" id="prestigeCount">0</span> ครั้ง
+            </div>
+            <span class="prestige-bonus-tag" id="prestigeBonusPct">+0%</span>
+          </div>
         </div>
-        <p class="hint-text" id="rebirthGemPreview" style="color:var(--gem);margin-bottom:8px;font-size:12px;"></p>
-        <p class="hint-text" id="prestigeHint"></p>
-        <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
+        <!-- stat bonus preview grid -->
+        <div class="prestige-stats-grid" id="prestigeStatsGrid">
+          <div class="prestige-stat-cell">
+            <span class="prestige-stat-icon">⚔️</span>
+            <span class="prestige-stat-val" id="pStatAtk">×1.00</span>
+            <span class="prestige-stat-lbl">ATK</span>
+          </div>
+          <div class="prestige-stat-cell">
+            <span class="prestige-stat-icon">🛡️</span>
+            <span class="prestige-stat-val" id="pStatDef">×1.00</span>
+            <span class="prestige-stat-lbl">DEF</span>
+          </div>
+          <div class="prestige-stat-cell">
+            <span class="prestige-stat-icon">❤️</span>
+            <span class="prestige-stat-val" id="pStatHp">×1.00</span>
+            <span class="prestige-stat-lbl">HP</span>
+          </div>
+        </div>
+        <!-- gem conversion -->
+        <div class="prestige-gem-block">
+          <div class="prestige-gem-left">
+            <span class="prestige-gem-icon">💎</span>
+            <div>
+              <div class="prestige-gem-label">แปลงทอง → เพชร</div>
+              <div class="prestige-gem-sub" id="rebirthGemSub">10,000 ทอง = 1 เพชร · สูงสุด 10,000/ครั้ง</div>
+            </div>
+          </div>
+          <span class="prestige-gem-val" id="rebirthGemPreview">+0 💎</span>
+        </div>
+        <!-- hints -->
+        <div class="prestige-hint-block" id="prestigeHintBlock"></div>
+        <!-- button -->
+        <div class="prestige-btn-wrap">
+          <button class="btn-danger full-width" id="rebirthBtn">ฟื้นคืนชีพ (รีเซ็ตเลเวล)</button>
+          <div class="prestige-next-pts" id="prestigeNextPts"></div>
+        </div>
       </div>
     </section>
 
@@ -4014,7 +4148,7 @@ const MAX_LEVEL = 150;
 // growing head-start (more dungeons pre-unlocked) on every replay.
 // ============================================
 const REBIRTH_MIN_LEVEL = 150;       // minimum level required to rebirth
-const REBIRTH_BONUS_PER_POINT = 0.02; // +2% to atk/def/hp/gold/exp per prestige point
+const REBIRTH_BONUS_PER_POINT = 0.001; // +0.1% to atk/def/hp per prestige point
 const REBIRTH_GOLD_PER_GEM = 10000;  // gold cost per 1 gem converted on rebirth
 const REBIRTH_GEM_CAP = 10000;       // max gems earnable per rebirth (anti-inflation cap)
 
@@ -4345,13 +4479,13 @@ function rerollItemStats(item) {
 function gemDropForBossKill(dungeon, player) {
   const tierIndex = Math.max(0, DUNGEON_TIERS.findIndex(t => t.id === dungeon.tier));
   const base = 3 + tierIndex * 2; // normal: 3, hard: 5, extreme: 7, transcendent: 9
-  return Math.round(base * prestigeBonusMultiplier(player));
+  return base;
 }
 
 const ENDLESS_GEM_WAVE_INTERVAL = 3; // gems awarded every N waves cleared in Boss Rush
 function gemDropForEndlessWave(wave, player) {
   if (wave % ENDLESS_GEM_WAVE_INTERVAL !== 0) return 0;
-  return Math.round((2 + Math.floor(wave / 10)) * prestigeBonusMultiplier(player));
+  return Math.round(2 + Math.floor(wave / 10));
 }
 
 const INV_BASE_CAPACITY = 60;
@@ -5027,13 +5161,13 @@ function rollLoot(dungeon) {
 function goldDropForKill(dungeon, isBoss, player) {
   const base = 4 + dungeon.minLevel * 1.4;
   const raw = base * dungeon.goldMult * (isBoss ? 4.5 : 1) * (0.85 + Math.random() * 0.3);
-  return Math.round(raw * (player ? prestigeBonusMultiplier(player) : 1));
+  return Math.round(raw);
 }
 
 function expDropForKill(dungeon, isBoss, player) {
   const base = 6 + dungeon.minLevel * 1.8;
   const raw = base * dungeon.expMult * (isBoss ? 4 : 1) * (0.85 + Math.random() * 0.3);
-  return Math.round(raw * (player ? prestigeBonusMultiplier(player) : 1));
+  return Math.round(raw);
 }
 
 // ============================================
@@ -5251,26 +5385,51 @@ function renderDungeonList(player, onSelect) {
 // ---------- Prestige / Rebirth box ----------
 function renderPrestigeBox(player) {
   const info = getRebirthInfo(player);
-  document.getElementById("prestigePoints").textContent = fmtNum(player.prestige.points);
-  document.getElementById("prestigeBonusPct").textContent =
-    `+${Math.round((prestigeBonusMultiplier(player) - 1) * 100)}%`;
-  document.getElementById("prestigeCount").textContent = fmtNum(player.prestige.rebirths);
+  const mult = prestigeBonusMultiplier(player);
+  const bonusPct = Math.round((mult - 1) * 1000) / 10;
 
-  const hint = document.getElementById("prestigeHint");
+  document.getElementById("prestigePoints").textContent = fmtNum(player.prestige.points);
+  document.getElementById("prestigeCount").textContent = fmtNum(player.prestige.rebirths);
+  document.getElementById("prestigeBonusPct").textContent = `+${bonusPct}% ATK/DEF/HP`;
+
+  // stat multiplier cells
+  const multStr = `×${mult.toFixed(2)}`;
+  document.getElementById("pStatAtk").textContent = multStr;
+  document.getElementById("pStatDef").textContent = multStr;
+  document.getElementById("pStatHp").textContent  = multStr;
+
+  // gem block
+  const gemEl = document.getElementById("rebirthGemPreview");
+  const gemSubEl = document.getElementById("rebirthGemSub");
+  if (info.gemsFromGold > 0) {
+    gemEl.textContent = `+${fmtNum(info.gemsFromGold)} 💎`;
+    gemSubEl.textContent = `ทอง ${fmtNum(player.gold)} แปลงได้ทันที`;
+  } else {
+    gemEl.textContent = `+0 💎`;
+    gemSubEl.textContent = `10,000 ทอง = 1 เพชร · สูงสุด 10,000/ครั้ง`;
+  }
+
+  // hints
+  const hintBlock = document.getElementById("prestigeHintBlock");
+  const nextPtsEl = document.getElementById("prestigeNextPts");
   const btn = document.getElementById("rebirthBtn");
-  const gemPreviewEl = document.getElementById("rebirthGemPreview");
 
   if (info.eligible) {
-    const gemText = info.gemsFromGold > 0
-      ? `ทอง ${fmtNum(player.gold)} จะแปลงเป็น ${info.gemsFromGold} เพชร (สูงสุด ${REBIRTH_GEM_CAP} เพชร/ครั้ง)`
-      : `ไม่มีทองเพียงพอสำหรับแปลงเพชร (ต้องการ ${REBIRTH_GOLD_PER_GEM}+ ทอง)`;
-    hint.textContent = `รีเซ็ตเลเวลกลับเป็น 1 เพื่อรับคะแนนสะสม +${info.pointsGain} และเริ่มใหม่พร้อมดันเจี้ยนที่ปลดล็อกไว้แล้ว ${info.nextShortcutIndex + 1} แห่ง — ไอเทมและอุปกรณ์จะไม่หายไป`;
-    if (gemPreviewEl) gemPreviewEl.textContent = gemText;
+    hintBlock.innerHTML = `
+      <div class="prestige-hint-row eligible"><span class="phi">✦</span><span>รับ <b>+${info.pointsGain} คะแนนสะสม</b> ถาวร</span></div>
+      <div class="prestige-hint-row eligible"><span class="phi">✦</span><span>ปลดล็อกดันเจี้ยนเริ่มต้นที่ <b>${info.nextShortcutIndex + 1}</b> โดยอัตโนมัติ</span></div>
+      <div class="prestige-hint-row eligible"><span class="phi">✦</span><span>ได้ <b>Stat Points +10</b> ฟรีถาวร</span></div>
+      <div class="prestige-hint-row danger"><span class="phi">✖</span><span>เลเวล · ทอง · EXP · Stat Points ที่ลงทุน → รีเซ็ต</span></div>
+      <div class="prestige-hint-row warn"><span class="phi">✔</span><span>ไอเทม · เพชร · อุปกรณ์ → ไม่หายไป</span></div>`;
     btn.disabled = false;
+    nextPtsEl.textContent = `หลัง Rebirth: EXP ที่ต้องการจะยากขึ้น ×${Math.pow(1.25, player.prestige.rebirths + 1).toFixed(2)}`;
   } else {
-    hint.textContent = `ต้องถึงเลเวล ${REBIRTH_MIN_LEVEL} ก่อนจึงจะฟื้นคืนชีพได้ (ปัจจุบันเลเวล ${player.level})`;
-    if (gemPreviewEl) gemPreviewEl.textContent = `สะสมทองไว้ก่อน Rebirth เพื่อแปลงเป็นเพชร (ทุก ${REBIRTH_GOLD_PER_GEM} ทอง = 1 เพชร, สูงสุด ${REBIRTH_GEM_CAP} เพชร)`;
+    const remaining = REBIRTH_MIN_LEVEL - player.level;
+    hintBlock.innerHTML = `
+      <div class="prestige-hint-row"><span class="phi">⏳</span><span>ต้องการเลเวล <b>${REBIRTH_MIN_LEVEL}</b> — อีก <b>${remaining}</b> เลเวล</span></div>
+      <div class="prestige-hint-row warn"><span class="phi">💡</span><span>สะสมทองก่อน Rebirth เพื่อแปลงเป็นเพชร</span></div>`;
     btn.disabled = true;
+    nextPtsEl.textContent = `Rebirth ครั้งนี้จะได้ +${info.pointsGain} คะแนน`;
   }
 }
 
@@ -6208,8 +6367,8 @@ function applyOfflineProgress() {
   const dungeon = DUNGEONS[Math.max(0, Math.min(player.unlockedDungeonIndex, DUNGEONS.length - 1))];
   const mult = prestigeBonusMultiplier(player);
 
-  const goldEarned = Math.round(OFFLINE_GOLD_RATE_PER_MIN * (dungeon.goldMult || 1) * (1 + player.level * 0.05) * mult * minutes);
-  const expEarned = Math.round(OFFLINE_EXP_RATE_PER_MIN * (dungeon.expMult || 1) * (1 + player.level * 0.04) * mult * minutes);
+  const goldEarned = Math.round(OFFLINE_GOLD_RATE_PER_MIN * (dungeon.goldMult || 1) * (1 + player.level * 0.05) * minutes);
+  const expEarned = Math.round(OFFLINE_EXP_RATE_PER_MIN * (dungeon.expMult || 1) * (1 + player.level * 0.04) * minutes);
   const gemsEarned = Math.floor(minutes / OFFLINE_GEM_INTERVAL_MIN);
 
   // Item rolls: about one every OFFLINE_ITEM_INTERVAL_MIN minutes, with the
@@ -8333,7 +8492,7 @@ function renderDailyDungeonCard(player) {
   ).join("");
 
   // Rewards preview
-  const gemAmt = Math.round(daily.baseGems * (streakBonus ? streakBonus.gemMult : 1) * prestigeBonusMultiplier(player));
+  const gemAmt = Math.round(daily.baseGems * (streakBonus ? streakBonus.gemMult : 1));
   const rpEl = document.getElementById("dailyRewardsPreview");
   rpEl.innerHTML = [
     `<span class="daily-reward-chip" style="color:var(--gem);border-color:rgba(75,216,232,0.4);background:rgba(75,216,232,0.08);">💎 +${fmtNum(gemAmt)} เพชร</span>`,
@@ -8433,7 +8592,7 @@ function onDailyMonsterDefeated() {
     const streakBonus = getDailyStreakBonus(dd.streak || 0);
     const gemMult = daily.modifiers.reduce((m, mod) => m * (mod.gemMult || 1), 1)
                   * (streakBonus ? streakBonus.gemMult : 1);
-    gems = Math.round(daily.baseGems * gemMult * prestigeBonusMultiplier(player));
+    gems = Math.round(daily.baseGems * gemMult);
     player.gems = (player.gems || 0) + gems;
 
     const forceEpic = !!(streakBonus?.guaranteedLegendary || streakBonus?.guaranteedEpic);
