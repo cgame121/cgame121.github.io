@@ -699,6 +699,113 @@ button {
 }
 .statpts-reset-btn:hover { border-color: var(--danger); color: var(--danger); }
 
+/* ---- Build tools: auto-invest switch + recommended presets ---- */
+.statpts-tools {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.statpts-tools-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.statpts-auto-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.statpts-auto-sub {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+.statpts-auto-switch {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.statpts-auto-track {
+  position: relative;
+  display: block;
+  width: 40px; height: 23px;
+  border-radius: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  transition: background 0.2s, border-color 0.2s;
+}
+.statpts-auto-track.on {
+  background: rgba(61,220,151,0.28);
+  border-color: var(--success);
+}
+.statpts-auto-knob {
+  position: absolute;
+  top: 1px; left: 1px;
+  width: 19px; height: 19px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.2s, background 0.2s;
+}
+.statpts-auto-track.on .statpts-auto-knob {
+  transform: translateX(17px);
+  background: var(--success);
+}
+.statpts-tools-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.statpts-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.statpts-preset-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 4px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.15;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.statpts-preset-chip .chip-icon { font-size: 17px; }
+.statpts-preset-chip:hover { border-color: var(--line-strong); color: var(--text-primary); }
+.statpts-preset-chip.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+.statpts-apply-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(124,92,252,0.4);
+  background: rgba(124,92,252,0.14);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12.5px;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+}
+.statpts-apply-btn:hover:not(:disabled) { background: rgba(124,92,252,0.24); }
+.statpts-apply-btn:active:not(:disabled) { transform: scale(0.98); }
+.statpts-apply-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
 .statpts-alloc-grid {
   display: flex;
   flex-direction: column;
@@ -708,7 +815,7 @@ button {
 .statpts-alloc-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--bg-panel-raised);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -717,11 +824,20 @@ button {
 }
 .statpts-alloc-row:hover { border-color: var(--line-strong); }
 .statpts-alloc-icon {
-  font-size: 15px;
-  width: 22px;
-  text-align: center;
+  font-size: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  background: var(--bg-panel);
 }
+.statpts-alloc-icon.hp   { background: rgba(255,107,91,0.16); }
+.statpts-alloc-icon.atk  { background: rgba(124,92,252,0.16); }
+.statpts-alloc-icon.def  { background: rgba(75,216,232,0.16); }
+.statpts-alloc-icon.crit { background: rgba(246,196,83,0.16); }
+.statpts-alloc-icon.spd  { background: rgba(61,220,151,0.16); }
 .statpts-alloc-info {
   flex: 1;
   min-width: 0;
@@ -738,6 +854,23 @@ button {
   margin-top: 2px;
 }
 .statpts-alloc-bonus.zero { color: var(--text-faint); }
+.statpts-alloc-bar-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  margin-top: 7px;
+  overflow: hidden;
+}
+.statpts-alloc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+.statpts-alloc-bar-fill.hp   { background: var(--danger); }
+.statpts-alloc-bar-fill.atk  { background: var(--accent); }
+.statpts-alloc-bar-fill.def  { background: var(--gem); }
+.statpts-alloc-bar-fill.crit { background: var(--gold); }
+.statpts-alloc-bar-fill.spd  { background: var(--success); }
 .statpts-alloc-val {
   font-family: var(--font-display);
   font-weight: 700;
@@ -2911,6 +3044,24 @@ button {
         </div>
         <button class="statpts-reset-btn" id="statptsResetBtn" title="รีเซ็ตแต้มสเตตัส (ใช้เพชร)">↺ รีเซ็ต</button>
       </div>
+
+      <div class="statpts-tools">
+        <div class="statpts-tools-row">
+          <div>
+            <div class="statpts-auto-title">🤖 ออโต้อัพสเตตัส</div>
+            <div class="statpts-auto-sub">ลงแต้มอัตโนมัติตามบิวด์ที่เลือกทุกครั้งที่มีแต้มใหม่</div>
+          </div>
+          <div class="statpts-auto-switch" id="statptsAutoSwitch" role="switch" aria-checked="false" tabindex="0">
+            <span class="statpts-auto-track" id="statptsAutoTrack"><span class="statpts-auto-knob"></span></span>
+          </div>
+        </div>
+        <div class="statpts-tools-label">เลือกสายบิวด์</div>
+        <div class="statpts-preset-grid" id="statptsPresetGrid">
+          <!-- filled by renderStatPoints() -->
+        </div>
+        <button class="statpts-apply-btn" id="statptsApplyBtn" disabled>✨ แนะนำ: ใช้บิวด์นี้กับแต้มที่มี</button>
+      </div>
+
       <div class="statpts-alloc-grid" id="statptsAllocGrid">
         <!-- filled by renderStatPoints() -->
       </div>
@@ -4111,6 +4262,78 @@ const STAT_POINT_GAINS = {
   spd:  { perPoint: 0.025, label: "ความเร็ว",  icon: "💨",  desc: "+0.025 SPD ต่อแต้ม" },
 };
 
+// ============================================
+// VOIDFALL - Recommended Build Presets
+// Used by the "Apply" (recommend) button and the auto-invest toggle to
+// distribute stat points across stats by weighted ratio instead of
+// requiring the player to tap +1 dozens of times.
+// ============================================
+const STAT_BUILD_PRESETS = {
+  balanced: { label: "สมดุล",   icon: "⚖️", weights: { hp: 1, atk: 1, def: 1, crit: 1, spd: 1 } },
+  tank:     { label: "ทนทาน",   icon: "🛡️", weights: { hp: 3, def: 2, atk: 0, crit: 0, spd: 0 } },
+  striker:  { label: "นักฆ่า",  icon: "⚔️", weights: { atk: 2, crit: 2, hp: 1, def: 0, spd: 0 } },
+  speed:    { label: "รวดเร็ว", icon: "💨", weights: { spd: 2, atk: 1, hp: 1, def: 0, crit: 0 } },
+};
+const STAT_BUILD_PRESET_ORDER = ["balanced", "tank", "striker", "speed"];
+
+// Distribute `totalPoints` whole points across the given weight ratios using
+// the largest-remainder method, so the exact point count is always used up
+// (no points lost to rounding) and the split stays proportional to the weights.
+function distributeStatPointsByWeights(weights, totalPoints) {
+  const keys = Object.keys(weights).filter(k => weights[k] > 0);
+  const weightSum = keys.reduce((s, k) => s + weights[k], 0);
+  const result = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+  if (weightSum <= 0 || totalPoints <= 0) return result;
+
+  const raw = {};
+  let usedFloor = 0;
+  keys.forEach(k => {
+    raw[k] = (weights[k] / weightSum) * totalPoints;
+    result[k] = Math.floor(raw[k]);
+    usedFloor += result[k];
+  });
+  let remainder = totalPoints - usedFloor;
+  const byFraction = keys.slice().sort((a, b) => (raw[b] - result[b]) - (raw[a] - result[a]));
+  let i = 0;
+  while (remainder > 0 && byFraction.length > 0) {
+    result[byFraction[i % byFraction.length]] += 1;
+    remainder--;
+    i++;
+  }
+  return result;
+}
+
+// Applies a recommended build preset to `pointsToSpend` currently-available
+// stat points, adding on top of whatever is already invested. Returns the
+// number of points actually applied (0 if nothing to do).
+function applyStatBuildPreset(player, presetKey, pointsToSpend) {
+  const preset = STAT_BUILD_PRESETS[presetKey];
+  if (!preset || pointsToSpend <= 0) return 0;
+  const dist = distributeStatPointsByWeights(preset.weights, pointsToSpend);
+  if (!player.statPoints) player.statPoints = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0 };
+  let applied = 0;
+  Object.keys(dist).forEach(k => {
+    if (dist[k] > 0) {
+      player.statPoints[k] = (player.statPoints[k] || 0) + dist[k];
+      applied += dist[k];
+    }
+  });
+  return applied;
+}
+
+// If auto-invest is enabled and the player has unspent stat points, spend
+// them immediately according to the selected build preset. Returns true if
+// anything was invested (so the caller knows to re-render stats/HUD/save).
+function maybeAutoInvestStatPoints(player) {
+  const auto = player.settings && player.settings.autoStatPoints;
+  if (!auto || !auto.enabled) return false;
+  const avail = getStatPointsAvailable(player);
+  if (avail <= 0) return false;
+  const presetKey = STAT_BUILD_PRESETS[auto.preset] ? auto.preset : "balanced";
+  const applied = applyStatBuildPreset(player, presetKey, avail);
+  return applied > 0;
+}
+
 function getStatPointsAvailable(player) {
   const totalEarned = (player.level - 1) * STAT_POINTS_PER_LEVEL
     + ((player.prestige && player.prestige.rebirths) || 0) * 10; // bonus 10 pts per rebirth
@@ -4286,6 +4509,18 @@ function statLabel(key) {
 // Stat Point Allocation UI
 // ============================================
 function renderStatPoints(player) {
+  // If auto-invest is on and points are sitting unspent, invest them now
+  // before rendering, so the player always sees an up-to-date, fully-spent state.
+  if (maybeAutoInvestStatPoints(player)) {
+    const stats = getTotalStats(player);
+    player.currentHp = Math.min(player.currentHp || stats.hp, stats.hp);
+    renderStats(player);
+    renderHud(player);
+    savePlayer(player);
+    const presetKey = player.settings.autoStatPoints.preset || "balanced";
+    showToast(`🤖 ออโต้กระจายแต้มสเตตัสแล้ว (สาย${STAT_BUILD_PRESETS[presetKey].label})`);
+  }
+
   const avail = getStatPointsAvailable(player);
   const pts = player.statPoints || {};
 
@@ -4321,11 +4556,53 @@ function renderStatPoints(player) {
     resetBtn.textContent = isFree ? "↺ รีเซ็ต (ฟรี)" : `↺ รีเซ็ต (${STAT_POINT_RESET_COST}💎)`;
   }
 
+  // ---- Auto-invest switch ----
+  if (!player.settings.autoStatPoints) player.settings.autoStatPoints = { enabled: false, preset: "balanced" };
+  const autoOn = !!player.settings.autoStatPoints.enabled;
+  const autoSwitch = document.getElementById("statptsAutoSwitch");
+  const autoTrack  = document.getElementById("statptsAutoTrack");
+  if (autoSwitch && autoTrack) {
+    autoTrack.classList.toggle("on", autoOn);
+    autoSwitch.setAttribute("aria-checked", autoOn ? "true" : "false");
+  }
+
+  // ---- Recommended build preset chips ----
+  const selectedPreset = STAT_BUILD_PRESETS[player.settings.autoStatPoints.preset] ? player.settings.autoStatPoints.preset : "balanced";
+  const presetGrid = document.getElementById("statptsPresetGrid");
+  if (presetGrid) {
+    presetGrid.innerHTML = STAT_BUILD_PRESET_ORDER.map(key => {
+      const preset = STAT_BUILD_PRESETS[key];
+      return `
+        <button class="statpts-preset-chip ${key === selectedPreset ? "selected" : ""}" data-preset="${key}">
+          <span class="chip-icon">${preset.icon}</span>
+          <span>${preset.label}</span>
+        </button>`;
+    }).join("");
+    presetGrid.querySelectorAll(".statpts-preset-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        if (!player.settings.autoStatPoints) player.settings.autoStatPoints = { enabled: false, preset: "balanced" };
+        player.settings.autoStatPoints.preset = chip.dataset.preset;
+        renderStatPoints(player);
+        savePlayer(player);
+      });
+    });
+  }
+
+  // Apply (recommend) button
+  const applyBtn = document.getElementById("statptsApplyBtn");
+  if (applyBtn) {
+    applyBtn.disabled = avail === 0;
+    applyBtn.textContent = avail === 0
+      ? "✨ แนะนำ: ไม่มีแต้มให้กระจาย"
+      : `✨ แนะนำ: กระจาย ${avail} แต้มตามบิวด์นี้`;
+  }
+
   // Allocation rows
   const grid = document.getElementById("statptsAllocGrid");
   if (!grid) return;
 
   const statOrder = ["hp", "atk", "def", "crit", "spd"];
+  const totalInvested = statOrder.reduce((s, k) => s + (pts[k] || 0), 0);
   grid.innerHTML = statOrder.map(key => {
     const cfg = STAT_POINT_GAINS[key];
     const invested = pts[key] || 0;
@@ -4336,12 +4613,14 @@ function renderStatPoints(player) {
       key === "def"  ? `+${Math.round(bonus * 10) / 10} DEF` :
       key === "crit" ? `+${Math.round(bonus * 10) / 10}% CRIT` :
                        `+${(bonus).toFixed(3)} SPD`;
+    const barPct = totalInvested > 0 ? Math.round((invested / totalInvested) * 100) : 0;
     return `
       <div class="statpts-alloc-row">
-        <span class="statpts-alloc-icon">${cfg.icon}</span>
+        <span class="statpts-alloc-icon ${key}">${cfg.icon}</span>
         <div class="statpts-alloc-info">
           <div class="statpts-alloc-name">${cfg.label}</div>
           <div class="statpts-alloc-bonus ${invested === 0 ? "zero" : ""}">${bonusStr}</div>
+          <div class="statpts-alloc-bar-track"><div class="statpts-alloc-bar-fill ${key}" style="width:${barPct}%"></div></div>
         </div>
         <span class="statpts-alloc-val">${invested}</span>
         <div class="statpts-btn-group">
@@ -4650,6 +4929,7 @@ function createNewPlayer() {
       keepScreenOn: true, // request a wake lock so the screen doesn't sleep during idle play
       autoSell: false, // auto-sell items below a rarity threshold
       autoSellRarities: { common: true, uncommon: false, rare: false, epic: false, legendary: false }, // which rarities to auto-sell
+      autoStatPoints: { enabled: false, preset: "balanced" }, // auto-invest stat points into a recommended build on level-up
     },
     stats: {
       monstersKilled: 0,
@@ -4945,6 +5225,12 @@ function repairPlayerShape(parsed) {
         parsed.settings.autoSellRarities[r] = r === "common";
       }
     }
+  }
+  if (!parsed.settings.autoStatPoints || typeof parsed.settings.autoStatPoints !== "object") {
+    parsed.settings.autoStatPoints = { enabled: false, preset: "balanced" };
+  } else {
+    if (typeof parsed.settings.autoStatPoints.enabled !== "boolean") parsed.settings.autoStatPoints.enabled = false;
+    if (!STAT_BUILD_PRESETS[parsed.settings.autoStatPoints.preset]) parsed.settings.autoStatPoints.preset = "balanced";
   }
   if (!parsed.prestige || typeof parsed.prestige !== "object") parsed.prestige = {};
   if (typeof parsed.prestige.points !== "number" || parsed.prestige.points < 0) parsed.prestige.points = 0;
@@ -8807,6 +9093,30 @@ function bindGlobalEvents() {
       charNameInput.focus();
     });
   }
+
+  document.getElementById("statptsAutoSwitch").addEventListener("click", () => {
+    if (!player.settings.autoStatPoints) player.settings.autoStatPoints = { enabled: false, preset: "balanced" };
+    player.settings.autoStatPoints.enabled = !player.settings.autoStatPoints.enabled;
+    renderStatPoints(player); // will immediately auto-invest any pending points if just turned on
+    savePlayer(player);
+    showToast(player.settings.autoStatPoints.enabled ? "เปิดออโต้อัพสเตตัสแล้ว" : "ปิดออโต้อัพสเตตัสแล้ว");
+  });
+
+  document.getElementById("statptsApplyBtn").addEventListener("click", () => {
+    const avail = getStatPointsAvailable(player);
+    if (avail <= 0) return;
+    const presetKey = STAT_BUILD_PRESETS[player.settings.autoStatPoints.preset] ? player.settings.autoStatPoints.preset : "balanced";
+    const applied = applyStatBuildPreset(player, presetKey, avail);
+    if (applied > 0) {
+      const stats = getTotalStats(player);
+      player.currentHp = Math.min(player.currentHp || stats.hp, stats.hp);
+      renderStatPoints(player);
+      renderStats(player);
+      renderHud(player);
+      savePlayer(player);
+      showToast(`✨ กระจาย ${applied} แต้มตามสาย${STAT_BUILD_PRESETS[presetKey].label}แล้ว`);
+    }
+  });
 
   document.getElementById("statptsResetBtn").addEventListener("click", () => {
     const totalSpent = Object.values(player.statPoints || {}).reduce((s, v) => s + v, 0);
