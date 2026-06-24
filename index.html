@@ -4527,9 +4527,20 @@ const PLAYER_BASE = {
   hp: 50, atk: 8, def: 3, crit: 5, spd: 1.0, acc: 85, dodge: 5,
 };
 
-// Stat growth per level
+// Stat growth per level.
+// `base` is the old flat per-level amount (kept for early levels), and `accel`
+// makes growth ramp up gradually as level rises, so the player's curve keeps
+// pace with how steeply dungeon monster stats scale at high level instead of
+// falling far behind by the lategame. spd now also grows slightly with level
+// (previously flat, leaving it entirely dependent on gear/stat points).
 const LEVEL_GROWTH = {
-  hp: 8, atk: 1.6, def: 0.7, crit: 0.15, acc: 0.05, dodge: 0.05,
+  hp:    { base: 8,    accel: 65 },
+  atk:   { base: 1.6,  accel: 62 },
+  def:   { base: 0.7,  accel: 55 },
+  crit:  0.15,
+  spd:   0.002,
+  acc:   0.05,
+  dodge: 0.05,
 };
 
 // ============================================
@@ -5264,12 +5275,19 @@ function createNewPlayer() {
 
 function getPlayerBaseStats(level) {
   const lvl = level - 1;
+  // hp/atk/def use an accelerating curve: growth-per-level itself increases
+  // with lvl (factor of 1 + lvl/accel), so the gap to monster scaling closes
+  // gradually instead of widening forever. crit/acc/dodge stay flat-linear
+  // since they're percentage stats with hard caps anyway.
+  const hpGrowth  = LEVEL_GROWTH.hp.base  * (1 + lvl / LEVEL_GROWTH.hp.accel);
+  const atkGrowth = LEVEL_GROWTH.atk.base * (1 + lvl / LEVEL_GROWTH.atk.accel);
+  const defGrowth = LEVEL_GROWTH.def.base * (1 + lvl / LEVEL_GROWTH.def.accel);
   return {
-    hp: Math.round(PLAYER_BASE.hp + LEVEL_GROWTH.hp * lvl),
-    atk: Math.round(PLAYER_BASE.atk + LEVEL_GROWTH.atk * lvl),
-    def: Math.round(PLAYER_BASE.def + LEVEL_GROWTH.def * lvl),
+    hp: Math.round(PLAYER_BASE.hp + hpGrowth * lvl),
+    atk: Math.round(PLAYER_BASE.atk + atkGrowth * lvl),
+    def: Math.round(PLAYER_BASE.def + defGrowth * lvl),
     crit: Math.round((PLAYER_BASE.crit + LEVEL_GROWTH.crit * lvl) * 10) / 10,
-    spd: PLAYER_BASE.spd,
+    spd: Math.round((PLAYER_BASE.spd + LEVEL_GROWTH.spd * lvl) * 1000) / 1000,
     acc: Math.round((PLAYER_BASE.acc + LEVEL_GROWTH.acc * lvl) * 10) / 10,
     dodge: Math.round((PLAYER_BASE.dodge + LEVEL_GROWTH.dodge * lvl) * 10) / 10,
   };
