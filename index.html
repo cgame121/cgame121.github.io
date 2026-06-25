@@ -4465,6 +4465,17 @@ button {
   padding: 6px 10px;
   border-radius: var(--radius-sm);
 }
+.market-claim-btn {
+  flex-shrink: 0;
+  background: rgba(61,220,151,0.15);
+  border: 1px solid rgba(61,220,151,0.4);
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+.market-claim-btn:disabled { opacity: 0.6; }
 
 </style>
 </head>
@@ -13569,6 +13580,14 @@ window.__deactivatePetHandler = () => {
 //                         && request.resource.data.item == resource.data.item
 //                         && request.resource.data.price == resource.data.price
 //                         && request.resource.data.sellerUid == resource.data.sellerUid)
+//                        ||
+//                        // seller claiming the gems owed from a sold listing
+//                        (resource.data.sellerUid == request.auth.uid
+//                         && resource.data.status == "sold"
+//                         && resource.data.claimed != true
+//                         && request.resource.data.claimed == true
+//                         && request.resource.data.status == resource.data.status
+//                         && request.resource.data.price == resource.data.price)
 //                      );
 //     allow delete: if false; // keep history; cancelled/sold rows stay queryable
 //   }
@@ -13811,6 +13830,35 @@ async function marketBuyListing(listing) {
   savePlayer(player, { immediate: true });
 }
 
+// ---------- Claiming gems from a sold listing ----------
+// When someone else buys your listing, the gems are NOT auto-deposited —
+// the seller has to come back to "รายการของฉัน" and tap "รับเพชร" to claim
+// them. This mirrors the buy flow's two-phase design: a transaction first
+// atomically marks the listing claimed==true (so it can only ever be
+// claimed once, even if tapped twice or from two tabs), and only after
+// that succeeds do we credit player.gems locally and save.
+async function marketClaimListingGems(listingId) {
+  const fb = getFB();
+  if (!fb || !fb.ready || !cloudUser) throw new Error("ยังไม่เชื่อมต่อออนไลน์");
+
+  let claimedPrice = 0;
+  await fb.runTransaction(fb.db, async (tx) => {
+    const ref = marketDocRef(listingId);
+    const snap = await tx.get(ref);
+    if (!snap.exists()) throw new Error("ไม่พบรายการนี้แล้ว");
+    const data = snap.data();
+    if (data.sellerUid !== cloudUser.uid) throw new Error("นี่ไม่ใช่รายการของคุณ");
+    if (data.status !== "sold") throw new Error("รายการนี้ยังไม่ถูกซื้อ");
+    if (data.claimed === true) throw new Error("รับเพชรจากรายการนี้ไปแล้ว");
+    tx.update(ref, { claimed: true });
+    claimedPrice = data.price || 0;
+  });
+
+  player.gems = (player.gems || 0) + claimedPrice;
+  savePlayer(player, { immediate: true });
+  return claimedPrice;
+}
+
 // ---------- Rendering ----------
 
 function marketItemMiniHtml(item) {
@@ -13925,11 +13973,12 @@ function renderMarketMineList() {
       <div class="market-listing-info">
         <div class="market-listing-name">${marketEscapeHtml(l.item.name || "ไอเทม")}</div>
         <div class="market-listing-meta">${marketItemMetaHtml(l.item)}</div>
-        <div class="market-listing-seller" style="color:${statusColor[l.status] || ""}">${statusLabel[l.status] || l.status}${l.status === "sold" && l.buyerName ? " — " + marketEscapeHtml(l.buyerName) : ""}</div>
+        <div class="market-listing-seller" style="color:${statusColor[l.status] || ""}">${statusLabel[l.status] || l.status}${l.status === "sold" && l.buyerName ? " — " + marketEscapeHtml(l.buyerName) : ""}${l.status === "sold" && l.claimed ? " (รับเพชรแล้ว)" : ""}</div>
       </div>
       <div class="market-mylisting-row">
         <div class="market-listing-price"><span class="gem-icon"></span>${fmtNum(l.price)}</div>
         ${l.status === "active" ? `<button class="market-cancel-btn" data-cancel-id="${l.id}">ยกเลิก</button>` : ""}
+        ${l.status === "sold" && !l.claimed ? `<button class="market-claim-btn" data-claim-id="${l.id}">รับเพชร</button>` : ""}
       </div>
     </div>`).join("");
 }
@@ -14107,6 +14156,7 @@ function marketOpenListingDetail(listing, { mine = false } = {}) {
       </div>
       ${!mine && !isOwn ? `<button class="btn-primary full-width" id="marketDetailBuyBtn" ${canAfford ? "" : "disabled"}>${canAfford ? "ซื้อไอเทมนี้" : "เพชรไม่เพียงพอ"}</button>` : ""}
       ${mine && listing.status === "active" ? `<button class="btn-danger full-width" id="marketDetailCancelBtn">ยกเลิกการขาย</button>` : ""}
+      ${mine && listing.status === "sold" && !listing.claimed ? `<button class="btn-primary full-width" id="marketDetailClaimBtn">รับเพชร ${fmtNum(listing.price)}</button>` : ""}
       <button class="btn-secondary full-width" id="marketDetailCloseBtn" style="margin-top:8px;">ปิด</button>
     </div>`;
   document.body.appendChild(backdrop);
@@ -14163,6 +14213,24 @@ function marketOpenListingDetail(listing, { mine = false } = {}) {
       cancelBtn.textContent = "ยกเลิกการขาย";
     }
   });
+  const claimBtn = backdrop.querySelector("#marketDetailClaimBtn");
+  claimBtn?.addEventListener("click", async () => {
+    claimBtn.disabled = true;
+    claimBtn.textContent = "กำลังรับเพชร...";
+    try {
+      const claimedPrice = await marketClaimListingGems(listing.id);
+      renderHud(player);
+      showToast(`รับเพชร ${fmtNum(claimedPrice)} สำเร็จ!`);
+      closeModal();
+      await marketRefreshAll({ silent: true });
+    } catch (err) {
+      console.warn("Market claim failed", err);
+      showToast(err.message || "รับเพชรไม่สำเร็จ ลองใหม่อีกครั้ง");
+      closeModal();
+      await marketRefreshAll({ silent: true }); // listing state may be stale now
+    }
+  });
+
 }
 
 // ---------- Event wiring ----------
@@ -14206,6 +14274,12 @@ function bindMarketEvents() {
     const cancelBtn = e.target.closest("[data-cancel-id]");
     if (cancelBtn) {
       const listing = marketMineCache.find(l => l.id === cancelBtn.dataset.cancelId);
+      if (listing) marketOpenListingDetail(listing, { mine: true });
+      return;
+    }
+    const claimBtn = e.target.closest("[data-claim-id]");
+    if (claimBtn) {
+      const listing = marketMineCache.find(l => l.id === claimBtn.dataset.claimId);
       if (listing) marketOpenListingDetail(listing, { mine: true });
       return;
     }
