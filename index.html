@@ -1672,6 +1672,16 @@ button {
   animation: pet-idle-bob 1.6s ease-in-out infinite;
   transform-origin: bottom center;
 }
+.pet-companion-icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+  animation: pet-idle-bob 1.6s ease-in-out infinite;
+  transform-origin: bottom center;
+  pointer-events: none;
+}
 @keyframes pet-idle-bob {
   0%, 100% { transform: translateY(0) rotate(-4deg); }
   50% { transform: translateY(-6px) rotate(5deg); }
@@ -1680,7 +1690,8 @@ button {
    not whenever the player swings — the pet acts on its own speed
    accumulator now, so its lunge is driven by a dedicated class instead
    of riding along on .attack-player. */
-.pet-companion-emoji.pet-attacking {
+.pet-companion-emoji.pet-attacking,
+.pet-companion-icon.pet-attacking {
   animation: pet-assist-lunge 0.42s ease;
 }
 @keyframes pet-assist-lunge {
@@ -3176,6 +3187,7 @@ button {
   .combatant-figure { width: 70px; height: 96px; }
   .pet-companion { width: 28px; height: 28px; bottom: 18px; right: -2px; }
   .pet-companion-emoji { font-size: 17px; }
+  .pet-companion-icon { width: 24px; height: 24px; }
   .combatant-monster.is-boss .combatant-figure { width: 100px; height: 134px; }
   .combatant-monster.is-boss .combatant-aura { width: 104px; height: 104px; }
   .arena { min-height: 220px; }
@@ -4193,6 +4205,7 @@ button {
             <img class="combatant-figure figure-player" id="arenaPlayer" src="" alt="Rayn" draggable="false">
             <div class="pet-companion hidden" id="arenaPetCompanion" title="">
               <span class="pet-companion-emoji" id="arenaPetEmoji"></span>
+              <img class="pet-companion-icon hidden" id="arenaPetIcon" src="" alt="" draggable="false">
             </div>
             <div class="hpbar"><div class="hpbar-fill hpbar-fill-player" id="playerHpFill"></div></div>
             <span class="hpbar-label" id="playerHpLabel">0/0</span>
@@ -8220,14 +8233,37 @@ function setArenaCombatants(player, monster) {
 function renderArenaPetCompanion(player) {
   const wrap = document.getElementById("arenaPetCompanion");
   const emojiEl = document.getElementById("arenaPetEmoji");
+  const iconEl = document.getElementById("arenaPetIcon");
   if (!wrap || !emojiEl) return;
   const pet = typeof getActivePet === "function" ? getActivePet(player) : null;
   if (pet) {
-    emojiEl.textContent = pet.emoji;
     wrap.title = pet.name;
     wrap.classList.remove("hidden");
+    if (pet.customIcon && iconEl) {
+      // Pets with their own artwork (e.g. the dragon) show the real
+      // image instead of a generic emoji, so the companion in the
+      // dungeon battle stage actually matches what's shown in the pet tab.
+      iconEl.src = DRAGON_IMG_DATA;
+      iconEl.alt = pet.name;
+      iconEl.classList.remove("hidden");
+      emojiEl.classList.add("hidden");
+      emojiEl.textContent = "";
+    } else {
+      emojiEl.textContent = pet.emoji;
+      emojiEl.classList.remove("hidden");
+      if (iconEl) {
+        iconEl.classList.add("hidden");
+        iconEl.src = "";
+      }
+    }
   } else {
     wrap.classList.add("hidden");
+    emojiEl.textContent = "";
+    emojiEl.classList.remove("hidden");
+    if (iconEl) {
+      iconEl.classList.add("hidden");
+      iconEl.src = "";
+    }
   }
 }
 
@@ -8287,10 +8323,15 @@ function playAttackAnim(actor) {
 // tick (see the "Pet attack" block in runBattleTick).
 function playPetAttackAnim() {
   const emojiEl = document.getElementById("arenaPetEmoji");
+  const iconEl = document.getElementById("arenaPetIcon");
   const monsterEl = document.getElementById("arenaMonster").closest(".combatant");
   if (!emojiEl) return;
-  emojiEl.classList.add("pet-attacking");
-  setTimeout(() => emojiEl.classList.remove("pet-attacking"), 420);
+  // Whichever visual is actually showing right now (emoji or the pet's
+  // own artwork) gets the lunge animation — only one of the two is
+  // ever visible at a time, based on renderArenaPetCompanion.
+  const activeEl = (iconEl && !iconEl.classList.contains("hidden")) ? iconEl : emojiEl;
+  activeEl.classList.add("pet-attacking");
+  setTimeout(() => activeEl.classList.remove("pet-attacking"), 420);
   spawnPetSparkle(monsterEl);
 }
 
