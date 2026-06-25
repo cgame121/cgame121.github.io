@@ -29,19 +29,19 @@
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ============================================
-  // !!! REPLACE WITH YOUR OWN FIREBASE PROJECT CONFIG !!!
-  // Get this from: Firebase Console → Project settings → General →
-  // "Your apps" → Web app → SDK setup and configuration → Config.
+  // Firebase project config — CGAME's own "github-1c9e8" project.
   // ============================================
   const firebaseConfig = {
     apiKey: "AIzaSyBNrvbjzVkV5ioZVFJcOXfkFbSeO-_cVoI",
     authDomain: "github-1c9e8.firebaseapp.com",
+    databaseURL: "https://github-1c9e8-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "github-1c9e8",
     storageBucket: "github-1c9e8.firebasestorage.app",
     messagingSenderId: "990705202692",
     appId: "1:990705202692:web:34b3b917593241375e2751",
-    // measurementId / databaseURL omitted on purpose: this game doesn't use
-    // Analytics or the Realtime Database, only Auth + Firestore below.
+    measurementId: "G-D9VTNDB41G",
+    // databaseURL / measurementId are kept here for completeness even though
+    // this game only uses Auth + Firestore (not Realtime Database/Analytics).
   };
 
   const fbApp = initializeApp(firebaseConfig);
@@ -81,6 +81,7 @@
   };
   // Let any code that loaded before this module finishes know it can proceed.
   window.dispatchEvent(new Event("voidfall-firebase-ready"));
+
 </script>
 <style>
 /* ============================================
@@ -6717,39 +6718,54 @@ async function handleEmailAuthSubmit() {
 
   try {
     if (accountFormMode === "signup") {
-      // Try linking onto the existing anonymous uid first so the current
-      // save carries straight over with no uid change at all.
-      const cred = fb.EmailAuthProvider.credential(email, password);
-      try {
-        await fb.linkWithCredential(fb.auth.currentUser, cred);
-        showToast("สมัครสมาชิกสำเร็จ! ข้อมูลของคุณถูกสำรองไว้แล้ว");
-      } catch (linkErr) {
-        if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use") {
-          showAccountError("อีเมลนี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
-          accountFormMode = "signin";
-          renderAccountFormMode();
-        } else {
-          throw linkErr;
+      if (fb.auth.currentUser) {
+        // Try linking onto the existing anonymous uid first so the current
+        // save carries straight over with no uid change at all.
+        const cred = fb.EmailAuthProvider.credential(email, password);
+        try {
+          await fb.linkWithCredential(fb.auth.currentUser, cred);
+          showToast("สมัครสมาชิกสำเร็จ! ข้อมูลของคุณถูกสำรองไว้แล้ว");
+        } catch (linkErr) {
+          if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use") {
+            showAccountError("อีเมลนี้มีบัญชีอยู่แล้ว กรุณาเข้าสู่ระบบแทน");
+            accountFormMode = "signin";
+            renderAccountFormMode();
+          } else {
+            throw linkErr;
+          }
         }
+      } else {
+        // No anonymous session to link onto (e.g. it never managed to sign
+        // in) — just create the account directly so sign-up still works.
+        await fb.createUserWithEmailAndPassword(fb.auth, email, password);
+        await pushSaveToCloud(localSnapshot, { immediate: true });
+        showToast("สมัครสมาชิกสำเร็จ! ข้อมูลของคุณถูกสำรองไว้แล้ว");
       }
     } else {
       // Sign-in mode: try linking first (covers "guest decided to sign in
       // to their own brand-new account they just made elsewhere isn't
       // possible here, but linking is harmless and falls through cleanly").
-      const cred = fb.EmailAuthProvider.credential(email, password);
-      try {
-        await fb.linkWithCredential(fb.auth.currentUser, cred);
-        showToast("เข้าสู่ระบบสำเร็จ!");
-      } catch (linkErr) {
-        if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/invalid-credential" || linkErr.code === "auth/wrong-password" || linkErr.code === "auth/user-not-found") {
-          // This account already exists separately — sign into it directly,
-          // then reconcile the two saves explicitly.
-          const result = await fb.signInWithEmailAndPassword(fb.auth, email, password);
-          await reconcileAfterSignIn(result.user.uid, localSnapshot);
+      if (fb.auth.currentUser) {
+        const cred = fb.EmailAuthProvider.credential(email, password);
+        try {
+          await fb.linkWithCredential(fb.auth.currentUser, cred);
           showToast("เข้าสู่ระบบสำเร็จ!");
-        } else {
-          throw linkErr;
+        } catch (linkErr) {
+          if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/invalid-credential" || linkErr.code === "auth/wrong-password" || linkErr.code === "auth/user-not-found") {
+            // This account already exists separately — sign into it directly,
+            // then reconcile the two saves explicitly.
+            const result = await fb.signInWithEmailAndPassword(fb.auth, email, password);
+            await reconcileAfterSignIn(result.user.uid, localSnapshot);
+            showToast("เข้าสู่ระบบสำเร็จ!");
+          } else {
+            throw linkErr;
+          }
         }
+      } else {
+        // No anonymous session to link onto — sign in directly.
+        const result = await fb.signInWithEmailAndPassword(fb.auth, email, password);
+        await reconcileAfterSignIn(result.user.uid, localSnapshot);
+        showToast("เข้าสู่ระบบสำเร็จ!");
       }
     }
     emailInput.value = "";
@@ -6762,8 +6778,10 @@ async function handleEmailAuthSubmit() {
       "auth/user-not-found": "ไม่พบบัญชีนี้ กรุณาสมัครสมาชิกก่อน",
       "auth/weak-password": "รหัสผ่านสั้นเกินไป (อย่างน้อย 6 ตัวอักษร)",
       "auth/network-request-failed": "เชื่อมต่อเครือข่ายไม่ได้ กรุณาลองใหม่",
+      "auth/operation-not-allowed": "ผู้ดูแลยังไม่ได้เปิดใช้งาน Email/Password sign-in ใน Firebase Console",
+      "auth/too-many-requests": "ลองหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่",
     };
-    showAccountError(messages[e.code] || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+    showAccountError(messages[e.code] || `เกิดข้อผิดพลาด (${e.code || e.message}) กรุณาลองใหม่อีกครั้ง`);
   } finally {
     submitBtn.disabled = false;
     renderAccountFormMode();
@@ -6778,31 +6796,47 @@ async function handleGoogleSignIn() {
   const provider = new fb.GoogleAuthProvider();
   btn.disabled = true;
   try {
-    try {
-      // Try linking the Google credential onto the current anonymous uid
-      // first, so the uid (and its cloud save) never changes.
-      await fb.linkWithPopup(fb.auth.currentUser, provider);
-      showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
-    } catch (linkErr) {
-      if (
-        linkErr.code === "auth/credential-already-in-use" ||
-        linkErr.code === "auth/email-already-in-use" ||
-        linkErr.code === "auth/provider-already-linked"
-      ) {
-        // This Google account is already tied to a different uid — sign in directly.
+    if (fb.auth.currentUser) {
+      try {
+        // Try linking the Google credential onto the current anonymous uid
+        // first, so the uid (and its cloud save) never changes.
+        await fb.linkWithPopup(fb.auth.currentUser, provider);
+        showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
+      } catch (linkErr) {
+        if (
+          linkErr.code === "auth/credential-already-in-use" ||
+          linkErr.code === "auth/email-already-in-use" ||
+          linkErr.code === "auth/provider-already-linked"
+        ) {
+          // This Google account is already tied to a different uid — sign in directly.
+          const result = await fb.signInWithPopup(fb.auth, provider);
+          await reconcileAfterSignIn(result.user.uid, localSnapshot);
+          showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
+        } else if (
+          linkErr.code === "auth/popup-blocked" ||
+          linkErr.code === "auth/cancelled-popup-request"
+        ) {
+          // Popup blocked — fall back to redirect flow.
+          showToast("Popup ถูกบล็อก กำลังเปลี่ยนไปใช้ redirect...");
+          await fb.signInWithRedirect(fb.auth, provider);
+          return; // page will reload; getRedirectResult handles the result
+        } else {
+          throw linkErr;
+        }
+      }
+    } else {
+      // No anonymous session to link onto — sign in directly.
+      try {
         const result = await fb.signInWithPopup(fb.auth, provider);
         await reconcileAfterSignIn(result.user.uid, localSnapshot);
         showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
-      } else if (
-        linkErr.code === "auth/popup-blocked" ||
-        linkErr.code === "auth/cancelled-popup-request"
-      ) {
-        // Popup blocked — fall back to redirect flow.
-        showToast("Popup ถูกบล็อก กำลังเปลี่ยนไปใช้ redirect...");
-        await fb.signInWithRedirect(fb.auth, provider);
-        return; // page will reload; getRedirectResult handles the result
-      } else {
-        throw linkErr;
+      } catch (popupErr) {
+        if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/cancelled-popup-request") {
+          showToast("Popup ถูกบล็อก กำลังเปลี่ยนไปใช้ redirect...");
+          await fb.signInWithRedirect(fb.auth, provider);
+          return;
+        }
+        throw popupErr;
       }
     }
   } catch (e) {
@@ -6864,21 +6898,48 @@ function bindAccountUIEvents() {
 // Anonymous sign-in happens automatically and silently on load. The local
 // save (localStorage) keeps working exactly as before regardless of whether
 // this succeeds — cloud sync is a pure bonus layer on top.
+//
+// IMPORTANT: button bindings used to be wired up only after a successful
+// anonymous sign-in. If that sign-in ever failed (Anonymous provider not
+// enabled in Firebase Console, network hiccup, etc.) the sign-in/sign-up/
+// Google buttons would silently have NO click handler at all — clicking them
+// did nothing, which is exactly the "ใช้ไม่ได้" (doesn't work) symptom. Now
+// we bind the UI immediately and independently of whether auth ever
+// succeeds, so the buttons always respond (and show a clear error if
+// Firebase itself isn't reachable yet).
+let _anonRetryAttempt = 0;
+function attemptAnonymousSignIn() {
+  const fb = getFB();
+  if (!fb) return;
+  fb.signInAnonymously(fb.auth).catch((e) => {
+    console.warn("Anonymous sign-in failed", e);
+    if (e && e.code === "auth/operation-not-allowed") {
+      showAccountError("ผู้ดูแลยังไม่ได้เปิดใช้งาน Anonymous sign-in ใน Firebase Console");
+      return; // retrying won't help until the console setting changes
+    }
+    // Retry with backoff (network hiccups, etc.) instead of giving up forever.
+    _anonRetryAttempt++;
+    const delay = Math.min(30000, 2000 * _anonRetryAttempt);
+    setTimeout(attemptAnonymousSignIn, delay);
+  });
+}
+
 function initCloudAccount() {
   const fb = getFB();
   if (!fb) return;
   cloudReady = true;
 
+  // Wire up the UI right away — do NOT wait for any auth result first.
+  renderAccountUI();
+  bindAccountUIEvents();
+
   fb.onAuthStateChanged(fb.auth, async (user) => {
     if (!user) {
-      // No session at all yet — start one anonymously, silently.
-      try {
-        await fb.signInAnonymously(fb.auth);
-      } catch (e) {
-        console.warn("Anonymous sign-in failed; continuing in local-only mode", e);
-      }
+      // No session at all yet — start one anonymously, silently, with retry.
+      attemptAnonymousSignIn();
       return; // onAuthStateChanged will fire again with the new user
     }
+    _anonRetryAttempt = 0;
     cloudUser = user;
     renderAccountUI();
     bindAccountUIEvents();
