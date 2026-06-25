@@ -1807,6 +1807,7 @@ button {
 .log-line-crit { color: var(--gold); }
 .log-line-defeat { color: var(--danger); font-weight: 600; }
 .log-line-evade { color: var(--gem); font-style: italic; }
+.log-line-pet { color: var(--success); }
 .pvp-opponent-row:hover { border-color: var(--accent) !important; }
 
 /* result panel — docked at the bottom of the battle stage instead of
@@ -9172,11 +9173,20 @@ function runBattleTick() {
       monsterHp: currentMonster.hp,
       playerSpdAcc: 0,
       monsterSpdAcc: 0,
+      petSpdAcc: 0,
     };
   }
 
   exchangeState.playerSpdAcc += stats.spd;
   exchangeState.monsterSpdAcc += currentMonster.spd;
+
+  // Pet speed accumulator — pets attack at ~60% of player's speed
+  const activePet = getActivePet(player);
+  const petBonus = getPetBonus(player);
+  if (activePet) {
+    const petSpd = Math.max(0.3, stats.spd * 0.6 + (petBonus.spd || 0));
+    exchangeState.petSpdAcc = (exchangeState.petSpdAcc || 0) + petSpd;
+  }
 
   let playerActed = false, monsterActed = false;
 
@@ -9193,6 +9203,27 @@ function runBattleTick() {
       result.evaded ? "log-line-evade" : result.isCrit ? "log-line-crit" : null
     );
     playerActed = true;
+  }
+
+  // ── Pet attack ──
+  if (activePet && exchangeState.petSpdAcc >= 1 && exchangeState.monsterHp > 0) {
+    exchangeState.petSpdAcc -= 1;
+    // Pet ATK = pet bonus atk (flat), always hits, no crit variance — simple but punchy
+    const petAtk = Math.max(1, petBonus.atk || 0);
+    const petResult = resolveAttack(petAtk, Math.round(currentMonster.def * 0.3), 15, 95, currentMonster.dodge * 0.5);
+    if (petResult.damage > 0 || !petResult.evaded) {
+      exchangeState.monsterHp = Math.max(0, exchangeState.monsterHp - petResult.damage);
+      currentMonster.hp = exchangeState.monsterHp;
+      const petDelay = playerActed ? 280 : 0;
+      setTimeout(() => spawnDamageText("monster", petResult.damage, petResult.isCrit, petResult.evaded), petDelay + 100);
+      updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
+      if (!petResult.evaded) {
+        appendCombatLog(
+          `${activePet.emoji} ${activePet.name} โจมตี ${currentMonster.name} ${petResult.isCrit ? "(คริติคอล) " : ""}-${petResult.damage}`,
+          petResult.isCrit ? "log-line-crit" : "log-line-pet"
+        );
+      }
+    }
   }
 
   if (exchangeState.monsterHp <= 0) {
