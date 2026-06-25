@@ -2522,7 +2522,7 @@ button {
 /* ============================================
    Real-time Chat ("เรียลไทม์") Tab
    ============================================ */
-.chat-page-panel {
+.chat-page-panel.active {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 64px - 56px - env(safe-area-inset-bottom, 0px));
@@ -2683,6 +2683,141 @@ button {
   text-align: center;
   flex-shrink: 0;
 }
+
+/* ============================================
+   Floating Chat Widget — compact "แชทรวม" bubble
+   shown on every page. Tapping the floating button
+   (FAB) slides up a small chat box that overlays the
+   current page; closing it returns to whatever tab
+   the player was on. Independent of the full Chat tab.
+   ============================================ */
+.chat-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 16px);
+  z-index: 120;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 16px rgba(124,92,252,0.45), 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.15s, filter 0.15s, opacity 0.2s;
+}
+.chat-fab svg { width: 24px; height: 24px; }
+.chat-fab:hover { filter: brightness(1.1); }
+.chat-fab:active { transform: scale(0.92); }
+.chat-fab.hidden { display: none; }
+.chat-fab-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  min-width: 19px; height: 19px;
+  border-radius: 10px;
+  background: var(--danger);
+  color: white;
+  font-size: 10.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid var(--bg-void);
+}
+.chat-fab-badge.hidden { display: none; }
+
+.chat-float-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 130;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.chat-float-backdrop.visible { opacity: 1; pointer-events: all; }
+
+.chat-float-panel {
+  position: fixed;
+  right: 12px;
+  left: 12px;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 12px);
+  margin: 0 auto;
+  max-width: 380px;
+  height: min(58vh, 460px);
+  z-index: 131;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 36px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.chat-float-panel.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+.chat-float-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.chat-float-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.chat-float-close {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-float-close svg { width: 14px; height: 14px; }
+.chat-float-close:hover { color: var(--text-primary); }
+.chat-float-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 12px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  overscroll-behavior: contain;
+}
+.chat-float-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 8px 10px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+.chat-float-input-bar .chat-text-input { font-size: 13px; padding: 8px 11px; max-height: 70px; }
+.chat-float-input-bar .chat-send-btn { width: 36px; height: 36px; }
+.chat-float-input-bar .chat-send-btn svg { width: 16px; height: 16px; }
 
 .endless-leaderboard { display: flex; flex-direction: column; gap: 6px; }
 .leaderboard-row {
@@ -4954,6 +5089,40 @@ button {
     <button class="more-menu-item" data-tab="settings" id="settingsBtn" role="menuitem" aria-label="ตั้งค่า" title="ตั้งค่า">
       <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.6 7.6 0 000-2l1.9-1.5-2-3.4-2.2.9a7.7 7.7 0 00-1.7-1l-.3-2.4H9.9l-.3 2.4a7.7 7.7 0 00-1.7 1l-2.2-.9-2 3.4L5.6 11a7.6 7.6 0 000 2l-1.9 1.5 2 3.4 2.2-.9c.5.4 1.1.7 1.7 1l.3 2.4h4.2l.3-2.4c.6-.3 1.2-.6 1.7-1l2.2.9 2-3.4L19.4 13z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
       <span>ตั้งค่า</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ FLOATING CHAT WIDGET (compact "แชทรวม", available on every page) ============ -->
+<button class="chat-fab" id="chatFabBtn" type="button" aria-label="เปิดแชทรวม">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4v-4H4V5z"/></svg>
+  <span class="chat-fab-badge hidden" id="chatFabBadge">0</span>
+</button>
+
+<div class="chat-float-backdrop" id="chatFloatBackdrop"></div>
+<div class="chat-float-panel" id="chatFloatPanel" role="dialog" aria-label="แชทรวม">
+  <div class="chat-float-header">
+    <div class="chat-float-title">
+      <span class="chat-live-dot" id="chatFloatLiveDot" aria-hidden="true"></span>
+      💬 แชทรวม
+    </div>
+    <button class="chat-float-close" id="chatFloatCloseBtn" type="button" aria-label="ปิดแชท">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+  </div>
+
+  <div class="chat-float-messages" id="chatFloatMessagesScroll">
+    <div class="chat-empty-hint" id="chatFloatEmptyHint">ยังไม่มีข้อความ — เริ่มทักทายผู้เล่นคนอื่นได้เลย!</div>
+  </div>
+
+  <div class="chat-name-warning hidden" id="chatFloatNameWarning">
+    กรุณาตั้งชื่อตัวละครในแท็บ "ตัวละคร" ก่อน (อย่างน้อย 2 ตัวอักษร) เพื่อเริ่มแชท
+  </div>
+
+  <div class="chat-float-input-bar">
+    <textarea id="chatFloatTextInput" class="chat-text-input" rows="1" maxlength="280" placeholder="พิมพ์ข้อความ..." autocomplete="off"></textarea>
+    <button id="chatFloatSendBtn" class="chat-send-btn" aria-label="ส่งข้อความ" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
   </div>
 </div>
@@ -9263,6 +9432,15 @@ function switchTab(tabName) {
   if (tabName === "enchant") {
     renderEnchantWorkshop();
   }
+  if (tabName === "chat") {
+    // Entering the full chat tab: clear any unread badge since the player
+    // is now looking at the feed.
+    chatUnreadCount = 0;
+    chatSetFabBadge(0);
+    chatUpdateNameGate(player);
+    chatFetch(player);
+  }
+  chatUpdateFabVisibility();
   hideTooltip();
   closeMoreMenu();
 }
@@ -10612,12 +10790,14 @@ let chatLastSeenTs = 0;
 let chatLastSendTs = 0;
 let chatKnownIds = new Set();
 let chatMessages = [];
+let chatFloatOpen = false;
+let chatUnreadCount = 0;
 
 function chatConfigured() { return lbConfigured(); }
 
 function chatSetLiveDot(ok) {
-  const dot = document.getElementById("chatLiveDot");
-  if (dot) dot.classList.toggle("err", !ok);
+  document.getElementById("chatLiveDot")?.classList.toggle("err", !ok);
+  document.getElementById("chatFloatLiveDot")?.classList.toggle("err", !ok);
 }
 
 function chatEscapeHtml(str) {
@@ -10676,17 +10856,29 @@ async function chatApiPrune(allMessages) {
   }
 }
 
+// ── Rendering targets ──
+// The chat UI exists in two independent places that share the same message
+// list and the same Firebase node:
+//   1. the full "เรียลไทม์" tab, reached via the "เพิ่มเติม" menu
+//      (#chatMessagesScroll / #chatEmptyHint)
+//   2. the compact floating widget, available on every page via the FAB
+//      (#chatFloatMessagesScroll / #chatFloatEmptyHint)
+// Every render pass updates whichever of the two are present in the DOM.
+const CHAT_SURFACES = [
+  { scrollId: "chatMessagesScroll", hintId: "chatEmptyHint" },
+  { scrollId: "chatFloatMessagesScroll", hintId: "chatFloatEmptyHint" },
+];
+
 function chatRenderEmptyState() {
-  const scroll = document.getElementById("chatMessagesScroll");
-  const hint = document.getElementById("chatEmptyHint");
-  if (!scroll || !hint) return;
-  hint.classList.toggle("hidden", chatMessages.length > 0);
+  for (const { scrollId, hintId } of CHAT_SURFACES) {
+    const scroll = document.getElementById(scrollId);
+    const hint = document.getElementById(hintId);
+    if (!scroll || !hint) continue;
+    hint.classList.toggle("hidden", chatMessages.length > 0);
+  }
 }
 
-function chatAppendMessageEl(msg, player) {
-  const scroll = document.getElementById("chatMessagesScroll");
-  if (!scroll) return;
-
+function chatBuildMessageRow(msg, player) {
   const isMine = !!(player && msg.lbId === player.lbId);
   const row = document.createElement("div");
   row.className = "chat-msg-row" + (isMine ? " is-mine" : "");
@@ -10701,34 +10893,83 @@ function chatAppendMessageEl(msg, player) {
       <span class="chat-msg-time">${chatFormatTime(msg.ts)}</span>
     </div>
     <div class="chat-msg-bubble">${safeText}</div>`;
-  scroll.appendChild(row);
+  return row;
 }
 
 function chatRenderMessages(player, { preserveScroll = false } = {}) {
-  const scroll = document.getElementById("chatMessagesScroll");
-  if (!scroll) return;
-
-  const wasNearBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 80;
-
-  // Full re-render is simplest and cheap enough at this message volume
-  // (capped at CHAT_MAX_RENDERED) — avoids tracking diff state across polls.
-  scroll.querySelectorAll(".chat-msg-row").forEach(el => el.remove());
   const toRender = chatMessages.slice(-CHAT_MAX_RENDERED);
-  for (const msg of toRender) chatAppendMessageEl(msg, player);
+
+  for (const { scrollId } of CHAT_SURFACES) {
+    const scroll = document.getElementById(scrollId);
+    if (!scroll) continue;
+
+    const wasNearBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 80;
+
+    // Full re-render is simplest and cheap enough at this message volume
+    // (capped at CHAT_MAX_RENDERED) — avoids tracking diff state across polls.
+    scroll.querySelectorAll(".chat-msg-row").forEach(el => el.remove());
+    for (const msg of toRender) scroll.appendChild(chatBuildMessageRow(msg, player));
+
+    if (!preserveScroll || wasNearBottom) {
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+  }
 
   chatRenderEmptyState();
+}
 
-  if (!preserveScroll || wasNearBottom) {
-    scroll.scrollTop = scroll.scrollHeight;
+// Whether the player is currently looking at chat — either the full tab is
+// active, or the floating widget panel is open. While true, incoming
+// messages are considered "read" and don't bump the FAB's unread badge.
+function chatIsVisible() {
+  const tabPanel = document.querySelector("[data-tab-panel='chat']");
+  const tabActive = !!(tabPanel && tabPanel.classList.contains("active"));
+  return tabActive || chatFloatOpen;
+}
+
+function chatSetFabBadge(count) {
+  const badge = document.getElementById("chatFabBadge");
+  if (!badge) return;
+  if (count <= 0) {
+    badge.classList.add("hidden");
+    badge.textContent = "0";
+  } else {
+    badge.classList.remove("hidden");
+    badge.textContent = count > 9 ? "9+" : String(count);
   }
+}
+
+function chatUpdateFabVisibility() {
+  const fab = document.getElementById("chatFabBtn");
+  if (!fab) return;
+  // Hide the floating bubble while the full chat tab itself is on-screen —
+  // no need for a shortcut to the thing already showing.
+  const tabPanel = document.querySelector("[data-tab-panel='chat']");
+  const onChatTab = !!(tabPanel && tabPanel.classList.contains("active"));
+  fab.classList.toggle("hidden", onChatTab);
 }
 
 async function chatFetch(player) {
   if (!chatConfigured()) { chatSetLiveDot(false); return; }
   try {
+    const prevKnownIds = chatKnownIds;
     const fresh = await chatApiFetch();
+    const freshIds = new Set(fresh.map(m => m.id));
+
+    // Count messages that are new since the last fetch (and not our own)
+    // to drive the floating button's unread badge, but only once we've
+    // already fetched at least once — avoids flashing a big number for
+    // the entire chat history on first load.
+    if (prevKnownIds.size > 0 && !chatIsVisible()) {
+      const newOnes = fresh.filter(m => !prevKnownIds.has(m.id) && !(player && m.lbId === player.lbId));
+      if (newOnes.length > 0) {
+        chatUnreadCount += newOnes.length;
+        chatSetFabBadge(chatUnreadCount);
+      }
+    }
+
     chatMessages = fresh;
-    chatKnownIds = new Set(fresh.map(m => m.id));
+    chatKnownIds = freshIds;
     chatSetLiveDot(true);
     chatRenderMessages(player, { preserveScroll: true });
   } catch (e) {
@@ -10736,9 +10977,10 @@ async function chatFetch(player) {
   }
 }
 
-async function chatSend(player) {
-  const input = document.getElementById("chatTextInput");
-  const sendBtn = document.getElementById("chatSendBtn");
+async function chatSend(player, { sourceId = "chat" } = {}) {
+  const isFloat = sourceId === "float";
+  const input = document.getElementById(isFloat ? "chatFloatTextInput" : "chatTextInput");
+  const sendBtn = document.getElementById(isFloat ? "chatFloatSendBtn" : "chatSendBtn");
   if (!input) return;
 
   const text = input.value.trim().slice(0, CHAT_MAX_LEN);
@@ -10785,18 +11027,71 @@ function chatAutoGrowInput(input) {
 }
 
 function chatUpdateNameGate(player) {
-  const warning = document.getElementById("chatNameWarning");
-  const input = document.getElementById("chatTextInput");
-  const sendBtn = document.getElementById("chatSendBtn");
   const hasName = !!(player.name && player.name.trim().length >= 2);
-  if (warning) warning.classList.toggle("hidden", hasName);
-  if (input) input.disabled = !hasName;
-  if (sendBtn) sendBtn.disabled = !hasName;
+  const pairs = [
+    ["chatNameWarning", "chatTextInput", "chatSendBtn"],
+    ["chatFloatNameWarning", "chatFloatTextInput", "chatFloatSendBtn"],
+  ];
+  for (const [warningId, inputId, sendBtnId] of pairs) {
+    document.getElementById(warningId)?.classList.toggle("hidden", hasName);
+    const input = document.getElementById(inputId);
+    const sendBtn = document.getElementById(sendBtnId);
+    if (input) input.disabled = !hasName;
+    if (sendBtn) sendBtn.disabled = !hasName;
+  }
+}
+
+// ── Floating widget open/close ──
+function chatOpenFloat(player) {
+  chatFloatOpen = true;
+  document.getElementById("chatFloatPanel")?.classList.add("visible");
+  document.getElementById("chatFloatBackdrop")?.classList.add("visible");
+  chatUnreadCount = 0;
+  chatSetFabBadge(0);
+  chatUpdateNameGate(player);
+  chatFetch(player);
+}
+
+function chatCloseFloat() {
+  chatFloatOpen = false;
+  document.getElementById("chatFloatPanel")?.classList.remove("visible");
+  document.getElementById("chatFloatBackdrop")?.classList.remove("visible");
+}
+
+function chatToggleFloat(player) {
+  if (chatFloatOpen) chatCloseFloat();
+  else chatOpenFloat(player);
+}
+
+function chatInitFloatingWidget(player) {
+  const fab = document.getElementById("chatFabBtn");
+  const closeBtn = document.getElementById("chatFloatCloseBtn");
+  const backdrop = document.getElementById("chatFloatBackdrop");
+  const floatInput = document.getElementById("chatFloatTextInput");
+  const floatSendBtn = document.getElementById("chatFloatSendBtn");
+  if (!fab || !floatInput || !floatSendBtn) return;
+
+  fab.addEventListener("click", () => chatToggleFloat(player));
+  closeBtn?.addEventListener("click", () => chatCloseFloat());
+  backdrop?.addEventListener("click", () => chatCloseFloat());
+
+  floatInput.addEventListener("input", () => chatAutoGrowInput(floatInput));
+  floatInput.addEventListener("keydown", (e) => {
+    // Enter sends, Shift+Enter inserts a newline — standard chat UX.
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      chatSend(player, { sourceId: "float" });
+    }
+  });
+  floatSendBtn.addEventListener("click", () => chatSend(player, { sourceId: "float" }));
+
+  chatUpdateFabVisibility();
 }
 
 function chatInitUI(player) {
   const input = document.getElementById("chatTextInput");
   const sendBtn = document.getElementById("chatSendBtn");
+  chatInitFloatingWidget(player);
   if (!input || !sendBtn) return;
 
   chatUpdateNameGate(player);
@@ -10806,26 +11101,25 @@ function chatInitUI(player) {
     // Enter sends, Shift+Enter inserts a newline — standard chat UX.
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      chatSend(player);
+      chatSend(player, { sourceId: "chat" });
     }
   });
-  sendBtn.addEventListener("click", () => chatSend(player));
+  sendBtn.addEventListener("click", () => chatSend(player, { sourceId: "chat" }));
 
-  // Fetch immediately when switching into the chat tab, and re-check the
-  // name gate in case the player just set their name on the Character tab.
-  document.querySelector("[data-tab='chat']")?.addEventListener("click", () => {
-    chatUpdateNameGate(player);
-    chatFetch(player);
-  });
+  // Note: entering the full chat tab (gate refresh, badge clear, fetch) and
+  // keeping the FAB's visibility in sync are both handled centrally inside
+  // switchTab() — see the "chat" branch there — so no duplicate listeners
+  // are needed here.
 
-  // Poll every few seconds, but only while the chat tab is actually
-  // visible — same battery/bandwidth-friendly pattern as the Leaderboard's
-  // 30s auto-refresh, just on a faster cadence since chat is "live".
+  // Poll continuously (not just while a chat surface is visible) so the
+  // floating button's unread badge stays accurate no matter what page the
+  // player is on — same battery/bandwidth-friendly cadence as before.
   if (chatPollInterval) clearInterval(chatPollInterval);
-  chatPollInterval = setInterval(() => {
-    const panel = document.querySelector("[data-tab-panel='chat']");
-    if (panel && panel.classList.contains("active")) chatFetch(player);
-  }, CHAT_POLL_MS);
+  chatPollInterval = setInterval(() => chatFetch(player), CHAT_POLL_MS);
+
+  // Initial fetch so the unread badge and live dot are correct right away,
+  // even before the player opens chat for the first time.
+  chatFetch(player);
 }
 
 
