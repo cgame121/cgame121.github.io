@@ -7867,22 +7867,27 @@ function generateMonster(dungeon, roomIndex, player) {
 }
 
 // "Recommended CP" for a dungeon — ties the CP system directly to the
-// dungeon system by running the same boss-scaling math generateMonster()
-// uses (boss room, same scale/hpMult/atk/def multipliers), then running
-// that monster's stats through the exact same CP_WEIGHTS formula used for
-// the player. That shared formula is what makes the two numbers comparable:
-// a player can look at "your CP" vs "this dungeon's CP" and know roughly
-// where they stand. Spd is fixed at 1.0 (the average monster roll) instead
-// of randomized, so the number shown is stable rather than jittering on
-// every render.
+// dungeon system by running the *exact same* boss-scaling math
+// generateMonster() uses (boss room, same scale/hpMult/atk/def multipliers
+// — atk ×1.2, def ×1.1, matching the isBoss branch there exactly) instead of
+// a separately-tuned stat block. Acc/dodge are included too, using the
+// average of rollMonsterAccDodge(true)'s range, so the comparison accounts
+// for the same stats that count toward the player's own CP. Running that
+// monster's stats through the exact same CP_WEIGHTS formula used for the
+// player is what makes the two numbers comparable: a player can look at
+// "your CP" vs "this dungeon's CP" and know roughly where they stand.
+// Spd is fixed at 1.0 (the average monster roll) instead of randomized, so
+// the number shown is stable rather than jittering on every render.
 function getDungeonRecommendedCP(dungeon) {
   const bossRoomIndex = ROOMS_PER_DUNGEON - 1;
   const scale = 1 + bossRoomIndex * 0.22;
   const bossStats = {
     hp: dungeon.baseHp * scale * dungeon.boss.hpMult,
-    atk: dungeon.baseAtk * scale * 1.6,
-    def: dungeon.baseDef * scale * 1.5,
+    atk: dungeon.baseAtk * scale * 1.2,
+    def: dungeon.baseDef * scale * 1.1,
     spd: 1.0,
+    acc: 92,   // avg of rollMonsterAccDodge(true) range: 88–96
+    dodge: 11, // avg of rollMonsterAccDodge(true) range: 8–14
   };
   return combatPowerFromStats(bossStats);
 }
