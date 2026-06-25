@@ -25,7 +25,9 @@
     setPersistence, browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot
+    getFirestore, doc, getDoc, setDoc, serverTimestamp, onSnapshot,
+    collection, addDoc, deleteDoc, updateDoc, query, where, orderBy, limit,
+    getDocs, runTransaction
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ============================================
@@ -77,6 +79,16 @@
     setDoc,
     serverTimestamp,
     onSnapshot,
+    collection,
+    addDoc,
+    deleteDoc,
+    updateDoc,
+    query,
+    where,
+    orderBy,
+    limit,
+    getDocs,
+    runTransaction,
     ready: true,
   };
   // Let any code that loaded before this module finishes know it can proceed.
@@ -2745,7 +2757,7 @@ button {
   bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 12px);
   margin: 0 auto;
   max-width: 380px;
-  height: min(58vh, 460px);
+  height: min(48vh, 360px);
   z-index: 131;
   background: var(--bg-panel);
   border: 1px solid var(--line-strong);
@@ -4233,6 +4245,227 @@ button {
   flex-shrink: 0;
 }
 
+/* ============================================
+   Market (Player-to-Player Trading)
+   ============================================ */
+.market-subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+.market-subtab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+}
+.market-subtab-btn.active { background: var(--accent-soft); color: var(--accent); }
+
+.market-status-banner {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.market-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-faint);
+  flex-shrink: 0;
+}
+.market-status-dot.live { background: var(--success); box-shadow: 0 0 6px rgba(61,220,151,0.7); }
+.market-status-dot.error { background: var(--danger); }
+
+.market-filter-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  padding-bottom: 2px;
+}
+.market-filter-row::-webkit-scrollbar { display: none; }
+.market-filter-btn {
+  flex-shrink: 0;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.market-filter-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.market-sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.market-sort-select {
+  flex: 1;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-family: var(--font-body);
+}
+.market-refresh-btn {
+  flex-shrink: 0;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.market-refresh-btn svg { width: 16px; height: 16px; }
+.market-refresh-btn.spinning svg { animation: marketSpin 0.7s linear; }
+@keyframes marketSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.market-list { display: flex; flex-direction: column; gap: 8px; }
+.market-listing-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.market-listing-card:hover { border-color: var(--line-strong); }
+.market-listing-icon {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 2px solid;
+  background: var(--bg-panel);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.market-listing-icon .item-icon { width: 26px; height: 26px; }
+.market-listing-info { flex: 1; min-width: 0; }
+.market-listing-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.market-listing-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.market-listing-seller { font-size: 10.5px; color: var(--text-faint); margin-top: 2px; }
+.market-listing-price {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--gem);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.market-empty-hint {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 13px;
+  padding: 40px 16px;
+  line-height: 1.6;
+}
+.market-loading-hint {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px 16px;
+}
+
+.market-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  z-index: 60;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 18px;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 6px 20px rgba(124,92,252,0.45);
+}
+.market-fab svg { width: 16px; height: 16px; }
+
+/* Sell sheet (choose item from inventory to list) */
+.market-sell-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 12px 0;
+}
+.market-sell-slot {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--line);
+  background: var(--bg-panel);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+.market-sell-slot.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.market-sell-slot .item-icon { width: 24px; height: 24px; }
+.market-price-input-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.market-price-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  outline: none;
+  width: 0;
+}
+.market-fee-note { font-size: 11px; color: var(--text-faint); margin: -6px 0 14px; line-height: 1.5; }
+
+.market-detail-stats { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; font-size: 12.5px; }
+.market-detail-stat-row { display: flex; justify-content: space-between; color: var(--text-muted); }
+.market-detail-stat-row b { color: var(--text-primary); }
+
+.market-mylisting-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.market-cancel-btn {
+  flex-shrink: 0;
+  background: rgba(255,107,91,0.12);
+  border: 1px solid rgba(255,107,91,0.3);
+  color: var(--danger);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
 </style>
 </head>
 <body>
@@ -5025,6 +5258,55 @@ button {
       <div class="pet-grid" id="petGrid"></div>
     </section>
 
+    <!-- Market (player-to-player trading with gems) -->
+    <section class="panel tab-panel" data-tab-panel="market" style="padding-bottom:90px;">
+      <h2 class="panel-title">💎 ตลาดกลาง</h2>
+      <p class="hint-text">ซื้อขายไอเทมกับผู้เล่นคนอื่นด้วยเพชร ต้องเข้าสู่ระบบ (เกสต์ใช้ได้) และมีอินเทอร์เน็ตเพื่อซิงค์ข้อมูล</p>
+
+      <div class="market-status-banner" id="marketStatusBanner">
+        <span class="market-status-dot" id="marketStatusDot"></span>
+        <span id="marketStatusText">กำลังเชื่อมต่อตลาดกลาง...</span>
+      </div>
+
+      <div class="market-subtabs">
+        <button class="market-subtab-btn active" data-market-tab="browse">เลือกซื้อ</button>
+        <button class="market-subtab-btn" data-market-tab="mine">รายการของฉัน</button>
+        <button class="market-subtab-btn" data-market-tab="purchases">ที่ซื้อแล้ว</button>
+      </div>
+
+      <!-- Browse sub-panel -->
+      <div id="marketBrowsePanel">
+        <div class="market-filter-row" id="marketFilterBar"></div>
+        <div class="market-sort-row">
+          <select class="market-sort-select" id="marketSortSelect">
+            <option value="newest">ใหม่ล่าสุด</option>
+            <option value="price_asc">ราคา: ต่ำ → สูง</option>
+            <option value="price_desc">ราคา: สูง → ต่ำ</option>
+            <option value="rarity">ความหายาก</option>
+          </select>
+          <button class="market-refresh-btn" id="marketRefreshBtn" title="รีเฟรช">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4M21 4v5h-5"/></svg>
+          </button>
+        </div>
+        <div class="market-list" id="marketBrowseList"></div>
+      </div>
+
+      <!-- My listings sub-panel -->
+      <div id="marketMinePanel" style="display:none;">
+        <div class="market-list" id="marketMineList"></div>
+      </div>
+
+      <!-- Purchase history sub-panel -->
+      <div id="marketPurchasesPanel" style="display:none;">
+        <div class="market-list" id="marketPurchasesList"></div>
+      </div>
+    </section>
+
+    <button class="market-fab" id="marketSellFab" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      ลงขาย
+    </button>
+
   </main>
 
   <!-- Reserves space at the bottom so content can scroll above the fixed nav -->
@@ -5073,6 +5355,10 @@ button {
     <button class="more-menu-item" data-tab="pets" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="12" cy="14" rx="7" ry="5"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="8" r="2.2"/><circle cx="4.5" cy="12.5" r="1.5"/><circle cx="19.5" cy="12.5" r="1.5"/></svg>
       <span>สัตว์เลี้ยง</span>
+    </button>
+    <button class="more-menu-item" data-tab="market" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9h16v9a2 2 0 01-2 2H6a2 2 0 01-2-2V9z"/><path d="M9 13a3 3 0 006 0"/></svg>
+      <span>ตลาดกลาง</span>
     </button>
     <button class="more-menu-item" data-tab="pvp" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.3"/><circle cx="17.5" cy="17.5" r="2.3"/></svg>
@@ -9196,7 +9482,7 @@ function showOfflineProgressModal({ durationMs, wasCapped, gold, exp, gems, item
 // ============================================
 // Tab navigation — one screen at a time
 // ============================================
-const OVERFLOW_TABS = ["enchant", "pvp", "leaderboard", "settings", "chat"];
+const OVERFLOW_TABS = ["enchant", "pvp", "leaderboard", "settings", "chat", "market"];
 
 function closeMoreMenu() {
   const sheet = document.getElementById("moreMenuSheet");
@@ -13231,6 +13517,694 @@ window.__deactivatePetHandler = () => {
   renderStats(player);
   renderArenaPetCompanion(player);
   showToast("ปิดการใช้งานสัตว์เลี้ยงแล้ว");
+};
+
+// ============================================
+// VOIDFALL — Player Market (Firestore-backed, secure trading with gems)
+// ============================================
+// Design notes (read before touching Security Rules):
+//
+// Every listing is its own document in the "voidfall_market" Firestore
+// collection: { id, sellerUid, sellerName, item, price, status, createdAt,
+// buyerUid, buyerName, soldAt }. status is one of "active" | "sold" |
+// "cancelled".
+//
+// SELL: the item is removed from the seller's own local inventory (and
+// their own cloud save) the moment the listing is created — exactly the
+// same trust model as withdrawing gold to put it in a chest. The listing
+// document is then created with sellerUid == the seller's own auth uid,
+// which Security Rules can verify cheaply.
+//
+// BUY: a Firestore transaction reads the listing, checks status=="active"
+// and buyerUid != sellerUid, and atomically flips it to "sold" with the
+// buyer's uid attached. Firestore transactions guarantee that if two
+// players try to buy the same listing at once, only one transaction wins —
+// the loser gets a clean "already sold" error instead of a duplicate item.
+// Gems are deducted from the buyer's own player object (their own cloud
+// doc) AFTER the transaction succeeds in claiming the listing, so a buyer
+// can never lose gems without getting the item, and a listing can never be
+// claimed twice.
+//
+// THIS REQUIRES Security Rules along these lines in the Firebase console
+// (Firestore Database -> Rules), or any signed-in player could edit any
+// listing directly via the browser console:
+//
+//   match /voidfall_market/{listingId} {
+//     allow read: if request.auth != null;
+//     allow create: if request.auth != null
+//                   && request.resource.data.sellerUid == request.auth.uid
+//                   && request.resource.data.status == "active";
+//     allow update: if request.auth != null
+//                   && (
+//                        // seller cancelling their own still-active listing
+//                        (resource.data.sellerUid == request.auth.uid
+//                         && resource.data.status == "active"
+//                         && request.resource.data.status == "cancelled")
+//                        ||
+//                        // buyer purchasing someone else's active listing
+//                        (resource.data.status == "active"
+//                         && resource.data.sellerUid != request.auth.uid
+//                         && request.resource.data.status == "sold"
+//                         && request.resource.data.buyerUid == request.auth.uid
+//                         && request.resource.data.item == resource.data.item
+//                         && request.resource.data.price == resource.data.price
+//                         && request.resource.data.sellerUid == resource.data.sellerUid)
+//                      );
+//     allow delete: if false; // keep history; cancelled/sold rows stay queryable
+//   }
+//
+// Without those rules (e.g. while still in Firestore "test mode"), the
+// market still *works*, but anyone with the browser console could write
+// directly to other players' listings, so treat that as temporary only.
+
+const MARKET_COLLECTION = "voidfall_market";
+const MARKET_LISTING_FETCH_LIMIT = 200;
+const MARKET_MAX_ACTIVE_LISTINGS = 10; // per player, prevents flooding the market
+const MARKET_MIN_PRICE = 1;
+const MARKET_MAX_PRICE = 999999;
+
+let marketListingsCache = [];     // active listings currently shown in Browse
+let marketMineCache = [];         // this player's own listings (active+sold+cancelled)
+let marketPurchasesCache = [];    // listings this player has bought
+let marketSubTab = "browse";      // "browse" | "mine" | "purchases"
+let marketFilterSlot = "all";
+let marketSortMode = "newest";
+let marketSellSelectedId = null;  // inventory item id chosen in the sell sheet
+let marketLoaded = false;
+
+function marketEscapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function marketSetStatus(state, text) {
+  // state: "connecting" | "live" | "error"
+  const dot = document.getElementById("marketStatusDot");
+  const txt = document.getElementById("marketStatusText");
+  if (!dot || !txt) return;
+  dot.classList.remove("live", "error");
+  if (state === "live") dot.classList.add("live");
+  else if (state === "error") dot.classList.add("error");
+  txt.textContent = text;
+}
+
+function marketDocRef(id) {
+  const fb = getFB();
+  return fb.doc(fb.db, MARKET_COLLECTION, id);
+}
+
+function marketCollectionRef() {
+  const fb = getFB();
+  return fb.collection(fb.db, MARKET_COLLECTION);
+}
+
+// ---------- Fetching ----------
+
+async function marketFetchActiveListings() {
+  const fb = getFB();
+  if (!fb || !fb.ready) return [];
+  const q = fb.query(
+    marketCollectionRef(),
+    fb.where("status", "==", "active"),
+    fb.orderBy("createdAt", "desc"),
+    fb.limit(MARKET_LISTING_FETCH_LIMIT)
+  );
+  const snap = await fb.getDocs(q);
+  const out = [];
+  snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  return out;
+}
+
+async function marketFetchMyListings(uid) {
+  const fb = getFB();
+  if (!fb || !fb.ready || !uid) return [];
+  const q = fb.query(
+    marketCollectionRef(),
+    fb.where("sellerUid", "==", uid),
+    fb.orderBy("createdAt", "desc"),
+    fb.limit(MARKET_LISTING_FETCH_LIMIT)
+  );
+  const snap = await fb.getDocs(q);
+  const out = [];
+  snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  return out;
+}
+
+async function marketFetchMyPurchases(uid) {
+  const fb = getFB();
+  if (!fb || !fb.ready || !uid) return [];
+  const q = fb.query(
+    marketCollectionRef(),
+    fb.where("buyerUid", "==", uid),
+    fb.orderBy("soldAt", "desc"),
+    fb.limit(MARKET_LISTING_FETCH_LIMIT)
+  );
+  const snap = await fb.getDocs(q);
+  const out = [];
+  snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  return out;
+}
+
+async function marketRefreshAll({ silent = false } = {}) {
+  const fb = getFB();
+  if (!fb || !fb.ready) {
+    marketSetStatus("error", "ยังไม่เชื่อมต่อ Firebase");
+    return;
+  }
+  if (!silent) marketSetStatus("connecting", "กำลังโหลดตลาดกลาง...");
+  try {
+    const uid = cloudUser ? cloudUser.uid : null;
+    const [active, mine, purchases] = await Promise.all([
+      marketFetchActiveListings(),
+      uid ? marketFetchMyListings(uid) : Promise.resolve([]),
+      uid ? marketFetchMyPurchases(uid) : Promise.resolve([]),
+    ]);
+    marketListingsCache = active;
+    marketMineCache = mine;
+    marketPurchasesCache = purchases;
+    marketLoaded = true;
+    marketSetStatus("live", `ออนไลน์ — มีไอเทมวางขาย ${active.length} รายการ`);
+    renderMarketTab();
+  } catch (e) {
+    console.warn("Market refresh failed", e);
+    marketSetStatus("error", "โหลดตลาดกลางไม่สำเร็จ ลองรีเฟรชอีกครั้ง");
+  }
+}
+
+// ---------- Selling ----------
+
+function marketCanListItem(item) {
+  if (!item) return false;
+  if (item.locked) return false;
+  return true;
+}
+
+async function marketCreateListing(item, price) {
+  const fb = getFB();
+  if (!fb || !fb.ready) throw new Error("ยังไม่เชื่อมต่อออนไลน์");
+  if (!cloudUser) throw new Error("ยังไม่มีบัญชีผู้เล่น (ลองรอสักครู่แล้วเปิดตลาดใหม่)");
+  const activeCount = marketMineCache.filter(l => l.status === "active").length;
+  if (activeCount >= MARKET_MAX_ACTIVE_LISTINGS) {
+    throw new Error(`ตั้งขายได้สูงสุด ${MARKET_MAX_ACTIVE_LISTINGS} รายการพร้อมกัน`);
+  }
+  const safeItem = JSON.parse(JSON.stringify(item));
+  const listing = {
+    sellerUid: cloudUser.uid,
+    sellerName: (player.name || "ผู้เล่นนิรนาม").slice(0, 24),
+    item: safeItem,
+    price: Math.max(MARKET_MIN_PRICE, Math.min(MARKET_MAX_PRICE, Math.round(price))),
+    status: "active",
+    createdAt: fb.serverTimestamp(),
+  };
+  const docRef = await fb.addDoc(marketCollectionRef(), listing);
+  return docRef.id;
+}
+
+async function marketCancelListing(listingId) {
+  const fb = getFB();
+  if (!fb || !fb.ready || !cloudUser) throw new Error("ยังไม่เชื่อมต่อออนไลน์");
+  await fb.runTransaction(fb.db, async (tx) => {
+    const ref = marketDocRef(listingId);
+    const snap = await tx.get(ref);
+    if (!snap.exists()) throw new Error("ไม่พบรายการนี้แล้ว");
+    const data = snap.data();
+    if (data.sellerUid !== cloudUser.uid) throw new Error("นี่ไม่ใช่รายการของคุณ");
+    if (data.status !== "active") throw new Error("รายการนี้ไม่ได้วางขายอยู่แล้ว");
+    tx.update(ref, { status: "cancelled" });
+  });
+}
+
+// ---------- Buying ----------
+// Two-phase commit: (1) atomically claim the listing via transaction so two
+// buyers racing for the same item can't both succeed; (2) only after that
+// succeeds, deduct the buyer's own gems and add the item to their own
+// inventory. If step 2 ever failed after step 1 succeeded, the buyer would
+// have a claimed-but-unpaid listing pointing at them — recoverable from
+// "ที่ซื้อแล้ว" — rather than silently losing gems or duplicating items.
+
+async function marketBuyListing(listing) {
+  const fb = getFB();
+  if (!fb || !fb.ready || !cloudUser) throw new Error("ยังไม่เชื่อมต่อออนไลน์");
+  if (listing.sellerUid === cloudUser.uid) throw new Error("ไม่สามารถซื้อไอเทมของตัวเองได้");
+  if ((player.gems || 0) < listing.price) throw new Error("เพชรไม่เพียงพอ");
+
+  // Step 1: atomically claim the listing.
+  await fb.runTransaction(fb.db, async (tx) => {
+    const ref = marketDocRef(listing.id);
+    const snap = await tx.get(ref);
+    if (!snap.exists()) throw new Error("รายการนี้ถูกซื้อหรือยกเลิกไปแล้ว");
+    const data = snap.data();
+    if (data.status !== "active") throw new Error("รายการนี้ถูกซื้อหรือยกเลิกไปแล้ว");
+    if (data.sellerUid === cloudUser.uid) throw new Error("ไม่สามารถซื้อไอเทมของตัวเองได้");
+    tx.update(ref, {
+      status: "sold",
+      buyerUid: cloudUser.uid,
+      buyerName: (player.name || "ผู้เล่นนิรนาม").slice(0, 24),
+      soldAt: fb.serverTimestamp(),
+    });
+  });
+
+  // Step 2: pay and receive, now that the listing is provably ours.
+  player.gems = (player.gems || 0) - listing.price;
+  const newItem = JSON.parse(JSON.stringify(listing.item));
+  newItem.id = nextItemId(); // avoid id collisions with the seller's old copy
+  repairItemShape(newItem);
+  if (player.inventory.length < inventoryCapacity(player)) {
+    player.inventory.push(newItem);
+  } else {
+    // Inventory full: gems are already paid and the purchase is recorded
+    // server-side under "ที่ซื้อแล้ว", but to avoid losing the item we still
+    // try to slot it in by warning the player instead of silently dropping it.
+    player.inventory.push(newItem);
+    showToast("คลังเต็ม! ไอเทมที่ซื้อถูกใส่ไว้แล้ว โปรดขายของเก่าทิ้งบางส่วน");
+  }
+  savePlayer(player, { immediate: true });
+}
+
+// ---------- Rendering ----------
+
+function marketItemMiniHtml(item) {
+  const rarityColor = RARITY[item.rarity] ? RARITY[item.rarity].color : "#9CA3AF";
+  return `
+    <div class="market-listing-icon" style="border-color:${rarityColor}55;">
+      ${iconHtml(item.icon, rarityColor)}
+      ${enchantBadgeHtml(item)}
+    </div>`;
+}
+
+function marketItemMetaHtml(item) {
+  const rarityColor = RARITY[item.rarity] ? RARITY[item.rarity].color : "#9CA3AF";
+  const rarityLabel = RARITY_LABEL_TH[item.rarity] || item.rarity;
+  const slotLabel = INV_SLOT_LABEL_TH[item.slot] || item.slot;
+  return `<span style="color:${rarityColor}">${rarityLabel}</span> · ${slotLabel} · Lv.${item.itemLevel}`;
+}
+
+function renderMarketStatusBanner() {
+  // status text/dot is driven by marketSetStatus(); nothing else to do here,
+  // this function exists for symmetry with the other render* functions.
+}
+
+function renderMarketSubtabs() {
+  document.querySelectorAll(".market-subtab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.marketTab === marketSubTab);
+  });
+  const browsePanel = document.getElementById("marketBrowsePanel");
+  const minePanel = document.getElementById("marketMinePanel");
+  const purchasesPanel = document.getElementById("marketPurchasesPanel");
+  if (browsePanel) browsePanel.style.display = marketSubTab === "browse" ? "" : "none";
+  if (minePanel) minePanel.style.display = marketSubTab === "mine" ? "" : "none";
+  if (purchasesPanel) purchasesPanel.style.display = marketSubTab === "purchases" ? "" : "none";
+  const fab = document.getElementById("marketSellFab");
+  if (fab) fab.style.display = marketSubTab === "mine" ? "flex" : "none";
+}
+
+function renderMarketFilterBar() {
+  const bar = document.getElementById("marketFilterBar");
+  if (!bar) return;
+  const slots = ["all", ...SLOTS];
+  bar.innerHTML = slots.map(s =>
+    `<button class="market-filter-btn${marketFilterSlot === s ? " active" : ""}" data-slot="${s}">${INV_SLOT_LABEL_TH[s] || s}</button>`
+  ).join("");
+}
+
+function renderMarketBrowseList() {
+  const list = document.getElementById("marketBrowseList");
+  if (!list) return;
+
+  if (!marketLoaded) {
+    list.innerHTML = `<div class="market-loading-hint">กำลังโหลด...</div>`;
+    return;
+  }
+
+  let items = marketListingsCache.filter(l =>
+    marketFilterSlot === "all" || (l.item && l.item.slot === marketFilterSlot)
+  );
+
+  const comparators = {
+    newest: () => 0, // already sorted by createdAt desc from the query
+    price_asc: (a, b) => a.price - b.price,
+    price_desc: (a, b) => b.price - a.price,
+    rarity: (a, b) => RARITY_ORDER.indexOf(b.item.rarity) - RARITY_ORDER.indexOf(a.item.rarity),
+  };
+  const cmp = comparators[marketSortMode];
+  if (marketSortMode !== "newest") items = [...items].sort(cmp);
+
+  if (items.length === 0) {
+    list.innerHTML = `<div class="market-empty-hint">ยังไม่มีไอเทมวางขายในหมวดนี้<br>ลองเปลี่ยนตัวกรอง หรือกลับมาดูใหม่ทีหลัง</div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(l => {
+    const isMine = cloudUser && l.sellerUid === cloudUser.uid;
+    const canAfford = (player.gems || 0) >= l.price;
+    return `
+      <div class="market-listing-card" data-listing-id="${l.id}" data-action="view">
+        ${marketItemMiniHtml(l.item)}
+        <div class="market-listing-info">
+          <div class="market-listing-name">${marketEscapeHtml(l.item.name || "ไอเทม")}</div>
+          <div class="market-listing-meta">${marketItemMetaHtml(l.item)}</div>
+          <div class="market-listing-seller">ผู้ขาย: ${marketEscapeHtml(l.sellerName || "ไม่ทราบชื่อ")}${isMine ? " (คุณ)" : ""}</div>
+        </div>
+        <div class="market-listing-price" style="${!isMine && !canAfford ? "color:var(--danger)" : ""}">
+          <span class="gem-icon"></span>${fmtNum(l.price)}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function renderMarketMineList() {
+  const list = document.getElementById("marketMineList");
+  if (!list) return;
+
+  if (!marketLoaded) {
+    list.innerHTML = `<div class="market-loading-hint">กำลังโหลด...</div>`;
+    return;
+  }
+
+  if (marketMineCache.length === 0) {
+    list.innerHTML = `<div class="market-empty-hint">คุณยังไม่มีรายการวางขาย<br>กดปุ่ม "ลงขาย" ด้านล่างเพื่อเริ่มต้น</div>`;
+    return;
+  }
+
+  const statusLabel = { active: "กำลังขาย", sold: "ขายแล้ว", cancelled: "ยกเลิกแล้ว" };
+  const statusColor = { active: "var(--success)", sold: "var(--gem)", cancelled: "var(--text-faint)" };
+
+  list.innerHTML = marketMineCache.map(l => `
+    <div class="market-listing-card" data-listing-id="${l.id}" data-action="view-mine">
+      ${marketItemMiniHtml(l.item)}
+      <div class="market-listing-info">
+        <div class="market-listing-name">${marketEscapeHtml(l.item.name || "ไอเทม")}</div>
+        <div class="market-listing-meta">${marketItemMetaHtml(l.item)}</div>
+        <div class="market-listing-seller" style="color:${statusColor[l.status] || ""}">${statusLabel[l.status] || l.status}${l.status === "sold" && l.buyerName ? " — " + marketEscapeHtml(l.buyerName) : ""}</div>
+      </div>
+      <div class="market-mylisting-row">
+        <div class="market-listing-price"><span class="gem-icon"></span>${fmtNum(l.price)}</div>
+        ${l.status === "active" ? `<button class="market-cancel-btn" data-cancel-id="${l.id}">ยกเลิก</button>` : ""}
+      </div>
+    </div>`).join("");
+}
+
+function renderMarketPurchasesList() {
+  const list = document.getElementById("marketPurchasesList");
+  if (!list) return;
+
+  if (!marketLoaded) {
+    list.innerHTML = `<div class="market-loading-hint">กำลังโหลด...</div>`;
+    return;
+  }
+
+  if (marketPurchasesCache.length === 0) {
+    list.innerHTML = `<div class="market-empty-hint">คุณยังไม่ได้ซื้อไอเทมจากตลาดกลาง</div>`;
+    return;
+  }
+
+  list.innerHTML = marketPurchasesCache.map(l => `
+    <div class="market-listing-card" data-action="none">
+      ${marketItemMiniHtml(l.item)}
+      <div class="market-listing-info">
+        <div class="market-listing-name">${marketEscapeHtml(l.item.name || "ไอเทม")}</div>
+        <div class="market-listing-meta">${marketItemMetaHtml(l.item)}</div>
+        <div class="market-listing-seller">จาก: ${marketEscapeHtml(l.sellerName || "ไม่ทราบชื่อ")}</div>
+      </div>
+      <div class="market-listing-price"><span class="gem-icon"></span>${fmtNum(l.price)}</div>
+    </div>`).join("");
+}
+
+function renderMarketTab() {
+  const panel = document.querySelector('[data-tab-panel="market"]');
+  if (!panel) return;
+  renderMarketStatusBanner();
+  renderMarketSubtabs();
+  renderMarketFilterBar();
+  renderMarketBrowseList();
+  renderMarketMineList();
+  renderMarketPurchasesList();
+}
+
+// ---------- Sell sheet (modal) ----------
+
+function marketOpenSellSheet() {
+  marketSellSelectedId = null;
+  const sellable = player.inventory.filter(marketCanListItem);
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  backdrop.id = "marketSellModal";
+  backdrop.innerHTML = `
+    <div class="modal-card" style="width:330px;max-height:80vh;overflow-y:auto;">
+      <h3>ลงขายไอเทม</h3>
+      ${sellable.length === 0
+        ? `<p class="hint-text">ไม่มีไอเทมที่วางขายได้ในคลัง (ไอเทมที่ล็อกไว้จะวางขายไม่ได้)</p>`
+        : `<p class="hint-text" style="margin-top:-8px;">เลือกไอเทมจากคลัง แล้วตั้งราคาเป็นเพชร</p>
+           <div class="market-sell-grid" id="marketSellGrid">
+             ${sellable.map(item => {
+               const rarityColor = RARITY[item.rarity] ? RARITY[item.rarity].color : "#9CA3AF";
+               return `<div class="market-sell-slot" data-item-id="${item.id}" style="border-color:${rarityColor}55;">
+                         ${iconHtml(item.icon, rarityColor)}${enchantBadgeHtml(item)}
+                       </div>`;
+             }).join("")}
+           </div>
+           <div id="marketSellSelectedInfo" style="font-size:12px;color:var(--text-muted);min-height:36px;margin-bottom:8px;"></div>
+           <div class="market-price-input-row">
+             <span class="gem-icon"></span>
+             <input type="number" id="marketSellPriceInput" placeholder="ราคา (เพชร)" min="${MARKET_MIN_PRICE}" max="${MARKET_MAX_PRICE}" inputmode="numeric">
+           </div>
+           <div class="market-fee-note">ไอเทมจะถูกย้ายออกจากคลังทันทีที่ลงขาย และจะกลับคืนคลังถ้ายกเลิกการขายก่อนมีคนซื้อ</div>
+           <button class="btn-primary full-width" id="marketSellConfirmBtn" disabled>ยืนยันลงขาย</button>`
+      }
+      <button class="btn-secondary full-width" id="marketSellCancelBtn" style="margin-top:8px;">ปิด</button>
+    </div>`;
+  document.body.appendChild(backdrop);
+
+  const closeSheet = () => { backdrop.remove(); };
+  backdrop.querySelector("#marketSellCancelBtn")?.addEventListener("click", closeSheet);
+  backdrop.addEventListener("click", e => { if (e.target === backdrop) closeSheet(); });
+
+  const grid = backdrop.querySelector("#marketSellGrid");
+  const infoEl = backdrop.querySelector("#marketSellSelectedInfo");
+  const priceInput = backdrop.querySelector("#marketSellPriceInput");
+  const confirmBtn = backdrop.querySelector("#marketSellConfirmBtn");
+
+  function updateConfirmState() {
+    if (!confirmBtn) return;
+    const price = parseInt(priceInput.value, 10);
+    confirmBtn.disabled = !marketSellSelectedId || !price || price < MARKET_MIN_PRICE;
+  }
+
+  if (grid) {
+    grid.querySelectorAll(".market-sell-slot").forEach(slot => {
+      slot.addEventListener("click", () => {
+        grid.querySelectorAll(".market-sell-slot").forEach(s => s.classList.remove("selected"));
+        slot.classList.add("selected");
+        marketSellSelectedId = slot.dataset.itemId;
+        const item = player.inventory.find(i => i.id === marketSellSelectedId);
+        if (item && infoEl) {
+          const rarityColor = RARITY[item.rarity] ? RARITY[item.rarity].color : "#9CA3AF";
+          infoEl.innerHTML = `<b style="color:${rarityColor}">${marketEscapeHtml(item.name)}</b><br>${marketItemMetaHtml(item)}`;
+        }
+        updateConfirmState();
+      });
+    });
+  }
+  priceInput?.addEventListener("input", updateConfirmState);
+
+  confirmBtn?.addEventListener("click", async () => {
+    const item = player.inventory.find(i => i.id === marketSellSelectedId);
+    const price = parseInt(priceInput.value, 10);
+    if (!item || !price) return;
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "กำลังลงขาย...";
+    try {
+      // Remove from local inventory first so it can't be equipped/sold
+      // twice while the network call is in flight.
+      const idx = player.inventory.findIndex(i => i.id === item.id);
+      if (idx === -1) throw new Error("ไอเทมนี้ถูกใช้ไปแล้ว");
+      const [removed] = player.inventory.splice(idx, 1);
+      savePlayer(player, { immediate: true });
+      try {
+        await marketCreateListing(removed, price);
+        showToast(`ลงขาย ${removed.name} ราคา ${fmtNum(price)} เพชรแล้ว`);
+        closeSheet();
+        await marketRefreshAll({ silent: true });
+        renderInventory(player, { onEquip: onInventoryItemClick });
+      } catch (err) {
+        // Listing failed after we already pulled it from inventory —
+        // give it back so nothing is lost.
+        player.inventory.push(removed);
+        savePlayer(player, { immediate: true });
+        renderInventory(player, { onEquip: onInventoryItemClick });
+        throw err;
+      }
+    } catch (err) {
+      console.warn("Market sell failed", err);
+      showToast(err.message || "ลงขายไม่สำเร็จ ลองใหม่อีกครั้ง");
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "ยืนยันลงขาย";
+    }
+  });
+}
+
+// ---------- Listing detail modal (buy / view) ----------
+
+function marketOpenListingDetail(listing, { mine = false } = {}) {
+  const isOwn = cloudUser && listing.sellerUid === cloudUser.uid;
+  const canAfford = (player.gems || 0) >= listing.price;
+  const item = listing.item;
+  const rarityColor = RARITY[item.rarity] ? RARITY[item.rarity].color : "#9CA3AF";
+
+  const statRows = Object.entries(item.stats || {})
+    .map(([k, v]) => `<div class="market-detail-stat-row"><span>${statLabel(k)}</span><b>+${v}</b></div>`)
+    .join("");
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  backdrop.id = "marketDetailModal";
+  backdrop.innerHTML = `
+    <div class="modal-card" style="width:300px;text-align:center;">
+      <div style="display:flex;justify-content:center;margin-bottom:8px;">
+        <div class="market-listing-icon" style="width:64px;height:64px;border-color:${rarityColor};">
+          <span style="transform:scale(1.6);">${iconHtml(item.icon, rarityColor)}</span>
+        </div>
+      </div>
+      <h3 style="margin-bottom:2px;">${marketEscapeHtml(item.name || "ไอเทม")}</h3>
+      <div style="font-size:12.5px;color:${rarityColor};margin-bottom:10px;">${marketItemMetaHtml(item)}</div>
+      <div class="market-detail-stats">${statRows}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin:8px 0;">
+        ${mine ? "" : `ผู้ขาย: ${marketEscapeHtml(listing.sellerName || "ไม่ทราบชื่อ")}`}
+      </div>
+      <div class="gem-pill" style="justify-content:center;margin:0 auto 14px;width:fit-content;">
+        <span class="gem-icon"></span><span>${fmtNum(listing.price)}</span>
+      </div>
+      ${!mine && !isOwn ? `<button class="btn-primary full-width" id="marketDetailBuyBtn" ${canAfford ? "" : "disabled"}>${canAfford ? "ซื้อไอเทมนี้" : "เพชรไม่เพียงพอ"}</button>` : ""}
+      ${mine && listing.status === "active" ? `<button class="btn-danger full-width" id="marketDetailCancelBtn">ยกเลิกการขาย</button>` : ""}
+      <button class="btn-secondary full-width" id="marketDetailCloseBtn" style="margin-top:8px;">ปิด</button>
+    </div>`;
+  document.body.appendChild(backdrop);
+
+  const closeModal = () => backdrop.remove();
+  backdrop.querySelector("#marketDetailCloseBtn")?.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", e => { if (e.target === backdrop) closeModal(); });
+
+  const buyBtn = backdrop.querySelector("#marketDetailBuyBtn");
+  buyBtn?.addEventListener("click", async () => {
+    buyBtn.disabled = true;
+    buyBtn.textContent = "กำลังซื้อ...";
+    try {
+      await marketBuyListing(listing);
+      showToast(`ซื้อ ${item.name} สำเร็จ!`);
+      closeModal();
+      renderHud(player);
+      renderStats(player);
+      renderInventory(player, { onEquip: onInventoryItemClick });
+      await marketRefreshAll({ silent: true });
+    } catch (err) {
+      console.warn("Market buy failed", err);
+      showToast(err.message || "ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง");
+      closeModal();
+      await marketRefreshAll({ silent: true }); // listing state may be stale now
+    }
+  });
+
+  const cancelBtn = backdrop.querySelector("#marketDetailCancelBtn");
+  cancelBtn?.addEventListener("click", async () => {
+    cancelBtn.disabled = true;
+    cancelBtn.textContent = "กำลังยกเลิก...";
+    try {
+      await marketCancelListing(listing.id);
+      // Return the item to local inventory now that we own the cancellation.
+      const restored = JSON.parse(JSON.stringify(item));
+      restored.id = nextItemId();
+      repairItemShape(restored);
+      if (player.inventory.length < inventoryCapacity(player)) {
+        player.inventory.push(restored);
+      } else {
+        player.inventory.push(restored);
+        showToast("คลังเต็ม! ไอเทมที่ยกเลิกถูกใส่ไว้แล้ว โปรดขายของเก่าทิ้งบางส่วน");
+      }
+      savePlayer(player, { immediate: true });
+      showToast("ยกเลิกการขายแล้ว ไอเทมกลับเข้าคลังของคุณ");
+      closeModal();
+      renderInventory(player, { onEquip: onInventoryItemClick });
+      await marketRefreshAll({ silent: true });
+    } catch (err) {
+      console.warn("Market cancel failed", err);
+      showToast(err.message || "ยกเลิกไม่สำเร็จ ลองใหม่อีกครั้ง");
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = "ยกเลิกการขาย";
+    }
+  });
+}
+
+// ---------- Event wiring ----------
+
+function bindMarketEvents() {
+  document.querySelectorAll(".market-subtab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      marketSubTab = btn.dataset.marketTab;
+      renderMarketSubtabs();
+    });
+  });
+
+  document.getElementById("marketRefreshBtn")?.addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.classList.add("spinning");
+    await marketRefreshAll();
+    setTimeout(() => btn.classList.remove("spinning"), 400);
+  });
+
+  document.getElementById("marketSortSelect")?.addEventListener("change", (e) => {
+    marketSortMode = e.target.value;
+    renderMarketBrowseList();
+  });
+
+  document.getElementById("marketFilterBar")?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".market-filter-btn");
+    if (!btn) return;
+    marketFilterSlot = btn.dataset.slot;
+    renderMarketFilterBar();
+    renderMarketBrowseList();
+  });
+
+  document.getElementById("marketBrowseList")?.addEventListener("click", (e) => {
+    const card = e.target.closest(".market-listing-card[data-action='view']");
+    if (!card) return;
+    const listing = marketListingsCache.find(l => l.id === card.dataset.listingId);
+    if (listing) marketOpenListingDetail(listing, { mine: false });
+  });
+
+  document.getElementById("marketMineList")?.addEventListener("click", (e) => {
+    const cancelBtn = e.target.closest("[data-cancel-id]");
+    if (cancelBtn) {
+      const listing = marketMineCache.find(l => l.id === cancelBtn.dataset.cancelId);
+      if (listing) marketOpenListingDetail(listing, { mine: true });
+      return;
+    }
+    const card = e.target.closest(".market-listing-card[data-action='view-mine']");
+    if (!card) return;
+    const listing = marketMineCache.find(l => l.id === card.dataset.listingId);
+    if (listing) marketOpenListingDetail(listing, { mine: true });
+  });
+
+  document.getElementById("marketSellFab")?.addEventListener("click", marketOpenSellSheet);
+}
+
+// ---------- Hook into switchTab / renderAll / createNewPlayer ----------
+
+const _origSwitchTabForMarket = switchTab;
+switchTab = function(tabName) {
+  _origSwitchTabForMarket(tabName);
+  if (tabName === "market") {
+    if (!document.getElementById("marketFilterBar")?.dataset.bound) {
+      bindMarketEvents();
+      const fb2 = document.getElementById("marketFilterBar");
+      if (fb2) fb2.dataset.bound = "1";
+    }
+    marketRefreshAll();
+  }
 };
 
 init();
