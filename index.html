@@ -13768,6 +13768,12 @@ async function marketCreateListing(item, price) {
     item: safeItem,
     price: Math.max(MARKET_MIN_PRICE, Math.min(MARKET_MAX_PRICE, Math.round(price))),
     status: "active",
+    // claimed must be written explicitly (not left undefined) because the
+    // Firestore security rules read resource.data.claimed when checking the
+    // claim-gems transition; a missing field throws inside the rule and the
+    // whole condition silently evaluates to false ("Missing or insufficient
+    // permissions"), even though the rule logic itself was otherwise correct.
+    claimed: false,
     createdAt: fb.serverTimestamp(),
   };
   const docRef = await fb.addDoc(marketCollectionRef(), listing);
