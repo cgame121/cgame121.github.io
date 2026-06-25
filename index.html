@@ -1647,6 +1647,59 @@ button {
 }
 .rayn-dash-in.figure-player { animation: rayn-dash-in 0.38s ease-out; }
 
+/* ============================================
+   Battle pet companion — appears beside the player
+   and joins in whenever the player attacks.
+   ============================================ */
+.pet-companion {
+  position: absolute;
+  right: -2px;
+  bottom: 26px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+}
+.pet-companion-emoji {
+  display: inline-block;
+  font-size: 22px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+  animation: pet-idle-bob 1.6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@keyframes pet-idle-bob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-6px) rotate(5deg); }
+}
+/* Riding on the player's own attack-player class so the pet always
+   leaps in alongside Rayn's lunge, without any extra JS hookup. */
+.attack-player .pet-companion-emoji {
+  animation: pet-assist-lunge 0.42s ease;
+}
+@keyframes pet-assist-lunge {
+  0%   { transform: translate(0,0) scale(1) rotate(-4deg); }
+  40%  { transform: translate(30px,-12px) scale(1.3) rotate(18deg); }
+  55%  { transform: translate(30px,-12px) scale(1.3) rotate(18deg); }
+  100% { transform: translate(0,0) scale(1) rotate(-4deg); }
+}
+.pet-companion-sparkle {
+  position: absolute;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+@keyframes pet-sparkle-fly {
+  0%   { opacity: 0; transform: translate(0,0) scale(0.6); }
+  18%  { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.9); }
+}
+.pet-companion-sparkle.fly { animation: pet-sparkle-fly 0.55s ease-out forwards; }
+
 .hpbar {
   width: 100%;
   height: 8px;
@@ -3117,6 +3170,8 @@ button {
   .main-grid { padding: 10px; gap: 10px; }
   .combatant { width: 110px; }
   .combatant-figure { width: 70px; height: 96px; }
+  .pet-companion { width: 28px; height: 28px; bottom: 18px; right: -2px; }
+  .pet-companion-emoji { font-size: 17px; }
   .combatant-monster.is-boss .combatant-figure { width: 100px; height: 134px; }
   .combatant-monster.is-boss .combatant-aura { width: 104px; height: 104px; }
   .arena { min-height: 220px; }
@@ -4101,6 +4156,9 @@ button {
           <div class="combatant combatant-player">
             <div class="combatant-aura aura-player" id="arenaPlayerAura"></div>
             <img class="combatant-figure figure-player" id="arenaPlayer" src="" alt="Rayn" draggable="false">
+            <div class="pet-companion hidden" id="arenaPetCompanion" title="">
+              <span class="pet-companion-emoji" id="arenaPetEmoji"></span>
+            </div>
             <div class="hpbar"><div class="hpbar-fill hpbar-fill-player" id="playerHpFill"></div></div>
             <span class="hpbar-label" id="playerHpLabel">0/0</span>
           </div>
@@ -8116,6 +8174,26 @@ function setArenaCombatants(player, monster) {
   monsterImgEl.alt = monster.name;
   monsterWrapEl.classList.toggle("is-boss", !!monster.isBoss);
   playMonsterEnterAnim(monsterImgEl, monster.isBoss);
+  renderArenaPetCompanion(player);
+}
+
+// Shows (or hides) the small companion sprite beside the player in the
+// dungeon arena, based on whichever pet is currently active. The pet has
+// no separate stats of its own here — it just visually tags along and
+// leaps in every time the player attacks (see the .attack-player CSS
+// hookup), so it reads as "fighting alongside you" in the dungeon.
+function renderArenaPetCompanion(player) {
+  const wrap = document.getElementById("arenaPetCompanion");
+  const emojiEl = document.getElementById("arenaPetEmoji");
+  if (!wrap || !emojiEl) return;
+  const pet = typeof getActivePet === "function" ? getActivePet(player) : null;
+  if (pet) {
+    emojiEl.textContent = pet.emoji;
+    wrap.title = pet.name;
+    wrap.classList.remove("hidden");
+  } else {
+    wrap.classList.add("hidden");
+  }
 }
 
 function updateHpBar(who, hp, maxHp) {
@@ -8166,7 +8244,38 @@ function playAttackAnim(actor) {
     defender.classList.add("hit-flash", "shake");
     setTimeout(() => defender.classList.remove("hit-flash", "shake"), 320);
     spawnParticles(defender);
+    if (actor === "player") spawnPetSparkle(defender);
   }, 190);
+}
+
+// A few little sparkles flying from the pet companion toward the monster,
+// timed with the pet's own lunge animation — purely cosmetic flair so the
+// pet visibly "joins in" on the player's attack.
+function spawnPetSparkle(monsterEl) {
+  const petWrap = document.getElementById("arenaPetCompanion");
+  if (!petWrap || petWrap.classList.contains("hidden")) return;
+  const fxLayer = document.getElementById("fxLayer");
+  if (!fxLayer) return;
+  const arenaRect = fxLayer.getBoundingClientRect();
+  const petRect = petWrap.getBoundingClientRect();
+  const monsterRect = monsterEl.getBoundingClientRect();
+  const startX = petRect.left - arenaRect.left + petRect.width / 2;
+  const startY = petRect.top - arenaRect.top + petRect.height / 2;
+  const endX = monsterRect.left - arenaRect.left + monsterRect.width / 2;
+  const endY = monsterRect.top - arenaRect.top + monsterRect.height / 2.4;
+
+  for (let i = 0; i < 3; i++) {
+    const s = document.createElement("div");
+    s.className = "pet-companion-sparkle";
+    s.textContent = "✦";
+    s.style.left = startX + "px";
+    s.style.top = startY + "px";
+    s.style.setProperty("--sx", (endX - startX + (Math.random() * 16 - 8)) + "px");
+    s.style.setProperty("--sy", (endY - startY + (Math.random() * 16 - 8)) + "px");
+    fxLayer.appendChild(s);
+    setTimeout(() => s.classList.add("fly"), i * 40);
+    setTimeout(() => s.remove(), 700 + i * 40);
+  }
 }
 
 function spawnParticles(targetEl) {
@@ -12240,6 +12349,7 @@ window.__buyPetHandler = (petId) => {
     renderPetTab(player);
     renderHud(player);
     renderStats(player);
+    renderArenaPetCompanion(player);
     const pet = getPetById(petId);
     showToast(`ได้รับสัตว์เลี้ยง ${pet ? pet.emoji + " " + pet.name : petId}!`);
   } else {
@@ -12253,6 +12363,7 @@ window.__activatePetHandler = (petId) => {
   renderPetTab(player);
   renderHud(player);
   renderStats(player);
+  renderArenaPetCompanion(player);
   const pet = getPetById(petId);
   showToast(`เปิดใช้งาน ${pet ? pet.emoji + " " + pet.name : petId} แล้ว!`);
 };
@@ -12263,6 +12374,7 @@ window.__deactivatePetHandler = () => {
   renderPetTab(player);
   renderHud(player);
   renderStats(player);
+  renderArenaPetCompanion(player);
   showToast("ปิดการใช้งานสัตว์เลี้ยงแล้ว");
 };
 
