@@ -6226,7 +6226,7 @@ const MAX_LEVEL = 150;
 // growing head-start (more dungeons pre-unlocked) on every replay.
 // ============================================
 const REBIRTH_MIN_LEVEL = 150;       // minimum level required to rebirth
-const REBIRTH_BONUS_PER_POINT = 0.001; // +0.1% to atk/def/hp per prestige point
+const REBIRTH_BONUS_PER_POINT = 0.004; // +0.4% to atk/def/hp per prestige point (was 0.001 — too weak to meaningfully bridge the post-level-cap power gap; see CP/dungeon balance notes)
 const REBIRTH_GOLD_PER_GEM = 10000;  // gold cost per 1 gem converted on rebirth
 const REBIRTH_GEM_CAP = 10000;       // max gems earnable per rebirth (anti-inflation cap)
 
@@ -7961,7 +7961,21 @@ function resolveAttack(atk, def, critChance, accChance = 100, dodgeChance = 0) {
   if (Math.random() * 100 >= hitChance) {
     return { damage: 0, isCrit: false, evaded: true };
   }
-  const mitigated = Math.max(1, Math.round(atk - def * 0.5));
+  // Proportional mitigation: damage = atk * (atk / (atk + def)).
+  // This keeps DEF's effect relative to the *ratio* of atk:def rather than a
+  // flat subtraction. With the old "atk - def*0.5" formula, defense was an
+  // absolute amount subtracted from damage — fine when atk comfortably
+  // exceeds def*0.5, but once def got too large relative to atk (e.g. an
+  // under-leveled fight, or just monster def naturally outscaling player
+  // atk later in the game), damage hard-floored at exactly 1 no matter how
+  // big the gap was. The new formula degrades smoothly instead: damage
+  // falls off as the def:atk ratio grows, but a character that's somewhat
+  // behind still chips away real (if reduced) damage rather than hitting a
+  // dead floor immediately. At a 1:1 atk:def ratio this still passes 50% of
+  // atk through, matching the old formula's general "feel" for normal,
+  // appropriately-geared fights.
+  const denom = atk + def;
+  const mitigated = denom > 0 ? Math.max(1, Math.round((atk * atk) / denom)) : Math.max(1, Math.round(atk));
   const variance = 0.85 + Math.random() * 0.3;
   let damage = Math.round(mitigated * variance);
   const isCrit = Math.random() * 100 < critChance;
@@ -8188,7 +8202,7 @@ function renderDungeonList(player, onSelect) {
         <span class="dungeon-card-tier" style="color:${tierMeta.color};background:color-mix(in srgb, ${tierMeta.color} 16%, transparent);">${tierMeta.label}</span>
         <span class="dungeon-card-name">${d.name}</span>
         <span class="dungeon-card-desc">${d.desc}</span>
-        <span class="dungeon-card-level">เลเวลแนะนำ ${d.minLevel}+</span>
+        <span class="dungeon-card-level">เลเวลแนะนำ ${d.minLevel > MAX_LEVEL ? `${MAX_LEVEL} (สูงสุด) + เกียร์/Rebirth` : `${d.minLevel}+`}</span>
         <div class="dungeon-card-cp">
           <span class="dungeon-card-cp-label">พลังแนะนำ ${fmtNum(recommendedCP)} CP</span>
           ${locked ? "" : `<span class="dungeon-card-cp-status ${cpStatus.cls}">${cpStatus.label}</span>`}
