@@ -3706,6 +3706,88 @@ button {
   border-radius: 3px;
 }
 
+/* ============================================
+   Pet System
+   ============================================ */
+.pet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.pet-card {
+  background: var(--bg-panel-raised);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+  position: relative;
+  text-align: center;
+}
+.pet-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.pet-card.pet-owned { border-color: var(--success); box-shadow: 0 0 10px rgba(61,220,151,0.18); }
+.pet-card.pet-active { border-color: var(--accent); box-shadow: 0 0 14px rgba(124,92,252,0.3); }
+.pet-card.pet-locked { opacity: 0.6; cursor: default; }
+.pet-emoji { font-size: 36px; line-height: 1; margin-bottom: 8px; }
+.pet-name { font-family: var(--font-display); font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.pet-rarity-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pet-rarity-common { background: rgba(156,163,175,0.2); color: #9CA3AF; }
+.pet-rarity-uncommon { background: rgba(61,220,151,0.18); color: var(--success); }
+.pet-rarity-rare { background: rgba(91,156,255,0.18); color: #5B9CFF; }
+.pet-rarity-epic { background: rgba(176,124,252,0.18); color: #B07CFC; }
+.pet-rarity-legendary { background: rgba(246,196,83,0.18); color: var(--gold); }
+.pet-bonus-list { font-size: 11px; color: var(--text-muted); text-align: left; margin: 6px 0; line-height: 1.7; }
+.pet-bonus-list span { color: var(--success); font-weight: 600; }
+.pet-cost-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+.pet-active-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(124,92,252,0.3);
+}
+.pet-owned-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(61,220,151,0.18);
+  color: var(--success);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+.pet-info-banner {
+  background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(75,216,232,0.08));
+  border: 1px solid rgba(124,92,252,0.25);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pet-info-active-emoji { font-size: 32px; flex-shrink: 0; }
+.pet-info-text-block { flex: 1; min-width: 0; }
+.pet-info-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+.pet-info-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--text-primary); }
+.pet-info-bonuses { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.6; }
+.pet-info-bonuses b { color: var(--success); }
+.pet-none-hint { font-size: 13px; color: var(--text-muted); font-style: italic; }
+
 </style>
 </head>
 <body>
@@ -4459,6 +4541,18 @@ button {
       </div>
     </section>
 
+    <!-- ============ PETS PANEL ============ -->
+    <section class="panel tab-panel" data-tab-panel="pets" style="padding-bottom:32px;">
+      <h2 class="panel-title">🐾 สัตว์เลี้ยง</h2>
+      <p class="hint-text">สัตว์เลี้ยงเพิ่มพลังให้ตัวละครตลอดเวลา สามารถเปิดใช้งานได้ทีละ 1 ตัว</p>
+
+      <!-- Active pet info -->
+      <div id="petActiveBanner"></div>
+
+      <h3 class="panel-subtitle">สัตว์เลี้ยงทั้งหมด</h3>
+      <div class="pet-grid" id="petGrid"></div>
+    </section>
+
   </main>
 
   <!-- Reserves space at the bottom so content can scroll above the fixed nav -->
@@ -4503,6 +4597,10 @@ button {
     <button class="more-menu-item" data-tab="skills" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linejoin="round"/></svg>
       <span>สกิล</span>
+    </button>
+    <button class="more-menu-item" data-tab="pets" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="12" cy="14" rx="7" ry="5"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="8" r="2.2"/><circle cx="4.5" cy="12.5" r="1.5"/><circle cx="19.5" cy="12.5" r="1.5"/></svg>
+      <span>สัตว์เลี้ยง</span>
     </button>
     <button class="more-menu-item" data-tab="pvp" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.3"/><circle cx="17.5" cy="17.5" r="2.3"/></svg>
@@ -11645,6 +11743,312 @@ gainExp = function(player, amount, onLevelUp) {
     }
   }
   return result;
+};
+
+// ============================================
+// VOIDFALL — Pet System
+// ============================================
+const PET_DATA = [
+  {
+    id: "wolf_cub",
+    name: "ลูกหมาป่า",
+    emoji: "🐺",
+    rarity: "common",
+    cost: { gold: 500 },
+    unlockLevel: 1,
+    bonus: { atk: 5, spd: 0.05 },
+    desc: "ATK +5, SPD +0.05",
+    lore: "ซื่อสัตย์และดุดัน เพิ่มพลังโจมตีเล็กน้อย",
+  },
+  {
+    id: "stone_turtle",
+    name: "เต่าหินโบราณ",
+    emoji: "🐢",
+    rarity: "common",
+    cost: { gold: 500 },
+    unlockLevel: 1,
+    bonus: { def: 8, hp: 30 },
+    desc: "DEF +8, HP +30",
+    lore: "เกราะแกร่งราวหิน ช่วยเพิ่มการป้องกัน",
+  },
+  {
+    id: "fire_fox",
+    name: "จิ้งจอกไฟ",
+    emoji: "🦊",
+    rarity: "uncommon",
+    cost: { gold: 2000 },
+    unlockLevel: 5,
+    bonus: { atk: 12, crit: 3 },
+    desc: "ATK +12, CRIT +3%",
+    lore: "ผู้ล่าในเปลวเพลิง เพิ่มโอกาสคริติคอล",
+  },
+  {
+    id: "shadow_cat",
+    name: "แมวเงา",
+    emoji: "🐱",
+    rarity: "uncommon",
+    cost: { gold: 2000 },
+    unlockLevel: 5,
+    bonus: { dodge: 4, acc: 5 },
+    desc: "DODGE +4%, ACC +5%",
+    lore: "เคลื่อนไหวดั่งเงา หลีกเลี่ยงการโจมตีได้",
+  },
+  {
+    id: "void_serpent",
+    name: "งูแห่งความว่างเปล่า",
+    emoji: "🐍",
+    rarity: "rare",
+    cost: { gems: 15 },
+    unlockLevel: 10,
+    bonus: { atk: 20, def: 10, crit: 4 },
+    desc: "ATK +20, DEF +10, CRIT +4%",
+    lore: "สิ่งมีชีวิตจากมิติต้องห้าม ทรงพลังและลึกลับ",
+  },
+  {
+    id: "crystal_phoenix",
+    name: "ฟีนิกซ์คริสตัล",
+    emoji: "🦅",
+    rarity: "epic",
+    cost: { gems: 40 },
+    unlockLevel: 20,
+    bonus: { hp: 200, atk: 25, crit: 6 },
+    desc: "HP +200, ATK +25, CRIT +6%",
+    lore: "เกิดใหม่จากแสงคริสตัล เพิ่มพลังชีวิตและการโจมตี",
+  },
+  {
+    id: "ancient_dragon",
+    name: "มังกรโบราณ",
+    emoji: "🐉",
+    rarity: "legendary",
+    cost: { gems: 100 },
+    unlockLevel: 35,
+    bonus: { atk: 50, def: 30, hp: 400, crit: 8, spd: 0.1 },
+    desc: "ATK +50, DEF +30, HP +400, CRIT +8%, SPD +0.1",
+    lore: "มังกรที่ดำรงอยู่นับพันปี พลังของมันเหนือกว่าสิ่งใด",
+  },
+];
+
+const PET_RARITY_ORDER = ["common","uncommon","rare","epic","legendary"];
+const PET_RARITY_LABEL = { common:"ธรรมดา", uncommon:"ไม่ธรรมดา", rare:"หายาก", epic:"มหากาพย์", legendary:"ตำนาน" };
+
+function getPetById(id) {
+  return PET_DATA.find(p => p.id === id) || null;
+}
+
+function getActivePet(player) {
+  const id = player.activePetId;
+  return id ? getPetById(id) : null;
+}
+
+function getPetBonus(player) {
+  const pet = getActivePet(player);
+  if (!pet) return { atk:0, def:0, hp:0, crit:0, spd:0, acc:0, dodge:0 };
+  return {
+    atk:   pet.bonus.atk   || 0,
+    def:   pet.bonus.def   || 0,
+    hp:    pet.bonus.hp    || 0,
+    crit:  pet.bonus.crit  || 0,
+    spd:   pet.bonus.spd   || 0,
+    acc:   pet.bonus.acc   || 0,
+    dodge: pet.bonus.dodge || 0,
+  };
+}
+
+function buyPet(player, petId) {
+  const pet = getPetById(petId);
+  if (!pet) return false;
+  if ((player.ownedPets || []).includes(petId)) return false;
+  if (player.level < pet.unlockLevel) return false;
+  if (pet.cost.gems) {
+    if ((player.gems || 0) < pet.cost.gems) return false;
+    player.gems -= pet.cost.gems;
+  } else if (pet.cost.gold) {
+    if ((player.gold || 0) < pet.cost.gold) return false;
+    player.gold -= pet.cost.gold;
+  }
+  if (!player.ownedPets) player.ownedPets = [];
+  player.ownedPets.push(petId);
+  return true;
+}
+
+function activatePet(player, petId) {
+  if (!(player.ownedPets || []).includes(petId)) return false;
+  player.activePetId = petId;
+  return true;
+}
+
+function deactivatePet(player) {
+  player.activePetId = null;
+}
+
+// ── Render pet tab ──
+function renderPetTab(player) {
+  const banner = document.getElementById("petActiveBanner");
+  const grid   = document.getElementById("petGrid");
+  if (!banner || !grid) return;
+
+  // Active pet banner
+  const activePet = getActivePet(player);
+  if (activePet) {
+    banner.innerHTML = `
+      <div class="pet-info-banner">
+        <div class="pet-info-active-emoji">${activePet.emoji}</div>
+        <div class="pet-info-text-block">
+          <div class="pet-info-label">สัตว์เลี้ยงที่ใช้งานอยู่</div>
+          <div class="pet-info-name">${activePet.name}</div>
+          <div class="pet-info-bonuses">${activePet.desc.replace(/\+(\d+)/g, '<b>+$1</b>')}</div>
+        </div>
+        <button class="btn-secondary" style="font-size:11px;padding:6px 10px;flex-shrink:0;" onclick="window.__deactivatePetHandler()">ปิดใช้งาน</button>
+      </div>`;
+  } else {
+    banner.innerHTML = `
+      <div class="pet-info-banner" style="opacity:0.6;">
+        <div class="pet-info-active-emoji" style="opacity:0.4;">🐾</div>
+        <div class="pet-info-text-block">
+          <div class="pet-info-label">สัตว์เลี้ยงที่ใช้งานอยู่</div>
+          <div class="pet-none-hint">ยังไม่ได้เปิดใช้งานสัตว์เลี้ยง</div>
+        </div>
+      </div>`;
+  }
+
+  // Pet grid
+  grid.innerHTML = "";
+  for (const pet of PET_DATA) {
+    const owned   = (player.ownedPets || []).includes(pet.id);
+    const isActive = player.activePetId === pet.id;
+    const locked  = player.level < pet.unlockLevel;
+    const canAfford = pet.cost.gems
+      ? (player.gems || 0) >= pet.cost.gems
+      : (player.gold || 0) >= pet.cost.gold;
+
+    let badgeHtml = "";
+    if (isActive) badgeHtml = `<span class="pet-active-badge">✓ ใช้งานอยู่</span>`;
+    else if (owned) badgeHtml = `<span class="pet-owned-badge">มีแล้ว</span>`;
+
+    let costHtml = "";
+    if (!owned) {
+      const cLabel = pet.cost.gems
+        ? `<span class="gem-icon"></span> ${pet.cost.gems} เพชร`
+        : `<span class="gold-icon"></span> ${pet.cost.gold.toLocaleString()} ทอง`;
+      const cColor = (locked || !canAfford) ? "color:var(--danger)" : "color:var(--success)";
+      costHtml = `<div class="pet-cost-row" style="${cColor}">${cLabel}</div>`;
+      if (locked) costHtml += `<div style="font-size:10px;color:var(--text-faint);margin-top:4px;">ต้องการเลเวล ${pet.unlockLevel}</div>`;
+    }
+
+    let actionHtml = "";
+    if (!owned) {
+      actionHtml = `<button class="btn-primary" style="font-size:11px;padding:6px 10px;width:100%;margin-top:8px;"
+        onclick="window.__buyPetHandler('${pet.id}')" ${locked || !canAfford ? "disabled" : ""}>ซื้อ</button>`;
+    } else if (!isActive) {
+      actionHtml = `<button class="btn-secondary" style="font-size:11px;padding:6px 10px;width:100%;margin-top:8px;"
+        onclick="window.__activatePetHandler('${pet.id}')">เปิดใช้งาน</button>`;
+    } else {
+      actionHtml = `<button class="btn-danger" style="font-size:11px;padding:6px 10px;width:100%;margin-top:8px;"
+        onclick="window.__deactivatePetHandler()">ปิดใช้งาน</button>`;
+    }
+
+    const cardClass = [
+      "pet-card",
+      owned ? "pet-owned" : "",
+      isActive ? "pet-active" : "",
+      locked && !owned ? "pet-locked" : "",
+    ].filter(Boolean).join(" ");
+
+    const rarityLabel = PET_RARITY_LABEL[pet.rarity] || pet.rarity;
+    const card = document.createElement("div");
+    card.className = cardClass;
+    card.innerHTML = `
+      ${badgeHtml}
+      <div class="pet-emoji">${pet.emoji}</div>
+      <div class="pet-name">${pet.name}</div>
+      <span class="pet-rarity-badge pet-rarity-${pet.rarity}">${rarityLabel}</span>
+      <div class="pet-bonus-list">${activePet && isActive
+        ? pet.desc.split(", ").map(b => `✦ ${b.replace(/\+(\d+)/,"<span>+$1</span>")}`).join("<br>")
+        : pet.desc.split(", ").map(b => `✦ ${b}`).join("<br>")}
+      </div>
+      <div style="font-size:10.5px;color:var(--text-faint);line-height:1.4;margin-bottom:4px;">${pet.lore}</div>
+      ${costHtml}
+      ${actionHtml}`;
+    grid.appendChild(card);
+  }
+}
+
+// ── Hook createNewPlayer to add pet fields ──
+const _origCreateNewPlayer = createNewPlayer;
+createNewPlayer = function() {
+  const p = _origCreateNewPlayer();
+  p.ownedPets = [];
+  p.activePetId = null;
+  return p;
+};
+
+// ── Hook repairPlayerShape for pet save compatibility ──
+const _origRepairPlayerShapeForPets = repairPlayerShape;
+repairPlayerShape = function(parsed) {
+  const p = _origRepairPlayerShapeForPets(parsed);
+  if (!Array.isArray(p.ownedPets)) p.ownedPets = [];
+  p.ownedPets = p.ownedPets.filter(pid => PET_DATA.some(pet => pet.id === pid));
+  if (p.activePetId && !p.ownedPets.includes(p.activePetId)) p.activePetId = null;
+  return p;
+};
+
+// ── Patch getTotalStats to include active pet bonus ──
+const _origGetTotalStatsForPets = getTotalStats;
+getTotalStats = function(player) {
+  const base = _origGetTotalStatsForPets(player);
+  const pet = getPetBonus(player);
+  return {
+    hp:    Math.round(base.hp    + pet.hp),
+    atk:   Math.round((base.atk  + pet.atk)  * 10) / 10,
+    def:   Math.round((base.def  + pet.def)  * 10) / 10,
+    crit:  Math.min(75, base.crit + pet.crit),
+    spd:   base.spd   + pet.spd,
+    acc:   Math.min(ACC_CAP, base.acc   + pet.acc),
+    dodge: Math.min(DODGE_CAP, base.dodge + pet.dodge),
+  };
+};
+
+// ── Hook renderAll to also render pets ──
+const _origRenderAllForPets = renderAll;
+renderAll = function() {
+  _origRenderAllForPets();
+  renderPetTab(player);
+};
+
+// ── Pet system global handlers ──
+window.__buyPetHandler = (petId) => {
+  const ok = buyPet(player, petId);
+  if (ok) {
+    // Auto-activate if no pet is active
+    if (!player.activePetId) activatePet(player, petId);
+    savePlayer(player);
+    renderPetTab(player);
+    renderHud(player);
+    renderStats(player);
+    const pet = getPetById(petId);
+    showToast(`ได้รับสัตว์เลี้ยง ${pet ? pet.emoji + " " + pet.name : petId}!`);
+  } else {
+    showToast("ไม่สามารถซื้อสัตว์เลี้ยงได้ (เลเวลหรือทรัพยากรไม่เพียงพอ)");
+  }
+};
+
+window.__activatePetHandler = (petId) => {
+  activatePet(player, petId);
+  savePlayer(player);
+  renderPetTab(player);
+  renderHud(player);
+  renderStats(player);
+  const pet = getPetById(petId);
+  showToast(`เปิดใช้งาน ${pet ? pet.emoji + " " + pet.name : petId} แล้ว!`);
+};
+
+window.__deactivatePetHandler = () => {
+  deactivatePet(player);
+  savePlayer(player);
+  renderPetTab(player);
+  renderHud(player);
+  renderStats(player);
+  showToast("ปิดการใช้งานสัตว์เลี้ยงแล้ว");
 };
 
 init();
