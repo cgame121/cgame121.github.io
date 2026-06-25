@@ -20,7 +20,7 @@
   import {
     getAuth, onAuthStateChanged, signInAnonymously,
     createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+    GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
     linkWithCredential, linkWithPopup, EmailAuthProvider, signOut,
     setPersistence, browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -68,6 +68,7 @@
     signInWithEmailAndPassword,
     signInWithPopup,
     signInWithRedirect,
+    getRedirectResult,
     linkWithCredential,
     linkWithPopup,
     signOut,
@@ -6393,14 +6394,7 @@ async function handleEmailAuthSubmit() {
         await fb.linkWithCredential(fb.auth.currentUser, cred);
         showToast("เข้าสู่ระบบสำเร็จ!");
       } catch (linkErr) {
-        if (
-          linkErr.code === "auth/email-already-in-use" ||
-          linkErr.code === "auth/credential-already-in-use" ||
-          linkErr.code === "auth/invalid-credential" ||
-          linkErr.code === "auth/wrong-password" ||
-          linkErr.code === "auth/user-not-found" ||
-          linkErr.code === "auth/provider-already-linked"
-        ) {
+        if (linkErr.code === "auth/email-already-in-use" || linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/invalid-credential" || linkErr.code === "auth/wrong-password" || linkErr.code === "auth/user-not-found") {
           // This account already exists separately — sign into it directly,
           // then reconcile the two saves explicitly.
           const result = await fb.signInWithEmailAndPassword(fb.auth, email, password);
@@ -6417,13 +6411,10 @@ async function handleEmailAuthSubmit() {
     console.warn("Email auth failed", e);
     const messages = {
       "auth/invalid-email": "รูปแบบอีเมลไม่ถูกต้อง",
-      "auth/invalid-credential": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
       "auth/wrong-password": "รหัสผ่านไม่ถูกต้อง",
       "auth/user-not-found": "ไม่พบบัญชีนี้ กรุณาสมัครสมาชิกก่อน",
       "auth/weak-password": "รหัสผ่านสั้นเกินไป (อย่างน้อย 6 ตัวอักษร)",
       "auth/network-request-failed": "เชื่อมต่อเครือข่ายไม่ได้ กรุณาลองใหม่",
-      "auth/too-many-requests": "ลองเข้าสู่ระบบผิดหลายครั้ง กรุณารอสักครู่แล้วลองใหม่",
-      "auth/operation-not-allowed": "ระบบ Email/Password ยังไม่เปิดใช้งาน กรุณาติดต่อผู้พัฒนา",
     };
     showAccountError(messages[e.code] || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
   } finally {
@@ -6446,24 +6437,42 @@ async function handleGoogleSignIn() {
       await fb.linkWithPopup(fb.auth.currentUser, provider);
       showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
     } catch (linkErr) {
-      if (linkErr.code === "auth/credential-already-in-use" || linkErr.code === "auth/email-already-in-use") {
-        // This Google account is already tied to a different uid with its
-        // own cloud save — sign into it directly, then let the player pick.
+      if (
+        linkErr.code === "auth/credential-already-in-use" ||
+        linkErr.code === "auth/email-already-in-use" ||
+        linkErr.code === "auth/provider-already-linked"
+      ) {
+        // This Google account is already tied to a different uid — sign in directly.
         const result = await fb.signInWithPopup(fb.auth, provider);
         await reconcileAfterSignIn(result.user.uid, localSnapshot);
         showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
-      } else if (linkErr.code === "auth/popup-blocked" || linkErr.code === "auth/cancelled-popup-request") {
+      } else if (
+        linkErr.code === "auth/popup-blocked" ||
+        linkErr.code === "auth/cancelled-popup-request"
+      ) {
+        // Popup blocked — fall back to redirect flow.
+        showToast("Popup ถูกบล็อก กำลังเปลี่ยนไปใช้ redirect...");
         await fb.signInWithRedirect(fb.auth, provider);
-        return; // page will reload after redirect completes
+        return; // page will reload; getRedirectResult handles the result
       } else {
         throw linkErr;
       }
     }
   } catch (e) {
     console.warn("Google sign-in failed", e);
-    if (e.code !== "auth/popup-closed-by-user") {
-      showToast("เข้าสู่ระบบด้วย Google ไม่สำเร็จ");
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") {
+      // User closed the popup — silent, no toast needed
+      return;
     }
+    const googleErrors = {
+      "auth/popup-blocked":               "Popup ถูกบล็อก กรุณาอนุญาต popup แล้วลองใหม่",
+      "auth/network-request-failed":      "เชื่อมต่อเครือข่ายไม่ได้ กรุณาลองใหม่",
+      "auth/too-many-requests":           "ลองหลายครั้งเกินไป กรุณารอสักครู่",
+      "auth/operation-not-allowed":       "Google Sign-in ยังไม่เปิดใช้งาน กรุณาติดต่อผู้พัฒนา",
+      "auth/unauthorized-domain":         "Domain นี้ยังไม่ได้รับอนุญาตใน Firebase Console",
+      "auth/internal-error":              "เกิดข้อผิดพลาดภายใน กรุณาลองใหม่",
+    };
+    showToast(googleErrors[e.code] || ("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: " + (e.code || e.message)));
   } finally {
     btn.disabled = false;
   }
@@ -6577,6 +6586,32 @@ function initCloudAccount() {
 window.addEventListener("voidfall-firebase-ready", initCloudAccount);
 // In case the module script already fired the event before this script ran.
 if (window.VOIDFALL_FIREBASE && window.VOIDFALL_FIREBASE.ready) initCloudAccount();
+
+// ── Handle Google redirect result ──────────────────────────────────────────
+// When popup is blocked the app falls back to signInWithRedirect which reloads
+// the page. On return we must call getRedirectResult to pick up the credential.
+(function waitForRedirectResult() {
+  function tryRedirect() {
+    const fb = getFB();
+    if (!fb || !fb.getRedirectResult) return;
+    fb.getRedirectResult(fb.auth).then(async (result) => {
+      if (!result || !result.user) return; // nothing pending
+      const localSnapshot = JSON.parse(JSON.stringify(player));
+      await reconcileAfterSignIn(result.user.uid, localSnapshot);
+      showToast("เข้าสู่ระบบด้วย Google สำเร็จ!");
+    }).catch((e) => {
+      if (e.code && e.code !== "auth/popup-closed-by-user" && e.code !== "auth/no-auth-event") {
+        console.warn("Google redirect result error", e);
+        showToast("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: " + (e.code || e.message));
+      }
+    });
+  }
+  if (window.VOIDFALL_FIREBASE && window.VOIDFALL_FIREBASE.ready) {
+    tryRedirect();
+  } else {
+    window.addEventListener("voidfall-firebase-ready", tryRedirect, { once: true });
+  }
+})();
 
 
 // ============================================
