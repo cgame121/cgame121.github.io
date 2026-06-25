@@ -1135,29 +1135,71 @@ button {
 /* ============================================
    Leaderboard Settings Section
    ============================================ */
-.lb-submit-btn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
+.lb-sync-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 2px 12px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--line);
 }
-.lb-submit-btn:hover { opacity: 0.85; }
-.lb-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.lb-sync-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lb-sync-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-sync-sub { font-size: 11px; color: var(--text-faint); }
+.lb-sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(86, 211, 138, 0.15);
+}
+.lb-sync-dot.err { background: var(--danger); box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.15); }
 .lb-status {
   font-size: 12px;
   color: var(--text-muted);
-  min-height: 18px;
-  margin-bottom: 10px;
+  min-height: 0;
+  margin: 8px 0 14px;
 }
+.lb-status:empty { display: none; }
 .lb-status.ok  { color: var(--success); }
 .lb-status.err { color: var(--danger); }
+.lb-sort-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.lb-search-input {
+  width: 100%;
+  background: var(--bg-void);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+  outline: none;
+}
+.lb-status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lb-count { font-size: 12px; color: var(--text-faint); }
+.lb-refresh-btn {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.lb-refresh-btn:hover { opacity: 0.7; }
+.lb-footnote { font-size: 11px; color: var(--text-faint); text-align: center; margin-top: 16px; }
 .lb-preview-card {
   background: var(--bg-void);
   border: 1px solid var(--line);
@@ -4275,41 +4317,32 @@ button {
     <section class="panel tab-panel" data-tab-panel="leaderboard" style="padding-bottom:32px;">
       <h2 class="panel-title">🏆 Leaderboard</h2>
 
-      <!-- How it works -->
-      <div style="background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text-muted);line-height:1.6;">
-        <strong style="color:var(--accent);">วิธีใช้งาน</strong><br>
-        1️⃣ ตั้งชื่อตัวละครในแท็บ <strong>ตัวละคร</strong> แล้วกด <strong>ส่งขึ้น Leaderboard</strong> ที่นี่ เพื่อบันทึกสถิติของคุณขึ้นออนไลน์<br>
-        2️⃣ เพื่อนที่เปิดลิงก์เกมเดียวกัน (ผ่าน GitHub Pages) จะเห็นชื่อคุณในตารางทันที — ไม่ต้องส่งไฟล์ให้กันแล้ว<br>
-        3️⃣ ตารางจะรีเฟรชอัตโนมัติทุก 30 วินาที เพื่ออัปเดตสถิติของทุกคน ✅
-      </div>
-
-      <!-- Register row -->
-      <div style="background:var(--bg-panel-raised);border:1px solid var(--line-strong);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">ส่งสถิติของคุณ: CP · เลเวล · Boss Rush · Daily Streak</div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <div style="flex:1;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--text-primary);" id="lbCurrentCharName">—</div>
-          <button class="lb-submit-btn" id="lbSubmitBtn">ส่งขึ้น Leaderboard</button>
+      <!-- Sync status row (minimal, replaces old how-to box + submit button) -->
+      <div class="lb-sync-row">
+        <div class="lb-sync-info">
+          <span class="lb-sync-name" id="lbCurrentCharName">—</span>
+          <span class="lb-sync-sub">ซิงค์อัตโนมัติทุก 60 วินาที</span>
         </div>
-        <div class="lb-status" id="lbStatus" style="margin-top:8px;margin-bottom:0;"></div>
+        <span class="lb-sync-dot" id="lbSyncDot" aria-hidden="true"></span>
       </div>
+      <div class="lb-status" id="lbStatus"></div>
 
       <!-- Sort tabs -->
-      <div id="lbSortTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
+      <div id="lbSortTabs" class="lb-sort-tabs"></div>
 
       <!-- Search -->
-      <input id="lbSearchInput" placeholder="🔍 ค้นหาชื่อ..." autocomplete="off"
-        style="width:100%;background:var(--bg-void);border:1px solid var(--line-strong);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:13px;padding:9px 12px;margin-bottom:12px;outline:none;">
+      <input id="lbSearchInput" class="lb-search-input" placeholder="🔍 ค้นหาชื่อ..." autocomplete="off">
 
       <!-- Status bar -->
-      <div id="lbStatusBar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span id="lbCount" style="font-size:12px;color:var(--text-faint);">—</span>
-        <button id="lbRefreshBtn" style="background:transparent;border:1px solid var(--line-strong);color:var(--text-muted);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;">🔄 รีเฟรช</button>
+      <div id="lbStatusBar" class="lb-status-bar">
+        <span id="lbCount" class="lb-count">—</span>
+        <button id="lbRefreshBtn" class="lb-refresh-btn">🔄 รีเฟรช</button>
       </div>
 
       <!-- Entry list -->
       <div id="lbList"></div>
 
-      <p style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:16px;">ข้อมูลเก็บออนไลน์ผ่าน Firebase · รีเฟรชอัตโนมัติทุก 30 วินาที</p>
+      <p class="lb-footnote">อัปเดตอัตโนมัติทุก 30 วินาที · ข้อมูลเก็บออนไลน์ผ่าน Firebase</p>
     </section>
 
     <!-- Settings -->
@@ -6352,6 +6385,9 @@ function repairPlayerShape(parsed) {
   if (typeof parsed.pvp.attemptsToday !== "number" || parsed.pvp.attemptsToday < 0) parsed.pvp.attemptsToday = 0;
   if (typeof parsed.pvp.lastAttemptDate !== "string") parsed.pvp.lastAttemptDate = "";
   if (typeof parsed.lbName !== "string") parsed.lbName = "";
+  if (typeof parsed.lbId !== "string" || !parsed.lbId) {
+    parsed.lbId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ("p" + Date.now() + Math.random().toString(36).slice(2));
+  }
   if (!parsed.dailyDungeon || typeof parsed.dailyDungeon !== "object") {
     parsed.dailyDungeon = { lastDate: "", streak: 0, completedToday: false, roomsCleared: 0 };
   } else {
@@ -8267,6 +8303,12 @@ function init() {
 
   // autosave loop
   setInterval(() => savePlayer(player), 10000);
+
+  // Auto-submit to the leaderboard in the background — no manual button
+  // press required. First submit shortly after load, then re-submit on
+  // the same cadence as the cooldown so stats stay fresh for everyone.
+  setTimeout(() => lbAutoSubmit(player), 5000);
+  setInterval(() => lbAutoSubmit(player), LB_COOLDOWN_MS);
   window.addEventListener("beforeunload", () => savePlayer(player, { immediate: true }));
   // visibilitychange fires reliably on mobile when a tab/app is backgrounded,
   // where beforeunload often does not — this is the main safety net there.
@@ -9814,16 +9856,15 @@ function lbLocalGetAll() {
 }
 function lbLocalUpsert(entry) {
   const db = lbLocalLoad();
-  db[entry.name] = entry;
+  db[entry.lbId || entry.name] = entry;
   lbLocalSave(db);
 }
 
 // --- Firebase Realtime Database REST API: submit & fetch (real shared storage) ---
-async function lbApiSubmit(entry) {
+async function lbApiSubmit(entry, key) {
   if (!lbConfigured()) {
     throw new Error("ยังไม่เชื่อมต่อออนไลน์ (ผู้พัฒนาเกมยังไม่ตั้งค่า FIREBASE_DB_URL)");
   }
-  const key = lbSafeKey(entry.name);
   const res = await fetch(`${FIREBASE_DB_URL}/leaderboard/${key}.json`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -9831,6 +9872,16 @@ async function lbApiSubmit(entry) {
   });
   if (!res.ok) throw new Error("ส่งข้อมูลขึ้นออนไลน์ไม่สำเร็จ ลองใหม่อีกครั้ง");
   return entry;
+}
+
+// Deletes a stale leaderboard entry left behind from the old name-keyed
+// system (back when renaming created a duplicate ghost entry instead of
+// updating in place). Safe to call even if the key never existed.
+async function lbApiDelete(key) {
+  if (!lbConfigured() || !key) return;
+  try {
+    await fetch(`${FIREBASE_DB_URL}/leaderboard/${key}.json`, { method: "DELETE" });
+  } catch { /* best effort cleanup, ignore failures */ }
 }
 
 async function lbApiFetch() {
@@ -9843,44 +9894,86 @@ async function lbApiFetch() {
 }
 
 // --- Submit flow ---
-async function lbSubmit(player, name) {
+// Auto-submit wrapper: runs lbSubmit in the background on a timer so the
+// player never has to press the button themselves. Skips quietly (no error
+// shown) if the character doesn't have a valid name yet — that's an expected
+// state early in the game, not something worth alarming the player about.
+function lbAutoSubmit(player) {
+  if (!lbConfigured()) return;
+  const name = player.name || "";
+  if (name.trim().length < 2) return;
+  const now = Date.now();
+  if (now - lbLastSubmitTs < LB_COOLDOWN_MS) return; // cooldown still active, just wait for the next tick
+  lbSubmit(player, name, { silent: true });
+}
+
+async function lbSubmit(player, name, opts = {}) {
+  const { silent = false } = opts;
   const statusEl = document.getElementById("lbStatus");
-  const btn = document.getElementById("lbSubmitBtn");
+  const dot = document.getElementById("lbSyncDot");
 
   const now = Date.now();
   if (now - lbLastSubmitTs < LB_COOLDOWN_MS) {
-    const wait = Math.ceil((LB_COOLDOWN_MS - (now - lbLastSubmitTs)) / 1000);
-    statusEl.textContent = `⏳ รอ ${wait} วินาทีก่อนส่งใหม่`;
-    statusEl.className = "lb-status err"; return;
+    if (!silent) {
+      const wait = Math.ceil((LB_COOLDOWN_MS - (now - lbLastSubmitTs)) / 1000);
+      statusEl.textContent = `⏳ รอ ${wait} วินาทีก่อนส่งใหม่`;
+      statusEl.className = "lb-status err";
+    }
+    return;
   }
   if (!name || name.trim().length < 2) {
-    statusEl.textContent = "กรุณาตั้งชื่อตัวละครในแท็บ \"ตัวละคร\" ก่อน (อย่างน้อย 2 ตัวอักษร)";
-    statusEl.className = "lb-status err"; return;
+    if (!silent) {
+      statusEl.textContent = "กรุณาตั้งชื่อตัวละครในแท็บ \"ตัวละคร\" ก่อน (อย่างน้อย 2 ตัวอักษร)";
+      statusEl.className = "lb-status err";
+    }
+    return;
   }
   const cleanName = name.trim().slice(0, CHAR_NAME_MAX_LEN);
   const entry = lbBuildEntry(player, cleanName);
 
-  btn.disabled = true;
-  statusEl.textContent = "⏳ กำลังบันทึก...";
-  statusEl.className = "lb-status";
+  if (!silent) {
+    statusEl.textContent = "⏳ กำลังบันทึก...";
+    statusEl.className = "lb-status";
+  }
+
+  // Each player keeps one permanent key (player.lbId) for their entire
+  // lifetime, no matter how many times they rename. This stops a rename
+  // from creating a brand-new leaderboard row while the old-named one
+  // stays behind as a stale duplicate.
+  const key = lbSafeKey(player.lbId);
+  entry.lbId = player.lbId;
 
   try {
     // เก็บสำรองไว้ในเครื่องเสมอ (ใช้งานได้แม้ออฟไลน์)
     lbLocalUpsert(entry);
     // ส่งขึ้นออนไลน์ ให้ทุกคนที่เปิดลิงก์เกมเห็นข้อมูลเดียวกัน
-    await lbApiSubmit(entry);
+    await lbApiSubmit(entry, key);
+    // One-time cleanup: if this player previously submitted under the old
+    // name-keyed system, delete that stale entry now that we've moved to
+    // the id-keyed entry above.
+    if (player.lbName && player.lbName !== cleanName) {
+      const staleKey = lbSafeKey(player.lbName);
+      if (staleKey !== key) lbApiDelete(staleKey);
+    }
     lbLastSubmitTs = Date.now();
     lbCurrentName = cleanName;
     player.lbName = cleanName;
     savePlayer(player);
-    statusEl.textContent = `✅ ส่งขึ้นออนไลน์แล้ว! ${cleanName} | CP ${fmtNum(entry.cp)}`;
-    statusEl.className = "lb-status ok";
+    if (dot) dot.classList.remove("err");
+    if (!silent) {
+      statusEl.textContent = `✅ ส่งขึ้นออนไลน์แล้ว! ${cleanName} | CP ${fmtNum(entry.cp)}`;
+      statusEl.className = "lb-status ok";
+    } else {
+      statusEl.textContent = "";
+      statusEl.className = "lb-status";
+    }
     lbFetch();
   } catch(e) {
-    statusEl.textContent = `❌ ${e.message || "บันทึกไม่สำเร็จ"}`;
-    statusEl.className = "lb-status err";
-  } finally {
-    btn.disabled = false;
+    if (dot) dot.classList.add("err");
+    if (!silent) {
+      statusEl.textContent = `❌ ${e.message || "บันทึกไม่สำเร็จ"}`;
+      statusEl.className = "lb-status err";
+    }
   }
 }
 
@@ -9932,9 +10025,9 @@ async function lbFetch() {
     const apiEntries = await lbApiFetch();
     if (Array.isArray(apiEntries) && apiEntries.length > 0) {
       const merged = {};
-      apiEntries.forEach(e => { if (e && e.name) merged[e.name] = e; });
+      apiEntries.forEach(e => { if (e && e.name) merged[e.lbId || e.name] = e; });
       lbEntries = Object.values(merged);
-      lbLocalSave(Object.fromEntries(lbEntries.map(e => [e.name, e])));
+      lbLocalSave(Object.fromEntries(lbEntries.map(e => [e.lbId || e.name, e])));
       lbRender();
     }
   } catch { /* โหลดออนไลน์ล้มเหลว ใช้ข้อมูล local cache แทนชั่วคราว */ }
@@ -10035,28 +10128,26 @@ function renderLbCurrentCharName(player) {
 
 function lbInitUI(player) {
   const nameDisplay = document.getElementById("lbCurrentCharName");
-  const btn         = document.getElementById("lbSubmitBtn");
   const status      = document.getElementById("lbStatus");
   const search      = document.getElementById("lbSearchInput");
   const refreshBtn  = document.getElementById("lbRefreshBtn");
-  if (!btn) return;
+  if (!nameDisplay) return;
 
   renderLbCurrentCharName(player);
 
   // If we'd already submitted under a name and the character has since
   // been renamed, surface that so the player knows the board still
-  // shows the old name until they press submit again.
+  // shows the old name until the next auto-sync tick picks it up.
   if (player.lbName && player.lbName !== player.name) {
     lbCurrentName = player.lbName;
     if (status) {
-      status.textContent = `ตารางแสดงชื่อเดิม "${player.lbName}" อยู่ — กด "ส่งขึ้น Leaderboard" เพื่ออัปเดตเป็นชื่อปัจจุบัน`;
+      status.textContent = `ตารางแสดงชื่อเดิม "${player.lbName}" อยู่ — จะอัปเดตเป็นชื่อปัจจุบันให้อัตโนมัติในไม่ช้า`;
       status.className = "lb-status";
     }
   } else if (player.lbName) {
     lbCurrentName = player.lbName;
   }
 
-  btn.addEventListener("click", () => lbSubmit(player, player.name));
   if (search) search.addEventListener("input", e => { lbSearchVal = e.target.value; lbRender(); });
   if (refreshBtn) refreshBtn.addEventListener("click", lbFetch);
 
