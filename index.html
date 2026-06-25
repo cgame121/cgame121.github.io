@@ -19,7 +19,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, onAuthStateChanged, signInAnonymously,
-    createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
     GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
     linkWithCredential, linkWithPopup, EmailAuthProvider, signOut,
     setPersistence, browserLocalPersistence
@@ -3498,6 +3498,214 @@ button {
   border-top: 1px solid var(--line);
 }
 
+/* ============================================
+   Skill System
+   ============================================ */
+.skill-equip-section {
+  margin-bottom: 20px;
+}
+.skill-equip-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+.skill-equip-slots {
+  display: flex;
+  gap: 10px;
+}
+.skill-equip-slot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 6px 10px;
+  background: var(--bg-panel-raised);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 72px;
+  position: relative;
+}
+.skill-equip-slot:hover { border-color: var(--accent); background: var(--accent-soft); }
+.skill-equip-slot.filled { border-style: solid; border-color: var(--line-strong); }
+.skill-equip-slot.filled:hover { border-color: var(--danger); background: rgba(255,107,91,0.06); }
+.skill-equip-slot-icon { font-size: 22px; line-height: 1; }
+.skill-equip-slot-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 60px;
+}
+.skill-equip-slot-type {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.skill-equip-slot-type.passive { color: var(--success); background: rgba(61,220,151,0.15); }
+.skill-equip-slot-type.active { color: var(--gem); background: var(--gem-soft); }
+.skill-equip-slot-empty-label {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.skill-active-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.skill-active-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  transition: all 0.15s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.skill-active-btn:hover:not(:disabled) { border-color: var(--gem); color: var(--gem); background: var(--gem-soft); }
+.skill-active-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.skill-active-btn .sab-icon { font-size: 18px; }
+.skill-active-btn .sab-cd {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gem);
+  transform-origin: left;
+  transition: transform 0.1s linear;
+}
+.skill-active-btn.on-cooldown { border-color: var(--line); }
+.skill-active-btn.on-cooldown .sab-icon { opacity: 0.5; }
+
+.skill-list-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.skill-list-tab {
+  flex: 1;
+  padding: 8px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.skill-list-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.skill-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.skill-card:hover { border-color: var(--line-strong); }
+.skill-card.equipped { border-color: var(--accent); background: var(--accent-soft); }
+.skill-card.locked-skill { opacity: 0.55; cursor: default; }
+
+.skill-card-icon {
+  font-size: 26px;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-void);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+}
+.skill-card.equipped .skill-card-icon { border-color: var(--accent); }
+
+.skill-card-info { flex: 1; min-width: 0; }
+.skill-card-name {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.skill-card-type-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.skill-card-type {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.skill-card-type.passive { color: var(--success); background: rgba(61,220,151,0.15); }
+.skill-card-type.active { color: var(--gem); background: var(--gem-soft); }
+.skill-card-unlock {
+  font-size: 10.5px;
+  color: var(--gold);
+  font-weight: 600;
+}
+.skill-card-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.skill-card-effect {
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.skill-card-locked-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+.skill-card-equip-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(124,92,252,0.4);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
 </style>
 </head>
 <body>
@@ -4222,6 +4430,35 @@ button {
 
     </section>
 
+    <!-- ============ SKILLS PANEL ============ -->
+    <section class="panel tab-panel" data-tab-panel="skills">
+      <h2 class="panel-title">⚡ สกิลติดตัว</h2>
+      <p class="hint-text" style="margin-bottom:16px;">ปลดล็อกสกิลจากการเลเวลอัพ และสวมได้สูงสุด 3 สกิลพร้อมกัน</p>
+
+      <!-- Equipped Skills (3 slots) -->
+      <h3 class="panel-subtitle">สกิลที่สวมอยู่</h3>
+      <div class="skill-equip-slots" id="skillEquipSlots">
+        <!-- rendered by renderSkills() -->
+      </div>
+
+      <!-- Active Skills: Use in battle -->
+      <div class="skill-active-row hidden" id="skillActiveRow">
+        <!-- rendered by renderSkillActiveBtns() -->
+      </div>
+
+      <!-- Tab switch: All / Passive / Active -->
+      <h3 class="panel-subtitle" style="margin-top:20px;">สกิลทั้งหมด</h3>
+      <div class="skill-list-tabs">
+        <button class="skill-list-tab active" data-sltab="all">ทั้งหมด</button>
+        <button class="skill-list-tab" data-sltab="passive">Passive</button>
+        <button class="skill-list-tab" data-sltab="active">Active</button>
+      </div>
+
+      <div id="skillList">
+        <!-- rendered by renderSkillList() -->
+      </div>
+    </section>
+
   </main>
 
   <!-- Reserves space at the bottom so content can scroll above the fixed nav -->
@@ -4262,6 +4499,10 @@ button {
     <button class="more-menu-item" data-tab="enchant" role="menuitem">
       <svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.4L19 9l-4.3 3.9 1.3 5.8L12 15.6l-3.9 3.1 1.3-5.8L5 9l5.2-1.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>ตีบวก</span>
+    </button>
+    <button class="more-menu-item" data-tab="skills" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linejoin="round"/></svg>
+      <span>สกิล</span>
     </button>
     <button class="more-menu-item" data-tab="pvp" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.3"/><circle cx="17.5" cy="17.5" r="2.3"/></svg>
@@ -8644,14 +8885,16 @@ function runBattleTick() {
   if (exchangeState.monsterSpdAcc >= 1) {
     exchangeState.monsterSpdAcc -= 1;
     const result = resolveAttack(currentMonster.atk, stats.def, 5, currentMonster.acc || 90, stats.dodge);
-    player.currentHp = Math.max(0, player.currentHp - result.damage);
+    const shieldMult = (typeof shieldReductionActive !== "undefined" && shieldReductionActive > 0) ? (1 - shieldReductionActive) : 1;
+    const actualDmg = result.evaded ? 0 : Math.max(0, Math.round(result.damage * shieldMult));
+    player.currentHp = Math.max(0, player.currentHp - actualDmg);
     setTimeout(() => {
       playAttackAnim("monster");
-      setTimeout(() => spawnDamageText("player", result.damage, result.isCrit, result.evaded), 190);
+      setTimeout(() => spawnDamageText("player", actualDmg, result.isCrit, result.evaded), 190);
       updateHpBar("player", player.currentHp, stats.hp);
     }, playerActed ? 420 : 0);
     appendCombatLog(
-      result.evaded ? `คุณหลบการโจมตีของ ${currentMonster.name}!` : `${currentMonster.name} โจมตีคุณ ${result.isCrit ? "(คริติคอล) " : ""}-${result.damage}`,
+      result.evaded ? `คุณหลบการโจมตีของ ${currentMonster.name}!` : `${currentMonster.name} โจมตีคุณ ${result.isCrit ? "(คริติคอล) " : ""}${shieldMult < 1 ? `[🔰-${Math.round(shieldReductionActive*100)}%] ` : ""}-${actualDmg}`,
       result.evaded ? "log-line-evade" : result.isCrit ? "log-line-crit" : null
     );
     monsterActed = true;
@@ -10879,6 +11122,530 @@ function bindGlobalEvents() {
 
   // Bottom sheet is closed via backdrop click or close button — no global dismiss needed
 }
+
+
+// ============================================
+// VOIDFALL — Skill System
+// Skills unlock every 5 levels (passive + active mix).
+// Max 3 equipped at once. Active skills trigger in battle.
+// ============================================
+
+const SKILL_DEFS = [
+  // ── PASSIVE ──
+  { id: "iron_skin",    type: "passive", icon: "🛡️", name: "ผิวเหล็ก",         unlockLevel: 5,
+    desc: "เพิ่ม DEF ถาวร +12%",
+    effect: { stat: "def", pct: 0.12 } },
+  { id: "berserker",    type: "passive", icon: "🔥", name: "นักรบคลั่ง",       unlockLevel: 10,
+    desc: "เพิ่ม ATK ถาวร +10%",
+    effect: { stat: "atk", pct: 0.10 } },
+  { id: "vital_surge",  type: "passive", icon: "❤️", name: "พลังชีวิตสูงส่ง",  unlockLevel: 15,
+    desc: "เพิ่ม HP สูงสุด +15%",
+    effect: { stat: "hp", pct: 0.15 } },
+  { id: "swift_steps",  type: "passive", icon: "💨", name: "ก้าวอันเร็ว",       unlockLevel: 20,
+    desc: "เพิ่ม SPD ถาวร +0.12",
+    effect: { stat: "spd", flat: 0.12 } },
+  { id: "eagle_eye",    type: "passive", icon: "🦅", name: "ตาอินทรี",          unlockLevel: 25,
+    desc: "เพิ่มความแม่นยำ +8% และ CRIT +5%",
+    effect: { stat: "acc", flat: 8, extra: { stat: "crit", flat: 5 } } },
+  { id: "shadow_veil",  type: "passive", icon: "🌑", name: "베일แห่งเงา",        unlockLevel: 30,
+    desc: "เพิ่มการหลบหลีก +10%",
+    effect: { stat: "dodge", flat: 10 } },
+  { id: "titan_body",   type: "passive", icon: "🗿", name: "กายไทแทน",          unlockLevel: 40,
+    desc: "เพิ่ม HP +20% และ DEF +8%",
+    effect: { stat: "hp", pct: 0.20, extra: { stat: "def", pct: 0.08 } } },
+  { id: "assassin",     type: "passive", icon: "🗡️", name: "สายนักฆ่า",         unlockLevel: 50,
+    desc: "เพิ่ม CRIT +12% และ ATK +8%",
+    effect: { stat: "crit", flat: 12, extra: { stat: "atk", pct: 0.08 } } },
+  { id: "war_cry_pas",  type: "passive", icon: "📣", name: "จิตใจนักรบ",        unlockLevel: 60,
+    desc: "เพิ่ม ATK +18% และ SPD +0.08",
+    effect: { stat: "atk", pct: 0.18, extra: { stat: "spd", flat: 0.08 } } },
+  { id: "void_affinity",type: "passive", icon: "🌀", name: "สัมผัสแห่งความว่าง", unlockLevel: 80,
+    desc: "เพิ่มสถานะทุกอย่าง +10%",
+    effect: { stat: "all", pct: 0.10 } },
+  { id: "godspeed",     type: "passive", icon: "⚡", name: "ความเร็วเทพ",       unlockLevel: 100,
+    desc: "เพิ่ม SPD +0.25 และ ACC +12%",
+    effect: { stat: "spd", flat: 0.25, extra: { stat: "acc", flat: 12 } } },
+  { id: "eternal_guard",type: "passive", icon: "🏰", name: "ป้อมปราการนิรันดร์", unlockLevel: 120,
+    desc: "เพิ่ม DEF +25% และ HP +15%",
+    effect: { stat: "def", pct: 0.25, extra: { stat: "hp", pct: 0.15 } } },
+  // ── ACTIVE ──
+  { id: "heal_pulse",   type: "active",  icon: "💚", name: "คลื่นรักษา",        unlockLevel: 5,
+    desc: "ฟื้นฟู HP 20% ของ HP สูงสุด ใช้ได้ทุก 10 วินาทีในการต่อสู้",
+    cooldownMs: 10000, action: "heal", actionVal: 0.20 },
+  { id: "power_strike", type: "active",  icon: "💥", name: "ฟาดพลังระเบิด",     unlockLevel: 15,
+    desc: "โจมตีศัตรูด้วยพลัง 250% ของ ATK ครั้งเดียว ใช้ได้ทุก 14 วินาที",
+    cooldownMs: 14000, action: "burst", actionVal: 2.5 },
+  { id: "shield_wall",  type: "active",  icon: "🔰", name: "กำแพงเกราะ",        unlockLevel: 25,
+    desc: "ลด DMG ที่รับ 50% เป็นเวลา 6 วินาที ใช้ได้ทุก 18 วินาที",
+    cooldownMs: 18000, action: "shield", actionVal: 0.50, durationMs: 6000 },
+  { id: "double_strike",type: "active",  icon: "⚔️", name: "ตีคู่สายฟ้า",       unlockLevel: 35,
+    desc: "โจมตี 2 ครั้งติดต่อกัน แต่ละครั้ง 140% ATK ใช้ได้ทุก 12 วินาที",
+    cooldownMs: 12000, action: "multi", actionVal: 1.4, hits: 2 },
+  { id: "life_drain",   type: "active",  icon: "🩸", name: "ดูดชีพ",            unlockLevel: 45,
+    desc: "ดูด HP จากศัตรู 30% ของ ATK แล้วบวกกลับมาให้คุณ ใช้ได้ทุก 16 วินาที",
+    cooldownMs: 16000, action: "drain", actionVal: 0.30 },
+  { id: "thunder_rush", type: "active",  icon: "⚡", name: "พุ่งสายฟ้า",        unlockLevel: 55,
+    desc: "โจมตีด้วยพลัง 400% ATK แบบ guarantee CRIT ใช้ได้ทุก 20 วินาที",
+    cooldownMs: 20000, action: "crit_burst", actionVal: 4.0 },
+  { id: "adrenaline",   type: "active",  icon: "🔴", name: "อะดรีนาลีน",       unlockLevel: 70,
+    desc: "เพิ่ม ATK และ SPD ชั่วคราว +40% เป็นเวลา 8 วินาที ใช้ได้ทุก 22 วินาที",
+    cooldownMs: 22000, action: "atk_buff", actionVal: 0.40, durationMs: 8000 },
+  { id: "void_slash",   type: "active",  icon: "🌀", name: "ฟันแห่งความว่าง",  unlockLevel: 90,
+    desc: "โจมตี 3 ครั้ง แต่ละครั้ง 180% ATK ใช้ได้ทุก 18 วินาที",
+    cooldownMs: 18000, action: "multi", actionVal: 1.8, hits: 3 },
+  { id: "divine_wrath", type: "active",  icon: "☀️", name: "พิโรธเทพ",          unlockLevel: 110,
+    desc: "โจมตีทรงพลัง 600% ATK guarantee CRIT ใช้ได้ทุก 30 วินาที",
+    cooldownMs: 30000, action: "crit_burst", actionVal: 6.0 },
+  { id: "phoenix_rise", type: "active",  icon: "🔥", name: "ฟีนิกซ์คืนชีพ",    unlockLevel: 130,
+    desc: "ฟื้นฟู HP 50% ทันที และเพิ่ม ATK +30% เป็นเวลา 10 วินาที ใช้ได้ทุก 35 วินาที",
+    cooldownMs: 35000, action: "phoenix", actionVal: 0.50, durationMs: 10000 },
+];
+
+const MAX_EQUIPPED_SKILLS = 3;
+
+// ── Ensure player.skills shape exists ──
+function ensurePlayerSkills(player) {
+  if (!player.skills) player.skills = { equipped: [] };
+  if (!Array.isArray(player.skills.equipped)) player.skills.equipped = [];
+  // Clamp to max slots
+  while (player.skills.equipped.length > MAX_EQUIPPED_SKILLS)
+    player.skills.equipped.pop();
+}
+
+// ── Which skills are unlocked for this player ──
+function getUnlockedSkills(player) {
+  return SKILL_DEFS.filter(s => player.level >= s.unlockLevel);
+}
+
+// ── Compute passive stat bonuses from equipped skills ──
+function getSkillPassiveBonus(player) {
+  ensurePlayerSkills(player);
+  const bonus = { hp: 0, atk: 0, def: 0, crit: 0, spd: 0, acc: 0, dodge: 0 };
+  const base = getPlayerBaseStats(player.level);
+
+  player.skills.equipped.forEach(sid => {
+    const sk = SKILL_DEFS.find(s => s.id === sid);
+    if (!sk || sk.type !== "passive") return;
+
+    function applyEffect(eff, statKey) {
+      if (statKey === "all") {
+        ["hp","atk","def","crit","spd","acc","dodge"].forEach(k => {
+          bonus[k] += (base[k] || 0) * (eff.pct || 0);
+        });
+        return;
+      }
+      if (eff.pct)  bonus[statKey] = (bonus[statKey] || 0) + (base[statKey] || 0) * eff.pct;
+      if (eff.flat) bonus[statKey] = (bonus[statKey] || 0) + eff.flat;
+    }
+
+    applyEffect(sk.effect, sk.effect.stat);
+    if (sk.effect.extra) applyEffect(sk.effect.extra, sk.effect.extra.stat);
+  });
+
+  return {
+    hp:    Math.round(bonus.hp),
+    atk:   Math.round(bonus.atk * 10) / 10,
+    def:   Math.round(bonus.def * 10) / 10,
+    crit:  Math.round(bonus.crit * 10) / 10,
+    spd:   Math.round(bonus.spd * 1000) / 1000,
+    acc:   Math.round(bonus.acc * 10) / 10,
+    dodge: Math.round(bonus.dodge * 10) / 10,
+  };
+}
+
+// Patch getTotalStats to include skill passive bonus
+const _origGetTotalStats = getTotalStats;
+getTotalStats = function(player) {
+  const base = _origGetTotalStats(player);
+  ensurePlayerSkills(player);
+  const sb = getSkillPassiveBonus(player);
+  return {
+    hp:    Math.round(base.hp    + sb.hp),
+    atk:   Math.round((base.atk  + sb.atk)  * 10) / 10,
+    def:   Math.round((base.def  + sb.def)   * 10) / 10,
+    crit:  Math.min(75, base.crit  + sb.crit),
+    spd:   base.spd   + sb.spd,
+    acc:   Math.min(ACC_CAP, base.acc   + sb.acc),
+    dodge: Math.min(DODGE_CAP, base.dodge + sb.dodge),
+  };
+};
+
+// ── In-battle active skill state ──
+const skillCooldowns = {}; // id → cooldown expiry timestamp
+const skillBuffs = {};     // id → buff expiry timestamp
+let shieldReductionActive = 0; // 0–1 reduction multiplier (0 = no shield)
+let atkBuffActive = 0;         // extra ATK multiplier active
+
+function isSkillOnCooldown(id) {
+  return skillCooldowns[id] && Date.now() < skillCooldowns[id];
+}
+function skillCooldownRemaining(id) {
+  if (!skillCooldowns[id]) return 0;
+  return Math.max(0, skillCooldowns[id] - Date.now());
+}
+
+// Called each battle tick to apply/expire buffs
+function tickSkillBuffs() {
+  const now = Date.now();
+  // Shield buff
+  const shieldSkill = player.skills?.equipped?.find(sid => {
+    const sk = SKILL_DEFS.find(s => s.id === sid);
+    return sk?.action === "shield";
+  });
+  if (shieldSkill && skillBuffs[shieldSkill] && now < skillBuffs[shieldSkill]) {
+    shieldReductionActive = SKILL_DEFS.find(s => s.id === shieldSkill)?.actionVal || 0;
+  } else {
+    shieldReductionActive = 0;
+  }
+  // ATK buff
+  const atkSkill = player.skills?.equipped?.find(sid => {
+    const sk = SKILL_DEFS.find(s => s.id === sid);
+    return sk?.action === "atk_buff" || sk?.action === "phoenix";
+  });
+  if (atkSkill && skillBuffs[atkSkill] && now < skillBuffs[atkSkill]) {
+    atkBuffActive = SKILL_DEFS.find(s => s.id === atkSkill)?.actionVal || 0;
+  } else {
+    atkBuffActive = 0;
+  }
+}
+
+// Execute an active skill
+function useActiveSkill(skillId) {
+  const sk = SKILL_DEFS.find(s => s.id === skillId);
+  if (!sk || sk.type !== "active") return;
+  if (isSkillOnCooldown(skillId)) return;
+  if (currentMonster == null) return; // not in battle
+
+  skillCooldowns[skillId] = Date.now() + sk.cooldownMs;
+  const stats = getTotalStats(player);
+
+  if (sk.action === "heal") {
+    const healAmt = Math.round(stats.hp * sk.actionVal);
+    player.currentHp = Math.min(stats.hp, player.currentHp + healAmt);
+    updateHpBar("player", player.currentHp, stats.hp);
+    appendCombatLog(`⚡ ${sk.name}: ฟื้นฟู HP +${fmtNum(healAmt)}`, "log-line-crit");
+  }
+  else if (sk.action === "burst" || sk.action === "crit_burst") {
+    const atkPow = Math.round(stats.atk * (sk.actionVal + (atkBuffActive || 0)));
+    const isCrit = sk.action === "crit_burst" || Math.random() * 100 < stats.crit;
+    const dmg = Math.max(1, Math.round((atkPow - (currentMonster.def || 0) * 0.5) * (isCrit ? 1.75 : 1)));
+    currentMonster.hp = Math.max(0, currentMonster.hp - dmg);
+    updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
+    spawnDamageText("monster", dmg, isCrit, false);
+    appendCombatLog(`⚡ ${sk.name}: โจมตี${isCrit ? " CRIT" : ""} -${fmtNum(dmg)}`, "log-line-crit");
+    if (currentMonster.hp <= 0) {
+      setTimeout(() => {
+        if (gameMode === "dungeon") onRoomWin();
+        else if (gameMode === "endless") onEndlessWin();
+      }, 400);
+    }
+  }
+  else if (sk.action === "multi") {
+    const hits = sk.hits || 2;
+    let totalDmg = 0;
+    for (let i = 0; i < hits; i++) {
+      if (currentMonster.hp <= 0) break;
+      const atkPow = Math.round(stats.atk * (sk.actionVal + (atkBuffActive || 0)));
+      const isCrit = Math.random() * 100 < stats.crit;
+      const dmg = Math.max(1, Math.round((atkPow - (currentMonster.def || 0) * 0.5) * (isCrit ? 1.75 : 1)));
+      currentMonster.hp = Math.max(0, currentMonster.hp - dmg);
+      totalDmg += dmg;
+    }
+    updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
+    spawnDamageText("monster", totalDmg, false, false);
+    appendCombatLog(`⚡ ${sk.name}: โจมตี ${hits}ครั้ง รวม -${fmtNum(totalDmg)}`, "log-line-crit");
+    if (currentMonster.hp <= 0) {
+      setTimeout(() => {
+        if (gameMode === "dungeon") onRoomWin();
+        else if (gameMode === "endless") onEndlessWin();
+      }, 400);
+    }
+  }
+  else if (sk.action === "drain") {
+    const dmg = Math.max(1, Math.round(stats.atk * sk.actionVal));
+    currentMonster.hp = Math.max(0, currentMonster.hp - dmg);
+    player.currentHp = Math.min(stats.hp, player.currentHp + dmg);
+    updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
+    updateHpBar("player", player.currentHp, stats.hp);
+    spawnDamageText("monster", dmg, false, false);
+    appendCombatLog(`⚡ ${sk.name}: ดูดชีพ -${fmtNum(dmg)} → +HP`, "log-line-crit");
+    if (currentMonster.hp <= 0) {
+      setTimeout(() => {
+        if (gameMode === "dungeon") onRoomWin();
+        else if (gameMode === "endless") onEndlessWin();
+      }, 400);
+    }
+  }
+  else if (sk.action === "shield") {
+    skillBuffs[skillId] = Date.now() + sk.durationMs;
+    appendCombatLog(`⚡ ${sk.name}: กำแพงเกราะ -${Math.round(sk.actionVal*100)}% DMG (${sk.durationMs/1000}s)`, "log-line-crit");
+  }
+  else if (sk.action === "atk_buff") {
+    skillBuffs[skillId] = Date.now() + sk.durationMs;
+    appendCombatLog(`⚡ ${sk.name}: ATK+SPD +${Math.round(sk.actionVal*100)}% (${sk.durationMs/1000}s)`, "log-line-crit");
+  }
+  else if (sk.action === "phoenix") {
+    const healAmt = Math.round(stats.hp * sk.actionVal);
+    player.currentHp = Math.min(stats.hp, player.currentHp + healAmt);
+    updateHpBar("player", player.currentHp, stats.hp);
+    skillBuffs[skillId] = Date.now() + sk.durationMs;
+    appendCombatLog(`⚡ ${sk.name}: ฟื้นฟู +${fmtNum(healAmt)} HP + ATK buff`, "log-line-crit");
+  }
+
+  renderSkillActiveBtns();
+}
+
+// ── Equip / unequip ──
+function toggleEquipSkill(skillId) {
+  ensurePlayerSkills(player);
+  if (player.skills.equipped.includes(skillId)) {
+    player.skills.equipped = player.skills.equipped.filter(s => s !== skillId);
+    showToast("ถอดสกิลออกแล้ว");
+  } else {
+    if (player.skills.equipped.length >= MAX_EQUIPPED_SKILLS) {
+      showToast(`สวมสกิลได้สูงสุด ${MAX_EQUIPPED_SKILLS} สกิล — ถอดสกิลก่อน`);
+      return;
+    }
+    player.skills.equipped.push(skillId);
+    showToast(`สวมสกิล "${SKILL_DEFS.find(s=>s.id===skillId)?.name}" แล้ว`);
+  }
+  savePlayer(player);
+  renderSkills(player);
+  renderStats(player);
+  renderHud(player);
+  renderSkillActiveBtns();
+}
+
+// ── Render: 3 equip slots at top ──
+function renderSkillEquipSlots(player) {
+  ensurePlayerSkills(player);
+  const container = document.getElementById("skillEquipSlots");
+  if (!container) return;
+  container.innerHTML = "";
+
+  for (let i = 0; i < MAX_EQUIPPED_SKILLS; i++) {
+    const slot = document.createElement("div");
+    slot.className = "skill-equip-slot";
+    const sid = player.skills.equipped[i];
+    if (sid) {
+      const sk = SKILL_DEFS.find(s => s.id === sid);
+      slot.classList.add("filled");
+      slot.innerHTML = `
+        <div class="skill-equip-slot-icon">${sk.icon}</div>
+        <div class="skill-equip-slot-name">${sk.name}</div>
+        <div class="skill-equip-slot-type ${sk.type}">${sk.type === "passive" ? "PASSIVE" : "ACTIVE"}</div>
+      `;
+      slot.title = "แตะเพื่อถอดสกิล";
+      slot.addEventListener("click", () => toggleEquipSkill(sid));
+    } else {
+      slot.innerHTML = `<div class="skill-equip-slot-icon" style="font-size:20px;opacity:.35">➕</div><div class="skill-equip-slot-empty-label">สล็อตว่าง</div>`;
+    }
+    container.appendChild(slot);
+  }
+}
+
+// ── Render: active skill buttons shown in battle section ──
+let _skillCdAnimFrame = null;
+function renderSkillActiveBtns() {
+  ensurePlayerSkills(player);
+  const row = document.getElementById("skillActiveRow");
+  if (!row) return;
+
+  const activeEquipped = player.skills.equipped
+    .map(sid => SKILL_DEFS.find(s => s.id === sid))
+    .filter(sk => sk && sk.type === "active");
+
+  if (activeEquipped.length === 0) { row.classList.add("hidden"); return; }
+  row.classList.remove("hidden");
+  row.innerHTML = "";
+
+  activeEquipped.forEach(sk => {
+    const btn = document.createElement("button");
+    btn.className = "skill-active-btn";
+    btn.dataset.skillId = sk.id;
+    btn.innerHTML = `<span class="sab-icon">${sk.icon}</span><span>${sk.name}</span><div class="sab-cd" id="sabcd_${sk.id}"></div>`;
+
+    btn.addEventListener("click", () => {
+      useActiveSkill(sk.id);
+      renderSkillActiveBtns();
+    });
+
+    row.appendChild(btn);
+  });
+
+  // Animate cooldown bars
+  if (_skillCdAnimFrame) cancelAnimationFrame(_skillCdAnimFrame);
+  const animLoop = () => {
+    row.querySelectorAll(".skill-active-btn").forEach(btn => {
+      const sid = btn.dataset.skillId;
+      const sk2 = SKILL_DEFS.find(s => s.id === sid);
+      if (!sk2) return;
+      const rem = skillCooldownRemaining(sid);
+      const onCd = rem > 0;
+      btn.disabled = onCd || currentMonster == null;
+      btn.classList.toggle("on-cooldown", onCd);
+      const cdBar = btn.querySelector(".sab-cd");
+      if (cdBar) cdBar.style.transform = `scaleX(${onCd ? rem / sk2.cooldownMs : 0})`;
+    });
+    _skillCdAnimFrame = requestAnimationFrame(animLoop);
+  };
+  _skillCdAnimFrame = requestAnimationFrame(animLoop);
+}
+
+// ── Render: full skill list ──
+let _skillListFilter = "all";
+function renderSkillList(player) {
+  const container = document.getElementById("skillList");
+  if (!container) return;
+  ensurePlayerSkills(player);
+
+  const unlocked = new Set(getUnlockedSkills(player).map(s => s.id));
+  let defs = SKILL_DEFS;
+  if (_skillListFilter === "passive") defs = defs.filter(s => s.type === "passive");
+  if (_skillListFilter === "active")  defs = defs.filter(s => s.type === "active");
+
+  container.innerHTML = "";
+  defs.forEach(sk => {
+    const isUnlocked  = unlocked.has(sk.id);
+    const isEquipped  = player.skills.equipped.includes(sk.id);
+
+    const card = document.createElement("div");
+    card.className = "skill-card" + (isEquipped ? " equipped" : "") + (!isUnlocked ? " locked-skill" : "");
+
+    let effectText = "";
+    if (sk.type === "passive" && isUnlocked) {
+      const eff = sk.effect;
+      const parts = [];
+      const fmtEff = (e, statK) => {
+        if (statK === "all") return `สถานะทุกอย่าง +${Math.round((e.pct||0)*100)}%`;
+        const label = { hp:"HP", atk:"ATK", def:"DEF", crit:"CRIT", spd:"SPD", acc:"ACC", dodge:"Dodge" }[statK] || statK;
+        if (e.pct)  return `${label} +${Math.round(e.pct*100)}%`;
+        if (e.flat) return `${label} +${e.flat}`;
+        return "";
+      };
+      parts.push(fmtEff(eff, eff.stat));
+      if (eff.extra) parts.push(fmtEff(eff.extra, eff.extra.stat));
+      effectText = parts.filter(Boolean).join(", ");
+    }
+
+    card.innerHTML = `
+      ${isEquipped ? `<div class="skill-card-equip-badge">สวมอยู่</div>` : ""}
+      <div class="skill-card-icon">${sk.icon}</div>
+      <div class="skill-card-info">
+        <div class="skill-card-name">${sk.name}</div>
+        <div class="skill-card-type-row">
+          <span class="skill-card-type ${sk.type}">${sk.type === "passive" ? "Passive" : "Active"}</span>
+          <span class="skill-card-unlock">ปลดล็อก Lv.${sk.unlockLevel}</span>
+        </div>
+        <div class="skill-card-desc">${sk.desc}</div>
+        ${effectText ? `<div class="skill-card-effect">✦ ${effectText}</div>` : ""}
+        ${!isUnlocked ? `<div class="skill-card-locked-label">🔒 ต้องการเลเวล ${sk.unlockLevel} (ยังขาด ${sk.unlockLevel - player.level} เลเวล)</div>` : ""}
+      </div>
+    `;
+
+    if (isUnlocked) {
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => toggleEquipSkill(sk.id));
+    }
+    container.appendChild(card);
+  });
+}
+
+function renderSkills(player) {
+  renderSkillEquipSlots(player);
+  renderSkillList(player);
+  renderSkillActiveBtns();
+}
+
+// ── Tab filter buttons ──
+document.querySelectorAll(".skill-list-tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".skill-list-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    _skillListFilter = btn.dataset.sltab;
+    renderSkillList(player);
+  });
+});
+
+// ── Hook into repairPlayerShape for save compatibility ──
+const _origRepairPlayerShape = repairPlayerShape;
+repairPlayerShape = function(parsed) {
+  const p = _origRepairPlayerShape(parsed);
+  if (!p.skills || typeof p.skills !== "object") p.skills = { equipped: [] };
+  if (!Array.isArray(p.skills.equipped)) p.skills.equipped = [];
+  // Remove any invalid skill IDs from save
+  p.skills.equipped = p.skills.equipped.filter(sid => SKILL_DEFS.some(s => s.id === sid));
+  while (p.skills.equipped.length > MAX_EQUIPPED_SKILLS) p.skills.equipped.pop();
+  return p;
+};
+
+// ── Hook renderAll to also render skills ──
+const _origRenderAll = renderAll;
+renderAll = function() {
+  _origRenderAll();
+  renderSkills(player);
+};
+
+// ── Show active skill buttons when entering battle tab ──
+document.querySelector("[data-tab='battle']")?.addEventListener("click", () => {
+  renderSkillActiveBtns();
+});
+
+// ── Move skill active row into battle panel ──
+(function injectSkillBtnsToBattlePanel() {
+  const autoRow = document.querySelector(".auto-toggle-row");
+  if (!autoRow) return;
+  const wrapper = document.createElement("div");
+  wrapper.id = "skillActiveRowBattle";
+  wrapper.className = "skill-active-row hidden";
+  wrapper.style.cssText = "margin-top:10px;";
+  autoRow.parentNode.insertBefore(wrapper, autoRow.nextSibling);
+})();
+
+// Override renderSkillActiveBtns to also update the battle panel copy
+const _origRenderSkillActiveBtns = renderSkillActiveBtns;
+renderSkillActiveBtns = function() {
+  _origRenderSkillActiveBtns();
+  // Mirror to battle panel
+  const battleRow = document.getElementById("skillActiveRowBattle");
+  const skillsRow = document.getElementById("skillActiveRow");
+  if (battleRow && skillsRow) {
+    battleRow.innerHTML = skillsRow.innerHTML;
+    battleRow.classList.toggle("hidden", skillsRow.classList.contains("hidden"));
+    battleRow.querySelectorAll(".skill-active-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        useActiveSkill(btn.dataset.skillId);
+      });
+    });
+  }
+};
+
+// ── Patch runBattleTick to apply shield reduction and tick buffs ──
+const _origRunBattleTick = runBattleTick;
+runBattleTick = function() {
+  tickSkillBuffs();
+  _origRunBattleTick();
+};
+
+// ── Notify player when a new skill is unlocked on level-up ──
+const _origGainExp = gainExp;
+gainExp = function(player, amount, onLevelUp) {
+  const prevLevel = player.level;
+  const result = _origGainExp(player, amount, onLevelUp);
+  if (result && player.level > prevLevel) {
+    // Check for newly unlocked skills
+    const newSkills = SKILL_DEFS.filter(s =>
+      s.unlockLevel > prevLevel && s.unlockLevel <= player.level
+    );
+    if (newSkills.length > 0) {
+      setTimeout(() => {
+        newSkills.forEach(sk => showToast(`🔓 ปลดล็อกสกิลใหม่: ${sk.icon} ${sk.name}!`));
+        renderSkills(player);
+      }, 600);
+    }
+  }
+  return result;
+};
 
 init();
 </script>
