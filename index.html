@@ -9208,8 +9208,8 @@ function runBattleTick() {
   // ── Pet attack ──
   if (activePet && exchangeState.petSpdAcc >= 1 && exchangeState.monsterHp > 0) {
     exchangeState.petSpdAcc -= 1;
-    // Pet ATK = pet bonus atk (flat), always hits, no crit variance — simple but punchy
-    const petAtk = Math.max(1, petBonus.atk || 0);
+    // Pet ATK = ครึ่งหนึ่งของ ATK ตัวละครรวม
+    const petAtk = Math.max(1, Math.floor(stats.atk / 2));
     const petResult = resolveAttack(petAtk, Math.round(currentMonster.def * 0.3), 15, 95, currentMonster.dodge * 0.5);
     if (petResult.damage > 0 || !petResult.evaded) {
       exchangeState.monsterHp = Math.max(0, exchangeState.monsterHp - petResult.damage);
