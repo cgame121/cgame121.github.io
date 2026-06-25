@@ -5665,7 +5665,7 @@ const ITEM_TEMPLATES = {
     { name: "มีดสั้นเงา", primary: "atk", icon: "blade" },
     { name: "ดาบหักแสง", primary: "atk", icon: "blade" },
     { name: "คทาวิญญาณ", primary: "atk", icon: "staff" },
-    { name: "ธนูจันทร์เสี้ยว", primary: "acc", icon: "blade" },
+    { name: "ธนูจันทร์เสี้ยว", primary: "atk", icon: "blade" },
   ],
   head: [
     { name: "หมวกคลุมราตรี", primary: "def", icon: "helm" },
@@ -6890,13 +6890,19 @@ function getTotalStats(player) {
 // gear lands around ~200 CP, which feels like a sensible "starting power".
 // ============================================
 const CP_WEIGHTS = {
-  hp: 0.6,     // big pool, so each point counts for relatively little
-  atk: 3.5,    // primary damage stat — heavily weighted
-  def: 3,      // mitigation, weighted close to atk
-  crit: 10,    // per % point; crit is capped at 75 so this can't run away
-  spd: 100,    // per point; spd moves in small decimals (base 1.0) but governs turn frequency
-  acc: 4,      // per % point above the 70% base; capped at 100 so the useful range is small
-  dodge: 8,    // per % point; capped at 60, and most builds only push this a little
+  hp: 0.6,       // big pool, so each point counts for relatively little
+  atk: 3.5,      // primary damage stat — heavily weighted
+  def: 3,        // mitigation, weighted close to atk
+  // crit/spd/acc/dodge rolls were reduced to 5% of their original scale in
+  // roundStat() (divided by an extra x20) so item stat *numbers* would stay
+  // small and readable. These weights are multiplied by that same x20 so
+  // their actual contribution to Combat Power matches what it was before
+  // that display-scale change — otherwise these stats would be almost
+  // worthless on gear compared to atk/def for the same stat budget.
+  crit: 200,     // 10 * 20 — per % point; crit is capped at 75 so this can't run away
+  spd: 2000,     // 100 * 20 — per point; spd moves in small decimals (base 1.0) but governs turn frequency
+  acc: 80,       // 4 * 20 — per % point above the 70% base; capped at 100 so the useful range is small
+  dodge: 160,    // 8 * 20 — per % point; capped at 60, and most builds only push this a little
 };
 
 // Combat power for a full, absolute stat block (e.g. a player's totals).
