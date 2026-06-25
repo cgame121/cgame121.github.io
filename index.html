@@ -4524,6 +4524,12 @@ button {
       </div>
 
       <!-- Active Skills: Use in battle -->
+      <div class="auto-toggle-row" id="skillAutoToggleRow">
+        <span class="auto-toggle-label">ใช้สกิลออโต้ในการต่อสู้</span>
+        <button class="auto-toggle" id="skillAutoToggle" role="switch" aria-checked="false" aria-label="เปิด/ปิดใช้สกิลออโต้">
+          <span class="auto-toggle-knob"></span>
+        </button>
+      </div>
       <div class="skill-active-row hidden" id="skillActiveRow">
         <!-- rendered by renderSkillActiveBtns() -->
       </div>
@@ -5987,6 +5993,7 @@ function createNewPlayer() {
       autoSell: false, // auto-sell items below a rarity threshold
       autoSellRarities: { common: true, uncommon: false, rare: false, epic: false, legendary: false }, // which rarities to auto-sell
       autoStatPoints: { enabled: false, preset: "balanced" }, // auto-invest stat points into a recommended build on level-up
+      autoSkill: false, // automatically cast equipped active skills as soon as they're off cooldown in battle
     },
     stats: {
       monstersKilled: 0,
@@ -6309,6 +6316,7 @@ function repairPlayerShape(parsed) {
     parsed.settings.autoDungeon.stopOnInventoryFull = true;
   }
   if (typeof parsed.settings.keepScreenOn !== "boolean") parsed.settings.keepScreenOn = true;
+  if (typeof parsed.settings.autoSkill !== "boolean") parsed.settings.autoSkill = false;
   if (typeof parsed.settings.autoSell !== "boolean") parsed.settings.autoSell = false;
   if (!parsed.settings.autoSellRarities || typeof parsed.settings.autoSellRarities !== "object") {
     parsed.settings.autoSellRarities = { common: true, uncommon: false, rare: false, epic: false, legendary: false };
@@ -11561,7 +11569,7 @@ function renderSkillActiveBtns() {
     const btn = document.createElement("button");
     btn.className = "skill-active-btn";
     btn.dataset.skillId = sk.id;
-    btn.innerHTML = `<span class="sab-icon">${sk.icon}</span><span>${sk.name}</span><div class="sab-cd" id="sabcd_${sk.id}"></div>`;
+    btn.innerHTML = `<span class="sab-icon">${sk.icon}</span><span>${sk.name}</span><div class="sab-cd"></div>`;
 
     btn.addEventListener("click", () => {
       useActiveSkill(sk.id);
@@ -11571,10 +11579,10 @@ function renderSkillActiveBtns() {
     row.appendChild(btn);
   });
 
-  // Animate cooldown bars
+  // Animate cooldown bars (covers both the skills-panel row and its battle-panel mirror)
   if (_skillCdAnimFrame) cancelAnimationFrame(_skillCdAnimFrame);
   const animLoop = () => {
-    row.querySelectorAll(".skill-active-btn").forEach(btn => {
+    document.querySelectorAll(".skill-active-row .skill-active-btn").forEach(btn => {
       const sid = btn.dataset.skillId;
       const sk2 = SKILL_DEFS.find(s => s.id === sid);
       if (!sk2) return;
@@ -11653,6 +11661,44 @@ function renderSkills(player) {
   renderSkillEquipSlots(player);
   renderSkillList(player);
   renderSkillActiveBtns();
+  renderSkillAutoToggle();
+}
+
+// ── Render: auto-use-skill toggle state (mirrored in skills panel + battle panel) ──
+function renderSkillAutoToggle() {
+  const isOn = !!(player.settings && player.settings.autoSkill);
+  ["skillAutoToggle", "skillAutoToggleBattle"].forEach(id => {
+    const toggle = document.getElementById(id);
+    if (!toggle) return;
+    toggle.classList.toggle("on", isOn);
+    toggle.setAttribute("aria-checked", isOn ? "true" : "false");
+  });
+}
+
+// ── Toggle: auto-use equipped active skills in battle ──
+function toggleAutoSkill() {
+  if (!player.settings) player.settings = {};
+  player.settings.autoSkill = !player.settings.autoSkill;
+  savePlayer(player);
+  renderSkillAutoToggle();
+  showToast(player.settings.autoSkill ? "เปิดใช้สกิลออโต้แล้ว" : "ปิดใช้สกิลออโต้แล้ว");
+}
+document.getElementById("skillAutoToggle")?.addEventListener("click", toggleAutoSkill);
+
+// ── Auto-cast every equipped active skill as soon as it's off cooldown ──
+function autoUseSkills() {
+  if (!player.settings || !player.settings.autoSkill) return;
+  if (currentMonster == null) return; // only during an active battle
+  ensurePlayerSkills(player);
+  let used = false;
+  player.skills.equipped.forEach(sid => {
+    const sk = SKILL_DEFS.find(s => s.id === sid);
+    if (!sk || sk.type !== "active") return;
+    if (isSkillOnCooldown(sid)) return;
+    useActiveSkill(sid);
+    used = true;
+  });
+  if (used) renderSkillActiveBtns();
 }
 
 // ── Tab filter buttons ──
@@ -11693,11 +11739,27 @@ document.querySelector("[data-tab='battle']")?.addEventListener("click", () => {
 (function injectSkillBtnsToBattlePanel() {
   const autoRow = document.querySelector(".auto-toggle-row");
   if (!autoRow) return;
+
+  // Mirrored "auto-use skills" toggle, shown right in the battle panel
+  const toggleRow = document.createElement("div");
+  toggleRow.className = "auto-toggle-row";
+  toggleRow.id = "skillAutoToggleRowBattle";
+  toggleRow.style.cssText = "margin-top:10px;";
+  toggleRow.innerHTML = `
+    <span class="auto-toggle-label">ใช้สกิลออโต้ในการต่อสู้</span>
+    <button class="auto-toggle" id="skillAutoToggleBattle" role="switch" aria-checked="false" aria-label="เปิด/ปิดใช้สกิลออโต้">
+      <span class="auto-toggle-knob"></span>
+    </button>
+  `;
+  autoRow.parentNode.insertBefore(toggleRow, autoRow.nextSibling);
+  document.getElementById("skillAutoToggleBattle")?.addEventListener("click", toggleAutoSkill);
+
   const wrapper = document.createElement("div");
   wrapper.id = "skillActiveRowBattle";
   wrapper.className = "skill-active-row hidden";
   wrapper.style.cssText = "margin-top:10px;";
-  autoRow.parentNode.insertBefore(wrapper, autoRow.nextSibling);
+  toggleRow.parentNode.insertBefore(wrapper, toggleRow.nextSibling);
+  renderSkillAutoToggle();
 })();
 
 // Override renderSkillActiveBtns to also update the battle panel copy
@@ -11718,10 +11780,11 @@ renderSkillActiveBtns = function() {
   }
 };
 
-// ── Patch runBattleTick to apply shield reduction and tick buffs ──
+// ── Patch runBattleTick to apply shield reduction, tick buffs, and auto-use skills ──
 const _origRunBattleTick = runBattleTick;
 runBattleTick = function() {
   tickSkillBuffs();
+  autoUseSkills();
   _origRunBattleTick();
 };
 
