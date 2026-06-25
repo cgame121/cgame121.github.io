@@ -4392,9 +4392,9 @@ button {
 
 .market-fab {
   position: fixed;
-  right: 18px;
-  bottom: 84px;
-  z-index: 60;
+  left: 18px;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 16px);
+  z-index: 90;
   background: var(--accent);
   color: #fff;
   border: none;
@@ -5300,12 +5300,12 @@ button {
       <div id="marketPurchasesPanel" style="display:none;">
         <div class="market-list" id="marketPurchasesList"></div>
       </div>
-    </section>
 
-    <button class="market-fab" id="marketSellFab" style="display:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      ลงขาย
-    </button>
+      <button class="market-fab" id="marketSellFab" type="button" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        ลงขาย
+      </button>
+    </section>
 
   </main>
 
