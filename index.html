@@ -1649,7 +1649,8 @@ button {
 
 /* ============================================
    Battle pet companion — appears beside the player
-   and joins in whenever the player attacks.
+   and leaps in on its own attack tick (see .pet-attacking),
+   independent of the player's own swings.
    ============================================ */
 .pet-companion {
   position: absolute;
@@ -1675,9 +1676,11 @@ button {
   0%, 100% { transform: translateY(0) rotate(-4deg); }
   50% { transform: translateY(-6px) rotate(5deg); }
 }
-/* Riding on the player's own attack-player class so the pet always
-   leaps in alongside Rayn's lunge, without any extra JS hookup. */
-.attack-player .pet-companion-emoji {
+/* The pet leaps on its own attack tick (see playPetAttackAnim in JS),
+   not whenever the player swings — the pet acts on its own speed
+   accumulator now, so its lunge is driven by a dedicated class instead
+   of riding along on .attack-player. */
+.pet-companion-emoji.pet-attacking {
   animation: pet-assist-lunge 0.42s ease;
 }
 @keyframes pet-assist-lunge {
@@ -8179,10 +8182,10 @@ function setArenaCombatants(player, monster) {
 }
 
 // Shows (or hides) the small companion sprite beside the player in the
-// dungeon arena, based on whichever pet is currently active. The pet has
-// no separate stats of its own here — it just visually tags along and
-// leaps in every time the player attacks (see the .attack-player CSS
-// hookup), so it reads as "fighting alongside you" in the dungeon.
+// dungeon arena, based on whichever pet is currently active. The pet now
+// acts on its own speed accumulator (see runBattleTick's "Pet attack"
+// block + playPetAttackAnim), so it leaps and deals damage on its own
+// cadence instead of copying the player's swing every time.
 function renderArenaPetCompanion(player) {
   const wrap = document.getElementById("arenaPetCompanion");
   const emojiEl = document.getElementById("arenaPetEmoji");
@@ -8245,8 +8248,19 @@ function playAttackAnim(actor) {
     defender.classList.add("hit-flash", "shake");
     setTimeout(() => defender.classList.remove("hit-flash", "shake"), 320);
     spawnParticles(defender);
-    if (actor === "player") spawnPetSparkle(defender);
   }, 190);
+}
+
+// Plays the pet companion's own lunge + sparkle, independent of the
+// player's attack animation — triggered only on the pet's own attack
+// tick (see the "Pet attack" block in runBattleTick).
+function playPetAttackAnim() {
+  const emojiEl = document.getElementById("arenaPetEmoji");
+  const monsterEl = document.getElementById("arenaMonster").closest(".combatant");
+  if (!emojiEl) return;
+  emojiEl.classList.add("pet-attacking");
+  setTimeout(() => emojiEl.classList.remove("pet-attacking"), 420);
+  spawnPetSparkle(monsterEl);
 }
 
 // A few little sparkles flying from the pet companion toward the monster,
@@ -9215,6 +9229,7 @@ function runBattleTick() {
       exchangeState.monsterHp = Math.max(0, exchangeState.monsterHp - petResult.damage);
       currentMonster.hp = exchangeState.monsterHp;
       const petDelay = playerActed ? 280 : 0;
+      setTimeout(() => playPetAttackAnim(), petDelay);
       setTimeout(() => spawnDamageText("monster", petResult.damage, petResult.isCrit, petResult.evaded), petDelay + 100);
       updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
       if (!petResult.evaded) {
