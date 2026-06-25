@@ -13623,6 +13623,13 @@ function marketCollectionRef() {
 }
 
 // ---------- Fetching ----------
+// NOTE: these queries deliberately use ONLY a single where() clause each,
+// with no orderBy() in the Firestore query itself. Combining where() on one
+// field with orderBy() on a different field requires a composite index to
+// be created manually in the Firebase console before the query will work
+// at all (Firestore rejects it with a "query requires an index" error,
+// which is what was causing "โหลดตลาดกลางไม่สำเร็จ"). Sorting is done in
+// JS after fetching instead, so no extra index setup is ever needed here.
 
 async function marketFetchActiveListings() {
   const fb = getFB();
@@ -13630,12 +13637,12 @@ async function marketFetchActiveListings() {
   const q = fb.query(
     marketCollectionRef(),
     fb.where("status", "==", "active"),
-    fb.orderBy("createdAt", "desc"),
     fb.limit(MARKET_LISTING_FETCH_LIMIT)
   );
   const snap = await fb.getDocs(q);
   const out = [];
   snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  marketSortByCreatedAtDesc(out);
   return out;
 }
 
@@ -13645,12 +13652,12 @@ async function marketFetchMyListings(uid) {
   const q = fb.query(
     marketCollectionRef(),
     fb.where("sellerUid", "==", uid),
-    fb.orderBy("createdAt", "desc"),
     fb.limit(MARKET_LISTING_FETCH_LIMIT)
   );
   const snap = await fb.getDocs(q);
   const out = [];
   snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  marketSortByCreatedAtDesc(out);
   return out;
 }
 
@@ -13660,13 +13667,29 @@ async function marketFetchMyPurchases(uid) {
   const q = fb.query(
     marketCollectionRef(),
     fb.where("buyerUid", "==", uid),
-    fb.orderBy("soldAt", "desc"),
     fb.limit(MARKET_LISTING_FETCH_LIMIT)
   );
   const snap = await fb.getDocs(q);
   const out = [];
   snap.forEach(docSnap => out.push({ id: docSnap.id, ...docSnap.data() }));
+  // sold listings: most recently sold first
+  out.sort((a, b) => marketTimestampMs(b.soldAt) - marketTimestampMs(a.soldAt));
   return out;
+}
+
+// Firestore Timestamp objects have a .toMillis() method; serverTimestamp()
+// fields can briefly be null right after a write before the server value
+// round-trips back down, so this falls back to 0 (oldest) rather than
+// throwing in that edge case.
+function marketTimestampMs(ts) {
+  if (!ts) return 0;
+  if (typeof ts.toMillis === "function") return ts.toMillis();
+  if (ts.seconds != null) return ts.seconds * 1000;
+  return 0;
+}
+
+function marketSortByCreatedAtDesc(arr) {
+  arr.sort((a, b) => marketTimestampMs(b.createdAt) - marketTimestampMs(a.createdAt));
 }
 
 async function marketRefreshAll({ silent = false } = {}) {
@@ -13691,7 +13714,10 @@ async function marketRefreshAll({ silent = false } = {}) {
     renderMarketTab();
   } catch (e) {
     console.warn("Market refresh failed", e);
-    marketSetStatus("error", "โหลดตลาดกลางไม่สำเร็จ ลองรีเฟรชอีกครั้ง");
+    // Surface the real Firestore error in the banner (instead of a generic
+    // message) so the next failure is diagnosable from a screenshot alone.
+    const detail = (e && (e.code || e.message)) ? ` (${e.code || e.message})` : "";
+    marketSetStatus("error", `โหลดตลาดกลางไม่สำเร็จ ลองรีเฟรชอีกครั้ง${detail}`);
   }
 }
 
