@@ -10755,17 +10755,17 @@ async function chatSend(player) {
 
   if (sendBtn) sendBtn.disabled = true;
 
-  const entry = {
-    lbId: player.lbId,
-    name: player.name.trim().slice(0, CHAT_NAME_MAX_LEN),
-    text,
-    ts: now,
-  };
-  // Key is timestamp-prefixed so Firebase's lexicographic key ordering
-  // doubles as chronological ordering (same trick used for $key queries).
-  const key = `${now}_${player.lbId.slice(0, 8)}`;
-
   try {
+    const entry = {
+      lbId: player.lbId,
+      name: player.name.trim().slice(0, CHAR_NAME_MAX_LEN),
+      text,
+      ts: now,
+    };
+    // Key is timestamp-prefixed so Firebase's lexicographic key ordering
+    // doubles as chronological ordering (same trick used for $key queries).
+    const key = `${now}_${player.lbId.slice(0, 8)}`;
+
     await chatApiSend(entry, key);
     input.value = "";
     chatAutoGrowInput(input);
