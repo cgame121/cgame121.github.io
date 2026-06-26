@@ -6104,7 +6104,7 @@ const STAT_POINT_GAINS = {
   crit:  { perPoint: 0.3,  label: "คริติคอล",   icon: "🎯",  desc: "+0.3% CRIT ต่อแต้ม (สูงสุด 75%)" },
   spd:   { perPoint: 0.028, label: "ความเร็ว",  icon: "💨",  desc: "+0.028 SPD ต่อแต้ม" },
   acc:   { perPoint: 0.21, label: "ความแม่นยำ", icon: "🏹",  desc: "+0.21% ACC ต่อแต้ม (สูงสุด 100%)" },
-  dodge: { perPoint: 0.18, label: "หลบหลีก",    icon: "🌀",  desc: "+0.18% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
+  dodge: { perPoint: 0.5, label: "หลบหลีก",    icon: "🌀",  desc: "+0.5% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
 };
 
 // Canonical list of all player stat keys, used anywhere code needs to loop
@@ -6548,7 +6548,11 @@ function sellValue(item) {
 }
 
 function computeItemPower(item) {
-  return Object.values(item.stats).reduce((s, v) => s + v, 0) * RARITY[item.rarity].mult * enchantStatMultiplier(item);
+  // item.stats already includes the rarity multiplier (baked in by
+  // rollItemStats' statBudget calculation at roll time), so only the
+  // enchant bonus needs to be applied here — multiplying by
+  // RARITY[item.rarity].mult again would double-count it.
+  return Object.values(item.stats).reduce((s, v) => s + v, 0) * enchantStatMultiplier(item);
 }
 
 // ============================================
@@ -7956,26 +7960,25 @@ function simulateBattle(player, monster) {
 // clamped to [HIT_CHANCE_FLOOR, 100] so a hit always has *some* chance to
 // land and dodge alone can never guarantee a miss.
 const HIT_CHANCE_FLOOR = 5;
+function mitigateDamage(atk, def) {
+  // Proportional mitigation: damage = atk * (atk / (atk + def)).
+  // See resolveAttack() below for the full rationale. Pulled out into its
+  // own function so every damage source (basic attacks, pets, active
+  // skills) shares one formula instead of each re-implementing it inline —
+  // that duplication is exactly how skill damage drifted out of sync with
+  // this fix previously.
+  const denom = atk + def;
+  return denom > 0 ? Math.max(1, Math.round((atk * atk) / denom)) : Math.max(1, Math.round(atk));
+}
+
 function resolveAttack(atk, def, critChance, accChance = 100, dodgeChance = 0) {
   const hitChance = Math.max(HIT_CHANCE_FLOOR, Math.min(100, accChance - dodgeChance));
   if (Math.random() * 100 >= hitChance) {
     return { damage: 0, isCrit: false, evaded: true };
   }
-  // Proportional mitigation: damage = atk * (atk / (atk + def)).
-  // This keeps DEF's effect relative to the *ratio* of atk:def rather than a
-  // flat subtraction. With the old "atk - def*0.5" formula, defense was an
-  // absolute amount subtracted from damage — fine when atk comfortably
-  // exceeds def*0.5, but once def got too large relative to atk (e.g. an
-  // under-leveled fight, or just monster def naturally outscaling player
-  // atk later in the game), damage hard-floored at exactly 1 no matter how
-  // big the gap was. The new formula degrades smoothly instead: damage
-  // falls off as the def:atk ratio grows, but a character that's somewhat
-  // behind still chips away real (if reduced) damage rather than hitting a
-  // dead floor immediately. At a 1:1 atk:def ratio this still passes 50% of
-  // atk through, matching the old formula's general "feel" for normal,
-  // appropriately-geared fights.
-  const denom = atk + def;
-  const mitigated = denom > 0 ? Math.max(1, Math.round((atk * atk) / denom)) : Math.max(1, Math.round(atk));
+  // See mitigateDamage() above for the rationale behind proportional
+  // (rather than subtractive) defense mitigation.
+  const mitigated = mitigateDamage(atk, def);
   const variance = 0.85 + Math.random() * 0.3;
   let damage = Math.round(mitigated * variance);
   const isCrit = Math.random() * 100 < critChance;
@@ -12865,10 +12868,7 @@ function useActiveSkill(skillId) {
   else if (sk.action === "burst" || sk.action === "crit_burst") {
     const atkPow = Math.round(stats.atk * (sk.actionVal + (atkBuffActive || 0)));
     const isCrit = sk.action === "crit_burst" || Math.random() * 100 < stats.crit;
-    const dmg = Math.max(1, Math.round((atkPow - (currentMonster.def || 0) * 0.5) * (isCrit ? 1.75 : 1)));
-    currentMonster.hp = Math.max(0, currentMonster.hp - dmg);
-    updateHpBar("monster", currentMonster.hp, currentMonster.maxHp);
-    spawnDamageText("monster", dmg, isCrit, false);
+    const dmg = Math.max(1, Math.round(mitigateDamage(atkPow, currentMonster.def || 0) * (isCrit ? 1.75 : 1)));
     appendCombatLog(`⚡ ${sk.name}: โจมตี${isCrit ? " CRIT" : ""} -${fmtNum(dmg)}`, "log-line-crit");
     if (currentMonster.hp <= 0) {
       setTimeout(() => {
@@ -12884,7 +12884,7 @@ function useActiveSkill(skillId) {
       if (currentMonster.hp <= 0) break;
       const atkPow = Math.round(stats.atk * (sk.actionVal + (atkBuffActive || 0)));
       const isCrit = Math.random() * 100 < stats.crit;
-      const dmg = Math.max(1, Math.round((atkPow - (currentMonster.def || 0) * 0.5) * (isCrit ? 1.75 : 1)));
+      const dmg = Math.max(1, Math.round(mitigateDamage(atkPow, currentMonster.def || 0) * (isCrit ? 1.75 : 1)));
       currentMonster.hp = Math.max(0, currentMonster.hp - dmg);
       totalDmg += dmg;
     }
