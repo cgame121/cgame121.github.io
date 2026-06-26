@@ -6102,7 +6102,7 @@ const STAT_POINT_GAINS = {
   atk:   { perPoint: 2.8,  label: "พลังโจมตี",  icon: "⚔️",  desc: "+2.8 ATK ต่อแต้ม" },
   def:   { perPoint: 1.6,  label: "ป้องกัน",    icon: "🛡️",  desc: "+1.6 DEF ต่อแต้ม" },
   crit:  { perPoint: 0.3,  label: "คริติคอล",   icon: "🎯",  desc: "+0.3% CRIT ต่อแต้ม (สูงสุด 75%)" },
-  spd:   { perPoint: 0.028, label: "ความเร็ว",  icon: "💨",  desc: "+0.028 SPD ต่อแต้ม" },
+  spd:   { perPoint: 0.028, label: "ความเร็ว",  icon: "💨",  desc: "+0.028 SPD ต่อแต้ม (สูงสุด 4.0)" },
   acc:   { perPoint: 0.21, label: "ความแม่นยำ", icon: "🏹",  desc: "+0.21% ACC ต่อแต้ม (สูงสุด 100%)" },
   dodge: { perPoint: 0.5, label: "หลบหลีก",    icon: "🌀",  desc: "+0.5% หลบหลีก ต่อแต้ม (สูงสุด 60%)" },
 };
@@ -6864,6 +6864,13 @@ function getEquipmentStats(player) {
 // so a heavily-evasive build can never become literally unhittable.
 const ACC_CAP = 100;
 const DODGE_CAP = 60;
+// SPD has no natural ceiling otherwise: it directly multiplies attack
+// frequency via the speed accumulator in the battle tick, so an all-in SPD
+// build could reach roughly 10x the base attack rate by max level —
+// dwarfing what investing the same points into any other stat could ever
+// provide. Capping it at 4x base keeps speed builds strong without letting
+// SPD alone trivialize every fight the way ATK/DEF/HP investment can't.
+const SPD_CAP = 4.0;
 
 function getTotalStats(player) {
   const base = getPlayerBaseStats(player.level);
@@ -6875,7 +6882,7 @@ function getTotalStats(player) {
     atk:   Math.round((base.atk + (eq.atk || 0) + sp.atk) * mult),
     def:   Math.round((base.def + (eq.def || 0) + sp.def) * mult),
     crit:  Math.min(75, base.crit + (eq.crit || 0) + sp.crit),
-    spd:   base.spd + (eq.spd || 0) + sp.spd,
+    spd:   Math.min(SPD_CAP, base.spd + (eq.spd || 0) + sp.spd),
     acc:   Math.min(ACC_CAP, base.acc + (eq.acc || 0) + sp.acc),
     dodge: Math.min(DODGE_CAP, base.dodge + (eq.dodge || 0) + sp.dodge),
   };
@@ -12804,7 +12811,7 @@ getTotalStats = function(player) {
     atk:   Math.round((base.atk  + sb.atk)  * 10) / 10,
     def:   Math.round((base.def  + sb.def)   * 10) / 10,
     crit:  Math.min(75, base.crit  + sb.crit),
-    spd:   base.spd   + sb.spd,
+    spd:   Math.min(SPD_CAP, base.spd   + sb.spd),
     acc:   Math.min(ACC_CAP, base.acc   + sb.acc),
     dodge: Math.min(DODGE_CAP, base.dodge + sb.dodge),
   };
@@ -13503,7 +13510,7 @@ getTotalStats = function(player) {
     atk:   Math.round((base.atk  + pet.atk)  * 10) / 10,
     def:   Math.round((base.def  + pet.def)  * 10) / 10,
     crit:  Math.min(75, base.crit + pet.crit),
-    spd:   base.spd   + pet.spd,
+    spd:   Math.min(SPD_CAP, base.spd   + pet.spd),
     acc:   Math.min(ACC_CAP, base.acc   + pet.acc),
     dodge: Math.min(DODGE_CAP, base.dodge + pet.dodge),
   };
