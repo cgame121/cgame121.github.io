@@ -41,7 +41,6 @@
     letter-spacing: 0.05em;
   }
   
-  /* Animated background */
   .dungeon-bg {
     background: 
       radial-gradient(ellipse at 20% 50%, rgba(255, 140, 66, 0.08) 0%, transparent 50%),
@@ -62,11 +61,9 @@
     z-index: 0;
   }
   
-  /* Floating embers */
   .ember {
     position: fixed;
-    width: 3px;
-    height: 3px;
+    width: 3px; height: 3px;
     background: var(--torch-glow);
     border-radius: 50%;
     box-shadow: 0 0 6px var(--torch-glow), 0 0 12px var(--torch-glow-bright);
@@ -82,12 +79,8 @@
     100% { transform: translateY(-10vh) translateX(50px) scale(0.3); opacity: 0; }
   }
   
-  /* Title screen */
   .title-glow {
-    text-shadow: 
-      0 0 20px var(--torch-glow),
-      0 0 40px rgba(255, 140, 66, 0.5),
-      0 4px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 20px var(--torch-glow), 0 0 40px rgba(255, 140, 66, 0.5), 0 4px 8px rgba(0, 0, 0, 0.8);
     animation: title-flicker 4s ease-in-out infinite;
   }
   
@@ -108,7 +101,6 @@
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 4px 0 var(--bg-darker), 0 0 20px rgba(196, 30, 58, 0.4);
-    position: relative;
     overflow: hidden;
   }
   
@@ -118,10 +110,7 @@
     background: linear-gradient(180deg, #d92e4a 0%, var(--blood-red) 100%);
   }
   
-  .btn-primary:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 var(--bg-darker), 0 0 15px rgba(196, 30, 58, 0.4);
-  }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--bg-darker), 0 0 15px rgba(196, 30, 58, 0.4); }
   
   .btn-secondary {
     background: linear-gradient(180deg, var(--dungeon-stone) 0%, var(--bg-dark) 100%);
@@ -130,18 +119,13 @@
     padding: 10px 24px;
     font-family: 'Cinzel', serif;
     font-weight: 700;
-    letter-spacing: 0.08em;
     cursor: pointer;
     transition: all 0.2s;
+    border-radius: 4px;
   }
   
-  .btn-secondary:hover {
-    border-color: var(--gold-treasure);
-    color: var(--gold-treasure);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-  }
+  .btn-secondary:hover { border-color: var(--gold-treasure); color: var(--gold-treasure); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
   
-  /* Game layout */
   .game-container {
     display: grid;
     grid-template-columns: 280px 1fr 300px;
@@ -153,29 +137,15 @@
     z-index: 2;
   }
   
-  @media (max-width: 1100px) {
-    .game-container { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 1100px) { .game-container { grid-template-columns: 1fr; } }
   
   .panel {
     background: linear-gradient(180deg, rgba(26, 21, 37, 0.95) 0%, rgba(10, 6, 18, 0.95) 100%);
     border: 2px solid var(--border-rune);
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 
-      inset 0 1px 0 rgba(255, 215, 0, 0.1),
-      0 4px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 215, 0, 0.1), 0 4px 20px rgba(0, 0, 0, 0.5);
     position: relative;
-  }
-  
-  .panel::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: -1px; right: -1px; bottom: -1px;
-    background: linear-gradient(135deg, transparent 40%, rgba(255, 215, 0, 0.2) 50%, transparent 60%);
-    border-radius: 8px;
-    z-index: -1;
-    opacity: 0.5;
   }
   
   .panel-title {
@@ -193,7 +163,6 @@
     gap: 8px;
   }
   
-  /* Stats */
   .stat-bar {
     height: 18px;
     background: var(--bg-darker);
@@ -217,10 +186,7 @@
     animation: shimmer 2s infinite;
   }
   
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
   
   .hp-fill { background: linear-gradient(90deg, var(--blood-dark), var(--blood-red)); }
   .mp-fill { background: linear-gradient(90deg, #1a3a5c, var(--magic-blue)); }
@@ -238,7 +204,6 @@
     z-index: 1;
   }
   
-  /* Dungeon map */
   .dungeon-map {
     display: grid;
     gap: 3px;
@@ -263,16 +228,8 @@
     transition: all 0.2s;
   }
   
-  .room.unexplored { 
-    background: #0a0612;
-    color: #2a2535;
-  }
-  
-  .room.explored { 
-    background: linear-gradient(135deg, #2a2535, #1a1525);
-    color: var(--text-faded);
-  }
-  
+  .room.unexplored { background: #0a0612; color: #2a2535; }
+  .room.explored { background: linear-gradient(135deg, #2a2535, #1a1525); color: var(--text-faded); }
   .room.current { 
     background: radial-gradient(circle, rgba(255, 140, 66, 0.3), rgba(255, 140, 66, 0.1));
     border-color: var(--torch-glow);
@@ -286,24 +243,10 @@
     50% { box-shadow: 0 0 25px rgba(255, 140, 66, 0.6), inset 0 0 15px rgba(255, 140, 66, 0.3); }
   }
   
-  .room.adjacent { 
-    background: linear-gradient(135deg, #1a1525, #0a0612);
-    border-color: var(--border-rune);
-    cursor: pointer;
-  }
+  .room.adjacent { background: linear-gradient(135deg, #1a1525, #0a0612); border-color: var(--border-rune); cursor: pointer; }
+  .room.adjacent:hover { background: linear-gradient(135deg, #2a2535, #1a1525); border-color: var(--torch-glow); transform: scale(1.05); }
+  .room.boss { background: linear-gradient(135deg, var(--blood-dark), #2a0810); border-color: var(--blood-red); }
   
-  .room.adjacent:hover {
-    background: linear-gradient(135deg, #2a2535, #1a1525);
-    border-color: var(--torch-glow);
-    transform: scale(1.05);
-  }
-  
-  .room.boss {
-    background: linear-gradient(135deg, var(--blood-dark), #2a0810);
-    border-color: var(--blood-red);
-  }
-  
-  /* Battle scene */
   .battle-scene {
     background: 
       radial-gradient(ellipse at center top, rgba(255, 140, 66, 0.15) 0%, transparent 50%),
@@ -311,31 +254,19 @@
       linear-gradient(180deg, #1a0810 0%, #0a0612 100%);
     border: 2px solid var(--border-rune);
     border-radius: 8px;
-    min-height: 400px;
+    min-height: 450px;
     padding: 24px;
     position: relative;
     overflow: hidden;
   }
   
-  .battle-scene::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: 
-      radial-gradient(circle at 30% 20%, rgba(255, 140, 66, 0.1) 0%, transparent 30%),
-      radial-gradient(circle at 70% 20%, rgba(255, 140, 66, 0.1) 0%, transparent 30%);
-    pointer-events: none;
-  }
-  
-  /* Character sprites */
   .character {
-    width: 120px;
-    height: 120px;
+    width: 100px; height: 100px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
+    font-size: 42px;
     position: relative;
     transition: transform 0.3s;
   }
@@ -352,18 +283,19 @@
     box-shadow: 0 0 30px rgba(196, 30, 58, 0.4);
   }
   
-  .character.attacking { animation: attack-lunge 0.4s; }
+  .character.attacking-right { animation: attack-right 0.4s; }
+  .character.attacking-left { animation: attack-left 0.4s; }
   .character.hit { animation: shake 0.4s; }
   .character.dying { animation: death 0.8s forwards; }
   
-  @keyframes attack-lunge {
+  @keyframes attack-right {
     0%, 100% { transform: translateX(0) scale(1); }
-    50% { transform: translateX(30px) scale(1.1); }
+    50% { transform: translateX(40px) scale(1.1); }
   }
   
-  @keyframes attack-lunge-left {
+  @keyframes attack-left {
     0%, 100% { transform: translateX(0) scale(1); }
-    50% { transform: translateX(-30px) scale(1.1); }
+    50% { transform: translateX(-40px) scale(1.1); }
   }
   
   @keyframes shake {
@@ -377,12 +309,11 @@
     100% { opacity: 0; transform: scale(0.5) rotate(90deg); }
   }
   
-  /* Damage numbers */
   .damage-number {
     position: absolute;
     font-family: 'Cinzel', serif;
     font-weight: 900;
-    font-size: 28px;
+    font-size: 32px;
     pointer-events: none;
     animation: damage-float 1.2s ease-out forwards;
     text-shadow: 0 2px 4px black, 0 0 10px currentColor;
@@ -390,12 +321,11 @@
   }
   
   @keyframes damage-float {
-    0% { opacity: 0; transform: translateY(0) scale(0.5); }
-    20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
-    100% { opacity: 0; transform: translateY(-80px) scale(1); }
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -20px) scale(1.3); }
+    100% { opacity: 0; transform: translate(-50%, -90px) scale(1); }
   }
   
-  /* Log */
   .log-container {
     max-height: 180px;
     overflow-y: auto;
@@ -425,7 +355,6 @@
   .log-entry.magic { border-left-color: var(--magic-purple); color: #c77dff; }
   .log-entry.system { border-left-color: var(--magic-blue); color: #7cb5ff; }
   
-  /* Inventory */
   .inventory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -446,15 +375,8 @@
     position: relative;
   }
   
-  .item-slot.has-item:hover {
-    border-color: var(--gold-treasure);
-    background: rgba(255, 215, 0, 0.1);
-    transform: scale(1.05);
-  }
-  
-  .item-slot.has-item {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.02));
-  }
+  .item-slot.has-item:hover { border-color: var(--gold-treasure); background: rgba(255, 215, 0, 0.1); transform: scale(1.05); }
+  .item-slot.has-item { background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.02)); }
   
   .item-rarity-common { border-color: #6b6b6b; }
   .item-rarity-rare { border-color: var(--magic-blue); box-shadow: 0 0 8px rgba(74, 158, 255, 0.3); }
@@ -466,23 +388,16 @@
     50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
   }
   
-  /* Modal */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     z-index: 100;
     animation: fade-in 0.3s;
   }
   
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
   
   .modal {
     background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
@@ -500,7 +415,6 @@
     to { transform: translateY(0) scale(1); opacity: 1; }
   }
   
-  /* Tooltip */
   .tooltip {
     position: fixed;
     background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
@@ -515,7 +429,6 @@
     display: none;
   }
   
-  /* Screen shake */
   .screen-shake { animation: screen-shake 0.4s; }
   @keyframes screen-shake {
     0%, 100% { transform: translate(0, 0); }
@@ -524,28 +437,21 @@
     75% { transform: translate(-3px, 5px); }
   }
   
-  /* Torch flicker */
   .torch {
     position: absolute;
-    width: 8px;
-    height: 30px;
+    width: 8px; height: 30px;
     background: linear-gradient(180deg, var(--torch-glow-bright), var(--torch-glow), transparent);
     border-radius: 50% 50% 20% 20%;
     filter: blur(2px);
     animation: flicker 0.5s infinite alternate;
   }
   
-  @keyframes flicker {
-    0% { opacity: 0.7; transform: scaleY(0.9); }
-    100% { opacity: 1; transform: scaleY(1.1); }
-  }
+  @keyframes flicker { 0% { opacity: 0.7; transform: scaleY(0.9); } 100% { opacity: 1; transform: scaleY(1.1); } }
   
   .hidden { display: none !important; }
   
-  /* Level up effect */
   .level-up-burst {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     pointer-events: none;
     background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 60%);
     animation: level-burst 1s ease-out;
@@ -557,18 +463,13 @@
     100% { opacity: 0; transform: scale(2); }
   }
   
-  /* Loot drop animation */
-  .loot-drop {
-    animation: loot-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
+  .loot-drop { animation: loot-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
   @keyframes loot-bounce {
     0% { transform: translateY(-100px) scale(0); opacity: 0; }
     60% { transform: translateY(10px) scale(1.1); opacity: 1; }
     100% { transform: translateY(0) scale(1); opacity: 1; }
   }
   
-  /* Action buttons */
   .action-btn {
     background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
     border: 2px solid var(--border-rune);
@@ -581,80 +482,121 @@
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
     text-transform: uppercase;
   }
   
-  .action-btn:hover:not(:disabled) {
-    border-color: var(--gold-treasure);
-    color: var(--gold-treasure);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-    transform: translateY(-1px);
-  }
-  
-  .action-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
+  .action-btn:hover:not(:disabled) { border-color: var(--gold-treasure); color: var(--gold-treasure); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); transform: translateY(-1px); }
+  .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .action-btn.attack { border-color: var(--blood-dark); }
   .action-btn.attack:hover:not(:disabled) { border-color: var(--blood-red); color: #ff6b7a; box-shadow: 0 0 15px rgba(196, 30, 58, 0.3); }
-  
   .action-btn.magic { border-color: #3a2a5c; }
   .action-btn.magic:hover:not(:disabled) { border-color: var(--magic-purple); color: #c77dff; box-shadow: 0 0 15px rgba(157, 78, 221, 0.3); }
-  
   .action-btn.heal { border-color: #2a4a3a; }
   .action-btn.heal:hover:not(:disabled) { border-color: var(--poison-green); color: #7dd3a8; box-shadow: 0 0 15px rgba(82, 183, 136, 0.3); }
   
   .scrollbar-thin::-webkit-scrollbar { width: 4px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border-rune); border-radius: 2px; }
+  
+  /* Class selection */
+  .class-card {
+    background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
+    border: 2px solid var(--border-rune);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .class-card:hover { border-color: var(--gold-treasure); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
+  
+  /* Status Effects */
+  .status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 2px;
+    border: 1px solid;
+  }
+  .status-poison { background: rgba(82, 183, 136, 0.3); border-color: var(--poison-green); color: var(--poison-green); }
+  .status-block { background: rgba(74, 158, 255, 0.3); border-color: var(--magic-blue); color: var(--magic-blue); }
 </style>
 </head>
 <body class="dungeon-bg">
 
-<!-- Floating embers -->
 <div id="embers"></div>
 
 <!-- Title Screen -->
 <div id="titleScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center px-4">
   <div class="text-center max-w-2xl">
     <div class="text-6xl mb-4">⚔️🏰💀</div>
-    <h1 class="font-display text-6xl md:text-7xl font-black title-glow mb-2" style="color: var(--gold-treasure);">
-      DUNGEON QUEST
-    </h1>
-    <p class="font-display text-lg md:text-xl mb-8" style="color: var(--torch-glow-bright); letter-spacing: 0.3em;">
-      ผจญภัยในดันเจี้ยนมืด
-    </p>
-    <p class="text-base md:text-lg mb-10 leading-relaxed" style="color: var(--text-faded);">
-      ลงลึกสู่ใต้ดินที่มืดมิด เผชิญหน้ากับมอนสเตอร์นานาพันธุ์<br>
-      ค้นหาสมบัติในตำนาน และกลายเป็นฮีโร่ที่ยิ่งใหญ่ที่สุด
-    </p>
+    <h1 class="font-display text-6xl md:text-7xl font-black title-glow mb-2" style="color: var(--gold-treasure);">DUNGEON QUEST</h1>
+    <p class="font-display text-lg md:text-xl mb-8" style="color: var(--torch-glow-bright); letter-spacing: 0.3em;">ผจญภัยในดันเจี้ยนมืด</p>
     
     <div class="flex flex-col items-center gap-4">
-      <button onclick="startGame()" class="btn-primary text-lg">
+      <button onclick="showClassSelection()" class="btn-primary text-lg">
         <i class="fas fa-play mr-2"></i>เริ่มการผจญภัย
       </button>
       <button onclick="showInstructions()" class="text-sm hover:text-yellow-400 transition" style="color: var(--text-faded);">
         <i class="fas fa-book mr-1"></i>วิธีเล่น
       </button>
     </div>
-    
-    <div class="mt-12 grid grid-cols-3 gap-4 text-xs" style="color: var(--text-faded);">
-      <div class="panel py-3">
-        <div class="text-2xl mb-1">🗡️</div>
-        <div>ระบบต่อสู้</div>
+  </div>
+</div>
+
+<!-- Class Selection Modal -->
+<div id="classModal" class="modal-overlay hidden">
+  <div class="modal" style="max-width: 800px;">
+    <h2 class="font-display text-3xl font-bold text-center mb-6" style="color: var(--gold-treasure);">เลือกคลาสฮีโร่</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Knight -->
+      <div class="class-card" onclick="selectClass('knight')">
+        <div class="text-center">
+          <div class="text-5xl mb-3">🛡️</div>
+          <h3 class="font-display text-xl font-bold" style="color: var(--magic-blue);">อัศวิน</h3>
+          <p class="text-xs mb-3" style="color: var(--text-faded);">นักรบสมดุล พร้อมโล่</p>
+          <div class="text-left text-xs space-y-1">
+            <div>❤️ HP: 120</div>
+            <div>✨ MP: 40</div>
+            <div>⚔️ ATK: 18</div>
+            <div>🛡️ DEF: 10</div>
+            <div>🔥 MAG: 5</div>
+          </div>
+        </div>
       </div>
-      <div class="panel py-3">
-        <div class="text-2xl mb-1">📦</div>
-        <div>ไอเทม & อุปกรณ์</div>
+      <!-- Mage -->
+      <div class="class-card" onclick="selectClass('mage')">
+        <div class="text-center">
+          <div class="text-5xl mb-3">🧙‍♂️</div>
+          <h3 class="font-display text-xl font-bold" style="color: var(--magic-purple);">นักเวท</h3>
+          <p class="text-xs mb-3" style="color: var(--text-faded);">เวทมนตร์ทรงพลัง</p>
+          <div class="text-left text-xs space-y-1">
+            <div>❤️ HP: 80</div>
+            <div>✨ MP: 80</div>
+            <div>⚔️ ATK: 10</div>
+            <div>🛡️ DEF: 4</div>
+            <div>🔥 MAG: 15</div>
+          </div>
+        </div>
       </div>
-      <div class="panel py-3">
-        <div class="text-2xl mb-1">📈</div>
-        <div>เลเวลอัพ</div>
+      <!-- Rogue -->
+      <div class="class-card" onclick="selectClass('rogue')">
+        <div class="text-center">
+          <div class="text-5xl mb-3">🗡️</div>
+          <h3 class="font-display text-xl font-bold" style="color: var(--blood-red);">มือสังหาร</h3>
+          <p class="text-xs mb-3" style="color: var(--text-faded);">โจมตีเร็วและคม</p>
+          <div class="text-left text-xs space-y-1">
+            <div>❤️ HP: 95</div>
+            <div>✨ MP: 50</div>
+            <div>⚔️ ATK: 22</div>
+            <div>🛡️ DEF: 6</div>
+            <div>🔥 MAG: 8</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -665,11 +607,11 @@
   <div class="modal">
     <h2 class="font-display text-2xl font-bold mb-4" style="color: var(--gold-treasure);">วิธีเล่น</h2>
     <div class="space-y-3 text-sm leading-relaxed">
-      <p><span style="color: var(--torch-glow-bright);">🗺️ สำรวจดันเจี้ยน:</span> คลิกที่ห้องข้างๆ ห้องปัจจุบันเพื่อเคลื่อนที่</p>
-      <p><span style="color: var(--blood-red);">⚔️ ต่อสู้:</span> เมื่อเจอมอนสเตอร์ ใช้ปุ่มโจมตี เวทมนตร์ หรือฟื้นฟู HP</p>
-      <p><span style="color: var(--gold-treasure);">📦 ไอเทม:</span> เก็บไอเทมจากการเปิดหีบ หรือตกจากมอนสเตอร์ คลิกเพื่อใช้</p>
-      <p><span style="color: var(--magic-blue);">📈 เลเวลอัพ:</span> ฆ่ามอนสเตอร์เพื่อรับ XP เมื่อ XP เต็มจะเลเวลอัพ ฟื้นฟู HP/MP</p>
-      <p><span style="color: var(--magic-purple);">👑 บอส:</span> ห้องสุดท้ายของแต่ละชั้นจะมีบอสให้ท้าทาย</p>
+      <p><span style="color: var(--torch-glow-bright);">🗺️ สำรวจ:</span> คลิกห้องข้างๆ เพื่อเคลื่อนที่</p>
+      <p><span style="color: var(--blood-red);">⚔️ ต่อสู้:</span> โจมตี / เวทมนตร์ / ฟื้นพลัง / บล็อก / หนี</p>
+      <p><span style="color: var(--gold-treasure);">📦 ไอเทม:</span> คลิกเพื่อสวมใส่หรือใช้</p>
+      <p><span style="color: var(--magic-blue);">📈 เลเวลอัพ:</span> ฆ่ามอนสเตอร์รับ XP</p>
+      <p><span style="color: var(--poison-green);">☠️ สถานะ:</span> ระวังพิษ! มันจะทำดาเมจทุกเทิร์น</p>
     </div>
     <button onclick="closeInstructions()" class="btn-secondary w-full mt-6">เข้าใจแล้ว</button>
   </div>
@@ -677,7 +619,6 @@
 
 <!-- Game Screen -->
 <div id="gameScreen" class="hidden">
-  <!-- Header -->
   <div class="border-b" style="border-color: var(--border-rune); background: linear-gradient(180deg, var(--dungeon-stone), transparent);">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -688,182 +629,87 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <button onclick="showInstructions()" class="btn-secondary text-xs py-2">
-          <i class="fas fa-book"></i>
-        </button>
-        <button onclick="resetGame()" class="btn-secondary text-xs py-2">
-          <i class="fas fa-redo"></i> เริ่มใหม่
-        </button>
+        <button onclick="showInstructions()" class="btn-secondary text-xs py-2"><i class="fas fa-book"></i></button>
+        <button onclick="resetGame()" class="btn-secondary text-xs py-2"><i class="fas fa-redo"></i> เริ่มใหม่</button>
       </div>
     </div>
   </div>
 
   <div class="game-container">
-    <!-- Left Panel: Stats & Inventory -->
+    <!-- Left Panel -->
     <div class="space-y-4">
-      <!-- Character Stats -->
       <div class="panel">
-        <div class="panel-title">
-          <i class="fas fa-user-shield"></i> ฮีโร่
-        </div>
-        
+        <div class="panel-title"><i class="fas fa-user-shield"></i> ฮีโร่</div>
         <div class="flex items-center gap-3 mb-4">
-          <div class="hero-sprite character" style="width: 60px; height: 60px; font-size: 28px;">
-            🦸
-          </div>
+          <div class="hero-sprite character" style="width: 60px; height: 60px; font-size: 28px;" id="heroIcon">🛡️</div>
           <div>
-            <div class="font-display font-bold" id="heroName">ผู้กล้า</div>
+            <div class="font-display font-bold" id="heroClass">อัศวิน</div>
             <div class="text-xs" style="color: var(--text-faded);">เลเวล <span id="heroLevel">1</span></div>
           </div>
         </div>
-        
         <div class="space-y-2">
           <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span style="color: var(--blood-red);"><i class="fas fa-heart"></i> พลังชีวิต</span>
-            </div>
-            <div class="stat-bar">
-              <div class="stat-fill hp-fill" id="hpBar" style="width: 100%;"></div>
-              <div class="stat-text" id="hpText">100/100</div>
-            </div>
+            <div class="flex justify-between text-xs mb-1"><span style="color: var(--blood-red);"><i class="fas fa-heart"></i> พลังชีวิต</span></div>
+            <div class="stat-bar"><div class="stat-fill hp-fill" id="hpBar" style="width: 100%;"></div><div class="stat-text" id="hpText">100/100</div></div>
           </div>
-          
           <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span style="color: var(--magic-blue);"><i class="fas fa-star"></i> มานา</span>
-            </div>
-            <div class="stat-bar">
-              <div class="stat-fill mp-fill" id="mpBar" style="width: 100%;"></div>
-              <div class="stat-text" id="mpText">50/50</div>
-            </div>
+            <div class="flex justify-between text-xs mb-1"><span style="color: var(--magic-blue);"><i class="fas fa-star"></i> มานา</span></div>
+            <div class="stat-bar"><div class="stat-fill mp-fill" id="mpBar" style="width: 100%;"></div><div class="stat-text" id="mpText">50/50</div></div>
           </div>
-          
           <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span style="color: var(--gold-treasure);"><i class="fas fa-star"></i> ประสบการณ์</span>
-            </div>
-            <div class="stat-bar">
-              <div class="stat-fill xp-fill" id="xpBar" style="width: 0%;"></div>
-              <div class="stat-text" id="xpText">0/100</div>
-            </div>
+            <div class="flex justify-between text-xs mb-1"><span style="color: var(--gold-treasure);"><i class="fas fa-star"></i> ประสบการณ์</span></div>
+            <div class="stat-bar"><div class="stat-fill xp-fill" id="xpBar" style="width: 0%;"></div><div class="stat-text" id="xpText">0/100</div></div>
           </div>
         </div>
-        
         <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
-          <div class="flex items-center gap-1">
-            <i class="fas fa-khanda" style="color: var(--blood-red);"></i>
-            <span style="color: var(--text-faded);">โจมตี:</span>
-            <span class="font-bold" id="statAttack">15</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <i class="fas fa-shield" style="color: var(--magic-blue);"></i>
-            <span style="color: var(--text-faded);">ป้องกัน:</span>
-            <span class="font-bold" id="statDefense">5</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <i class="fas fa-coins" style="color: var(--gold-treasure);"></i>
-            <span style="color: var(--text-faded);">ทอง:</span>
-            <span class="font-bold" id="statGold">0</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <i class="fas fa-fire" style="color: var(--magic-purple);"></i>
-            <span style="color: var(--text-faded);">เวทมนตร์:</span>
-            <span class="font-bold" id="statMagic">8</span>
-          </div>
+          <div class="flex items-center gap-1"><i class="fas fa-khanda" style="color: var(--blood-red);"></i><span style="color: var(--text-faded);">โจมตี:</span><span class="font-bold" id="statAttack">15</span></div>
+          <div class="flex items-center gap-1"><i class="fas fa-shield" style="color: var(--magic-blue);"></i><span style="color: var(--text-faded);">ป้องกัน:</span><span class="font-bold" id="statDefense">5</span></div>
+          <div class="flex items-center gap-1"><i class="fas fa-coins" style="color: var(--gold-treasure);"></i><span style="color: var(--text-faded);">ทอง:</span><span class="font-bold" id="statGold">0</span></div>
+          <div class="flex items-center gap-1"><i class="fas fa-fire" style="color: var(--magic-purple);"></i><span style="color: var(--text-faded);">เวทมนตร์:</span><span class="font-bold" id="statMagic">8</span></div>
         </div>
+        <div class="mt-3 text-xs" id="statusEffectsHero"></div>
       </div>
       
-      <!-- Inventory -->
       <div class="panel">
-        <div class="panel-title">
-          <i class="fas fa-bag-shopping"></i> กระเป๋า
-        </div>
-        <div class="inventory-grid" id="inventoryGrid">
-          <!-- Items filled by JS -->
-        </div>
-        <div class="text-xs mt-2 text-center" style="color: var(--text-faded);">
-          คลิกไอเทมเพื่อใช้
-        </div>
+        <div class="panel-title"><i class="fas fa-bag-shopping"></i> กระเป๋า</div>
+        <div class="inventory-grid" id="inventoryGrid"></div>
+        <div class="text-xs mt-2 text-center" style="color: var(--text-faded);">คลิกไอเทมเพื่อใช้/สวมใส่</div>
       </div>
     </div>
     
-    <!-- Center: Battle/Scene -->
+    <!-- Center -->
     <div class="space-y-4">
-      <div id="sceneContainer" class="battle-scene">
-        <!-- Scene content filled by JS -->
-      </div>
-      
-      <!-- Battle Log -->
+      <div id="sceneContainer" class="battle-scene"></div>
       <div class="panel">
-        <div class="panel-title">
-          <i class="fas fa-scroll"></i> บันทึกการผจญภัย
-        </div>
+        <div class="panel-title"><i class="fas fa-scroll"></i> บันทึกการผจญภัย</div>
         <div class="log-container scrollbar-thin" id="battleLog">
-          <div class="log-entry system">📜 คุณเข้าสู่ดันเจี้ยน... ขอให้โชคดี</div>
+          <div class="log-entry system">📜 คุณเข้าสู่ดันเจี้ยน...</div>
         </div>
       </div>
     </div>
     
-    <!-- Right: Dungeon Map -->
+    <!-- Right -->
     <div class="space-y-4">
       <div class="panel">
-        <div class="panel-title">
-          <i class="fas fa-map"></i> แผนที่ดันเจี้ยน
-        </div>
-        <div class="dungeon-map" id="dungeonMap" style="grid-template-columns: repeat(5, 1fr);">
-          <!-- Map filled by JS -->
-        </div>
-        <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-          <div class="flex items-center gap-1">
-            <div class="w-3 h-3 rounded" style="background: var(--torch-glow);"></div>
-            <span style="color: var(--text-faded);">ปัจจุบัน</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <div class="w-3 h-3 rounded" style="background: #2a2535;"></div>
-            <span style="color: var(--text-faded);">ผ่านแล้ว</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <div class="w-3 h-3 rounded" style="background: #0a0612;"></div>
-            <span style="color: var(--text-faded);">ยังไม่ค้นพบ</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <div class="w-3 h-3 rounded" style="background: var(--blood-dark);"></div>
-            <span style="color: var(--text-faded);">บอส</span>
-          </div>
-        </div>
+        <div class="panel-title"><i class="fas fa-map"></i> แผนที่ดันเจี้ยน</div>
+        <div class="dungeon-map" id="dungeonMap" style="grid-template-columns: repeat(5, 1fr);"></div>
       </div>
-      
       <div class="panel">
-        <div class="panel-title">
-          <i class="fas fa-trophy"></i> สถิติ
-        </div>
+        <div class="panel-title"><i class="fas fa-trophy"></i> สถิติ</div>
         <div class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <span style="color: var(--text-faded);">มอนสเตอร์ที่ฆ่า:</span>
-            <span class="font-bold" id="killCount">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span style="color: var(--text-faded);">หีบที่เปิด:</span>
-            <span class="font-bold" id="chestCount">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span style="color: var(--text-faded);">ห้องที่สำรวจ:</span>
-            <span class="font-bold" id="roomCount">1</span>
-          </div>
-          <div class="flex justify-between">
-            <span style="color: var(--text-faded);">ไอเทมที่เก็บ:</span>
-            <span class="font-bold" id="itemCount">0</span>
-          </div>
+          <div class="flex justify-between"><span style="color: var(--text-faded);">มอนสเตอร์ที่ฆ่า:</span><span class="font-bold" id="killCount">0</span></div>
+          <div class="flex justify-between"><span style="color: var(--text-faded);">หีบที่เปิด:</span><span class="font-bold" id="chestCount">0</span></div>
+          <div class="flex justify-between"><span style="color: var(--text-faded);">ห้องที่สำรวจ:</span><span class="font-bold" id="roomCount">1</span></div>
+          <div class="flex justify-between"><span style="color: var(--text-faded);">ไอเทมที่เก็บ:</span><span class="font-bold" id="itemCount">0</span></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Tooltip -->
 <div id="tooltip" class="tooltip"></div>
 
-<!-- Game Over Modal -->
+<!-- Modals -->
 <div id="gameOverModal" class="modal-overlay hidden">
   <div class="modal text-center">
     <div class="text-6xl mb-4">💀</div>
@@ -875,39 +721,22 @@
         <div class="flex justify-between"><span style="color: var(--text-faded);">ชั้นที่:</span> <span id="gameOverFloor">1</span></div>
         <div class="flex justify-between"><span style="color: var(--text-faded);">เลเวล:</span> <span id="gameOverLevel">1</span></div>
         <div class="flex justify-between"><span style="color: var(--text-faded);">มอนสเตอร์ที่ฆ่า:</span> <span id="gameOverKills">0</span></div>
-        <div class="flex justify-between"><span style="color: var(--text-faded);">ทองที่เก็บ:</span> <span id="gameOverGold">0</span></div>
       </div>
     </div>
-    <button onclick="resetGame()" class="btn-primary w-full">
-      <i class="fas fa-redo mr-2"></i>เริ่มใหม่อีกครั้ง
-    </button>
+    <button onclick="resetGame()" class="btn-primary w-full"><i class="fas fa-redo mr-2"></i>เริ่มใหม่อีกครั้ง</button>
   </div>
 </div>
 
-<!-- Victory Modal -->
 <div id="victoryModal" class="modal-overlay hidden">
   <div class="modal text-center">
     <div class="text-6xl mb-4">👑</div>
     <h2 class="font-display text-4xl font-black mb-2" style="color: var(--gold-treasure);">ชัยชนะ!</h2>
     <p class="mb-6" style="color: var(--text-faded);">คุณพิชิตบอสแห่งดันเจี้ยนได้สำเร็จ!</p>
-    <div class="panel mb-6 text-left">
-      <div class="text-sm mb-2" style="color: var(--gold-treasure);">รางวัล:</div>
-      <div class="space-y-1 text-sm">
-        <div class="flex justify-between"><span style="color: var(--text-faded);">ชั้นที่ผ่าน:</span> <span id="victoryFloor">1</span></div>
-        <div class="flex justify-between"><span style="color: var(--text-faded);">เลเวล:</span> <span id="victoryLevel">1</span></div>
-        <div class="flex justify-between"><span style="color: var(--text-faded);">ทองรวม:</span> <span id="victoryGold">0</span></div>
-      </div>
-    </div>
-    <button onclick="nextFloor()" class="btn-primary w-full mb-2">
-      <i class="fas fa-arrow-down mr-2"></i>ลงชั้นถัดไป
-    </button>
-    <button onclick="resetGame()" class="btn-secondary w-full">
-      เริ่มใหม่
-    </button>
+    <button onclick="nextFloor()" class="btn-primary w-full mb-2"><i class="fas fa-arrow-down mr-2"></i>ลงชั้นถัดไป</button>
+    <button onclick="resetGame()" class="btn-secondary w-full">เริ่มใหม่</button>
   </div>
 </div>
 
-<!-- Item Drop Modal -->
 <div id="itemDropModal" class="modal-overlay hidden">
   <div class="modal text-center">
     <div class="text-4xl mb-3">📦</div>
@@ -918,14 +747,14 @@
 </div>
 
 <script>
-// ============ Game Data ============
+// ============ Data ============
 const ENEMIES = {
-  slime: { name: 'สไลม์', icon: '🟢', hp: 30, attack: 8, defense: 2, xp: 15, gold: 5 },
+  slime: { name: 'สไลม์พิษ', icon: '🟢', hp: 30, attack: 8, defense: 2, xp: 15, gold: 5, poisonChance: 0.3 },
   bat: { name: 'ค้างคาวยักษ์', icon: '🦇', hp: 25, attack: 12, defense: 1, xp: 18, gold: 8 },
   skeleton: { name: 'โครงกระดูก', icon: '💀', hp: 45, attack: 15, defense: 5, xp: 25, gold: 12 },
-  zombie: { name: 'ซอมบี้', icon: '🧟', hp: 60, attack: 12, defense: 3, xp: 30, gold: 10 },
-  spider: { name: 'แมงมุมยักษ์', icon: '🕷️', hp: 40, attack: 18, defense: 4, xp: 28, gold: 15 },
-  ghost: { name: 'ผี', icon: '👻', hp: 35, attack: 20, defense: 6, xp: 35, gold: 18 },
+  zombie: { name: 'ซอมบี้', icon: '🧟', hp: 60, attack: 12, defense: 3, xp: 30, gold: 10, poisonChance: 0.2 },
+  spider: { name: 'แมงมุมยักษ์', icon: '🕷️', hp: 40, attack: 18, defense: 4, xp: 28, gold: 15, poisonChance: 0.4 },
+  ghost: { name: 'ผีดูดวิญญาณ', icon: '👻', hp: 35, attack: 20, defense: 6, xp: 35, gold: 18 },
   goblin: { name: 'ก็อบลิน', icon: '👹', hp: 50, attack: 16, defense: 5, xp: 32, gold: 20 },
   orc: { name: 'ออร์ค', icon: '👺', hp: 70, attack: 20, defense: 8, xp: 45, gold: 25 },
   troll: { name: 'โทรลล์', icon: '👿', hp: 90, attack: 22, defense: 10, xp: 55, gold: 30 },
@@ -938,6 +767,7 @@ const ITEMS = {
   potion_hp: { name: 'ยาฟื้นพลัง', icon: '🧪', rarity: 'common', type: 'heal', value: 50, desc: 'ฟื้นพลังชีวิต 50 หน่วย' },
   potion_mp: { name: 'ยาฟื้นมานา', icon: '💧', rarity: 'common', type: 'mana', value: 30, desc: 'ฟื้นมานา 30 หน่วย' },
   potion_hp_lg: { name: 'ยาฟื้นพลังใหญ่', icon: '⚗️', rarity: 'rare', type: 'heal', value: 120, desc: 'ฟื้นพลังชีวิต 120 หน่วย' },
+  antidote: { name: 'ยาแก้พิษ', icon: '🧴', rarity: 'common', type: 'antidote', desc: 'รักษาสถานะพิษ' },
   sword: { name: 'ดาบเหล็ก', icon: '🗡️', rarity: 'common', type: 'weapon', attack: 5, desc: 'เพิ่มพลังโจมตี +5' },
   sword_fire: { name: 'ดาบไฟ', icon: '⚔️', rarity: 'rare', type: 'weapon', attack: 12, desc: 'เพิ่มพลังโจมตี +12' },
   sword_legendary: { name: 'ดาบมังกร', icon: '🔥', rarity: 'legendary', type: 'weapon', attack: 25, desc: 'เพิ่มพลังโจมตี +25' },
@@ -945,446 +775,298 @@ const ITEMS = {
   shield_magic: { name: 'โล่ห์เวทมนตร์', icon: '🔰', rarity: 'epic', type: 'armor', defense: 12, desc: 'เพิ่มพลังป้องกัน +12' },
   staff: { name: 'ไม้เวท', icon: '🪄', rarity: 'rare', type: 'weapon', magic: 10, desc: 'เพิ่มพลังเวทมนตร์ +10' },
   gem: { name: 'อัญมณี', icon: '💎', rarity: 'rare', type: 'valuable', value: 50, desc: 'ขายได้ราคาดี' },
-  gem_epic: { name: 'อัญมณีราตรี', icon: '💠', rarity: 'epic', type: 'valuable', value: 120, desc: 'อัญมณีหายาก' },
-  key: { name: 'กุญแจลึกลับ', icon: '🗝️', rarity: 'epic', type: 'key', desc: 'อาจเปิดประตูลับได้' },
 };
 
-const RARITY_COLORS = {
-  common: '#6b6b6b',
-  rare: '#4a9eff',
-  epic: '#9d4edd',
-  legendary: '#ffd700'
+const RARITY_COLORS = { common: '#6b6b6b', rare: '#4a9eff', epic: '#9d4edd', legendary: '#ffd700' };
+const CLASSES = {
+  knight: { name: 'อัศวิน', icon: '🛡️', hp: 120, mp: 40, attack: 18, defense: 10, magic: 5 },
+  mage: { name: 'นักเวท', icon: '🧙‍♂️', hp: 80, mp: 80, attack: 10, defense: 4, magic: 15 },
+  rogue: { name: 'มือสังหาร', icon: '🗡️', hp: 95, mp: 50, attack: 22, defense: 6, magic: 8 }
 };
 
-// ============ Game State ============
-let game = {
-  floor: 1,
-  hero: {
-    name: 'ผู้กล้า',
-    level: 1,
-    hp: 100, maxHp: 100,
-    mp: 50, maxMp: 50,
-    xp: 0, xpNeeded: 100,
-    attack: 15, defense: 5, magic: 8,
-    gold: 0,
-    weapon: null,
-    armor: null
-  },
-  inventory: [],
-  map: [],
-  currentRoom: null,
-  inBattle: false,
-  currentEnemy: null,
-  stats: { kills: 0, chests: 0, rooms: 1, items: 0 },
-  busy: false
-};
+// ============ State ============
+let game = null;
+let fleeAttempts = 0;
 
-// ============ Initialize ============
-function init() {
-  createEmbers();
-  generateDungeon();
+function initGameState(selectedClass = 'knight') {
+  const c = CLASSES[selectedClass];
+  game = {
+    floor: 1,
+    hero: {
+      class: selectedClass, name: c.name, icon: c.icon,
+      level: 1, hp: c.hp, maxHp: c.hp, mp: c.mp, maxMp: c.mp,
+      xp: 0, xpNeeded: 100,
+      attack: c.attack, defense: c.defense, magic: c.magic,
+      gold: 0, weapon: null, armor: null,
+      status: { poison: 0, block: 0 }
+    },
+    inventory: [],
+    map: [], currentRoom: null,
+    inBattle: false, currentEnemy: null,
+    stats: { kills: 0, chests: 0, rooms: 1, items: 0 },
+    busy: false
+  };
+  fleeAttempts = 0;
 }
 
-function createEmbers() {
-  const container = document.getElementById('embers');
-  for (let i = 0; i < 20; i++) {
-    const ember = document.createElement('div');
-    ember.className = 'ember';
-    ember.style.left = Math.random() * 100 + 'vw';
-    ember.style.animationDuration = (8 + Math.random() * 12) + 's';
-    ember.style.animationDelay = Math.random() * 10 + 's';
-    container.appendChild(ember);
-  }
-}
-
-// ============ Dungeon Generation ============
+// ============ Dungeon Gen ============
 function generateDungeon() {
   const size = 5;
-  const totalRooms = size * size;
   game.map = [];
-  
-  for (let i = 0; i < totalRooms; i++) {
-    game.map.push({
-      id: i,
-      x: i % size,
-      y: Math.floor(i / size),
-      explored: false,
-      type: 'empty',
-      content: null,
-      enemy: null,
-      isBoss: false
-    });
+  for (let i = 0; i < size * size; i++) {
+    game.map.push({ id: i, x: i % size, y: Math.floor(i / size), explored: false, type: 'empty', content: null, enemy: null, isBoss: false });
   }
-  
-  // Start room (top-left)
   game.map[0].explored = true;
   game.map[0].type = 'start';
   game.currentRoom = game.map[0];
   
-  // Boss room (bottom-right)
-  const bossRoom = game.map[totalRooms - 1];
-  bossRoom.isBoss = true;
-  bossRoom.type = 'boss';
+  const bossRoom = game.map[size * size - 1];
+  bossRoom.isBoss = true; bossRoom.type = 'boss';
   
-  // Generate content for other rooms
   const enemyTypes = ['slime', 'bat', 'skeleton', 'zombie', 'spider', 'ghost', 'goblin', 'orc'];
   
   for (let room of game.map) {
     if (room.type === 'start' || room.type === 'boss') continue;
-    
     const rand = Math.random();
     if (rand < 0.55) {
-      // Enemy room
       room.type = 'enemy';
-      const enemyKey = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-      const enemyData = ENEMIES[enemyKey];
-      room.enemy = { 
-        ...enemyData, 
-        currentHp: enemyData.hp,
-        key: enemyKey
-      };
+      const ek = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+      const ed = ENEMIES[ek];
+      room.enemy = { ...ed, currentHp: ed.hp, key: ek, status: { poison: 0, block: 0 } };
     } else if (rand < 0.75) {
-      // Treasure room
-      room.type = 'treasure';
-      room.content = generateLoot();
-    } else if (rand < 0.88) {
-      // Rest room (heal)
-      room.type = 'rest';
-    } else {
-      // Empty
-      room.type = 'empty';
-    }
+      room.type = 'treasure'; room.content = generateLoot();
+    } else if (rand < 0.88) { room.type = 'rest'; }
   }
-  
   renderMap();
 }
 
 function generateLoot(rarityBias = null) {
-  const itemKeys = Object.keys(ITEMS);
-  let candidates = itemKeys;
-  
-  if (rarityBias) {
-    candidates = itemKeys.filter(k => ITEMS[k].rarity === rarityBias);
-  }
-  
-  const itemKey = candidates[Math.floor(Math.random() * candidates.length)];
-  return { ...ITEMS[itemKey], key: itemKey };
+  const keys = Object.keys(ITEMS);
+  let cands = rarityBias ? keys.filter(k => ITEMS[k].rarity === rarityBias) : keys;
+  const k = cands[Math.floor(Math.random() * cands.length)];
+  return { ...ITEMS[k], key: k };
 }
 
-// ============ Map Rendering ============
+// ============ Map ============
 function renderMap() {
   const mapEl = document.getElementById('dungeonMap');
   mapEl.innerHTML = '';
-  
   game.map.forEach(room => {
     const el = document.createElement('div');
     el.className = 'room';
-    
-    const isAdjacent = isRoomAdjacent(game.currentRoom, room);
+    const isAdj = isRoomAdjacent(game.currentRoom, room);
     
     if (room.id === game.currentRoom.id) {
-      el.classList.add('current');
-      el.innerHTML = '<i class="fas fa-person-walking"></i>';
+      el.classList.add('current'); el.innerHTML = '<i class="fas fa-person-walking"></i>';
     } else if (room.explored) {
       el.classList.add('explored');
-      if (room.isBoss) {
-        el.classList.add('boss');
-        el.innerHTML = '<i class="fas fa-crown"></i>';
-      } else if (room.type === 'treasure' && room.content) {
-        el.innerHTML = '<i class="fas fa-treasure-chest"></i>';
-      } else if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) {
-        el.innerHTML = room.enemy.icon;
-      } else if (room.type === 'rest') {
-        el.innerHTML = '<i class="fas fa-campfire"></i>';
-      }
-    } else if (isAdjacent) {
-      el.classList.add('adjacent');
-      el.innerHTML = '<i class="fas fa-question"></i>';
-    } else {
-      el.classList.add('unexplored');
-    }
+      if (room.isBoss) { el.classList.add('boss'); el.innerHTML = '<i class="fas fa-crown"></i>'; }
+      else if (room.type === 'treasure' && room.content) el.innerHTML = '💰';
+      else if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) el.innerHTML = room.enemy.icon;
+      else if (room.type === 'rest') el.innerHTML = '🔥';
+    } else if (isAdj) {
+      el.classList.add('adjacent'); el.innerHTML = '<i class="fas fa-question"></i>';
+    } else { el.classList.add('unexplored'); }
     
-    if (isAdjacent && !game.inBattle && !game.busy) {
-      el.onclick = () => moveToRoom(room);
-    }
-    
+    if (isAdj && !game.inBattle && !game.busy) el.onclick = () => moveToRoom(room);
     mapEl.appendChild(el);
   });
 }
 
 function isRoomAdjacent(a, b) {
   if (!a || !b) return false;
-  const dx = Math.abs(a.x - b.x);
-  const dy = Math.abs(a.y - b.y);
+  const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y);
   return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
 }
 
-// ============ Movement ============
 function moveToRoom(room) {
-  if (game.busy || game.inBattle) return;
-  if (!isRoomAdjacent(game.currentRoom, room)) return;
-  
-  game.currentRoom = room;
-  if (!room.explored) {
-    room.explored = true;
-    game.stats.rooms++;
-    addLog('system', `🚶 คุณเดินเข้าสู่ห้องใหม่...`);
-  }
-  
-  renderMap();
-  updateStats();
-  
+  if (game.busy || game.inBattle || !isRoomAdjacent(game.currentRoom, room)) return;
+  game.currentRoom = room; fleeAttempts = 0;
+  if (!room.explored) { room.explored = true; game.stats.rooms++; addLog('system', '🚶 เดินสู่ห้องใหม่...'); }
+  renderMap(); updateStats();
   setTimeout(() => enterRoom(room), 300);
 }
 
 function enterRoom(room) {
-  if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) {
-    startBattle(room.enemy);
-  } else if (room.type === 'treasure' && room.content) {
-    showTreasure(room);
-  } else if (room.type === 'rest') {
-    showRest(room);
-  } else if (room.type === 'boss') {
-    startBossBattle();
-  } else {
-    showEmptyRoom();
-  }
+  if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) startBattle(room.enemy);
+  else if (room.type === 'treasure' && room.content) showTreasure(room);
+  else if (room.type === 'rest') showRest(room);
+  else if (room.type === 'boss') startBossBattle();
+  else showEmptyRoom();
 }
 
-// ============ Scene Rendering ============
-function renderScene(html) {
-  document.getElementById('sceneContainer').innerHTML = html;
-}
+// ============ Scenes ============
+function renderScene(html) { document.getElementById('sceneContainer').innerHTML = html; }
 
 function showEmptyRoom() {
-  const flavors = [
-    'ห้องว่างเปล่า มีเศษหินกระจัดกระจาย',
-    'ห้องโถงเงียบสงบ ไม่พบอะไรพิเศษ',
-    'ทางเดินแคบ มีเชื้อราขึ้นตามผนัง',
-    'ห้องที่ถูกทิ้งร้าง มีแต่ฝุ่น',
-    'ห้องเปิดโล่ง มีแสงสลัวจางๆ'
-  ];
+  const flavors = ['ห้องว่างเปล่า มีเศษหิน', 'ห้องโถงเงียบสงบ', 'ทางเดินแคบมีเชื้อรา', 'ห้องที่ถูกทิ้งร้าง', 'ห้องเปิดโล่ง มีแสงจางๆ'];
   const desc = flavors[Math.floor(Math.random() * flavors.length)];
-  
   renderScene(`
-    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative">
-      <div class="absolute top-4 left-4 torch"></div>
-      <div class="absolute top-4 right-4 torch"></div>
+    <div class="flex flex-col items-center justify-center min-h-[450px] text-center relative">
+      <div class="absolute top-4 left-4 torch"></div><div class="absolute top-4 right-4 torch"></div>
       <div class="text-6xl mb-4 opacity-50">🕯️</div>
       <div class="font-display text-xl mb-2" style="color: var(--text-faded);">${desc}</div>
-      <div class="text-sm" style="color: var(--text-faded);">เลือกห้องข้างๆ เพื่อเคลื่อนที่ต่อ</div>
+      <div class="text-sm" style="color: var(--text-faded);">เลือกห้องข้างๆ เพื่อเคลื่อนที่</div>
     </div>
   `);
 }
 
 function showTreasure(room) {
-  const item = room.content;
-  const rarityColor = RARITY_COLORS[item.rarity];
-  
+  const item = room.content; const rc = RARITY_COLORS[item.rarity];
   renderScene(`
-    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative loot-drop">
-      <div class="absolute top-4 left-4 torch"></div>
-      <div class="absolute top-4 right-4 torch"></div>
-      
+    <div class="flex flex-col items-center justify-center min-h-[450px] text-center relative loot-drop">
+      <div class="absolute top-4 left-4 torch"></div><div class="absolute top-4 right-4 torch"></div>
       <div class="text-7xl mb-6">📦</div>
       <div class="font-display text-2xl mb-2" style="color: var(--gold-treasure);">หีบสมบัติ!</div>
-      <div class="mb-6" style="color: var(--text-faded);">คุณพบไอเทมภายในหีบ</div>
-      
-      <div class="panel p-6 mb-6" style="border-color: ${rarityColor}; max-width: 300px;">
+      <div class="panel p-6 mb-6" style="border-color: ${rc}; max-width: 300px;">
         <div class="text-5xl mb-3">${item.icon}</div>
-        <div class="font-display font-bold text-lg" style="color: ${rarityColor};">${item.name}</div>
-        <div class="text-xs uppercase mt-1" style="color: ${rarityColor};">${item.rarity}</div>
+        <div class="font-display font-bold text-lg" style="color: ${rc};">${item.name}</div>
+        <div class="text-xs uppercase mt-1" style="color: ${rc};">${item.rarity}</div>
         <div class="text-sm mt-2" style="color: var(--text-faded);">${item.desc}</div>
       </div>
-      
-      <button onclick="takeLoot()" class="btn-primary">
-        <i class="fas fa-hand-holding mr-2"></i>หยิบไอเทม
-      </button>
+      <button onclick="takeLoot()" class="btn-primary"><i class="fas fa-hand-holding mr-2"></i>หยิบไอเทม</button>
     </div>
   `);
-  
-  game.pendingLoot = item;
-  game.pendingLootRoom = room;
+  game.pendingLoot = item; game.pendingLootRoom = room;
 }
 
 function takeLoot() {
   if (game.pendingLoot) {
     addToInventory(game.pendingLoot);
     addLog('loot', `📦 ได้รับ: ${game.pendingLoot.name}`);
-    game.stats.items++;
-    game.stats.chests++;
-    
-    if (game.pendingLootRoom) {
-      game.pendingLootRoom.content = null;
-      game.pendingLootRoom.type = 'empty';
-    }
-    
-    game.pendingLoot = null;
-    game.pendingLootRoom = null;
-    
-    updateStats();
-    renderMap();
-    showEmptyRoom();
+    game.stats.items++; game.stats.chests++;
+    if (game.pendingLootRoom) { game.pendingLootRoom.content = null; game.pendingLootRoom.type = 'empty'; }
+    game.pendingLoot = null; game.pendingLootRoom = null;
+    updateStats(); renderMap(); showEmptyRoom();
   }
 }
 
 function showRest(room) {
-  const healAmount = Math.floor(game.hero.maxHp * 0.5);
-  const mpHeal = Math.floor(game.hero.maxMp * 0.5);
-  
-  game.hero.hp = Math.min(game.hero.maxHp, game.hero.hp + healAmount);
-  game.hero.mp = Math.min(game.hero.maxMp, game.hero.mp + mpHeal);
-  
-  addLog('heal', `🔥 พักผ่อน ฟื้นพลังชีวิต ${healAmount} และมานา ${mpHeal}`);
-  
-  room.type = 'empty';
-  updateStats();
-  
+  const ha = Math.floor(game.hero.maxHp * 0.5), ma = Math.floor(game.hero.maxMp * 0.5);
+  game.hero.hp = Math.min(game.hero.maxHp, game.hero.hp + ha);
+  game.hero.mp = Math.min(game.hero.maxMp, game.hero.mp + ma);
+  game.hero.status.poison = 0; // Rest cures poison
+  addLog('heal', `🔥 พักผ่อน ฟื้นพลัง ${ha} และมานา ${ma}`);
+  room.type = 'empty'; updateStats();
   renderScene(`
-    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative">
-      <div class="absolute top-4 left-4 torch"></div>
-      <div class="absolute top-4 right-4 torch"></div>
-      
+    <div class="flex flex-col items-center justify-center min-h-[450px] text-center relative">
+      <div class="absolute top-4 left-4 torch"></div><div class="absolute top-4 right-4 torch"></div>
       <div class="text-7xl mb-6">🔥</div>
       <div class="font-display text-2xl mb-2" style="color: var(--poison-green);">จุดพักแคมป์</div>
-      <div class="mb-6" style="color: var(--text-faded);">คุณพักผ่อนและฟื้นพลัง</div>
-      
       <div class="panel p-4 mb-4" style="max-width: 280px;">
-        <div class="text-sm mb-2"><span style="color: var(--blood-red);">❤️ ฟื้นพลังชีวิต:</span> +${healAmount}</div>
-        <div class="text-sm"><span style="color: var(--magic-blue);">✨ ฟื้นมานา:</span> +${mpHeal}</div>
+        <div class="text-sm mb-2"><span style="color: var(--blood-red);">❤️ ฟื้นพลัง:</span> +${ha}</div>
+        <div class="text-sm"><span style="color: var(--magic-blue);">✨ ฟื้นมานา:</span> +${ma}</div>
+        <div class="text-sm mt-1"><span style="color: var(--poison-green);">🧪 รักษาพิษ</span></div>
       </div>
-      
-      <div class="text-sm" style="color: var(--text-faded);">เลือกห้องข้างๆ เพื่อเคลื่อนที่ต่อ</div>
     </div>
   `);
 }
 
-// ============ Battle System ============
+// ============ Battle ============
 function startBattle(enemy) {
-  game.inBattle = true;
-  game.currentEnemy = enemy;
-  renderBattle();
-  addLog('combat', `⚔️ ${enemy.name} ปรากฏ!`);
-  renderMap();
+  game.inBattle = true; game.currentEnemy = enemy; fleeAttempts = 0;
+  renderBattle(); addLog('combat', `⚔️ ${enemy.name} ปรากฏ!`); renderMap();
 }
 
 function startBossBattle() {
   const bosses = ['dragon_boss', 'lich_boss', 'demon_boss'];
-  const bossKey = bosses[Math.min(game.floor - 1, bosses.length - 1)];
-  const bossData = ENEMIES[bossKey];
-  
-  // Scale boss with floor
-  const scaledBoss = {
-    ...bossData,
-    hp: bossData.hp + (game.floor - 1) * 50,
-    attack: bossData.attack + (game.floor - 1) * 5,
-    currentHp: bossData.hp + (game.floor - 1) * 50,
-    key: bossKey,
-    isBoss: true
-  };
-  
-  game.inBattle = true;
-  game.currentEnemy = scaledBoss;
-  renderBattle();
-  addLog('combat', `☠️ บอสปรากฏ: ${scaledBoss.name}!`);
+  const bk = bosses[Math.min(game.floor - 1, bosses.length - 1)];
+  const bd = ENEMIES[bk];
+  const sb = { ...bd, hp: bd.hp + (game.floor - 1) * 50, attack: bd.attack + (game.floor - 1) * 5, currentHp: bd.hp + (game.floor - 1) * 50, key: bk, isBoss: true, status: { poison: 0, block: 0 } };
+  game.inBattle = true; game.currentEnemy = sb;
+  renderBattle(); addLog('combat', `☠️ บอส: ${sb.name}!`);
 }
 
 function renderBattle() {
-  const enemy = game.currentEnemy;
-  const hero = game.hero;
-  
+  const e = game.currentEnemy, h = game.hero;
   renderScene(`
-    <div class="relative min-h-[400px] flex flex-col">
-      <div class="absolute top-4 left-4 torch"></div>
-      <div class="absolute top-4 right-4 torch"></div>
+    <div class="relative min-h-[450px] flex flex-col">
+      <div class="absolute top-4 left-4 torch"></div><div class="absolute top-4 right-4 torch"></div>
       
-      <!-- Enemy section -->
       <div class="flex flex-col items-center mt-4 mb-4">
-        <div class="font-display text-xl mb-2" style="color: var(--blood-red);">${enemy.name}</div>
-        <div class="enemy-sprite character" id="enemySprite" style="position: relative;">
-          ${enemy.icon}
-          ${enemy.isBoss ? '<div class="absolute -top-2 -right-2 text-xl">👑</div>' : ''}
-        </div>
+        <div class="font-display text-xl mb-2" style="color: var(--blood-red);">${e.name} ${e.isBoss ? '👑' : ''}</div>
+        <div class="enemy-sprite character" id="enemySprite">${e.icon}</div>
         <div class="mt-3 w-64">
           <div class="stat-bar" style="height: 22px;">
-            <div class="stat-fill hp-fill" id="enemyHpBar" style="width: ${(enemy.currentHp/enemy.hp)*100}%;"></div>
-            <div class="stat-text" id="enemyHpText">${enemy.currentHp}/${enemy.hp}</div>
+            <div class="stat-fill hp-fill" id="enemyHpBar" style="width: ${(e.currentHp/e.hp)*100}%;"></div>
+            <div class="stat-text" id="enemyHpText">${e.currentHp}/${e.hp}</div>
           </div>
         </div>
         <div class="text-xs mt-2 flex gap-3" style="color: var(--text-faded);">
-          <span>⚔️ ${enemy.attack}</span>
-          <span>🛡️ ${enemy.defense}</span>
+          <span>⚔️ ${e.attack}</span><span>🛡️ ${e.defense}</span>
+          <span id="enemyStatus"></span>
         </div>
       </div>
       
-      <!-- VS divider -->
       <div class="flex items-center justify-center my-2">
         <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, var(--blood-red), transparent);"></div>
         <div class="font-display text-sm mx-4" style="color: var(--blood-red);">⚔️ VS ⚔️</div>
         <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, var(--blood-red), transparent);"></div>
       </div>
       
-      <!-- Hero section -->
       <div class="flex flex-col items-center mb-4">
-        <div class="hero-sprite character" id="heroSprite" style="position: relative;">
-          🦸
+        <div class="hero-sprite character" id="heroSprite">${h.icon}</div>
+        <div class="text-xs mt-2 flex gap-3" style="color: var(--text-faded);">
+          <span id="heroStatusBattle"></span>
         </div>
       </div>
       
-      <!-- Action buttons -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-auto">
-        <button class="action-btn attack" onclick="playerAttack()" id="btnAttack">
-          <i class="fas fa-khanda"></i> โจมตี
-        </button>
-        <button class="action-btn magic" onclick="playerMagic()" id="btnMagic" ${hero.mp < 15 ? 'disabled' : ''}>
-          <i class="fas fa-fire"></i> เวทมนตร์ (15MP)
-        </button>
-        <button class="action-btn heal" onclick="playerHeal()" id="btnHeal" ${hero.mp < 20 ? 'disabled' : ''}>
-          <i class="fas fa-heart"></i> ฟื้นพลัง (20MP)
-        </button>
-        <button class="action-btn" onclick="playerFlee()" id="btnFlee">
-          <i class="fas fa-person-running"></i> หนี
-        </button>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-auto">
+        <button class="action-btn attack" onclick="playerAttack()" id="btnAttack"><i class="fas fa-khanda"></i> โจมตี</button>
+        <button class="action-btn magic" onclick="playerMagic()" id="btnMagic" ${h.mp < 15 ? 'disabled' : ''}><i class="fas fa-fire"></i> เวท (15)</button>
+        <button class="action-btn heal" onclick="playerHeal()" id="btnHeal" ${h.mp < 20 ? 'disabled' : ''}><i class="fas fa-heart"></i> ฟื้น (20)</button>
+        <button class="action-btn" onclick="playerBlock()" id="btnBlock"><i class="fas fa-shield"></i> บล็อก</button>
+        <button class="action-btn" onclick="playerFlee()" id="btnFlee"><i class="fas fa-person-running"></i> หนี</button>
       </div>
     </div>
   `);
+  updateStatusUI();
+}
+
+function updateStatusUI() {
+  const h = game.hero, e = game.currentEnemy;
+  let heroHtml = '';
+  if (h.status.poison > 0) heroHtml += `<div class="status-icon status-poison" title="พิษ">☠️${h.status.poison}</div>`;
+  if (h.status.block > 0) heroHtml += `<div class="status-icon status-block" title="บล็อก">🛡️${h.status.block}</div>`;
+  document.getElementById('heroStatusBattle').innerHTML = heroHtml;
+  
+  document.getElementById('statusEffectsHero').innerHTML = heroHtml ? `สถานะ: ${heroHtml}` : '';
+  
+  if (e) {
+    let enemyHtml = '';
+    if (e.status.poison > 0) enemyHtml += `<div class="status-icon status-poison">☠️${e.status.poison}</div>`;
+    if (e.status.block > 0) enemyHtml += `<div class="status-icon status-block">🛡️${e.status.block}</div>`;
+    document.getElementById('enemyStatus').innerHTML = enemyHtml;
+  }
 }
 
 function playerAttack() {
   if (game.busy || !game.inBattle) return;
   game.busy = true;
+  const h = game.hero, e = game.currentEnemy;
+  const wAtk = h.weapon ? (h.weapon.attack || 0) : 0;
+  const isCrit = Math.random() < 0.15;
+  let dmg = Math.max(1, h.attack + wAtk - e.defense + Math.floor(Math.random() * 6 - 3));
+  if (isCrit) dmg = Math.floor(dmg * 1.5);
   
-  const hero = game.hero;
-  const enemy = game.currentEnemy;
-  const weaponAtk = hero.weapon ? (hero.weapon.attack || 0) : 0;
-  const damage = Math.max(1, hero.attack + weaponAtk - enemy.defense + Math.floor(Math.random() * 6 - 3));
-  
-  // Animate
-  const heroSprite = document.getElementById('heroSprite');
-  heroSprite.classList.add('attacking');
+  document.getElementById('heroSprite').classList.add('attacking-right');
   
   setTimeout(() => {
-    enemy.currentHp = Math.max(0, enemy.currentHp - damage);
-    showDamage(enemy, damage, 'var(--blood-red)');
+    e.currentHp = Math.max(0, e.currentHp - dmg);
+    showDamage(e, dmg, isCrit ? 'var(--gold-treasure)' : 'var(--blood-red)', isCrit);
     
-    const enemySprite = document.getElementById('enemySprite');
-    enemySprite.classList.add('hit');
+    const es = document.getElementById('enemySprite');
+    es.classList.add('hit');
     document.getElementById('sceneContainer').classList.add('screen-shake');
-    
-    addLog('combat', `⚔️ คุณโจมตี ${enemy.name} สร้างดาเมจ ${damage}`);
+    addLog('combat', `${isCrit ? '💥คริติคอล! ' : ''}⚔️ โจมตี ${e.name} ดาเมจ ${dmg}`);
     
     setTimeout(() => {
-      heroSprite.classList.remove('attacking');
-      enemySprite.classList.remove('hit');
+      document.getElementById('heroSprite').classList.remove('attacking-right');
+      es.classList.remove('hit');
       document.getElementById('sceneContainer').classList.remove('screen-shake');
-      
       updateEnemyHp();
-      
-      if (enemy.currentHp <= 0) {
-        enemyDefeated();
-      } else {
-        enemyTurn();
-      }
+      if (e.currentHp <= 0) enemyDefeated();
+      else enemyTurn();
     }, 400);
   }, 200);
 }
@@ -1392,40 +1074,28 @@ function playerAttack() {
 function playerMagic() {
   if (game.busy || !game.inBattle || game.hero.mp < 15) return;
   game.busy = true;
+  const h = game.hero, e = game.currentEnemy;
+  h.mp -= 15;
+  const wMag = h.weapon ? (h.weapon.magic || 0) : 0;
+  const dmg = Math.max(1, (h.magic + wMag) * 2 - e.defense + Math.floor(Math.random() * 8));
   
-  const hero = game.hero;
-  const enemy = game.currentEnemy;
-  hero.mp -= 15;
-  
-  const weaponMag = hero.weapon ? (hero.weapon.magic || 0) : 0;
-  const damage = Math.max(1, (hero.magic + weaponMag) * 2 - enemy.defense + Math.floor(Math.random() * 8));
-  
-  const heroSprite = document.getElementById('heroSprite');
-  heroSprite.style.transform = 'scale(1.2)';
+  const hs = document.getElementById('heroSprite');
+  hs.style.transform = 'scale(1.2)'; hs.style.filter = 'brightness(1.5) hue-rotate(90deg)';
   
   setTimeout(() => {
-    enemy.currentHp = Math.max(0, enemy.currentHp - damage);
-    showDamage(enemy, damage, 'var(--magic-purple)');
+    e.currentHp = Math.max(0, e.currentHp - dmg);
+    showDamage(e, dmg, 'var(--magic-purple)', false);
     
-    const enemySprite = document.getElementById('enemySprite');
-    enemySprite.classList.add('hit');
-    enemySprite.style.boxShadow = '0 0 40px var(--magic-purple)';
-    
-    addLog('magic', `✨ คุณร่ายเวทมนตร์ใส่ ${enemy.name} สร้างดาเมจ ${damage}`);
+    const es = document.getElementById('enemySprite');
+    es.classList.add('hit'); es.style.boxShadow = '0 0 40px var(--magic-purple)';
+    addLog('magic', `✨ เวทมนตร์ใส่ ${e.name} ดาเมจ ${dmg}`);
     
     setTimeout(() => {
-      heroSprite.style.transform = '';
-      enemySprite.classList.remove('hit');
-      enemySprite.style.boxShadow = '';
-      
-      updateEnemyHp();
-      updateStats();
-      
-      if (enemy.currentHp <= 0) {
-        enemyDefeated();
-      } else {
-        enemyTurn();
-      }
+      hs.style.transform = ''; hs.style.filter = '';
+      es.classList.remove('hit'); es.style.boxShadow = '';
+      updateEnemyHp(); updateStats();
+      if (e.currentHp <= 0) enemyDefeated();
+      else enemyTurn();
     }, 400);
   }, 300);
 }
@@ -1433,174 +1103,162 @@ function playerMagic() {
 function playerHeal() {
   if (game.busy || !game.inBattle || game.hero.mp < 20) return;
   game.busy = true;
-  
-  const hero = game.hero;
-  hero.mp -= 20;
-  
-  const healAmount = 40 + hero.level * 5;
-  const actualHeal = Math.min(hero.maxHp - hero.hp, healAmount);
-  hero.hp = Math.min(hero.maxHp, hero.hp + healAmount);
-  
-  showDamage({ _isHero: true }, actualHeal, 'var(--poison-green)');
-  addLog('heal', `💚 คุณฟื้นพลังชีวิต ${actualHeal} หน่วย`);
-  
+  const h = game.hero; h.mp -= 20;
+  const heal = 40 + h.level * 5;
+  const actual = Math.min(h.maxHp - h.hp, heal);
+  h.hp = Math.min(h.maxHp, h.hp + heal);
+  showDamage({ _isHero: true }, actual, 'var(--poison-green)', false);
+  addLog('heal', `💚 ฟื้นพลัง ${actual}`);
   updateStats();
-  
-  setTimeout(() => {
-    enemyTurn();
-  }, 600);
+  setTimeout(() => enemyTurn(), 600);
+}
+
+function playerBlock() {
+  if (game.busy || !game.inBattle) return;
+  game.busy = true;
+  game.hero.status.block = 2; // Block next 1 attack
+  addLog('system', `🛡️ ตั้งรับ! ลดดาเมจครั้งต่อไป`);
+  updateStatusUI();
+  setTimeout(() => enemyTurn(), 400);
 }
 
 function playerFlee() {
   if (game.busy || !game.inBattle) return;
+  if (game.currentEnemy.isBoss) { addLog('system', `❌ หนีจากบอสไม่ได้!`); return; }
+  game.busy = true; fleeAttempts++;
   
-  if (game.currentEnemy.isBoss) {
-    addLog('system', `❌ ไม่สามารถหนีจากบอสได้!`);
-    return;
-  }
-  
-  game.busy = true;
-  
-  if (Math.random() < 0.6) {
-    addLog('system', `🏃 คุณหนีสำเร็จ!`);
-    game.inBattle = false;
-    game.currentEnemy = null;
-    game.busy = false;
-    
-    // Move back to start or stay
-    showEmptyRoom();
-    renderMap();
+  if (fleeAttempts >= 2 || Math.random() < 0.5) {
+    addLog('system', `🏃 หนีสำเร็จ!`);
+    game.inBattle = false; game.currentEnemy = null; game.busy = false;
+    showEmptyRoom(); renderMap();
   } else {
-    addLog('system', `❌ หนีไม่สำเร็จ!`);
+    addLog('system', `❌ หนีไม่สำเร็จ! (ลองอีกครั้ง)`);
     setTimeout(() => enemyTurn(), 500);
   }
 }
 
 function enemyTurn() {
   if (!game.inBattle) return;
+  const e = game.currentEnemy, h = game.hero;
   
-  const enemy = game.currentEnemy;
-  const hero = game.hero;
-  const armorDef = hero.armor ? (hero.armor.defense || 0) : 0;
-  const damage = Math.max(1, enemy.attack - hero.defense - armorDef + Math.floor(Math.random() * 6 - 3));
-  
-  const enemySprite = document.getElementById('enemySprite');
-  if (enemySprite) {
-    enemySprite.style.animation = 'attack-lunge-left 0.4s';
+  // Poison damage to enemy
+  if (e.status.poison > 0) {
+    const pDmg = 5 + Math.floor(game.hero.magic * 0.5);
+    e.currentHp = Math.max(0, e.currentHp - pDmg);
+    showDamage(e, pDmg, 'var(--poison-green)', false);
+    addLog('magic', `☠️ ${e.name} ได้รับดาเมจพิษ ${pDmg}`);
+    e.status.poison--;
+    updateEnemyHp();
+    if (e.currentHp <= 0) { enemyDefeated(); return; }
   }
   
+  // Poison damage to hero
+  if (h.status.poison > 0) {
+    const pDmg = 5;
+    h.hp = Math.max(0, h.hp - pDmg);
+    showDamage({ _isHero: true }, pDmg, 'var(--poison-green)', false);
+    addLog('combat', `☠️ คุณได้รับดาเมจพิษ ${pDmg}`);
+    h.status.poison--;
+    updateStats(); updateStatusUI();
+    if (h.hp <= 0) { gameOver(); return; }
+  }
+  
+  const aDef = h.armor ? (h.armor.defense || 0) : 0;
+  let dmg = Math.max(1, e.attack - h.defense - aDef + Math.floor(Math.random() * 6 - 3));
+  
+  // Block reduces damage
+  if (h.status.block > 0) {
+    dmg = Math.max(1, Math.floor(dmg * 0.3));
+    h.status.block--;
+    addLog('system', `🛡️ บล็อกดาเมจ!`);
+  }
+  
+  // Enemy poison attack
+  let poisoned = false;
+  if (e.poisonChance && Math.random() < e.poisonChance && h.status.poison === 0) {
+    h.status.poison = 3; poisoned = true;
+  }
+  
+  const es = document.getElementById('enemySprite');
+  es.style.animation = 'attack-left 0.4s';
+  
   setTimeout(() => {
-    hero.hp = Math.max(0, hero.hp - damage);
-    showDamage({ _isHero: true }, damage, 'var(--blood-red)');
+    h.hp = Math.max(0, h.hp - dmg);
+    showDamage({ _isHero: true }, dmg, 'var(--blood-red)', false);
     
-    const heroSprite = document.getElementById('heroSprite');
-    if (heroSprite) {
-      heroSprite.classList.add('hit');
-      document.getElementById('sceneContainer').classList.add('screen-shake');
-    }
-    
-    addLog('combat', `💥 ${enemy.name} โจมตีคุณ สร้างดาเมจ ${damage}`);
+    const hs = document.getElementById('heroSprite');
+    hs.classList.add('hit');
+    document.getElementById('sceneContainer').classList.add('screen-shake');
+    addLog('combat', `💥 ${e.name} โจมตี ดาเมจ ${dmg}${poisoned ? ' [ติดพิษ!]' : ''}`);
     
     setTimeout(() => {
-      if (enemySprite) enemySprite.style.animation = '';
-      if (heroSprite) heroSprite.classList.remove('hit');
+      es.style.animation = '';
+      hs.classList.remove('hit');
       document.getElementById('sceneContainer').classList.remove('screen-shake');
-      
-      updateStats();
-      
-      if (hero.hp <= 0) {
-        gameOver();
-      } else {
-        game.busy = false;
-        renderBattle();
-      }
+      updateStats(); updateStatusUI();
+      if (h.hp <= 0) gameOver();
+      else { game.busy = false; renderBattle(); }
     }, 400);
   }, 200);
 }
 
-function showDamage(target, damage, color) {
+function showDamage(target, dmg, color, isCrit) {
   const scene = document.getElementById('sceneContainer');
-  const dmg = document.createElement('div');
-  dmg.className = 'damage-number';
-  dmg.textContent = damage;
-  dmg.style.color = color;
-  
-  if (target._isHero) {
-    dmg.style.left = '50%';
-    dmg.style.top = '60%';
-  } else {
-    dmg.style.left = '50%';
-    dmg.style.top = '25%';
-  }
-  
-  dmg.style.transform = 'translateX(-50%)';
-  scene.appendChild(dmg);
-  
-  setTimeout(() => dmg.remove(), 1200);
+  const el = document.createElement('div');
+  el.className = 'damage-number';
+  el.innerHTML = isCrit ? `<span style="font-size:16px;">CRIT!</span><br>${dmg}` : dmg;
+  el.style.color = color;
+  el.style.left = '50%';
+  el.style.top = target._isHero ? '60%' : '25%';
+  scene.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
 }
 
 function updateEnemyHp() {
-  const enemy = game.currentEnemy;
-  if (!enemy) return;
-  
-  const bar = document.getElementById('enemyHpBar');
-  const text = document.getElementById('enemyHpText');
-  if (bar) bar.style.width = (enemy.currentHp/enemy.hp)*100 + '%';
-  if (text) text.textContent = `${enemy.currentHp}/${enemy.hp}`;
+  const e = game.currentEnemy; if (!e) return;
+  const bar = document.getElementById('enemyHpBar'), txt = document.getElementById('enemyHpText');
+  if (bar) bar.style.width = (e.currentHp/e.hp)*100 + '%';
+  if (txt) txt.textContent = `${e.currentHp}/${e.hp}`;
 }
 
 function enemyDefeated() {
-  const enemy = game.currentEnemy;
-  game.stats.kills++;
+  const e = game.currentEnemy; game.stats.kills++;
+  const es = document.getElementById('enemySprite'); if (es) es.classList.add('dying');
+  addLog('combat', `☠️ กำจัด ${e.name} แล้ว!`);
+  game.hero.xp += e.xp; game.hero.gold += e.gold;
+  addLog('system', `✨ +${e.xp} XP, +${e.gold} ทอง`);
   
-  const enemySprite = document.getElementById('enemySprite');
-  if (enemySprite) enemySprite.classList.add('dying');
+  // Poison staff chance
+  if (game.hero.weapon && game.hero.weapon.magic && Math.random() < 0.3) {
+    if (e.status.poison === 0) {
+      // Just visual log for passive poison
+    }
+  }
   
-  addLog('combat', `☠️ กำจัด ${enemy.name} ได้แล้ว!`);
-  
-  // Gain XP and Gold
-  game.hero.xp += enemy.xp;
-  game.hero.gold += enemy.gold;
-  addLog('system', `✨ ได้รับ ${enemy.xp} XP และ ${enemy.gold} ทอง`);
-  
-  // Drop loot chance
-  if (Math.random() < 0.4 || enemy.isBoss) {
-    const loot = enemy.isBoss ? generateLoot('legendary') : generateLoot();
+  if (Math.random() < 0.4 || e.isBoss) {
+    const loot = e.isBoss ? generateLoot('legendary') : generateLoot();
     setTimeout(() => showItemDrop(loot), 800);
   } else {
     setTimeout(endBattle, 800);
   }
-  
-  // Level up check
-  checkLevelUp();
-  updateStats();
+  checkLevelUp(); updateStats();
 }
 
 function endBattle() {
-  game.inBattle = false;
-  game.currentEnemy = null;
-  game.busy = false;
-  
-  if (game.currentRoom.isBoss) {
-    showVictory();
-  } else {
-    game.currentRoom.enemy = null;
-    game.currentRoom.type = 'empty';
-    showEmptyRoom();
-    renderMap();
-  }
+  game.inBattle = false; game.currentEnemy = null; game.busy = false;
+  if (game.currentRoom.isBoss) showVictory();
+  else { game.currentRoom.enemy = null; game.currentRoom.type = 'empty'; showEmptyRoom(); renderMap(); }
 }
 
 function showItemDrop(item) {
-  const rarityColor = RARITY_COLORS[item.rarity];
+  const rc = RARITY_COLORS[item.rarity];
   document.getElementById('itemDropContent').innerHTML = `
     <div class="flex flex-col items-center">
       <div class="text-6xl mb-3 loot-drop">${item.icon}</div>
-      <div class="font-display text-lg font-bold" style="color: ${rarityColor};">${item.name}</div>
-      <div class="text-xs uppercase mt-1" style="color: ${rarityColor};">${item.rarity}</div>
+      <div class="font-display text-lg font-bold" style="color: ${rc};">${item.name}</div>
+      <div class="text-xs uppercase mt-1" style="color: ${rc};">${item.rarity}</div>
       <div class="text-sm mt-2" style="color: var(--text-faded);">${item.desc}</div>
-    </div>
-  `;
+    </div>`;
   document.getElementById('itemDropModal').classList.remove('hidden');
   game.pendingDrop = item;
 }
@@ -1610,289 +1268,179 @@ function closeItemDrop() {
   if (game.pendingDrop) {
     addToInventory(game.pendingDrop);
     addLog('loot', `📦 ได้รับ: ${game.pendingDrop.name}`);
-    game.stats.items++;
-    game.pendingDrop = null;
-    updateStats();
+    game.stats.items++; game.pendingDrop = null; updateStats();
   }
   endBattle();
 }
 
-// ============ Level System ============
 function checkLevelUp() {
   while (game.hero.xp >= game.hero.xpNeeded) {
     game.hero.xp -= game.hero.xpNeeded;
-    game.hero.level++;
-    game.hero.xpNeeded = Math.floor(game.hero.xpNeeded * 1.5);
-    
-    // Stat increases
-    game.hero.maxHp += 20;
-    game.hero.maxMp += 10;
-    game.hero.attack += 3;
-    game.hero.defense += 2;
-    game.hero.magic += 2;
-    game.hero.hp = game.hero.maxHp;
-    game.hero.mp = game.hero.maxMp;
-    
+    game.hero.level++; game.hero.xpNeeded = Math.floor(game.hero.xpNeeded * 1.5);
+    game.hero.maxHp += 20; game.hero.maxMp += 10;
+    game.hero.attack += 3; game.hero.defense += 2; game.hero.magic += 2;
+    game.hero.hp = game.hero.maxHp; game.hero.mp = game.hero.maxMp;
     addLog('system', `🎉 เลเวลอัพ! เลเวล ${game.hero.level}`);
-    
-    // Visual effect
-    const scene = document.getElementById('sceneContainer');
-    const burst = document.createElement('div');
-    burst.className = 'level-up-burst';
-    scene.appendChild(burst);
-    setTimeout(() => burst.remove(), 1000);
+    const s = document.getElementById('sceneContainer');
+    const b = document.createElement('div'); b.className = 'level-up-burst'; s.appendChild(b);
+    setTimeout(() => b.remove(), 1000);
   }
 }
 
 // ============ Inventory ============
 function addToInventory(item) {
-  if (game.inventory.length < 16) {
-    game.inventory.push(item);
-    renderInventory();
-  } else {
-    addLog('system', '❌ กระเป๋าเต็ม!');
-  }
+  if (game.inventory.length < 16) { game.inventory.push(item); renderInventory(); }
+  else addLog('system', '❌ กระเป๋าเต็ม!');
 }
 
 function renderInventory() {
-  const grid = document.getElementById('inventoryGrid');
-  grid.innerHTML = '';
-  
+  const g = document.getElementById('inventoryGrid'); g.innerHTML = '';
   for (let i = 0; i < 16; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'item-slot';
-    
+    const slot = document.createElement('div'); slot.className = 'item-slot';
     if (i < game.inventory.length) {
       const item = game.inventory[i];
       slot.classList.add('has-item', `item-rarity-${item.rarity}`);
       slot.innerHTML = item.icon;
-      
       slot.onmouseenter = (e) => showTooltip(e, item);
       slot.onmouseleave = hideTooltip;
-      slot.onmousemove = (e) => moveTooltip(e);
+      slot.onmousemove = moveTooltip;
       slot.onclick = () => useItem(i);
     }
-    
-    grid.appendChild(slot);
+    g.appendChild(slot);
   }
 }
 
 function useItem(index) {
-  const item = game.inventory[index];
-  if (!item) return;
-  
+  const item = game.inventory[index]; if (!item) return;
   if (item.type === 'heal') {
     const heal = Math.min(game.hero.maxHp - game.hero.hp, item.value);
     game.hero.hp = Math.min(game.hero.maxHp, game.hero.hp + item.value);
-    addLog('heal', `💚 ใช้ ${item.name} ฟื้นพลัง ${heal}`);
-    game.inventory.splice(index, 1);
+    addLog('heal', `💚 ใช้ ${item.name} ฟื้น ${heal}`); game.inventory.splice(index, 1);
   } else if (item.type === 'mana') {
     const heal = Math.min(game.hero.maxMp - game.hero.mp, item.value);
     game.hero.mp = Math.min(game.hero.maxMp, game.hero.mp + item.value);
-    addLog('magic', `✨ ใช้ ${item.name} ฟื้นมานา ${heal}`);
-    game.inventory.splice(index, 1);
+    addLog('magic', `✨ ใช้ ${item.name} ฟื้นมานา ${heal}`); game.inventory.splice(index, 1);
+  } else if (item.type === 'antidote') {
+    game.hero.status.poison = 0;
+    addLog('heal', `🧴 รักษาพิษแล้ว`); game.inventory.splice(index, 1);
   } else if (item.type === 'weapon') {
-    // Equip weapon
-    if (game.hero.weapon) {
-      addToInventory(game.hero.weapon);
-    }
-    game.hero.weapon = item;
-    addLog('loot', `🗡️ สวมใส่ ${item.name}`);
-    game.inventory.splice(index, 1);
+    if (game.hero.weapon) addToInventory(game.hero.weapon);
+    game.hero.weapon = item; addLog('loot', `🗡️ สวม ${item.name}`); game.inventory.splice(index, 1);
   } else if (item.type === 'armor') {
-    if (game.hero.armor) {
-      addToInventory(game.hero.armor);
-    }
-    game.hero.armor = item;
-    addLog('loot', `🛡️ สวมใส่ ${item.name}`);
-    game.inventory.splice(index, 1);
+    if (game.hero.armor) addToInventory(game.hero.armor);
+    game.hero.armor = item; addLog('loot', `🛡️ สวม ${item.name}`); game.inventory.splice(index, 1);
   } else if (item.type === 'valuable') {
-    game.hero.gold += item.value;
-    addLog('loot', `💰 ขาย ${item.name} ได้ ${item.value} ทอง`);
-    game.inventory.splice(index, 1);
+    game.hero.gold += item.value; addLog('loot', `💰 ขาย ${item.name} ได้ ${item.value}`); game.inventory.splice(index, 1);
   }
-  
-  renderInventory();
-  updateStats();
-  
-  if (game.inBattle) {
-    renderBattle();
-  }
+  renderInventory(); updateStats(); updateStatusUI();
+  if (game.inBattle) renderBattle();
 }
 
-// ============ Tooltip ============
 function showTooltip(e, item) {
-  const tooltip = document.getElementById('tooltip');
-  const rarityColor = RARITY_COLORS[item.rarity];
-  
-  tooltip.innerHTML = `
-    <div class="font-bold" style="color: ${rarityColor};">${item.name}</div>
-    <div class="text-xs uppercase mb-2" style="color: ${rarityColor};">${item.rarity}</div>
-    <div class="text-xs" style="color: var(--text-faded);">${item.desc}</div>
-    ${item.type === 'weapon' ? `<div class="text-xs mt-1" style="color: var(--blood-red);">⚔️ +${item.attack || 0} โจมตี</div>` : ''}
-    ${item.type === 'armor' ? `<div class="text-xs mt-1" style="color: var(--magic-blue);">🛡️ +${item.defense || 0} ป้องกัน</div>` : ''}
-    ${item.type === 'heal' ? `<div class="text-xs mt-1" style="color: var(--poison-green);">❤️ ฟื้นพลัง ${item.value}</div>` : ''}
-  `;
-  
-  tooltip.style.display = 'block';
-  moveTooltip(e);
+  const t = document.getElementById('tooltip'); const rc = RARITY_COLORS[item.rarity];
+  t.innerHTML = `
+    <div class="font-bold" style="color: ${rc};">${item.name}</div>
+    <div class="text-xs uppercase mb-2" style="color: ${rc};">${item.rarity}</div>
+    <div class="text-xs" style="color: var(--text-faded);">${item.desc}</div>`;
+  t.style.display = 'block'; moveTooltip(e);
 }
 
 function moveTooltip(e) {
-  const tooltip = document.getElementById('tooltip');
-  let x = e.clientX + 15;
-  let y = e.clientY + 15;
-  
+  const t = document.getElementById('tooltip');
+  let x = e.clientX + 15, y = e.clientY + 15;
   if (x + 250 > window.innerWidth) x = e.clientX - 265;
   if (y + 150 > window.innerHeight) y = e.clientY - 165;
-  
-  tooltip.style.left = x + 'px';
-  tooltip.style.top = y + 'px';
+  t.style.left = x + 'px'; t.style.top = y + 'px';
 }
 
-function hideTooltip() {
-  document.getElementById('tooltip').style.display = 'none';
-}
+function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
 
-// ============ Stats Update ============
+// ============ Stats ============
 function updateStats() {
   const h = game.hero;
-  
   document.getElementById('heroLevel').textContent = h.level;
+  document.getElementById('heroClass').textContent = h.name;
+  document.getElementById('heroIcon').textContent = h.icon;
   document.getElementById('floorDisplay').textContent = game.floor;
-  
   document.getElementById('hpBar').style.width = (h.hp/h.maxHp)*100 + '%';
   document.getElementById('hpText').textContent = `${h.hp}/${h.maxHp}`;
-  
   document.getElementById('mpBar').style.width = (h.mp/h.maxMp)*100 + '%';
   document.getElementById('mpText').textContent = `${h.mp}/${h.maxMp}`;
-  
   document.getElementById('xpBar').style.width = (h.xp/h.xpNeeded)*100 + '%';
   document.getElementById('xpText').textContent = `${h.xp}/${h.xpNeeded}`;
-  
-  const weaponAtk = h.weapon ? (h.weapon.attack || 0) : 0;
-  const weaponMag = h.weapon ? (h.weapon.magic || 0) : 0;
-  const armorDef = h.armor ? (h.armor.defense || 0) : 0;
-  
-  document.getElementById('statAttack').textContent = h.attack + weaponAtk;
-  document.getElementById('statDefense').textContent = h.defense + armorDef;
+  const wA = h.weapon ? (h.weapon.attack || 0) : 0;
+  const wM = h.weapon ? (h.weapon.magic || 0) : 0;
+  const aD = h.armor ? (h.armor.defense || 0) : 0;
+  document.getElementById('statAttack').textContent = h.attack + wA;
+  document.getElementById('statDefense').textContent = h.defense + aD;
   document.getElementById('statGold').textContent = h.gold;
-  document.getElementById('statMagic').textContent = h.magic + weaponMag;
-  
+  document.getElementById('statMagic').textContent = h.magic + wM;
   document.getElementById('killCount').textContent = game.stats.kills;
   document.getElementById('chestCount').textContent = game.stats.chests;
   document.getElementById('roomCount').textContent = game.stats.rooms;
   document.getElementById('itemCount').textContent = game.stats.items;
 }
 
-// ============ Logging ============
-function addLog(type, message) {
-  const log = document.getElementById('battleLog');
-  const entry = document.createElement('div');
-  entry.className = `log-entry ${type}`;
-  entry.innerHTML = message;
-  log.appendChild(entry);
-  log.scrollTop = log.scrollHeight;
-  
-  // Keep last 50 entries
-  while (log.children.length > 50) {
-    log.removeChild(log.firstChild);
-  }
+function addLog(type, msg) {
+  const l = document.getElementById('battleLog');
+  const e = document.createElement('div'); e.className = `log-entry ${type}`; e.innerHTML = msg;
+  l.appendChild(e); l.scrollTop = l.scrollHeight;
+  while (l.children.length > 50) l.removeChild(l.firstChild);
 }
 
-// ============ Game Over / Victory ============
+// ============ Flow ============
 function gameOver() {
-  game.inBattle = false;
-  game.busy = false;
-  
+  game.inBattle = false; game.busy = false;
   document.getElementById('gameOverFloor').textContent = game.floor;
   document.getElementById('gameOverLevel').textContent = game.hero.level;
   document.getElementById('gameOverKills').textContent = game.stats.kills;
-  document.getElementById('gameOverGold').textContent = game.hero.gold;
-  
   document.getElementById('gameOverModal').classList.remove('hidden');
 }
 
 function showVictory() {
-  document.getElementById('victoryFloor').textContent = game.floor;
-  document.getElementById('victoryLevel').textContent = game.hero.level;
-  document.getElementById('victoryGold').textContent = game.hero.gold;
-  
   document.getElementById('victoryModal').classList.remove('hidden');
 }
 
 function nextFloor() {
   game.floor++;
   document.getElementById('victoryModal').classList.add('hidden');
-  
-  // Heal hero
-  game.hero.hp = game.hero.maxHp;
-  game.hero.mp = game.hero.maxMp;
-  
-  generateDungeon();
-  updateStats();
-  showEmptyRoom();
+  game.hero.hp = game.hero.maxHp; game.hero.mp = game.hero.maxMp;
+  generateDungeon(); updateStats(); showEmptyRoom();
   addLog('system', `🏰 ลงสู่ชั้นที่ ${game.floor}...`);
 }
 
-// ============ Game Controls ============
-function startGame() {
+function showClassSelection() {
   document.getElementById('titleScreen').classList.add('hidden');
+  document.getElementById('classModal').classList.remove('hidden');
+}
+
+function selectClass(cls) {
+  document.getElementById('classModal').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
-  
-  init();
-  updateStats();
-  renderInventory();
-  showEmptyRoom();
+  initGameState(cls);
+  generateDungeon(); updateStats(); renderInventory(); showEmptyRoom();
+  document.getElementById('battleLog').innerHTML = `<div class="log-entry system">📜 คุณเริ่มต้นการผจญภัยในฐานะ${CLASSES[cls].name}...</div>`;
 }
 
 function resetGame() {
-  game = {
-    floor: 1,
-    hero: {
-      name: 'ผู้กล้า',
-      level: 1,
-      hp: 100, maxHp: 100,
-      mp: 50, maxMp: 50,
-      xp: 0, xpNeeded: 100,
-      attack: 15, defense: 5, magic: 8,
-      gold: 0,
-      weapon: null,
-      armor: null
-    },
-    inventory: [],
-    map: [],
-    currentRoom: null,
-    inBattle: false,
-    currentEnemy: null,
-    stats: { kills: 0, chests: 0, rooms: 1, items: 0 },
-    busy: false
-  };
-  
   document.getElementById('gameOverModal').classList.add('hidden');
   document.getElementById('victoryModal').classList.add('hidden');
   document.getElementById('itemDropModal').classList.add('hidden');
-  
-  document.getElementById('battleLog').innerHTML = '<div class="log-entry system">📜 เริ่มการผจญภัยใหม่...</div>';
-  
-  generateDungeon();
-  updateStats();
-  renderInventory();
-  showEmptyRoom();
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('titleScreen').classList.remove('hidden');
 }
 
-function showInstructions() {
-  document.getElementById('instructionsModal').classList.remove('hidden');
-}
+function showInstructions() { document.getElementById('instructionsModal').classList.remove('hidden'); }
+function closeInstructions() { document.getElementById('instructionsModal').classList.add('hidden'); }
 
-function closeInstructions() {
-  document.getElementById('instructionsModal').classList.add('hidden');
+// Init embers
+for (let i = 0; i < 20; i++) {
+  const e = document.createElement('div'); e.className = 'ember';
+  e.style.left = Math.random() * 100 + 'vw';
+  e.style.animationDuration = (8 + Math.random() * 12) + 's';
+  e.style.animationDelay = Math.random() * 10 + 's';
+  document.getElementById('embers').appendChild(e);
 }
-
-// Initialize on load
-window.addEventListener('DOMContentLoaded', () => {
-  createEmbers();
-});
 </script>
 </body>
 </html>
