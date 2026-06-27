@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dungeon Quest - ผจญภัยในดันเจี้ยนมืด</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0a0612;
+    --bg-darker: #050308;
+    --dungeon-stone: #1a1525;
+    --torch-glow: #ff8c42;
+    --torch-glow-bright: #ffb066;
+    --blood-red: #c41e3a;
+    --blood-dark: #6b0f1a;
+    --gold-treasure: #ffd700;
+    --magic-blue: #4a9eff;
+    --magic-purple: #9d4edd;
+    --poison-green: #52b788;
+    --text-parchment: #e8d5b7;
+    --text-faded: #8a7a65;
+    --border-rune: #3a2e4a;
+  }
+  
+  * { box-sizing: border-box; }
+  
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg-darker);
+    color: var(--text-parchment);
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  .font-display {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+  }
+  
+  /* Animated background */
+  .dungeon-bg {
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(255, 140, 66, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(157, 78, 221, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(196, 30, 58, 0.05) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-darker) 0%, var(--bg-dark) 50%, var(--bg-darker) 100%);
+    position: relative;
+  }
+  
+  .dungeon-bg::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(58, 46, 74, 0.03) 35px, rgba(58, 46, 74, 0.03) 70px),
+      repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(58, 46, 74, 0.03) 35px, rgba(58, 46, 74, 0.03) 70px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* Floating embers */
+  .ember {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: var(--torch-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--torch-glow), 0 0 12px var(--torch-glow-bright);
+    pointer-events: none;
+    animation: ember-rise linear infinite;
+    z-index: 1;
+  }
+  
+  @keyframes ember-rise {
+    0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+    10% { opacity: 1; transform: translateY(90vh) translateX(0) scale(1); }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) translateX(50px) scale(0.3); opacity: 0; }
+  }
+  
+  /* Title screen */
+  .title-glow {
+    text-shadow: 
+      0 0 20px var(--torch-glow),
+      0 0 40px rgba(255, 140, 66, 0.5),
+      0 4px 8px rgba(0, 0, 0, 0.8);
+    animation: title-flicker 4s ease-in-out infinite;
+  }
+  
+  @keyframes title-flicker {
+    0%, 100% { text-shadow: 0 0 20px var(--torch-glow), 0 0 40px rgba(255, 140, 66, 0.5), 0 4px 8px rgba(0, 0, 0, 0.8); }
+    50% { text-shadow: 0 0 30px var(--torch-glow-bright), 0 0 60px rgba(255, 140, 66, 0.7), 0 4px 8px rgba(0, 0, 0, 0.8); }
+  }
+  
+  .btn-primary {
+    background: linear-gradient(180deg, var(--blood-red) 0%, var(--blood-dark) 100%);
+    border: 2px solid var(--gold-treasure);
+    color: var(--text-parchment);
+    padding: 14px 40px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 0 var(--bg-darker), 0 0 20px rgba(196, 30, 58, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--bg-darker), 0 0 30px rgba(196, 30, 58, 0.6);
+    background: linear-gradient(180deg, #d92e4a 0%, var(--blood-red) 100%);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--bg-darker), 0 0 15px rgba(196, 30, 58, 0.4);
+  }
+  
+  .btn-secondary {
+    background: linear-gradient(180deg, var(--dungeon-stone) 0%, var(--bg-dark) 100%);
+    border: 2px solid var(--border-rune);
+    color: var(--text-parchment);
+    padding: 10px 24px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--gold-treasure);
+    color: var(--gold-treasure);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  }
+  
+  /* Game layout */
+  .game-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  @media (max-width: 1100px) {
+    .game-container { grid-template-columns: 1fr; }
+  }
+  
+  .panel {
+    background: linear-gradient(180deg, rgba(26, 21, 37, 0.95) 0%, rgba(10, 6, 18, 0.95) 100%);
+    border: 2px solid var(--border-rune);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 215, 0, 0.1),
+      0 4px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+  }
+  
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 215, 0, 0.2) 50%, transparent 60%);
+    border-radius: 8px;
+    z-index: -1;
+    opacity: 0.5;
+  }
+  
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--gold-treasure);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-rune);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Stats */
+  .stat-bar {
+    height: 18px;
+    background: var(--bg-darker);
+    border: 1px solid var(--border-rune);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .stat-fill {
+    height: 100%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  
+  .stat-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .hp-fill { background: linear-gradient(90deg, var(--blood-dark), var(--blood-red)); }
+  .mp-fill { background: linear-gradient(90deg, #1a3a5c, var(--magic-blue)); }
+  .xp-fill { background: linear-gradient(90deg, #5c4a1a, var(--gold-treasure)); }
+  
+  .stat-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px black;
+    z-index: 1;
+  }
+  
+  /* Dungeon map */
+  .dungeon-map {
+    display: grid;
+    gap: 3px;
+    background: var(--bg-darker);
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-rune);
+    aspect-ratio: 1;
+  }
+  
+  .room {
+    background: var(--bg-darker);
+    border: 1px solid #1a1525;
+    border-radius: 3px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .room.unexplored { 
+    background: #0a0612;
+    color: #2a2535;
+  }
+  
+  .room.explored { 
+    background: linear-gradient(135deg, #2a2535, #1a1525);
+    color: var(--text-faded);
+  }
+  
+  .room.current { 
+    background: radial-gradient(circle, rgba(255, 140, 66, 0.3), rgba(255, 140, 66, 0.1));
+    border-color: var(--torch-glow);
+    box-shadow: 0 0 15px rgba(255, 140, 66, 0.4), inset 0 0 10px rgba(255, 140, 66, 0.2);
+    color: var(--torch-glow-bright);
+    animation: room-pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes room-pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(255, 140, 66, 0.4), inset 0 0 10px rgba(255, 140, 66, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(255, 140, 66, 0.6), inset 0 0 15px rgba(255, 140, 66, 0.3); }
+  }
+  
+  .room.adjacent { 
+    background: linear-gradient(135deg, #1a1525, #0a0612);
+    border-color: var(--border-rune);
+    cursor: pointer;
+  }
+  
+  .room.adjacent:hover {
+    background: linear-gradient(135deg, #2a2535, #1a1525);
+    border-color: var(--torch-glow);
+    transform: scale(1.05);
+  }
+  
+  .room.boss {
+    background: linear-gradient(135deg, var(--blood-dark), #2a0810);
+    border-color: var(--blood-red);
+  }
+  
+  /* Battle scene */
+  .battle-scene {
+    background: 
+      radial-gradient(ellipse at center top, rgba(255, 140, 66, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at center bottom, rgba(196, 30, 58, 0.1) 0%, transparent 50%),
+      linear-gradient(180deg, #1a0810 0%, #0a0612 100%);
+    border: 2px solid var(--border-rune);
+    border-radius: 8px;
+    min-height: 400px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .battle-scene::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(circle at 30% 20%, rgba(255, 140, 66, 0.1) 0%, transparent 30%),
+      radial-gradient(circle at 70% 20%, rgba(255, 140, 66, 0.1) 0%, transparent 30%);
+    pointer-events: none;
+  }
+  
+  /* Character sprites */
+  .character {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  
+  .hero-sprite {
+    background: radial-gradient(circle, rgba(74, 158, 255, 0.3), rgba(74, 158, 255, 0.05));
+    border: 3px solid var(--magic-blue);
+    box-shadow: 0 0 30px rgba(74, 158, 255, 0.4);
+  }
+  
+  .enemy-sprite {
+    background: radial-gradient(circle, rgba(196, 30, 58, 0.3), rgba(196, 30, 58, 0.05));
+    border: 3px solid var(--blood-red);
+    box-shadow: 0 0 30px rgba(196, 30, 58, 0.4);
+  }
+  
+  .character.attacking { animation: attack-lunge 0.4s; }
+  .character.hit { animation: shake 0.4s; }
+  .character.dying { animation: death 0.8s forwards; }
+  
+  @keyframes attack-lunge {
+    0%, 100% { transform: translateX(0) scale(1); }
+    50% { transform: translateX(30px) scale(1.1); }
+  }
+  
+  @keyframes attack-lunge-left {
+    0%, 100% { transform: translateX(0) scale(1); }
+    50% { transform: translateX(-30px) scale(1.1); }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+  
+  @keyframes death {
+    0% { opacity: 1; transform: scale(1) rotate(0); }
+    100% { opacity: 0; transform: scale(0.5) rotate(90deg); }
+  }
+  
+  /* Damage numbers */
+  .damage-number {
+    position: absolute;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 28px;
+    pointer-events: none;
+    animation: damage-float 1.2s ease-out forwards;
+    text-shadow: 0 2px 4px black, 0 0 10px currentColor;
+    z-index: 10;
+  }
+  
+  @keyframes damage-float {
+    0% { opacity: 0; transform: translateY(0) scale(0.5); }
+    20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1); }
+  }
+  
+  /* Log */
+  .log-container {
+    max-height: 180px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .log-container::-webkit-scrollbar { width: 6px; }
+  .log-container::-webkit-scrollbar-track { background: var(--bg-darker); }
+  .log-container::-webkit-scrollbar-thumb { background: var(--border-rune); border-radius: 3px; }
+  
+  .log-entry {
+    padding: 4px 8px;
+    border-left: 2px solid var(--border-rune);
+    margin-bottom: 4px;
+    animation: log-fade-in 0.3s;
+  }
+  
+  @keyframes log-fade-in {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  .log-entry.combat { border-left-color: var(--blood-red); color: #ff6b7a; }
+  .log-entry.heal { border-left-color: var(--poison-green); color: #7dd3a8; }
+  .log-entry.loot { border-left-color: var(--gold-treasure); color: #ffe066; }
+  .log-entry.magic { border-left-color: var(--magic-purple); color: #c77dff; }
+  .log-entry.system { border-left-color: var(--magic-blue); color: #7cb5ff; }
+  
+  /* Inventory */
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  
+  .item-slot {
+    aspect-ratio: 1;
+    background: var(--bg-darker);
+    border: 2px solid var(--border-rune);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  
+  .item-slot.has-item:hover {
+    border-color: var(--gold-treasure);
+    background: rgba(255, 215, 0, 0.1);
+    transform: scale(1.05);
+  }
+  
+  .item-slot.has-item {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.02));
+  }
+  
+  .item-rarity-common { border-color: #6b6b6b; }
+  .item-rarity-rare { border-color: var(--magic-blue); box-shadow: 0 0 8px rgba(74, 158, 255, 0.3); }
+  .item-rarity-epic { border-color: var(--magic-purple); box-shadow: 0 0 8px rgba(157, 78, 221, 0.3); }
+  .item-rarity-legendary { border-color: var(--gold-treasure); box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); animation: legendary-glow 2s infinite; }
+  
+  @keyframes legendary-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fade-in 0.3s;
+  }
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .modal {
+    background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
+    border: 2px solid var(--gold-treasure);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.3), 0 20px 60px black;
+    animation: modal-slide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes modal-slide {
+    from { transform: translateY(-50px) scale(0.9); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
+    border: 1px solid var(--gold-treasure);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 4px 20px black;
+    max-width: 250px;
+    display: none;
+  }
+  
+  /* Screen shake */
+  .screen-shake { animation: screen-shake 0.4s; }
+  @keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-5px, 3px); }
+    50% { transform: translate(5px, -3px); }
+    75% { transform: translate(-3px, 5px); }
+  }
+  
+  /* Torch flicker */
+  .torch {
+    position: absolute;
+    width: 8px;
+    height: 30px;
+    background: linear-gradient(180deg, var(--torch-glow-bright), var(--torch-glow), transparent);
+    border-radius: 50% 50% 20% 20%;
+    filter: blur(2px);
+    animation: flicker 0.5s infinite alternate;
+  }
+  
+  @keyframes flicker {
+    0% { opacity: 0.7; transform: scaleY(0.9); }
+    100% { opacity: 1; transform: scaleY(1.1); }
+  }
+  
+  .hidden { display: none !important; }
+  
+  /* Level up effect */
+  .level-up-burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 60%);
+    animation: level-burst 1s ease-out;
+  }
+  
+  @keyframes level-burst {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(2); }
+  }
+  
+  /* Loot drop animation */
+  .loot-drop {
+    animation: loot-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes loot-bounce {
+    0% { transform: translateY(-100px) scale(0); opacity: 0; }
+    60% { transform: translateY(10px) scale(1.1); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  
+  /* Action buttons */
+  .action-btn {
+    background: linear-gradient(180deg, var(--dungeon-stone), var(--bg-dark));
+    border: 2px solid var(--border-rune);
+    color: var(--text-parchment);
+    padding: 12px 16px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: uppercase;
+  }
+  
+  .action-btn:hover:not(:disabled) {
+    border-color: var(--gold-treasure);
+    color: var(--gold-treasure);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  .action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .action-btn.attack { border-color: var(--blood-dark); }
+  .action-btn.attack:hover:not(:disabled) { border-color: var(--blood-red); color: #ff6b7a; box-shadow: 0 0 15px rgba(196, 30, 58, 0.3); }
+  
+  .action-btn.magic { border-color: #3a2a5c; }
+  .action-btn.magic:hover:not(:disabled) { border-color: var(--magic-purple); color: #c77dff; box-shadow: 0 0 15px rgba(157, 78, 221, 0.3); }
+  
+  .action-btn.heal { border-color: #2a4a3a; }
+  .action-btn.heal:hover:not(:disabled) { border-color: var(--poison-green); color: #7dd3a8; box-shadow: 0 0 15px rgba(82, 183, 136, 0.3); }
+  
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border-rune); border-radius: 2px; }
+</style>
+</head>
+<body class="dungeon-bg">
+
+<!-- Floating embers -->
+<div id="embers"></div>
+
+<!-- Title Screen -->
+<div id="titleScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center px-4">
+  <div class="text-center max-w-2xl">
+    <div class="text-6xl mb-4">⚔️🏰💀</div>
+    <h1 class="font-display text-6xl md:text-7xl font-black title-glow mb-2" style="color: var(--gold-treasure);">
+      DUNGEON QUEST
+    </h1>
+    <p class="font-display text-lg md:text-xl mb-8" style="color: var(--torch-glow-bright); letter-spacing: 0.3em;">
+      ผจญภัยในดันเจี้ยนมืด
+    </p>
+    <p class="text-base md:text-lg mb-10 leading-relaxed" style="color: var(--text-faded);">
+      ลงลึกสู่ใต้ดินที่มืดมิด เผชิญหน้ากับมอนสเตอร์นานาพันธุ์<br>
+      ค้นหาสมบัติในตำนาน และกลายเป็นฮีโร่ที่ยิ่งใหญ่ที่สุด
+    </p>
+    
+    <div class="flex flex-col items-center gap-4">
+      <button onclick="startGame()" class="btn-primary text-lg">
+        <i class="fas fa-play mr-2"></i>เริ่มการผจญภัย
+      </button>
+      <button onclick="showInstructions()" class="text-sm hover:text-yellow-400 transition" style="color: var(--text-faded);">
+        <i class="fas fa-book mr-1"></i>วิธีเล่น
+      </button>
+    </div>
+    
+    <div class="mt-12 grid grid-cols-3 gap-4 text-xs" style="color: var(--text-faded);">
+      <div class="panel py-3">
+        <div class="text-2xl mb-1">🗡️</div>
+        <div>ระบบต่อสู้</div>
+      </div>
+      <div class="panel py-3">
+        <div class="text-2xl mb-1">📦</div>
+        <div>ไอเทม & อุปกรณ์</div>
+      </div>
+      <div class="panel py-3">
+        <div class="text-2xl mb-1">📈</div>
+        <div>เลเวลอัพ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Instructions Modal -->
+<div id="instructionsModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h2 class="font-display text-2xl font-bold mb-4" style="color: var(--gold-treasure);">วิธีเล่น</h2>
+    <div class="space-y-3 text-sm leading-relaxed">
+      <p><span style="color: var(--torch-glow-bright);">🗺️ สำรวจดันเจี้ยน:</span> คลิกที่ห้องข้างๆ ห้องปัจจุบันเพื่อเคลื่อนที่</p>
+      <p><span style="color: var(--blood-red);">⚔️ ต่อสู้:</span> เมื่อเจอมอนสเตอร์ ใช้ปุ่มโจมตี เวทมนตร์ หรือฟื้นฟู HP</p>
+      <p><span style="color: var(--gold-treasure);">📦 ไอเทม:</span> เก็บไอเทมจากการเปิดหีบ หรือตกจากมอนสเตอร์ คลิกเพื่อใช้</p>
+      <p><span style="color: var(--magic-blue);">📈 เลเวลอัพ:</span> ฆ่ามอนสเตอร์เพื่อรับ XP เมื่อ XP เต็มจะเลเวลอัพ ฟื้นฟู HP/MP</p>
+      <p><span style="color: var(--magic-purple);">👑 บอส:</span> ห้องสุดท้ายของแต่ละชั้นจะมีบอสให้ท้าทาย</p>
+    </div>
+    <button onclick="closeInstructions()" class="btn-secondary w-full mt-6">เข้าใจแล้ว</button>
+  </div>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen" class="hidden">
+  <!-- Header -->
+  <div class="border-b" style="border-color: var(--border-rune); background: linear-gradient(180deg, var(--dungeon-stone), transparent);">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-dungeon text-2xl" style="color: var(--torch-glow);"></i>
+        <div>
+          <div class="font-display text-lg font-bold" style="color: var(--gold-treasure);">DUNGEON QUEST</div>
+          <div class="text-xs" style="color: var(--text-faded);">ชั้นที่ <span id="floorDisplay">1</span></div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="showInstructions()" class="btn-secondary text-xs py-2">
+          <i class="fas fa-book"></i>
+        </button>
+        <button onclick="resetGame()" class="btn-secondary text-xs py-2">
+          <i class="fas fa-redo"></i> เริ่มใหม่
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-container">
+    <!-- Left Panel: Stats & Inventory -->
+    <div class="space-y-4">
+      <!-- Character Stats -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fas fa-user-shield"></i> ฮีโร่
+        </div>
+        
+        <div class="flex items-center gap-3 mb-4">
+          <div class="hero-sprite character" style="width: 60px; height: 60px; font-size: 28px;">
+            🦸
+          </div>
+          <div>
+            <div class="font-display font-bold" id="heroName">ผู้กล้า</div>
+            <div class="text-xs" style="color: var(--text-faded);">เลเวล <span id="heroLevel">1</span></div>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color: var(--blood-red);"><i class="fas fa-heart"></i> พลังชีวิต</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill hp-fill" id="hpBar" style="width: 100%;"></div>
+              <div class="stat-text" id="hpText">100/100</div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color: var(--magic-blue);"><i class="fas fa-star"></i> มานา</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill mp-fill" id="mpBar" style="width: 100%;"></div>
+              <div class="stat-text" id="mpText">50/50</div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color: var(--gold-treasure);"><i class="fas fa-star"></i> ประสบการณ์</span>
+            </div>
+            <div class="stat-bar">
+              <div class="stat-fill xp-fill" id="xpBar" style="width: 0%;"></div>
+              <div class="stat-text" id="xpText">0/100</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+          <div class="flex items-center gap-1">
+            <i class="fas fa-khanda" style="color: var(--blood-red);"></i>
+            <span style="color: var(--text-faded);">โจมตี:</span>
+            <span class="font-bold" id="statAttack">15</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="fas fa-shield" style="color: var(--magic-blue);"></i>
+            <span style="color: var(--text-faded);">ป้องกัน:</span>
+            <span class="font-bold" id="statDefense">5</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="fas fa-coins" style="color: var(--gold-treasure);"></i>
+            <span style="color: var(--text-faded);">ทอง:</span>
+            <span class="font-bold" id="statGold">0</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="fas fa-fire" style="color: var(--magic-purple);"></i>
+            <span style="color: var(--text-faded);">เวทมนตร์:</span>
+            <span class="font-bold" id="statMagic">8</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Inventory -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fas fa-bag-shopping"></i> กระเป๋า
+        </div>
+        <div class="inventory-grid" id="inventoryGrid">
+          <!-- Items filled by JS -->
+        </div>
+        <div class="text-xs mt-2 text-center" style="color: var(--text-faded);">
+          คลิกไอเทมเพื่อใช้
+        </div>
+      </div>
+    </div>
+    
+    <!-- Center: Battle/Scene -->
+    <div class="space-y-4">
+      <div id="sceneContainer" class="battle-scene">
+        <!-- Scene content filled by JS -->
+      </div>
+      
+      <!-- Battle Log -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fas fa-scroll"></i> บันทึกการผจญภัย
+        </div>
+        <div class="log-container scrollbar-thin" id="battleLog">
+          <div class="log-entry system">📜 คุณเข้าสู่ดันเจี้ยน... ขอให้โชคดี</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right: Dungeon Map -->
+    <div class="space-y-4">
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fas fa-map"></i> แผนที่ดันเจี้ยน
+        </div>
+        <div class="dungeon-map" id="dungeonMap" style="grid-template-columns: repeat(5, 1fr);">
+          <!-- Map filled by JS -->
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded" style="background: var(--torch-glow);"></div>
+            <span style="color: var(--text-faded);">ปัจจุบัน</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded" style="background: #2a2535;"></div>
+            <span style="color: var(--text-faded);">ผ่านแล้ว</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded" style="background: #0a0612;"></div>
+            <span style="color: var(--text-faded);">ยังไม่ค้นพบ</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded" style="background: var(--blood-dark);"></div>
+            <span style="color: var(--text-faded);">บอส</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fas fa-trophy"></i> สถิติ
+        </div>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span style="color: var(--text-faded);">มอนสเตอร์ที่ฆ่า:</span>
+            <span class="font-bold" id="killCount">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span style="color: var(--text-faded);">หีบที่เปิด:</span>
+            <span class="font-bold" id="chestCount">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span style="color: var(--text-faded);">ห้องที่สำรวจ:</span>
+            <span class="font-bold" id="roomCount">1</span>
+          </div>
+          <div class="flex justify-between">
+            <span style="color: var(--text-faded);">ไอเทมที่เก็บ:</span>
+            <span class="font-bold" id="itemCount">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip"></div>
+
+<!-- Game Over Modal -->
+<div id="gameOverModal" class="modal-overlay hidden">
+  <div class="modal text-center">
+    <div class="text-6xl mb-4">💀</div>
+    <h2 class="font-display text-4xl font-black mb-2" style="color: var(--blood-red);">สิ้นชีพ</h2>
+    <p class="mb-6" style="color: var(--text-faded);">การผจญภัยของคุณจบลงที่นี่...</p>
+    <div class="panel mb-6 text-left">
+      <div class="text-sm mb-2" style="color: var(--gold-treasure);">สถิติการเล่น:</div>
+      <div class="space-y-1 text-sm">
+        <div class="flex justify-between"><span style="color: var(--text-faded);">ชั้นที่:</span> <span id="gameOverFloor">1</span></div>
+        <div class="flex justify-between"><span style="color: var(--text-faded);">เลเวล:</span> <span id="gameOverLevel">1</span></div>
+        <div class="flex justify-between"><span style="color: var(--text-faded);">มอนสเตอร์ที่ฆ่า:</span> <span id="gameOverKills">0</span></div>
+        <div class="flex justify-between"><span style="color: var(--text-faded);">ทองที่เก็บ:</span> <span id="gameOverGold">0</span></div>
+      </div>
+    </div>
+    <button onclick="resetGame()" class="btn-primary w-full">
+      <i class="fas fa-redo mr-2"></i>เริ่มใหม่อีกครั้ง
+    </button>
+  </div>
+</div>
+
+<!-- Victory Modal -->
+<div id="victoryModal" class="modal-overlay hidden">
+  <div class="modal text-center">
+    <div class="text-6xl mb-4">👑</div>
+    <h2 class="font-display text-4xl font-black mb-2" style="color: var(--gold-treasure);">ชัยชนะ!</h2>
+    <p class="mb-6" style="color: var(--text-faded);">คุณพิชิตบอสแห่งดันเจี้ยนได้สำเร็จ!</p>
+    <div class="panel mb-6 text-left">
+      <div class="text-sm mb-2" style="color: var(--gold-treasure);">รางวัล:</div>
+      <div class="space-y-1 text-sm">
+        <div class="flex justify-between"><span style="color: var(--text-faded);">ชั้นที่ผ่าน:</span> <span id="victoryFloor">1</span></div>
+        <div class="flex justify-between"><span style="color: var(--text-faded);">เลเวล:</span> <span id="victoryLevel">1</span></div>
+        <div class="flex justify-between"><span style="color: var(--text-faded);">ทองรวม:</span> <span id="victoryGold">0</span></div>
+      </div>
+    </div>
+    <button onclick="nextFloor()" class="btn-primary w-full mb-2">
+      <i class="fas fa-arrow-down mr-2"></i>ลงชั้นถัดไป
+    </button>
+    <button onclick="resetGame()" class="btn-secondary w-full">
+      เริ่มใหม่
+    </button>
+  </div>
+</div>
+
+<!-- Item Drop Modal -->
+<div id="itemDropModal" class="modal-overlay hidden">
+  <div class="modal text-center">
+    <div class="text-4xl mb-3">📦</div>
+    <h2 class="font-display text-2xl font-bold mb-4" style="color: var(--gold-treasure);">พบไอเทม!</h2>
+    <div id="itemDropContent"></div>
+    <button onclick="closeItemDrop()" class="btn-secondary w-full mt-6">เก็บเข้ากระเป๋า</button>
+  </div>
+</div>
+
+<script>
+// ============ Game Data ============
+const ENEMIES = {
+  slime: { name: 'สไลม์', icon: '🟢', hp: 30, attack: 8, defense: 2, xp: 15, gold: 5 },
+  bat: { name: 'ค้างคาวยักษ์', icon: '🦇', hp: 25, attack: 12, defense: 1, xp: 18, gold: 8 },
+  skeleton: { name: 'โครงกระดูก', icon: '💀', hp: 45, attack: 15, defense: 5, xp: 25, gold: 12 },
+  zombie: { name: 'ซอมบี้', icon: '🧟', hp: 60, attack: 12, defense: 3, xp: 30, gold: 10 },
+  spider: { name: 'แมงมุมยักษ์', icon: '🕷️', hp: 40, attack: 18, defense: 4, xp: 28, gold: 15 },
+  ghost: { name: 'ผี', icon: '👻', hp: 35, attack: 20, defense: 6, xp: 35, gold: 18 },
+  goblin: { name: 'ก็อบลิน', icon: '👹', hp: 50, attack: 16, defense: 5, xp: 32, gold: 20 },
+  orc: { name: 'ออร์ค', icon: '👺', hp: 70, attack: 20, defense: 8, xp: 45, gold: 25 },
+  troll: { name: 'โทรลล์', icon: '👿', hp: 90, attack: 22, defense: 10, xp: 55, gold: 30 },
+  dragon_boss: { name: 'มังกรโบราณ', icon: '🐲', hp: 200, attack: 30, defense: 15, xp: 200, gold: 100 },
+  lich_boss: { name: 'พ่อมดผี', icon: '🧙‍♂️', hp: 180, attack: 35, defense: 12, xp: 180, gold: 90 },
+  demon_boss: { name: 'ปีศาจล่าวิญญาณ', icon: '😈', hp: 250, attack: 38, defense: 18, xp: 250, gold: 150 },
+};
+
+const ITEMS = {
+  potion_hp: { name: 'ยาฟื้นพลัง', icon: '🧪', rarity: 'common', type: 'heal', value: 50, desc: 'ฟื้นพลังชีวิต 50 หน่วย' },
+  potion_mp: { name: 'ยาฟื้นมานา', icon: '💧', rarity: 'common', type: 'mana', value: 30, desc: 'ฟื้นมานา 30 หน่วย' },
+  potion_hp_lg: { name: 'ยาฟื้นพลังใหญ่', icon: '⚗️', rarity: 'rare', type: 'heal', value: 120, desc: 'ฟื้นพลังชีวิต 120 หน่วย' },
+  sword: { name: 'ดาบเหล็ก', icon: '🗡️', rarity: 'common', type: 'weapon', attack: 5, desc: 'เพิ่มพลังโจมตี +5' },
+  sword_fire: { name: 'ดาบไฟ', icon: '⚔️', rarity: 'rare', type: 'weapon', attack: 12, desc: 'เพิ่มพลังโจมตี +12' },
+  sword_legendary: { name: 'ดาบมังกร', icon: '🔥', rarity: 'legendary', type: 'weapon', attack: 25, desc: 'เพิ่มพลังโจมตี +25' },
+  shield: { name: 'โล่ห์เหล็ก', icon: '🛡️', rarity: 'common', type: 'armor', defense: 5, desc: 'เพิ่มพลังป้องกัน +5' },
+  shield_magic: { name: 'โล่ห์เวทมนตร์', icon: '🔰', rarity: 'epic', type: 'armor', defense: 12, desc: 'เพิ่มพลังป้องกัน +12' },
+  staff: { name: 'ไม้เวท', icon: '🪄', rarity: 'rare', type: 'weapon', magic: 10, desc: 'เพิ่มพลังเวทมนตร์ +10' },
+  gem: { name: 'อัญมณี', icon: '💎', rarity: 'rare', type: 'valuable', value: 50, desc: 'ขายได้ราคาดี' },
+  gem_epic: { name: 'อัญมณีราตรี', icon: '💠', rarity: 'epic', type: 'valuable', value: 120, desc: 'อัญมณีหายาก' },
+  key: { name: 'กุญแจลึกลับ', icon: '🗝️', rarity: 'epic', type: 'key', desc: 'อาจเปิดประตูลับได้' },
+};
+
+const RARITY_COLORS = {
+  common: '#6b6b6b',
+  rare: '#4a9eff',
+  epic: '#9d4edd',
+  legendary: '#ffd700'
+};
+
+// ============ Game State ============
+let game = {
+  floor: 1,
+  hero: {
+    name: 'ผู้กล้า',
+    level: 1,
+    hp: 100, maxHp: 100,
+    mp: 50, maxMp: 50,
+    xp: 0, xpNeeded: 100,
+    attack: 15, defense: 5, magic: 8,
+    gold: 0,
+    weapon: null,
+    armor: null
+  },
+  inventory: [],
+  map: [],
+  currentRoom: null,
+  inBattle: false,
+  currentEnemy: null,
+  stats: { kills: 0, chests: 0, rooms: 1, items: 0 },
+  busy: false
+};
+
+// ============ Initialize ============
+function init() {
+  createEmbers();
+  generateDungeon();
+}
+
+function createEmbers() {
+  const container = document.getElementById('embers');
+  for (let i = 0; i < 20; i++) {
+    const ember = document.createElement('div');
+    ember.className = 'ember';
+    ember.style.left = Math.random() * 100 + 'vw';
+    ember.style.animationDuration = (8 + Math.random() * 12) + 's';
+    ember.style.animationDelay = Math.random() * 10 + 's';
+    container.appendChild(ember);
+  }
+}
+
+// ============ Dungeon Generation ============
+function generateDungeon() {
+  const size = 5;
+  const totalRooms = size * size;
+  game.map = [];
+  
+  for (let i = 0; i < totalRooms; i++) {
+    game.map.push({
+      id: i,
+      x: i % size,
+      y: Math.floor(i / size),
+      explored: false,
+      type: 'empty',
+      content: null,
+      enemy: null,
+      isBoss: false
+    });
+  }
+  
+  // Start room (top-left)
+  game.map[0].explored = true;
+  game.map[0].type = 'start';
+  game.currentRoom = game.map[0];
+  
+  // Boss room (bottom-right)
+  const bossRoom = game.map[totalRooms - 1];
+  bossRoom.isBoss = true;
+  bossRoom.type = 'boss';
+  
+  // Generate content for other rooms
+  const enemyTypes = ['slime', 'bat', 'skeleton', 'zombie', 'spider', 'ghost', 'goblin', 'orc'];
+  
+  for (let room of game.map) {
+    if (room.type === 'start' || room.type === 'boss') continue;
+    
+    const rand = Math.random();
+    if (rand < 0.55) {
+      // Enemy room
+      room.type = 'enemy';
+      const enemyKey = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+      const enemyData = ENEMIES[enemyKey];
+      room.enemy = { 
+        ...enemyData, 
+        currentHp: enemyData.hp,
+        key: enemyKey
+      };
+    } else if (rand < 0.75) {
+      // Treasure room
+      room.type = 'treasure';
+      room.content = generateLoot();
+    } else if (rand < 0.88) {
+      // Rest room (heal)
+      room.type = 'rest';
+    } else {
+      // Empty
+      room.type = 'empty';
+    }
+  }
+  
+  renderMap();
+}
+
+function generateLoot(rarityBias = null) {
+  const itemKeys = Object.keys(ITEMS);
+  let candidates = itemKeys;
+  
+  if (rarityBias) {
+    candidates = itemKeys.filter(k => ITEMS[k].rarity === rarityBias);
+  }
+  
+  const itemKey = candidates[Math.floor(Math.random() * candidates.length)];
+  return { ...ITEMS[itemKey], key: itemKey };
+}
+
+// ============ Map Rendering ============
+function renderMap() {
+  const mapEl = document.getElementById('dungeonMap');
+  mapEl.innerHTML = '';
+  
+  game.map.forEach(room => {
+    const el = document.createElement('div');
+    el.className = 'room';
+    
+    const isAdjacent = isRoomAdjacent(game.currentRoom, room);
+    
+    if (room.id === game.currentRoom.id) {
+      el.classList.add('current');
+      el.innerHTML = '<i class="fas fa-person-walking"></i>';
+    } else if (room.explored) {
+      el.classList.add('explored');
+      if (room.isBoss) {
+        el.classList.add('boss');
+        el.innerHTML = '<i class="fas fa-crown"></i>';
+      } else if (room.type === 'treasure' && room.content) {
+        el.innerHTML = '<i class="fas fa-treasure-chest"></i>';
+      } else if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) {
+        el.innerHTML = room.enemy.icon;
+      } else if (room.type === 'rest') {
+        el.innerHTML = '<i class="fas fa-campfire"></i>';
+      }
+    } else if (isAdjacent) {
+      el.classList.add('adjacent');
+      el.innerHTML = '<i class="fas fa-question"></i>';
+    } else {
+      el.classList.add('unexplored');
+    }
+    
+    if (isAdjacent && !game.inBattle && !game.busy) {
+      el.onclick = () => moveToRoom(room);
+    }
+    
+    mapEl.appendChild(el);
+  });
+}
+
+function isRoomAdjacent(a, b) {
+  if (!a || !b) return false;
+  const dx = Math.abs(a.x - b.x);
+  const dy = Math.abs(a.y - b.y);
+  return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
+}
+
+// ============ Movement ============
+function moveToRoom(room) {
+  if (game.busy || game.inBattle) return;
+  if (!isRoomAdjacent(game.currentRoom, room)) return;
+  
+  game.currentRoom = room;
+  if (!room.explored) {
+    room.explored = true;
+    game.stats.rooms++;
+    addLog('system', `🚶 คุณเดินเข้าสู่ห้องใหม่...`);
+  }
+  
+  renderMap();
+  updateStats();
+  
+  setTimeout(() => enterRoom(room), 300);
+}
+
+function enterRoom(room) {
+  if (room.type === 'enemy' && room.enemy && room.enemy.currentHp > 0) {
+    startBattle(room.enemy);
+  } else if (room.type === 'treasure' && room.content) {
+    showTreasure(room);
+  } else if (room.type === 'rest') {
+    showRest(room);
+  } else if (room.type === 'boss') {
+    startBossBattle();
+  } else {
+    showEmptyRoom();
+  }
+}
+
+// ============ Scene Rendering ============
+function renderScene(html) {
+  document.getElementById('sceneContainer').innerHTML = html;
+}
+
+function showEmptyRoom() {
+  const flavors = [
+    'ห้องว่างเปล่า มีเศษหินกระจัดกระจาย',
+    'ห้องโถงเงียบสงบ ไม่พบอะไรพิเศษ',
+    'ทางเดินแคบ มีเชื้อราขึ้นตามผนัง',
+    'ห้องที่ถูกทิ้งร้าง มีแต่ฝุ่น',
+    'ห้องเปิดโล่ง มีแสงสลัวจางๆ'
+  ];
+  const desc = flavors[Math.floor(Math.random() * flavors.length)];
+  
+  renderScene(`
+    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative">
+      <div class="absolute top-4 left-4 torch"></div>
+      <div class="absolute top-4 right-4 torch"></div>
+      <div class="text-6xl mb-4 opacity-50">🕯️</div>
+      <div class="font-display text-xl mb-2" style="color: var(--text-faded);">${desc}</div>
+      <div class="text-sm" style="color: var(--text-faded);">เลือกห้องข้างๆ เพื่อเคลื่อนที่ต่อ</div>
+    </div>
+  `);
+}
+
+function showTreasure(room) {
+  const item = room.content;
+  const rarityColor = RARITY_COLORS[item.rarity];
+  
+  renderScene(`
+    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative loot-drop">
+      <div class="absolute top-4 left-4 torch"></div>
+      <div class="absolute top-4 right-4 torch"></div>
+      
+      <div class="text-7xl mb-6">📦</div>
+      <div class="font-display text-2xl mb-2" style="color: var(--gold-treasure);">หีบสมบัติ!</div>
+      <div class="mb-6" style="color: var(--text-faded);">คุณพบไอเทมภายในหีบ</div>
+      
+      <div class="panel p-6 mb-6" style="border-color: ${rarityColor}; max-width: 300px;">
+        <div class="text-5xl mb-3">${item.icon}</div>
+        <div class="font-display font-bold text-lg" style="color: ${rarityColor};">${item.name}</div>
+        <div class="text-xs uppercase mt-1" style="color: ${rarityColor};">${item.rarity}</div>
+        <div class="text-sm mt-2" style="color: var(--text-faded);">${item.desc}</div>
+      </div>
+      
+      <button onclick="takeLoot()" class="btn-primary">
+        <i class="fas fa-hand-holding mr-2"></i>หยิบไอเทม
+      </button>
+    </div>
+  `);
+  
+  game.pendingLoot = item;
+  game.pendingLootRoom = room;
+}
+
+function takeLoot() {
+  if (game.pendingLoot) {
+    addToInventory(game.pendingLoot);
+    addLog('loot', `📦 ได้รับ: ${game.pendingLoot.name}`);
+    game.stats.items++;
+    game.stats.chests++;
+    
+    if (game.pendingLootRoom) {
+      game.pendingLootRoom.content = null;
+      game.pendingLootRoom.type = 'empty';
+    }
+    
+    game.pendingLoot = null;
+    game.pendingLootRoom = null;
+    
+    updateStats();
+    renderMap();
+    showEmptyRoom();
+  }
+}
+
+function showRest(room) {
+  const healAmount = Math.floor(game.hero.maxHp * 0.5);
+  const mpHeal = Math.floor(game.hero.maxMp * 0.5);
+  
+  game.hero.hp = Math.min(game.hero.maxHp, game.hero.hp + healAmount);
+  game.hero.mp = Math.min(game.hero.maxMp, game.hero.mp + mpHeal);
+  
+  addLog('heal', `🔥 พักผ่อน ฟื้นพลังชีวิต ${healAmount} และมานา ${mpHeal}`);
+  
+  room.type = 'empty';
+  updateStats();
+  
+  renderScene(`
+    <div class="flex flex-col items-center justify-center min-h-[400px] text-center relative">
+      <div class="absolute top-4 left-4 torch"></div>
+      <div class="absolute top-4 right-4 torch"></div>
+      
+      <div class="text-7xl mb-6">🔥</div>
+      <div class="font-display text-2xl mb-2" style="color: var(--poison-green);">จุดพักแคมป์</div>
+      <div class="mb-6" style="color: var(--text-faded);">คุณพักผ่อนและฟื้นพลัง</div>
+      
+      <div class="panel p-4 mb-4" style="max-width: 280px;">
+        <div class="text-sm mb-2"><span style="color: var(--blood-red);">❤️ ฟื้นพลังชีวิต:</span> +${healAmount}</div>
+        <div class="text-sm"><span style="color: var(--magic-blue);">✨ ฟื้นมานา:</span> +${mpHeal}</div>
+      </div>
+      
+      <div class="text-sm" style="color: var(--text-faded);">เลือกห้องข้างๆ เพื่อเคลื่อนที่ต่อ</div>
+    </div>
+  `);
+}
+
+// ============ Battle System ============
+function startBattle(enemy) {
+  game.inBattle = true;
+  game.currentEnemy = enemy;
+  renderBattle();
+  addLog('combat', `⚔️ ${enemy.name} ปรากฏ!`);
+  renderMap();
+}
+
+function startBossBattle() {
+  const bosses = ['dragon_boss', 'lich_boss', 'demon_boss'];
+  const bossKey = bosses[Math.min(game.floor - 1, bosses.length - 1)];
+  const bossData = ENEMIES[bossKey];
+  
+  // Scale boss with floor
+  const scaledBoss = {
+    ...bossData,
+    hp: bossData.hp + (game.floor - 1) * 50,
+    attack: bossData.attack + (game.floor - 1) * 5,
+    currentHp: bossData.hp + (game.floor - 1) * 50,
+    key: bossKey,
+    isBoss: true
+  };
+  
+  game.inBattle = true;
+  game.currentEnemy = scaledBoss;
+  renderBattle();
+  addLog('combat', `☠️ บอสปรากฏ: ${scaledBoss.name}!`);
+}
+
+function renderBattle() {
+  const enemy = game.currentEnemy;
+  const hero = game.hero;
+  
+  renderScene(`
+    <div class="relative min-h-[400px] flex flex-col">
+      <div class="absolute top-4 left-4 torch"></div>
+      <div class="absolute top-4 right-4 torch"></div>
+      
+      <!-- Enemy section -->
+      <div class="flex flex-col items-center mt-4 mb-4">
+        <div class="font-display text-xl mb-2" style="color: var(--blood-red);">${enemy.name}</div>
+        <div class="enemy-sprite character" id="enemySprite" style="position: relative;">
+          ${enemy.icon}
+          ${enemy.isBoss ? '<div class="absolute -top-2 -right-2 text-xl">👑</div>' : ''}
+        </div>
+        <div class="mt-3 w-64">
+          <div class="stat-bar" style="height: 22px;">
+            <div class="stat-fill hp-fill" id="enemyHpBar" style="width: ${(enemy.currentHp/enemy.hp)*100}%;"></div>
+            <div class="stat-text" id="enemyHpText">${enemy.currentHp}/${enemy.hp}</div>
+          </div>
+        </div>
+        <div class="text-xs mt-2 flex gap-3" style="color: var(--text-faded);">
+          <span>⚔️ ${enemy.attack}</span>
+          <span>🛡️ ${enemy.defense}</span>
+        </div>
+      </div>
+      
+      <!-- VS divider -->
+      <div class="flex items-center justify-center my-2">
+        <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, var(--blood-red), transparent);"></div>
+        <div class="font-display text-sm mx-4" style="color: var(--blood-red);">⚔️ VS ⚔️</div>
+        <div class="flex-1 h-px" style="background: linear-gradient(90deg, transparent, var(--blood-red), transparent);"></div>
+      </div>
+      
+      <!-- Hero section -->
+      <div class="flex flex-col items-center mb-4">
+        <div class="hero-sprite character" id="heroSprite" style="position: relative;">
+          🦸
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-auto">
+        <button class="action-btn attack" onclick="playerAttack()" id="btnAttack">
+          <i class="fas fa-khanda"></i> โจมตี
+        </button>
+        <button class="action-btn magic" onclick="playerMagic()" id="btnMagic" ${hero.mp < 15 ? 'disabled' : ''}>
+          <i class="fas fa-fire"></i> เวทมนตร์ (15MP)
+        </button>
+        <button class="action-btn heal" onclick="playerHeal()" id="btnHeal" ${hero.mp < 20 ? 'disabled' : ''}>
+          <i class="fas fa-heart"></i> ฟื้นพลัง (20MP)
+        </button>
+        <button class="action-btn" onclick="playerFlee()" id="btnFlee">
+          <i class="fas fa-person-running"></i> หนี
+        </button>
+      </div>
+    </div>
+  `);
+}
+
+function playerAttack() {
+  if (game.busy || !game.inBattle) return;
+  game.busy = true;
+  
+  const hero = game.hero;
+  const enemy = game.currentEnemy;
+  const weaponAtk = hero.weapon ? (hero.weapon.attack || 0) : 0;
+  const damage = Math.max(1, hero.attack + weaponAtk - enemy.defense + Math.floor(Math.random() * 6 - 3));
+  
+  // Animate
+  const heroSprite = document.getElementById('heroSprite');
+  heroSprite.classList.add('attacking');
+  
+  setTimeout(() => {
+    enemy.currentHp = Math.max(0, enemy.currentHp - damage);
+    showDamage(enemy, damage, 'var(--blood-red)');
+    
+    const enemySprite = document.getElementById('enemySprite');
+    enemySprite.classList.add('hit');
+    document.getElementById('sceneContainer').classList.add('screen-shake');
+    
+    addLog('combat', `⚔️ คุณโจมตี ${enemy.name} สร้างดาเมจ ${damage}`);
+    
+    setTimeout(() => {
+      heroSprite.classList.remove('attacking');
+      enemySprite.classList.remove('hit');
+      document.getElementById('sceneContainer').classList.remove('screen-shake');
+      
+      updateEnemyHp();
+      
+      if (enemy.currentHp <= 0) {
+        enemyDefeated();
+      } else {
+        enemyTurn();
+      }
+    }, 400);
+  }, 200);
+}
+
+function playerMagic() {
+  if (game.busy || !game.inBattle || game.hero.mp < 15) return;
+  game.busy = true;
+  
+  const hero = game.hero;
+  const enemy = game.currentEnemy;
+  hero.mp -= 15;
+  
+  const weaponMag = hero.weapon ? (hero.weapon.magic || 0) : 0;
+  const damage = Math.max(1, (hero.magic + weaponMag) * 2 - enemy.defense + Math.floor(Math.random() * 8));
+  
+  const heroSprite = document.getElementById('heroSprite');
+  heroSprite.style.transform = 'scale(1.2)';
+  
+  setTimeout(() => {
+    enemy.currentHp = Math.max(0, enemy.currentHp - damage);
+    showDamage(enemy, damage, 'var(--magic-purple)');
+    
+    const enemySprite = document.getElementById('enemySprite');
+    enemySprite.classList.add('hit');
+    enemySprite.style.boxShadow = '0 0 40px var(--magic-purple)';
+    
+    addLog('magic', `✨ คุณร่ายเวทมนตร์ใส่ ${enemy.name} สร้างดาเมจ ${damage}`);
+    
+    setTimeout(() => {
+      heroSprite.style.transform = '';
+      enemySprite.classList.remove('hit');
+      enemySprite.style.boxShadow = '';
+      
+      updateEnemyHp();
+      updateStats();
+      
+      if (enemy.currentHp <= 0) {
+        enemyDefeated();
+      } else {
+        enemyTurn();
+      }
+    }, 400);
+  }, 300);
+}
+
+function playerHeal() {
+  if (game.busy || !game.inBattle || game.hero.mp < 20) return;
+  game.busy = true;
+  
+  const hero = game.hero;
+  hero.mp -= 20;
+  
+  const healAmount = 40 + hero.level * 5;
+  const actualHeal = Math.min(hero.maxHp - hero.hp, healAmount);
+  hero.hp = Math.min(hero.maxHp, hero.hp + healAmount);
+  
+  showDamage({ _isHero: true }, actualHeal, 'var(--poison-green)');
+  addLog('heal', `💚 คุณฟื้นพลังชีวิต ${actualHeal} หน่วย`);
+  
+  updateStats();
+  
+  setTimeout(() => {
+    enemyTurn();
+  }, 600);
+}
+
+function playerFlee() {
+  if (game.busy || !game.inBattle) return;
+  
+  if (game.currentEnemy.isBoss) {
+    addLog('system', `❌ ไม่สามารถหนีจากบอสได้!`);
+    return;
+  }
+  
+  game.busy = true;
+  
+  if (Math.random() < 0.6) {
+    addLog('system', `🏃 คุณหนีสำเร็จ!`);
+    game.inBattle = false;
+    game.currentEnemy = null;
+    game.busy = false;
+    
+    // Move back to start or stay
+    showEmptyRoom();
+    renderMap();
+  } else {
+    addLog('system', `❌ หนีไม่สำเร็จ!`);
+    setTimeout(() => enemyTurn(), 500);
+  }
+}
+
+function enemyTurn() {
+  if (!game.inBattle) return;
+  
+  const enemy = game.currentEnemy;
+  const hero = game.hero;
+  const armorDef = hero.armor ? (hero.armor.defense || 0) : 0;
+  const damage = Math.max(1, enemy.attack - hero.defense - armorDef + Math.floor(Math.random() * 6 - 3));
+  
+  const enemySprite = document.getElementById('enemySprite');
+  if (enemySprite) {
+    enemySprite.style.animation = 'attack-lunge-left 0.4s';
+  }
+  
+  setTimeout(() => {
+    hero.hp = Math.max(0, hero.hp - damage);
+    showDamage({ _isHero: true }, damage, 'var(--blood-red)');
+    
+    const heroSprite = document.getElementById('heroSprite');
+    if (heroSprite) {
+      heroSprite.classList.add('hit');
+      document.getElementById('sceneContainer').classList.add('screen-shake');
+    }
+    
+    addLog('combat', `💥 ${enemy.name} โจมตีคุณ สร้างดาเมจ ${damage}`);
+    
+    setTimeout(() => {
+      if (enemySprite) enemySprite.style.animation = '';
+      if (heroSprite) heroSprite.classList.remove('hit');
+      document.getElementById('sceneContainer').classList.remove('screen-shake');
+      
+      updateStats();
+      
+      if (hero.hp <= 0) {
+        gameOver();
+      } else {
+        game.busy = false;
+        renderBattle();
+      }
+    }, 400);
+  }, 200);
+}
+
+function showDamage(target, damage, color) {
+  const scene = document.getElementById('sceneContainer');
+  const dmg = document.createElement('div');
+  dmg.className = 'damage-number';
+  dmg.textContent = damage;
+  dmg.style.color = color;
+  
+  if (target._isHero) {
+    dmg.style.left = '50%';
+    dmg.style.top = '60%';
+  } else {
+    dmg.style.left = '50%';
+    dmg.style.top = '25%';
+  }
+  
+  dmg.style.transform = 'translateX(-50%)';
+  scene.appendChild(dmg);
+  
+  setTimeout(() => dmg.remove(), 1200);
+}
+
+function updateEnemyHp() {
+  const enemy = game.currentEnemy;
+  if (!enemy) return;
+  
+  const bar = document.getElementById('enemyHpBar');
+  const text = document.getElementById('enemyHpText');
+  if (bar) bar.style.width = (enemy.currentHp/enemy.hp)*100 + '%';
+  if (text) text.textContent = `${enemy.currentHp}/${enemy.hp}`;
+}
+
+function enemyDefeated() {
+  const enemy = game.currentEnemy;
+  game.stats.kills++;
+  
+  const enemySprite = document.getElementById('enemySprite');
+  if (enemySprite) enemySprite.classList.add('dying');
+  
+  addLog('combat', `☠️ กำจัด ${enemy.name} ได้แล้ว!`);
+  
+  // Gain XP and Gold
+  game.hero.xp += enemy.xp;
+  game.hero.gold += enemy.gold;
+  addLog('system', `✨ ได้รับ ${enemy.xp} XP และ ${enemy.gold} ทอง`);
+  
+  // Drop loot chance
+  if (Math.random() < 0.4 || enemy.isBoss) {
+    const loot = enemy.isBoss ? generateLoot('legendary') : generateLoot();
+    setTimeout(() => showItemDrop(loot), 800);
+  } else {
+    setTimeout(endBattle, 800);
+  }
+  
+  // Level up check
+  checkLevelUp();
+  updateStats();
+}
+
+function endBattle() {
+  game.inBattle = false;
+  game.currentEnemy = null;
+  game.busy = false;
+  
+  if (game.currentRoom.isBoss) {
+    showVictory();
+  } else {
+    game.currentRoom.enemy = null;
+    game.currentRoom.type = 'empty';
+    showEmptyRoom();
+    renderMap();
+  }
+}
+
+function showItemDrop(item) {
+  const rarityColor = RARITY_COLORS[item.rarity];
+  document.getElementById('itemDropContent').innerHTML = `
+    <div class="flex flex-col items-center">
+      <div class="text-6xl mb-3 loot-drop">${item.icon}</div>
+      <div class="font-display text-lg font-bold" style="color: ${rarityColor};">${item.name}</div>
+      <div class="text-xs uppercase mt-1" style="color: ${rarityColor};">${item.rarity}</div>
+      <div class="text-sm mt-2" style="color: var(--text-faded);">${item.desc}</div>
+    </div>
+  `;
+  document.getElementById('itemDropModal').classList.remove('hidden');
+  game.pendingDrop = item;
+}
+
+function closeItemDrop() {
+  document.getElementById('itemDropModal').classList.add('hidden');
+  if (game.pendingDrop) {
+    addToInventory(game.pendingDrop);
+    addLog('loot', `📦 ได้รับ: ${game.pendingDrop.name}`);
+    game.stats.items++;
+    game.pendingDrop = null;
+    updateStats();
+  }
+  endBattle();
+}
+
+// ============ Level System ============
+function checkLevelUp() {
+  while (game.hero.xp >= game.hero.xpNeeded) {
+    game.hero.xp -= game.hero.xpNeeded;
+    game.hero.level++;
+    game.hero.xpNeeded = Math.floor(game.hero.xpNeeded * 1.5);
+    
+    // Stat increases
+    game.hero.maxHp += 20;
+    game.hero.maxMp += 10;
+    game.hero.attack += 3;
+    game.hero.defense += 2;
+    game.hero.magic += 2;
+    game.hero.hp = game.hero.maxHp;
+    game.hero.mp = game.hero.maxMp;
+    
+    addLog('system', `🎉 เลเวลอัพ! เลเวล ${game.hero.level}`);
+    
+    // Visual effect
+    const scene = document.getElementById('sceneContainer');
+    const burst = document.createElement('div');
+    burst.className = 'level-up-burst';
+    scene.appendChild(burst);
+    setTimeout(() => burst.remove(), 1000);
+  }
+}
+
+// ============ Inventory ============
+function addToInventory(item) {
+  if (game.inventory.length < 16) {
+    game.inventory.push(item);
+    renderInventory();
+  } else {
+    addLog('system', '❌ กระเป๋าเต็ม!');
+  }
+}
+
+function renderInventory() {
+  const grid = document.getElementById('inventoryGrid');
+  grid.innerHTML = '';
+  
+  for (let i = 0; i < 16; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'item-slot';
+    
+    if (i < game.inventory.length) {
+      const item = game.inventory[i];
+      slot.classList.add('has-item', `item-rarity-${item.rarity}`);
+      slot.innerHTML = item.icon;
+      
+      slot.onmouseenter = (e) => showTooltip(e, item);
+      slot.onmouseleave = hideTooltip;
+      slot.onmousemove = (e) => moveTooltip(e);
+      slot.onclick = () => useItem(i);
+    }
+    
+    grid.appendChild(slot);
+  }
+}
+
+function useItem(index) {
+  const item = game.inventory[index];
+  if (!item) return;
+  
+  if (item.type === 'heal') {
+    const heal = Math.min(game.hero.maxHp - game.hero.hp, item.value);
+    game.hero.hp = Math.min(game.hero.maxHp, game.hero.hp + item.value);
+    addLog('heal', `💚 ใช้ ${item.name} ฟื้นพลัง ${heal}`);
+    game.inventory.splice(index, 1);
+  } else if (item.type === 'mana') {
+    const heal = Math.min(game.hero.maxMp - game.hero.mp, item.value);
+    game.hero.mp = Math.min(game.hero.maxMp, game.hero.mp + item.value);
+    addLog('magic', `✨ ใช้ ${item.name} ฟื้นมานา ${heal}`);
+    game.inventory.splice(index, 1);
+  } else if (item.type === 'weapon') {
+    // Equip weapon
+    if (game.hero.weapon) {
+      addToInventory(game.hero.weapon);
+    }
+    game.hero.weapon = item;
+    addLog('loot', `🗡️ สวมใส่ ${item.name}`);
+    game.inventory.splice(index, 1);
+  } else if (item.type === 'armor') {
+    if (game.hero.armor) {
+      addToInventory(game.hero.armor);
+    }
+    game.hero.armor = item;
+    addLog('loot', `🛡️ สวมใส่ ${item.name}`);
+    game.inventory.splice(index, 1);
+  } else if (item.type === 'valuable') {
+    game.hero.gold += item.value;
+    addLog('loot', `💰 ขาย ${item.name} ได้ ${item.value} ทอง`);
+    game.inventory.splice(index, 1);
+  }
+  
+  renderInventory();
+  updateStats();
+  
+  if (game.inBattle) {
+    renderBattle();
+  }
+}
+
+// ============ Tooltip ============
+function showTooltip(e, item) {
+  const tooltip = document.getElementById('tooltip');
+  const rarityColor = RARITY_COLORS[item.rarity];
+  
+  tooltip.innerHTML = `
+    <div class="font-bold" style="color: ${rarityColor};">${item.name}</div>
+    <div class="text-xs uppercase mb-2" style="color: ${rarityColor};">${item.rarity}</div>
+    <div class="text-xs" style="color: var(--text-faded);">${item.desc}</div>
+    ${item.type === 'weapon' ? `<div class="text-xs mt-1" style="color: var(--blood-red);">⚔️ +${item.attack || 0} โจมตี</div>` : ''}
+    ${item.type === 'armor' ? `<div class="text-xs mt-1" style="color: var(--magic-blue);">🛡️ +${item.defense || 0} ป้องกัน</div>` : ''}
+    ${item.type === 'heal' ? `<div class="text-xs mt-1" style="color: var(--poison-green);">❤️ ฟื้นพลัง ${item.value}</div>` : ''}
+  `;
+  
+  tooltip.style.display = 'block';
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  const tooltip = document.getElementById('tooltip');
+  let x = e.clientX + 15;
+  let y = e.clientY + 15;
+  
+  if (x + 250 > window.innerWidth) x = e.clientX - 265;
+  if (y + 150 > window.innerHeight) y = e.clientY - 165;
+  
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+
+// ============ Stats Update ============
+function updateStats() {
+  const h = game.hero;
+  
+  document.getElementById('heroLevel').textContent = h.level;
+  document.getElementById('floorDisplay').textContent = game.floor;
+  
+  document.getElementById('hpBar').style.width = (h.hp/h.maxHp)*100 + '%';
+  document.getElementById('hpText').textContent = `${h.hp}/${h.maxHp}`;
+  
+  document.getElementById('mpBar').style.width = (h.mp/h.maxMp)*100 + '%';
+  document.getElementById('mpText').textContent = `${h.mp}/${h.maxMp}`;
+  
+  document.getElementById('xpBar').style.width = (h.xp/h.xpNeeded)*100 + '%';
+  document.getElementById('xpText').textContent = `${h.xp}/${h.xpNeeded}`;
+  
+  const weaponAtk = h.weapon ? (h.weapon.attack || 0) : 0;
+  const weaponMag = h.weapon ? (h.weapon.magic || 0) : 0;
+  const armorDef = h.armor ? (h.armor.defense || 0) : 0;
+  
+  document.getElementById('statAttack').textContent = h.attack + weaponAtk;
+  document.getElementById('statDefense').textContent = h.defense + armorDef;
+  document.getElementById('statGold').textContent = h.gold;
+  document.getElementById('statMagic').textContent = h.magic + weaponMag;
+  
+  document.getElementById('killCount').textContent = game.stats.kills;
+  document.getElementById('chestCount').textContent = game.stats.chests;
+  document.getElementById('roomCount').textContent = game.stats.rooms;
+  document.getElementById('itemCount').textContent = game.stats.items;
+}
+
+// ============ Logging ============
+function addLog(type, message) {
+  const log = document.getElementById('battleLog');
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${type}`;
+  entry.innerHTML = message;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+  
+  // Keep last 50 entries
+  while (log.children.length > 50) {
+    log.removeChild(log.firstChild);
+  }
+}
+
+// ============ Game Over / Victory ============
+function gameOver() {
+  game.inBattle = false;
+  game.busy = false;
+  
+  document.getElementById('gameOverFloor').textContent = game.floor;
+  document.getElementById('gameOverLevel').textContent = game.hero.level;
+  document.getElementById('gameOverKills').textContent = game.stats.kills;
+  document.getElementById('gameOverGold').textContent = game.hero.gold;
+  
+  document.getElementById('gameOverModal').classList.remove('hidden');
+}
+
+function showVictory() {
+  document.getElementById('victoryFloor').textContent = game.floor;
+  document.getElementById('victoryLevel').textContent = game.hero.level;
+  document.getElementById('victoryGold').textContent = game.hero.gold;
+  
+  document.getElementById('victoryModal').classList.remove('hidden');
+}
+
+function nextFloor() {
+  game.floor++;
+  document.getElementById('victoryModal').classList.add('hidden');
+  
+  // Heal hero
+  game.hero.hp = game.hero.maxHp;
+  game.hero.mp = game.hero.maxMp;
+  
+  generateDungeon();
+  updateStats();
+  showEmptyRoom();
+  addLog('system', `🏰 ลงสู่ชั้นที่ ${game.floor}...`);
+}
+
+// ============ Game Controls ============
+function startGame() {
+  document.getElementById('titleScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  
+  init();
+  updateStats();
+  renderInventory();
+  showEmptyRoom();
+}
+
+function resetGame() {
+  game = {
+    floor: 1,
+    hero: {
+      name: 'ผู้กล้า',
+      level: 1,
+      hp: 100, maxHp: 100,
+      mp: 50, maxMp: 50,
+      xp: 0, xpNeeded: 100,
+      attack: 15, defense: 5, magic: 8,
+      gold: 0,
+      weapon: null,
+      armor: null
+    },
+    inventory: [],
+    map: [],
+    currentRoom: null,
+    inBattle: false,
+    currentEnemy: null,
+    stats: { kills: 0, chests: 0, rooms: 1, items: 0 },
+    busy: false
+  };
+  
+  document.getElementById('gameOverModal').classList.add('hidden');
+  document.getElementById('victoryModal').classList.add('hidden');
+  document.getElementById('itemDropModal').classList.add('hidden');
+  
+  document.getElementById('battleLog').innerHTML = '<div class="log-entry system">📜 เริ่มการผจญภัยใหม่...</div>';
+  
+  generateDungeon();
+  updateStats();
+  renderInventory();
+  showEmptyRoom();
+}
+
+function showInstructions() {
+  document.getElementById('instructionsModal').classList.remove('hidden');
+}
+
+function closeInstructions() {
+  document.getElementById('instructionsModal').classList.add('hidden');
+}
+
+// Initialize on load
+window.addEventListener('DOMContentLoaded', () => {
+  createEmbers();
+});
+</script>
+</body>
+</html>
