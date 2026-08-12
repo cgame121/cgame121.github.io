@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เครื่องคำนวณไฟฟ้าโซล่าเซลล์</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #ffffff;
+    --surface: #f5f4f1;
+    --ink: #14171a;
+    --ink-soft: #6b6f73;
+    --ink-faint: #a3a7ab;
+    --dc: #d98e1f;
+    --dc-soft: #f7e9d2;
+    --ac: #2f6f6b;
+    --ac-soft: #dfeceb;
+    --loss: #b5443a;
+    --line: #e2e0da;
+    --radius: 3px;
+  }
+
+  html[data-theme="dark"]{
+    --bg: #14171a;
+    --surface: #1e2226;
+    --ink: #f2f1ee;
+    --ink-soft: #a3a7ab;
+    --ink-faint: #6b6f73;
+    --dc: #f2b25c;
+    --dc-soft: #3a2c14;
+    --ac: #6fc0b9;
+    --ac-soft: #16302d;
+    --loss: #e6897c;
+    --line: #2b2f33;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans Thai', 'IBM Plex Sans', sans-serif;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  body{
+    display:flex;
+    justify-content:center;
+    padding: 40px 20px 80px;
+  }
+
+  .app{
+    width:100%;
+    max-width: 560px;
+  }
+
+  header{
+    display:flex;
+    justify-content: space-between;
+    align-items:flex-start;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  header .titles{ flex:1; }
+
+  header .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+
+  h1{
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  header p.sub{
+    margin:0;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .theme-toggle{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 6px 12px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .theme-toggle:hover{ color: var(--ink); }
+  .theme-toggle:focus-visible{ outline: 2px solid var(--ac); outline-offset: 2px; }
+
+  .summary{
+    margin-top: 28px;
+    padding: 18px 20px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .summary b{ color: var(--dc); }
+  .summary b.ac-b{ color: var(--ac); }
+
+  section.stage{
+    padding: 30px 0 26px;
+    border-top: 1px solid var(--line);
+  }
+  section.stage:first-of-type{ margin-top: 26px; }
+
+  .stage-head{
+    margin-bottom: 18px;
+  }
+
+  .stage-title{
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .stage-hint{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .field{ margin-bottom: 18px; }
+  .field:last-child{ margin-bottom:0; }
+
+  .field label{
+    display:block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .field-row{ display:flex; gap: 16px; }
+  .field-row .field{ flex:1; }
+
+  input[type="number"]{
+    width:100%;
+    border:none;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 20px;
+    padding: 6px 2px 10px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  input[type="number"]:focus{ border-bottom-color: var(--ink); }
+  input[type="number"]:focus-visible{ outline: 2px solid var(--dc); outline-offset: 3px; }
+
+  .unit-suffix{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+  }
+
+  input[type="range"]{
+    width: 100%;
+    accent-color: var(--ac);
+    margin-top: 6px;
+  }
+  input[type="range"]:focus-visible{ outline: 2px solid var(--ac); outline-offset: 3px; }
+
+  .range-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .readouts{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  @media (max-width: 480px){
+    .readouts{ grid-template-columns: 1fr; }
+    .field-row{ flex-direction: column; gap: 18px; }
+  }
+
+  .readout{
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 18px 15px;
+  }
+  .readout.dc{ background: var(--dc-soft); }
+  .readout.ac{ background: var(--ac-soft); }
+
+  .readout .rlabel{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .readout .rvalue{
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+    display:flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .readout.dc .rvalue{ color: var(--dc); }
+  .readout.ac .rvalue{ color: var(--ac); }
+  .readout.loss .rvalue{ color: var(--loss); }
+
+  .readout .runit{
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+  .readout.full{ grid-column: 1 / -1; }
+
+  .cost-summary{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  @media (max-width: 480px){ .cost-summary{ grid-template-columns: 1fr; } }
+
+  .cost-item{
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .cost-item .clabel{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .cost-item .cvalue{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 19px;
+    font-weight: 500;
+  }
+  .cost-item .cvalue span{
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  footer{
+    margin-top: 36px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  footer ul{ margin: 8px 0 0; padding-left: 18px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="titles">
+      <p class="eyebrow">Solar Power Calculator</p>
+      <h1>เครื่องคำนวณไฟฟ้าโซล่าเซลล์</h1>
+      <p class="sub">ใส่ค่าไฟ DC แล้วดูว่าใช้ไฟ AC ได้กี่วัตต์ พร้อมค่าไฟที่ประหยัดได้</p>
+    </div>
+    <button class="theme-toggle" id="themeBtn" type="button" aria-pressed="false">
+      <span id="themeIcon">🌙</span><span id="themeLabel">มืด</span>
+    </button>
+  </header>
+
+  <div class="summary" id="summaryText">
+    12V × 20A = <b>240.0 W DC</b> → ใช้งานได้จริง <b class="ac-b">216.0 W AC</b> (ที่ประสิทธิภาพ 90%)
+  </div>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div class="stage-title">1. ไฟ DC ที่มีอยู่</div>
+      <div class="stage-hint">ใส่แรงดันไฟและกระแสไฟจากแผงโซล่าเซลล์หรือแบตเตอรี่</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="voltage">แรงดันไฟฟ้า</label>
+        <input type="number" id="voltage" value="12" step="0.1" min="0" inputmode="decimal">
+        <div class="unit-suffix">V (โวลต์)</div>
+      </div>
+      <div class="field">
+        <label for="current">กระแสไฟฟ้า</label>
+        <input type="number" id="current" value="20" step="0.1" min="0" inputmode="decimal">
+        <div class="unit-suffix">A (แอมป์)</div>
+      </div>
+    </div>
+
+    <div class="inline-eq" id="dcEquation">48 V × 20 A = 960 W</div>
+
+    <div class="readouts">
+      <div class="readout dc full">
+        <div class="rlabel">กำลังไฟฟ้า DC — โวลต์ × แอมป์</div>
+        <div class="rvalue"><span id="dcWatt">240.0</span><span class="runit">W</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div class="stage-title">2. ไฟ AC ที่ใช้งานได้จริง</div>
+      <div class="stage-hint">อินเวอร์เตอร์แปลงไฟ DC เป็น AC แต่จะสูญเสียพลังงานไปบางส่วน</div>
+    </div>
+
+    <div class="field">
+      <label for="eff">ประสิทธิภาพอินเวอร์เตอร์ — <span class="range-value" id="effVal">90%</span></label>
+      <input type="range" id="eff" min="70" max="98" value="90" step="1">
+    </div>
+
+    <div class="readouts">
+      <div class="readout ac">
+        <div class="rlabel">ไฟ AC ที่ใช้ได้จริง</div>
+        <div class="rvalue"><span id="acWatt">216.0</span><span class="runit">W</span></div>
+      </div>
+      <div class="readout loss">
+        <div class="rlabel">พลังงานที่เสียไป</div>
+        <div class="rvalue"><span id="lossWatt">24.0</span><span class="runit">W</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div class="stage-title">3. ใช้ไปกี่หน่วยต่อวัน</div>
+      <div class="stage-hint">ใส่จำนวนชั่วโมงที่ใช้งานไฟ AC นี้ต่อวัน</div>
+    </div>
+
+    <div class="field">
+      <label for="hours">ระยะเวลาใช้งาน</label>
+      <input type="number" id="hours" value="5" step="0.5" min="0" inputmode="decimal">
+      <div class="unit-suffix">ชั่วโมง / วัน</div>
+    </div>
+
+    <div class="cost-summary">
+      <div class="cost-item">
+        <div class="clabel">พลังงาน/วัน</div>
+        <div class="cvalue"><span id="whDay">1080</span><span>Wh</span></div>
+      </div>
+      <div class="cost-item">
+        <div class="clabel">พลังงาน/เดือน</div>
+        <div class="cvalue"><span id="kwhMonth">32.4</span><span>kWh</span></div>
+      </div>
+      <div class="cost-item">
+        <div class="clabel">พลังงาน/ปี</div>
+        <div class="cvalue"><span id="kwhYear">394.2</span><span>kWh</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div class="stage-title">4. ค่าไฟที่ประหยัดได้</div>
+      <div class="stage-hint">คิดจากค่าไฟฟ้าเฉลี่ยต่อหน่วย (kWh) ของบ้านคุณ</div>
+    </div>
+
+    <div class="field">
+      <label for="rate">ค่าไฟฟ้าเฉลี่ย</label>
+      <input type="number" id="rate" value="4.72" step="0.01" min="0" inputmode="decimal">
+      <div class="unit-suffix">บาท / หน่วย (kWh)</div>
+    </div>
+
+    <div class="cost-summary">
+      <div class="cost-item">
+        <div class="clabel">ประหยัด/วัน</div>
+        <div class="cvalue"><span id="costDay">5.10</span><span>บาท</span></div>
+      </div>
+      <div class="cost-item">
+        <div class="clabel">ประหยัด/เดือน</div>
+        <div class="cvalue"><span id="costMonth">152.9</span><span>บาท</span></div>
+      </div>
+      <div class="cost-item">
+        <div class="clabel">ประหยัด/ปี</div>
+        <div class="cvalue"><span id="costYear">1860.6</span><span>บาท</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    วิธีคำนวณแบบง่าย:
+    <ul>
+      <li>ไฟ DC (วัตต์) = โวลต์ × แอมป์</li>
+      <li>ไฟ AC (วัตต์) = ไฟ DC × ประสิทธิภาพอินเวอร์เตอร์</li>
+      <li>พลังงาน (Wh) = ไฟ AC × ชั่วโมงที่ใช้งาน</li>
+      <li>ค่าไฟ (บาท) = พลังงาน (kWh) × ค่าไฟต่อหน่วย</li>
+    </ul>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  const voltage = $('voltage');
+  const current = $('current');
+  const eff = $('eff');
+  const hours = $('hours');
+  const rate = $('rate');
+
+  function fmt(n, d=1){
+    if(!isFinite(n)) return '0';
+    return n.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+  }
+
+  function num(el){
+    const v = parseFloat(el.value);
+    return (isFinite(v) && v >= 0) ? v : 0;
+  }
+
+  function calc(){
+    const v = num(voltage);
+    const i = num(current);
+    const effPct = num(eff);
+    const h = num(hours);
+    const r = num(rate);
+
+    const dcW = v * i;
+    const acW = dcW * (effPct / 100);
+    const lossW = dcW - acW;
+
+    $('dcWatt').textContent = fmt(dcW);
+    $('acWatt').textContent = fmt(acW);
+    $('lossWatt').textContent = fmt(lossW);
+    $('effVal').textContent = effPct + '%';
+
+    $('summaryText').innerHTML =
+      fmt(v) + 'V × ' + fmt(i) + 'A = <b>' + fmt(dcW) + ' W DC</b> → ใช้งานได้จริง <b class="ac-b">' +
+      fmt(acW) + ' W AC</b> (ที่ประสิทธิภาพ ' + effPct + '%)';
+
+    const whDay = acW * h;
+    const kwhDay = whDay / 1000;
+    const kwhMonth = kwhDay * 30;
+    const kwhYear = kwhDay * 365;
+
+    $('whDay').textContent = fmt(whDay, 0);
+    $('kwhMonth').textContent = fmt(kwhMonth, 1);
+    $('kwhYear').textContent = fmt(kwhYear, 1);
+
+    const costDay = kwhDay * r;
+    const costMonth = kwhMonth * r;
+    const costYear = kwhYear * r;
+
+    $('costDay').textContent = fmt(costDay, 2);
+    $('costMonth').textContent = fmt(costMonth, 1);
+    $('costYear').textContent = fmt(costYear, 1);
+  }
+
+  [voltage, current, eff, hours, rate].forEach(el=>{
+    el.addEventListener('input', calc);
+  });
+
+  // theme toggle (in-memory only, no storage)
+  const themeBtn = $('themeBtn');
+  const themeIcon = $('themeIcon');
+  const themeLabel = $('themeLabel');
+  let dark = false;
+
+  themeBtn.addEventListener('click', function(){
+    dark = !dark;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    themeBtn.setAttribute('aria-pressed', String(dark));
+    themeIcon.textContent = dark ? '☀️' : '🌙';
+    themeLabel.textContent = dark ? 'สว่าง' : 'มืด';
+  });
+
+  calc();
+})();
+</script>
+</body>
+</html>
