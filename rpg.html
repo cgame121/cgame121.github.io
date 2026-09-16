@@ -13,7 +13,7 @@
   --warn:#ffb04a; --bad:#ff7a7a; --rage:#ff9a6b;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
-  font-family:'Segoe UI',Tahoma,sans-serif}
+  font-family:'Noto Sans Thai','IBM Plex Sans Thai','Sarabun','Leelawadee UI','Segoe UI',Tahoma,sans-serif}
 html,body{height:100%;overflow:hidden;background:var(--bg-0);overscroll-behavior:none;touch-action:none}
 body{color:var(--tx-2)}
 #fit{position:fixed;left:0;top:0;will-change:transform}
@@ -54,7 +54,11 @@ canvas{display:block;width:100%;height:100%}
   box-shadow:0 3px 6px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .08s}
 .sb:active{transform:translateY(1px) scale(.96)}
 .sb.nomp{opacity:.42}
-.cdm{position:absolute;left:0;bottom:0;width:100%;background:rgba(0,0,0,.64);height:0;pointer-events:none}
+.sb.rdy{border-color:rgba(141,243,255,.55);
+  box-shadow:0 3px 6px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1),0 0 11px rgba(141,243,255,.32)}
+.cdm{position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:conic-gradient(from -90deg,rgba(5,7,14,.74) calc(var(--p,0)*1%),rgba(0,0,0,0) 0);
+  transition:background .06s linear}
 #panel{flex:0 0 auto;background:linear-gradient(180deg,var(--bg-1),#101322);display:flex;flex-direction:column;padding:9px;gap:7px}
 body.portrait #panel{border-top:2px solid var(--line)}
 body.landscape #panel{border-left:2px solid var(--line)}
@@ -67,6 +71,7 @@ body.landscape #panel{border-left:2px solid var(--line)}
 #panes{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
 #panes::-webkit-scrollbar{width:5px}
 #panes::-webkit-scrollbar-thumb{background:#3a4468;border-radius:3px}
+#panes::-webkit-scrollbar-thumb:active{background:#5a68a0}
 .pane{display:none}.pane.act{display:block}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:2px 10px}
 .row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:2px 0;color:var(--tx-2);min-width:0}
@@ -91,7 +96,7 @@ button:disabled{opacity:.45;color:var(--tx-4);box-shadow:none;transform:none}
   font-size:9px;line-height:1.3;text-align:center;color:var(--tx-3);box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
 .eqs em{font-size:15px;display:block;font-style:normal}
 .eqs .nm{font-weight:700;font-size:10.5px;word-break:break-word;color:var(--tx-1)}
-.itrow{display:flex;align-items:center;gap:5px;background:linear-gradient(180deg,#161a2b,#10131e);border:1px solid #2b3148;
+.itrow{display:flex;align-items:center;gap:5px;background:linear-gradient(180deg,#161a2b,#10131e);border:1px solid #2b3148;border-left-width:3px;
   border-radius:7px;padding:5px 6px;margin-bottom:4px;flex-wrap:wrap;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 .itrow .l{flex:1 1 120px;min-width:0;line-height:1.35}
 .itrow .nm{font-weight:700;font-size:11px;color:var(--tx-1);overflow-wrap:break-word}
@@ -247,6 +252,28 @@ const C={tx1:'#f2f5ff',tx2:'#c5cbe0',tx3:'#8f97b4',tx4:'#646c8c',
  shieldBar:'#9ee0ffcc',eliteRing:'#5cb0ff',bossRing:'#ffd97a',
  mobFar:'#ff8f8f',mobHigh:'#ffc04d',mobLow:'#9aa2bd',mobOk:'#eef1fb',safeOk:'#8ff0b4'};
 
+/* ===== ⭐ โทนสีประจำโซน + หน้าหนี่ออบจอ ===== */
+const TF="'Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif";
+/* โซน 0 ไม่เคลือบสี → ทุ่งหญ้าสดใสเหมือนเดิม */
+const ZTINT=[null,{c:'#12402c',a:.36},{c:'#4b5674',a:.42},{c:'#6e2510',a:.44}];
+const VIGN=[{m:'rgba(4,14,8,.10)',o:'rgba(2,10,6,.42)'},
+ {m:'rgba(3,18,12,.17)',o:'rgba(1,10,7,.58)'},
+ {m:'rgba(12,16,26,.17)',o:'rgba(6,9,18,.56)'},
+ {m:'rgba(42,10,4,.18)',o:'rgba(22,4,2,.58)'}];
+function rr(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);ctx.beginPath();
+  if(ctx.roundRect){ctx.roundRect(x,y,w,h,r);return}
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function bar(x,y,w,h,k,c1,c2,r){
+  const fw=w*clamp(k,0,1);if(fw<=.5)return;
+  const g=ctx.createLinearGradient(0,y,0,y+h);
+  g.addColorStop(0,c1);g.addColorStop(.52,c2);g.addColorStop(1,c1);
+  ctx.fillStyle=g;rr(x,y,fw,h,r);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.26)';rr(x+1,y+1,Math.max(0,fw-2),Math.max(1,h*.32),r*.7);ctx.fill()}
+
 /* ===== UI เต็มจอ (เต็มความกว้าง/สูงจริงของหน้าจอ) ===== */
 const RATIO={portrait:{stage:548/900,panel:352/900},landscape:{stage:823/1196,panel:373/1196}};
 let MODE='portrait',DS={w:495,h:900,stage:{w:495,h:548},panel:{w:495,h:352}},SCALE=1;
@@ -302,7 +329,7 @@ function resizeCanvas(){W=DS.stage.w;H=DS.stage.h;
   ctx.imageSmoothingEnabled=true;
   if('imageSmoothingQuality'in ctx)ctx.imageSmoothingQuality='high'}
 let userZoom=1;
-const ZOOM_MIN=.65,ZOOM_MAX=1.7,ZOOM_STEP=.15;
+const ZOOM_MIN=.34,ZOOM_MAX=1.7,ZOOM_STEP=.13;
 function setUserZoom(v){userZoom=clamp(v,ZOOM_MIN,ZOOM_MAX);
   try{localStorage.setItem('ah_zoom',String(userZoom))}catch(e){}
   updateZoomBtns()}
@@ -314,11 +341,11 @@ function zoom(){
   const base=clamp(Math.min(W,H)/470,.62,1.3);
   /* บังคับให้พื้นที่โลกที่มองเห็น (หน่วยโลก) ไม่เกินค่าคงที่ ไม่ว่าจอจะใหญ่แค่ไหน
      ป้องกันไม่ให้จอใหญ่ต้องวาดพื้น/มอนสเตอร์มากขึ้นจนภาพกระตุก */
-  return clamp(Math.max(base,W/900,H/900)*userZoom,.5,2.9);
+  return clamp(Math.max(base,W/900,H/900)*userZoom,.24,2.9);
 }
 
 /* ===== ยูทิล ===== */
-const WORLD={w:4500,h:3300};
+const WORLD={w:10125,h:7425};
 /* ===== isometric projection ===== */
 const ISO_KX=1,ISO_KY=.5;
 function toIso(x,y){return{x:(x-y)*ISO_KX,y:(x+y)*ISO_KY}}
@@ -337,18 +364,18 @@ function shade(hex,amt){
 
 /* ===== ⭐ สมดุลโหมดสบาย ===== */
 const BAL={
-  TTK_NORMAL:2.6, TTK_ELITE:6.5, TTK_BOSS:16, TTD:45, ENGAGE:1.4,
+  TTK_NORMAL:3.2, TTK_ELITE:8.5, TTK_BOSS:22, TTD:34, ENGAGE:1.25,
   DEF_K:120, DEF_W:3.2,
   HP0:160, HP_LV:22, ATK0:14, ATK_LV:3.0, DEF0:5, DEF_LV:1.35,
   ASPD0:1.15, ASPD_MUL:1.06, ASPD_CAP:3.5,
   CRIT0:.10, CRIT_LV:.004, CRIT_CAP:.65, CRIT_MULT:1.9,
   LS0:.02,
   COMBO_STEP:.008, COMBO_CAP:.32, COMBO_WIN:3.4,
-  REGEN:.050, REGEN_DELAY:2.0, SPEED:208, RANGE:56,
+  REGEN:.034, REGEN_DELAY:2.6, SPEED:208, RANGE:56,
   MP_MAX:100, MP_REGEN:9, MP_HIT:9,
-  EXP_A:70, EXP_B:.98, UP_GROW:1.20,
-  POT_CD:5, POT_HEAL:.60, POT_AUTO_AT:.45,
-  DEATH_GOLD:.05, DEATH_EXP:0, SAFE_TIME:6, RESPAWN:2,
+  EXP_A:75, EXP_B:1.70, UP_GROW:1.20,
+  POT_CD:5, POT_HEAL:.60, POT_AUTO_AT:.40,
+  DEATH_GOLD:.12, DEATH_EXP:0, SAFE_TIME:4, RESPAWN:2,
   INV_MAX:30, SP_PER_LV:2,
 };
 const mit=d=>BAL.DEF_K/(BAL.DEF_K+d*BAL.DEF_W);
@@ -486,7 +513,8 @@ function castSkill(i){
     L.forEach(m=>skillDmg(m,(1.5+l*.3)*sp))}
   else if(S.id==='dash'){const a=Math.atan2(t.y-P.y,t.x-P.x);
     for(let k=0;k<8;k++)fx.push({trail:1,x:P.x+Math.cos(a)*k*8,y:P.y+Math.sin(a)*k*8,life:.5});
-    P.x=t.x-Math.cos(a)*(t.r+20);P.y=t.y-Math.sin(a)*(t.r+20);
+    P.x=clamp(t.x-Math.cos(a)*(t.r+20),P.r,WORLD.w-P.r);
+    P.y=clamp(t.y-Math.sin(a)*(t.r+20),P.r,WORLD.h-P.r);
     P.invul=.5;shake=Math.max(shake,8);hitstop=.09;
     skillDmg(t,2+l*.45);t.stun=.7+l*.07;ring(t.x,t.y,'#ffffffaa',t.r*3)}
   else if(S.id==='shield'){P.shield=Math.round(P.maxHp*(18+l*4)/100);P.shieldT=10;
@@ -523,19 +551,19 @@ const TIER={normal:{ttk:BAL.TTK_NORMAL,dmg:1,rw:1,sc:1,nm:'',drop:.30},
 
 let mobs=[],orbs=[],pops=[],parts=[],fx=[],tels=[],rocks=[],trees=[];
 let auto=true,moveTarget=null,camX=0,camY=0,shake=0,hitstop=0;
-const MAX_MOBS=26;
+const MAX_MOBS=36;
 const TREE_SPR=[
   ['treeOak1','treeOak2','treeRound','bushWhite','bushPink','flowerPlant','grassTuft'],
   ['treePine','treeOak1','treeOak2','treeCherry','bushPink','grassTuft'],
   ['treeDead','treePine','grassTuft'],
   ['treeDead','treeGolden']
 ];
-for(let i=0;i<220;i++){const x=rand(40,WORLD.w-40),y=rand(40,WORLD.h-40),zi=zoneAt(x,y);
+for(let i=0;i<480;i++){const x=rand(40,WORLD.w-40),y=rand(40,WORLD.h-40),zi=zoneAt(x,y);
   trees.push({x,y,s:rand(.8,1.4),z:zi,spr:pick(TREE_SPR[zi])})}
 /* ===== ก้อนหินตกแต่ง (ภาพเท่านั้น ไม่ชนผู้เล่น เพื่อไม่ให้เกิดบั๊กเดินติด) ===== */
 let decoRocks=[];
 const ROCK_SPR=['rockPile1','rockMossy','rockSmall'];
-const ROCK_DENSITY=[14,30,68,58];
+const ROCK_DENSITY=[30,65,145,125];
 for(let zi=0;zi<4;zi++){
   for(let i=0;i<ROCK_DENSITY[zi];i++){
     let x,y,tr=0;
@@ -574,14 +602,15 @@ function wZone(){const c=zoneAt(P.x,P.y),w=[1,1,1,1];
 function spawn(zi){
   if(mobs.length>=MAX_MOBS)return;
   zi=zi??wZone();const Z=ZONES[zi],t=pick(TYPES.filter(x=>x.z.includes(zi)));
-  /* เลเวลมอนสเกลตามตัวละครเสมอ ไม่ยึดเพดานโซนที่ยืนอยู่ */
-  const lv=Math.max(1,Math.round(P.lv+rand(-2,1.4)));
-  const rl=Math.random(),tier=rl<.03?'boss':rl<.17?'elite':'normal',T=TIER[tier];
+  /* เลเวลมอนสเกลตามตัวละครเสมอ ไม่ยึดเพดานโซนที่ยืนอยู่
+     เอียงให้สูงกว่าผู้เล่นเล็กน้อย (เฉลี่ย +0.9) เพื่อให้ยังรู้สึกมีแรงต้าน */
+  const lv=Math.max(1,Math.round(P.lv+rand(-1,2.8)));
+  const rl=Math.random(),tier=rl<.045?'boss':rl<.245?'elite':'normal',T=TIER[tier];
   const D=refDPS(lv),E=refEHP(lv),def=Math.round((2+lv*.9)*t.defW);
   const hp=Math.max(8,Math.round(D*mit(def)*T.ttk*t.hpW));
   const atk=Math.max(1,(E/BAL.TTD)/BAL.ENGAGE*T.dmg*t.dpsW*t.sw);
   let x,y,tr=0;
-  do{const a=rand(0,6.283),ri=zi?ZONES[zi-1].rad:0,ro=Math.min(Z.rad,2200),rr=rand(ri+40,ro-40);
+  do{const a=rand(0,6.283),ri=zi?ZONES[zi-1].rad:0,ro=Math.min(Z.rad,Math.min(WORLD.w,WORLD.h)/2-100),rr=rand(ri+40,ro-40);
     x=clamp(WORLD.w/2+Math.cos(a)*rr,60,WORLD.w-60);y=clamp(WORLD.h/2+Math.sin(a)*rr,60,WORLD.h-60);tr++}
   while(Math.hypot(x-P.x,y-P.y)<300&&tr<40);
   mobs.push({t,lv,x,y,tier,T,zone:zi,r:t.r*T.sc,maxHp:hp,hp,hpGhost:hp,atk,def,
@@ -772,7 +801,10 @@ function takeDmg(dm,fx_,fy){
 
 /* ===== ลูปหลัก ===== */
 let last=performance.now();
-function loop(now){const raw=Math.min(.05,(now-last)/1000);last=now;update(raw);draw();requestAnimationFrame(loop)}
+let rafId=null,paused=false;
+function loop(now){const raw=Math.min(.05,(now-last)/1000);last=now;update(raw);draw();rafId=requestAnimationFrame(loop)}
+function pauseLoop(){if(!paused){paused=true;if(rafId)cancelAnimationFrame(rafId);rafId=null}}
+function resumeLoop(){if(paused){paused=false;last=performance.now();rafId=requestAnimationFrame(loop)}}
 function update(raw){
   let dt=raw;if(hitstop>0){hitstop-=raw;dt=raw*.16}
   updPops(raw);
@@ -920,31 +952,53 @@ function drawCampProp(o){
 function drawMobIso(m){
   const p=toIso(m.x,m.y);
   const sq=1+m.squash*.28,st=1-m.squash*.22;
-  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(p.x,p.y+m.r*.8,m.r,m.r*.4,0,0,7);ctx.fill();
-  ctx.save();ctx.translate(p.x,p.y);ctx.scale(sq,st);
+  const tt=performance.now()/1000;
+  /* ขยับเบาๆ ตอนอยู่เฉยๆ ให้ดูมีชีวิต */
+  const bob=Math.sin(tt*2.4+(m.x+m.y)*.013)*m.r*.07;
+  const py=p.y-bob;
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();
+  ctx.ellipse(p.x,p.y+m.r*.8,m.r*(1-bob/(m.r*3)),m.r*.4,0,0,7);ctx.fill();
+  ctx.save();ctx.translate(p.x,py);ctx.scale(sq,st);
   if(m.flash>0){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,m.r,0,7);ctx.fill()}
   else{
     const mg=ctx.createRadialGradient(-m.r*.35,-m.r*.4,m.r*.1,0,0,m.r*1.05);
     mg.addColorStop(0,shade(m.t.c,42));mg.addColorStop(.55,m.t.c);mg.addColorStop(1,shade(m.t.c,-38));
     ctx.fillStyle=mg;ctx.beginPath();ctx.arc(0,0,m.r,0,7);ctx.fill();
+    /* ขอบรับแสงด้านล่าง ช่วยแยกตัวออกจากพื้น */
+    ctx.save();ctx.globalAlpha=.34;ctx.strokeStyle=shade(m.t.c,86);ctx.lineWidth=m.r*.2;
+    ctx.beginPath();ctx.arc(0,0,m.r*.86,.55,2.1);ctx.stroke();ctx.restore();
     ctx.fillStyle='rgba(255,255,255,.32)';ctx.beginPath();
     ctx.arc(-m.r*.34,-m.r*.36,m.r*.22,0,7);ctx.fill()
   }
-  if(m.tier!=='normal'){ctx.strokeStyle=m.tier==='boss'?C.bossRing:C.eliteRing;ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(0,0,m.r+3,0,7);ctx.stroke()}
+  if(m.tier!=='normal'){
+    ctx.save();
+    if(m.tier==='boss'){
+      ctx.strokeStyle=C.bossRing;ctx.shadowColor=C.bossRing;ctx.shadowBlur=10;
+      ctx.lineWidth=2.4;ctx.setLineDash([5,4]);ctx.lineDashOffset=-tt*15;
+      ctx.beginPath();ctx.arc(0,0,m.r+4.5,0,7);ctx.stroke();
+      ctx.setLineDash([]);ctx.lineWidth=1.5;ctx.globalAlpha=.55;
+      ctx.beginPath();ctx.arc(0,0,m.r+8.5,0,7);ctx.stroke();
+    }else{
+      ctx.strokeStyle=C.eliteRing;ctx.shadowColor=C.eliteRing;ctx.shadowBlur=8;
+      ctx.lineWidth=2.6;
+      ctx.beginPath();ctx.arc(0,0,m.r+3.5,0,7);ctx.stroke();
+    }
+    ctx.restore();
+  }
   ctx.fillStyle='#151827';ctx.beginPath();
   ctx.arc(-m.r*.32,-m.r*.2,2.6,0,7);ctx.arc(m.r*.32,-m.r*.2,2.6,0,7);ctx.fill();ctx.restore();
-  if(m.stun>0){ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('💫',p.x,p.y-m.r-20)}
-  const bw=m.r*2.4;
-  ctx.fillStyle='rgba(0,0,0,.62)';ctx.fillRect(p.x-bw/2,p.y-m.r-11,bw,5);
-  ctx.fillStyle=C.hpGhost;ctx.fillRect(p.x-bw/2,p.y-m.r-11,bw*clamp(m.hpGhost/m.maxHp,0,1),5);
+  if(m.stun>0){ctx.font=`13px ${TF}`;ctx.textAlign='center';ctx.fillText('💫',p.x,py-m.r-20)}
+  const bw=m.r*2.4,by=py-m.r-11;
+  ctx.fillStyle='rgba(0,0,0,.66)';rr(p.x-bw/2-1,by-1,bw+2,7,3.5);ctx.fill();
+  ctx.fillStyle=C.hpGhost;
+  {const gw=bw*clamp(m.hpGhost/m.maxHp,0,1);if(gw>.5){rr(p.x-bw/2,by,gw,5,2.5);ctx.fill()}}
   ctx.fillStyle=m.tier==='boss'?C.bossRing:m.tier==='elite'?C.eliteRing:C.hpBar;
-  ctx.fillRect(p.x-bw/2,p.y-m.r-11,bw*Math.max(0,m.hp)/m.maxHp,5);
+  {const hw=bw*clamp(m.hp/m.maxHp,0,1);if(hw>.5){rr(p.x-bw/2,by,hw,5,2.5);ctx.fill()}}
   const dl=m.lv-P.lv,label=`${m.T.nm}${m.t.n} Lv.${m.lv}`;
   ctx.fillStyle=dl>=6?C.mobFar:dl>=3?C.mobHigh:dl<=-5?C.mobLow:C.mobOk;
-  ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.font=`bold 10px ${TF}`;ctx.textAlign='center';
   ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.75)';
-  ctx.strokeText(label,p.x,p.y-m.r-15);ctx.fillText(label,p.x,p.y-m.r-15)}
+  ctx.strokeText(label,p.x,by-4);ctx.fillText(label,p.x,by-4)}
 function drawPlayerIso(){
   const p=toIso(P.x,P.y);
   if(P.safe>0||P.invul>0){ctx.strokeStyle='rgba(141,243,255,.75)';ctx.lineWidth=2;
@@ -997,9 +1051,17 @@ function draw(){
     if(w.x<minX)minX=w.x;if(w.x>maxX)maxX=w.x;
     if(w.y<minY)minY=w.y;if(w.y>maxY)maxY=w.y}
   minX-=90;maxX+=90;minY-=90;maxY+=90;
+  /* จำกัดพื้นที่วาดพื้นให้ไม่เกินขอบแผนที่จริง เพื่อให้เห็นขอบแมพชัดเจน */
+  minX=Math.max(minX,-40);maxX=Math.min(maxX,WORLD.w+40);
+  minY=Math.max(minY,-40);maxY=Math.min(maxY,WORLD.h+40);
 
-  const gs=64,gx0=Math.floor(minX/gs)*gs,gx1=Math.ceil(maxX/gs)*gs,gy0=Math.floor(minY/gs)*gs,gy1=Math.ceil(maxY/gs)*gs;
+  /* ยิ่งซูมออกไกล พื้นที่ที่มองเห็นยิ่งกว้าง ถ้าใช้ช่องขนาดเดิมจำนวนช่องจะพุ่งจนเฟรมตก
+     จึงขยายขนาดช่องตารางพื้นตามระยะที่มองเห็น ให้จำนวนช่องต่อเฟรมคงที่ */
+  const span=Math.max(maxX-minX,maxY-minY);
+  const gs=span>4200?256:span>2400?128:64;
+  const gx0=Math.floor(minX/gs)*gs,gx1=Math.ceil(maxX/gs)*gs,gy0=Math.floor(minY/gs)*gs,gy1=Math.ceil(maxY/gs)*gs;
   const tileGroups=new Map(),edgeLight=new Path2D(),edgeDark=new Path2D();
+  const tintPaths=new Map();
   const groundTiles=[];
   /* สไปรต์พื้นแบบต่อช่อง: ทุกโซนใช้ผืนหญ้าใหญ่ (grassBig) แทนแล้ว จึงไม่ต้องมีสไปรต์หิน/ดินอีกต่อไป */
   const GROUND_SPR=[null,null,null,null];
@@ -1010,6 +1072,8 @@ function draw(){
     if(!g){g={path:new Path2D(),color:parity===0?Z.g1:Z.g2};tileGroups.set(key,g)}
     const p0=toIso(x,y),p1=toIso(x+gs,y),p2=toIso(x+gs,y+gs),p3=toIso(x,y+gs);
     g.path.moveTo(p0.x,p0.y);g.path.lineTo(p1.x,p1.y);g.path.lineTo(p2.x,p2.y);g.path.lineTo(p3.x,p3.y);g.path.closePath();
+    if(ZTINT[zi]){let tp=tintPaths.get(zi);if(!tp){tp=new Path2D();tintPaths.set(zi,tp)}
+      tp.moveTo(p0.x,p0.y);tp.lineTo(p1.x,p1.y);tp.lineTo(p2.x,p2.y);tp.lineTo(p3.x,p3.y);tp.closePath()}
     edgeLight.moveTo(p3.x,p3.y);edgeLight.lineTo(p0.x,p0.y);edgeLight.lineTo(p1.x,p1.y);
     edgeDark.moveTo(p1.x,p1.y);edgeDark.lineTo(p2.x,p2.y);edgeDark.lineTo(p3.x,p3.y);
     const gspr=GROUND_SPR[zi];
@@ -1020,7 +1084,7 @@ function draw(){
   ctx.strokeStyle='rgba(0,0,0,.14)';ctx.stroke(edgeDark);
   /* พื้นหญ้าผืนใหญ่ ปูทั่วทั้งแผนที่ (ไม่แยกโซนหิน/ลาวาอีกต่อไป ใช้พื้นหญ้าเดียวกันหมด) */
   if(atlasReady&&SPR.grassBig){
-    const GS=gs*4,cx0=Math.floor(minX/GS)*GS,cx1=Math.ceil(maxX/GS)*GS,cy0=Math.floor(minY/GS)*GS,cy1=Math.ceil(maxY/GS)*GS;
+    const GS=256,cx0=Math.floor(minX/GS)*GS,cx1=Math.ceil(maxX/GS)*GS,cy0=Math.floor(minY/GS)*GS,cy1=Math.ceil(maxY/GS)*GS;
     const r=SPR.grassBig,tw=GS*2.05,th=GS*1.03;
     for(let x=cx0;x<cx1;x+=GS)for(let y=cy0;y<cy1;y+=GS){
       const zi=zoneAt(x+GS/2,y+GS/2);
@@ -1039,6 +1103,25 @@ function draw(){
     }
   }
 
+  /* เกรดสีพื้นตามโซน ให้แต่ละโซนมีบรรยากาศต่างกัน */
+  if(tintPaths.size){
+    ctx.save();ctx.globalCompositeOperation='multiply';
+    for(const [zi,tp] of tintPaths){const t=ZTINT[zi];
+      ctx.globalAlpha=t.a;ctx.fillStyle=t.c;ctx.fill(tp)}
+    ctx.restore();
+  }
+
+  /* ขอบแมพ: เส้นกั้นให้เห็นชัดว่าเดินได้ถึงไหน */
+  {
+    const bc0=toIso(0,0),bc1=toIso(WORLD.w,0),bc2=toIso(WORLD.w,WORLD.h),bc3=toIso(0,WORLD.h);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(bc0.x,bc0.y);ctx.lineTo(bc1.x,bc1.y);ctx.lineTo(bc2.x,bc2.y);ctx.lineTo(bc3.x,bc3.y);ctx.closePath();
+    ctx.lineJoin='round';
+    ctx.strokeStyle='rgba(20,14,8,.55)';ctx.lineWidth=14;ctx.stroke();
+    ctx.strokeStyle='rgba(196,150,84,.9)';ctx.lineWidth=6;ctx.stroke();
+    ctx.restore();
+  }
 
   for(const o of orbs){const io=toIso(o.x,o.y);ctx.globalAlpha=o.life;ctx.fillStyle=C.gold;
     ctx.beginPath();ctx.ellipse(io.x,io.y,6,3,0,0,7);ctx.fill();ctx.globalAlpha=1}
@@ -1068,7 +1151,7 @@ function draw(){
     depthList.push({d:P.x+P.y,fn:drawPlayerIso,o:null})
   }else{
     const p=toIso(P.x,P.y);
-    ctx.fillStyle='rgba(242,245,255,.55)';ctx.font='bold 16px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='rgba(242,245,255,.55)';ctx.font=`bold 16px ${TF}`;ctx.textAlign='center';
     ctx.fillText('เกิดใหม่ใน '+P.dead.toFixed(1)+'s',p.x,p.y)}
 
   depthList.sort((a,b)=>a.d-b.d);
@@ -1087,9 +1170,12 @@ function draw(){
   drawPops();
   ctx.restore();
 
-  if(!vgn||vgn.w!==W||vgn.h!==H){
-    vgn=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.72);
-    vgn.addColorStop(0,'rgba(0,0,0,0)');vgn.addColorStop(1,'rgba(0,0,0,.4)');vgn.w=W;vgn.h=H}
+  const pzi=zoneAt(P.x,P.y);
+  if(!vgn||vgn.w!==W||vgn.h!==H||vgn.z!==pzi){
+    const vc=VIGN[pzi];
+    vgn=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.30,W/2,H/2,Math.max(W,H)*.74);
+    vgn.addColorStop(0,'rgba(0,0,0,0)');vgn.addColorStop(.55,vc.m);vgn.addColorStop(1,vc.o);
+    vgn.w=W;vgn.h=H;vgn.z=pzi}
   ctx.fillStyle=vgn;ctx.fillRect(0,0,W,H);
 
   /* ===== สถานะผู้เล่น: ติดขอบล่างจอ แถบยาวเต็มความกว้าง ===== */
@@ -1099,36 +1185,62 @@ function draw(){
   const panelY=H-panelH;
   const barX=panelX+8,cx=panelX+panelW/2;
 
-  ctx.fillStyle='rgba(0,0,0,.62)';ctx.fillRect(panelX,panelY,panelW,panelH);
-  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
-  ctx.strokeRect(panelX+.5,panelY+.5,panelW-1,panelH-1);
+  const hpK=clamp(P.hp/P.maxHp,0,1),low=hpK<.3;
 
-  ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=3;
-  ctx.fillStyle=C.tx1;ctx.font='bold 12px sans-serif';ctx.textAlign='center';
-  ctx.fillText(`Lv.${P.lv}  HP ${Math.ceil(P.hp)}/${P.maxHp}`,cx,panelY+16);
+  /* พื้นแผง: ไล่มนใส + ขอบมน + เส้นแสงด้านบน */
+  const pg=ctx.createLinearGradient(0,panelY,0,panelY+panelH);
+  pg.addColorStop(0,'rgba(10,13,22,.54)');pg.addColorStop(.35,'rgba(8,10,18,.76)');
+  pg.addColorStop(1,'rgba(5,7,13,.86)');
+  ctx.fillStyle=pg;rr(panelX,panelY,panelW,panelH,13);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=1;
+  rr(panelX+.5,panelY+.5,panelW-1,panelH-1,13);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.14)';rr(panelX+14,panelY+1,panelW-28,1,.5);ctx.fill();
+
+  ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=4;
+  ctx.textAlign='left';ctx.font=`bold 12px ${TF}`;
+  ctx.fillStyle=C.gold;ctx.fillText(`Lv.${P.lv}`,barX+2,panelY+16);
+  ctx.textAlign='right';ctx.font=`bold 11px ${TF}`;
+  ctx.fillStyle=low?C.bad:C.tx2;
+  ctx.fillText(`${Math.ceil(P.hp)} / ${P.maxHp}`,barX+bw-2,panelY+16);
   ctx.shadowBlur=0;
 
-  const barY1=panelY+22;
-  ctx.fillStyle=C.hpBack;ctx.fillRect(barX,barY1,bw,14);
-  ctx.fillStyle=C.hpGhost;ctx.fillRect(barX,barY1,bw*clamp(P.hpGhost/P.maxHp,0,1),14);
-  ctx.fillStyle=C.hpBar;ctx.fillRect(barX,barY1,bw*clamp(P.hp/P.maxHp,0,1),14);
-  if(P.shield>0){ctx.fillStyle=C.shieldBar;ctx.fillRect(barX,barY1,bw*clamp(P.shield/P.maxHp,0,1),5)}
+  /* หลอดเลือด */
+  const barY1=panelY+22,h1=14;
+  if(low){const pul=.35+Math.sin(performance.now()/180)*.22;
+    ctx.save();ctx.shadowColor='rgba(255,90,90,'+pul.toFixed(2)+')';ctx.shadowBlur=15;
+    ctx.fillStyle='rgba(255,70,70,.14)';rr(barX,barY1,bw,h1,7);ctx.fill();ctx.restore()}
+  ctx.fillStyle=C.hpBack;rr(barX,barY1,bw,h1,7);ctx.fill();
+  ctx.fillStyle=C.hpGhost;
+  {const gw=bw*clamp(P.hpGhost/P.maxHp,0,1);if(gw>.5){rr(barX,barY1,gw,h1,7);ctx.fill()}}
+  bar(barX,barY1,bw,h1,hpK,'#c9313f','#ff7b7b',7);
+  if(P.shield>0)bar(barX,barY1,bw,5,clamp(P.shield/P.maxHp,0,1),'#7fc9ee','#cdf0ff',2.5);
+  /* ขีดแบ่งทุก 25% อ่านสัดส่วนเลือดง่ายขึ้น */
+  ctx.fillStyle='rgba(0,0,0,.34)';
+  for(let i=1;i<4;i++)ctx.fillRect(Math.round(barX+bw*i/4),barY1+2,1,h1-4);
+  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
+  rr(barX+.5,barY1+.5,bw-1,h1-1,7);ctx.stroke();
 
-  const barY2=barY1+18;
-  ctx.fillStyle=C.mpBack;ctx.fillRect(barX,barY2,bw,8);
-  ctx.fillStyle=C.mpBar;ctx.fillRect(barX,barY2,bw*(P.mp/P.mpMax),8);
+  /* มานา */
+  const barY2=barY1+h1+4,h2=8;
+  ctx.fillStyle=C.mpBack;rr(barX,barY2,bw,h2,4);ctx.fill();
+  bar(barX,barY2,bw,h2,P.mp/P.mpMax,'#3ba6bd','#a9f7ff',4);
 
-  const barY3=barY2+12;
-  ctx.fillStyle=C.expBack;ctx.fillRect(barX,barY3,bw,10);
-  ctx.fillStyle=C.expBar;ctx.fillRect(barX,barY3,bw*clamp(P.exp/P.expNext,0,1),10);
+  /* ค่าประสบการณ์ */
+  const barY3=barY2+h2+4,h3=10;
+  ctx.fillStyle=C.expBack;rr(barX,barY3,bw,h3,5);ctx.fill();
+  bar(barX,barY3,bw,h3,clamp(P.exp/P.expNext,0,1),'#c79b2e','#ffe9a8',5);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font=`bold 8px ${TF}`;ctx.textAlign='center';
+  ctx.fillText(`EXP ${Math.round(clamp(P.exp/P.expNext,0,1)*100)}%`,cx,barY3+h3-1.5);
 
+  /* ชื่อโซน + ระดับความเสี่ยง */
   const Z=ZONES[zoneAt(P.x,P.y)],risk=Z.min-P.lv;
-  ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=3;
-  ctx.fillStyle=risk>4?C.mobFar:risk>0?C.mobHigh:C.safeOk;ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+  const zc=risk>4?C.mobFar:risk>0?C.mobHigh:C.safeOk;
+  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4;
+  ctx.fillStyle=zc;ctx.font=`bold 11px ${TF}`;ctx.textAlign='center';
   ctx.fillText(`${Z.ic} ${Z.n} ×${Z.rw}`,cx,barY3+22);
   ctx.shadowBlur=0;
 
-  ctx.textAlign='right';ctx.font='bold 12px sans-serif';
+  ctx.textAlign='right';ctx.font=`bold 12px ${TF}`;
   ctx.fillStyle=auto?C.good:C.tx3;ctx.fillText(auto?'AUTO ON':'AUTO OFF',W-14,28);
   ctx.fillStyle=C.tx2;ctx.fillText('💰 '+P.gold,W-14,46);
   if(P.sp>0){ctx.fillStyle=C.mana;ctx.fillText('✨ '+P.sp,W-14,64)}
@@ -1158,10 +1270,13 @@ function hud(){
   q('s-cdr').textContent=Math.round(P.cdr*100)+'%';
   q('s-gold').textContent=P.gold;q('s-sp').textContent=P.sp;q('sp2').textContent=P.sp;
   q('pot-c').textContent=potCost()+'g';
-  q('pot-cd').style.height=(P.potCd/BAL.POT_CD*100)+'%';
+  q('pot-cd').style.setProperty('--p',(P.potCd/BAL.POT_CD*100).toFixed(1));
   for(let i=0;i<6;i++){const e=q('sc'+i);if(!e)continue;
-    e.style.height=(P.scd[i]/(P.scdMax[i]||skillCd(i))*100)+'%';
-    q('sb'+i).classList.toggle('nomp',P.mp<SKILLS[i].mp)}}
+    const k=P.scd[i]/(P.scdMax[i]||skillCd(i));
+    e.style.setProperty('--p',(clamp(k,0,1)*100).toFixed(1));
+    const b=q('sb'+i);
+    b.classList.toggle('nomp',P.mp<SKILLS[i].mp);
+    b.classList.toggle('rdy',P.scd[i]<=0&&P.mp>=SKILLS[i].mp)}}
 
 function renderGear(){
   document.getElementById('eqgrid').innerHTML=SLOTS.map(S=>{
@@ -1300,7 +1415,7 @@ function serialize(){
     sk:P.sk,sp:P.sp,costs,IID,auto};
 }
 function applySave(d){
-  P.x=d.x??P.x;P.y=d.y??P.y;
+  P.x=clamp(d.x??P.x,P.r,WORLD.w-P.r);P.y=clamp(d.y??P.y,P.r,WORLD.h-P.r);
   P.lv=d.lv??P.lv;P.exp=d.exp??P.exp;P.expNext=d.expNext??P.expNext;
   P.bHp=d.bHp??P.bHp;P.bAtk=d.bAtk??P.bAtk;P.bDef=d.bDef??P.bDef;
   P.bAspd=d.bAspd??P.bAspd;P.bCrit=d.bCrit??P.bCrit;
@@ -1362,7 +1477,7 @@ document.getElementById('b-delsave').onclick=()=>deleteSave();
 let autosaveT=null;
 function autosaveNow(){clearTimeout(autosaveT);autosaveT=setTimeout(()=>saveGame(true),1200)}
 setInterval(()=>saveGame(true),20000);
-addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveGame(true)});
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){saveGame(true);pauseLoop()}else{resumeLoop()}});
 addEventListener('pagehide',()=>saveGame(true));
 
 function showOnboard(msg,ms){
