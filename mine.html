@@ -192,6 +192,7 @@
             <li class="menu-item" onclick="switchTab(event, 'mining')">ศูนย์ขุดเหมือง</li>
             <li class="menu-item" onclick="switchTab(event, 'crafting')">โรงงานคราฟต์</li>
             <li class="menu-item" onclick="switchTab(event, 'skills')">ทักษะสกิล (Skill Tree)</li>
+            <li class="menu-item" onclick="switchTab(event, 'analytics')">📊 สรุปสถิติเชิงลึก</li>
             <li class="menu-item" onclick="switchTab(event, 'market')">ตลาดกลาง</li>
             <li class="menu-item" onclick="switchTab(event, 'quests')">ภารกิจเควสต์</li>
             <li class="menu-item" onclick="switchTab(event, 'inventory')">ช่องเก็บของ</li>
@@ -226,9 +227,9 @@
                     <div class="card">
                         <h3>🛠️ ความทนทานเครื่องมือขุด (Tool Durability)</h3>
                         <div class="progress-bar-container" style="margin-top: 12px;"><div id="durability-bar" class="progress-bar"></div></div>
-                        <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span> / <span id="max-durability-val">100</span>%</p>
+                        <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span> / 100%</p>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 12px;">
-                            💡 <em>ระบบ Auto-Repair จะซ่อมแซมให้อัตโนมัติเมื่อความทนทานลดเหลือ ≤ 20%</em>
+                            💡 <em>ระบบ Auto-Repair ช่วยขุดออฟไลน์ได้สูงสุด 12 ชั่วโมง</em>
                         </p>
                         <div class="btn-row">
                             <button class="btn btn-warning" onclick="repairTools()" style="flex: 2;">ซ่อมแซม (<span id="repair-cost-val">50</span> Gold)</button>
@@ -265,7 +266,7 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>⚙️ ระบบจัดการข้อมูลเกม</h3>
-                        <p>ระบบเสถียร รองรับระบบ Auto-Repair สมบูรณ์ 100%</p>
+                        <p>ระบบเสถียร รองรับระบบ Offline 12 ชม. สมบูรณ์ 100%</p>
                         <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 10px;">ล้างข้อมูลเซฟใหม่ทั้งหมด</button>
                     </div>
                 </div>
@@ -343,13 +344,62 @@
                     </div>
                     <div class="card">
                         <h3>🛠️ ช่างซ่อมประหยัด</h3>
-                        <p>ลดค่าซ่อมและเพิ่มขีดจำกัดความทนทานสูงสุด<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>% | เพิ่มความทนทาน +<span id="skill-durability-bonus">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
+                        <p>ลดค่าใช้จ่ายในการซ่อมแซมอุปกรณ์เครื่องมือ<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
                         <button class="btn btn-warning" onclick="upgradeSkill('repair')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. ตลาดกลาง -->
+            <!-- 5. สรุปสถิติเชิงลึก -->
+            <div id="analytics" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>💰 มูลค่าทรัพย์สินรวม (Net Worth)</h3>
+                        <p>ประเมินมูลค่าทรัพย์สินทั้งหมดในครอบครอง (Gold + แร่ + อุปกรณ์)</p>
+                        <h2 id="stat-net-worth" style="color: var(--accent); font-size: 1.8rem; margin-top: 10px;">0 Gold</h2>
+                    </div>
+                    <div class="card">
+                        <h3>📈 สถิติความก้าวหน้า (Progression)</h3>
+                        <p>เลเวลผู้เล่น: <b id="stat-lvl" style="color:var(--primary);">1</b><br>
+                           แต้มสกิลคงเหลือ: <b id="stat-skill-points">0</b> แต้ม<br>
+                           เควสต์ที่สำเร็จ: <b id="stat-quests-done" style="color:var(--success);">0 / 2</b></p>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>⛏️ แร่เหล็กสะสมทั้งหมด</h3>
+                        <p style="font-size: 1.5rem; color: var(--success); font-weight: bold; margin-top: 10px;"><span id="stat-total-iron">0</span> ชิ้น</p>
+                        <p style="font-size: 0.8rem; margin-top: 5px;">มูลค่าตลาด: <span id="stat-val-iron" style="color: var(--accent);">0</span> Gold</p>
+                    </div>
+                    <div class="card">
+                        <h3>🥈 แร่เงินสะสมทั้งหมด</h3>
+                        <p style="font-size: 1.5rem; color: var(--success); font-weight: bold; margin-top: 10px;"><span id="stat-total-silver">0</span> ชิ้น</p>
+                        <p style="font-size: 0.8rem; margin-top: 5px;">มูลค่าตลาด: <span id="stat-val-silver" style="color: var(--accent);">0</span> Gold</p>
+                    </div>
+                    <div class="card">
+                        <h3>🥇 แร่ทองสะสมทั้งหมด</h3>
+                        <p style="font-size: 1.5rem; color: var(--success); font-weight: bold; margin-top: 10px;"><span id="stat-total-gold">0</span> ชิ้น</p>
+                        <p style="font-size: 0.8rem; margin-top: 5px;">มูลค่าตลาด: <span id="stat-val-gold" style="color: var(--accent);">0</span> Gold</p>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>🏭 สถิติโรงงานคราฟต์อุปกรณ์</h3>
+                        <p>ขวานเหล็กกล้าที่สร้าง: <b id="stat-steel-axe" style="color: var(--text-main);">0</b> อัน<br>
+                           ขวานเพชรที่สร้าง: <b id="stat-diamond-axe" style="color: var(--text-main);">0</b> อัน</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚙️ สถานะเหมืองแร่ปัจจุบัน</h3>
+                        <p>เหมืองเหล็ก: เลเวล <b id="stat-mine-iron-lvl">1</b><br>
+                           เหมืองเงิน: เลเวล <b id="stat-mine-silver-lvl">1</b><br>
+                           เหมืองทอง: เลเวล <b id="stat-mine-gold-lvl">1</b></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. ตลาดกลาง -->
             <div id="market" class="tab-content">
                 <div class="card">
                     <h3>ตลาดกลางแลกเปลี่ยนด่วน (Instant Marketplace)</h3>
@@ -371,7 +421,7 @@
                 </div>
             </div>
 
-            <!-- 6. ภารกิจเควสต์ -->
+            <!-- 7. ภารกิจเควสต์ -->
             <div id="quests" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -387,7 +437,7 @@
                 </div>
             </div>
 
-            <!-- 7. ช่องเก็บของ -->
+            <!-- 8. ช่องเก็บของ -->
             <div id="inventory" class="tab-content">
                 <div class="grid-3">
                     <div class="card">
@@ -423,7 +473,8 @@
             xp: 0,
             xpMax: 100,
             skillPoints: 0,
-            autoRepair: false, // เพิ่มสถานะ Auto-Repair
+            autoRepair: false,
+            lastSaveTime: Date.now(), // เก็บเวลาล่าสุดสำหรับการคำนวณออฟไลน์
             skills: {
                 speed: 0,
                 xp: 0,
@@ -437,16 +488,16 @@
             durability: 100,
             quests: { 1: false, 2: false },
             mines: {
-                iron: { level: 1, cost: 500 },
-                silver: { level: 1, cost: 1200 },
-                goldOre: { level: 1, cost: 3000 }
+                iron: { level: 1, cost: 500, active: false },
+                silver: { level: 1, cost: 1200, active: false },
+                goldOre: { level: 1, cost: 3000, active: false }
             }
         };
 
         let miningStates = {
-            iron: { active: false, progressInterval: null, collected: 0, progress: 0 },
-            silver: { active: false, progressInterval: null, collected: 0, progress: 0 },
-            goldOre: { active: false, progressInterval: null, collected: 0, progress: 0 }
+            iron: { collected: 0 },
+            silver: { collected: 0 },
+            goldOre: { collected: 0 }
         };
 
         let saveTimeout = null;
@@ -475,10 +526,6 @@
             if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('collapsed');
         }
 
-        function getMaxDurability() {
-            return 100 + (gameData.skills.repair * 20);
-        }
-
         function toggleAutoRepair() {
             gameData.autoRepair = !gameData.autoRepair;
             let btn = document.getElementById('auto-repair-btn');
@@ -494,12 +541,10 @@
 
         function checkAutoRepair() {
             if (!gameData.autoRepair) return;
-            let maxDur = getMaxDurability();
             let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
-            // ซ่อมเมื่อความทนทานลดลงเหลือ 20% หรือต่ำกว่า และมีเงินพอ
-            if (gameData.durability <= (maxDur * 0.2) && gameData.gold >= repairCost) {
+            if (gameData.durability <= 20 && gameData.gold >= repairCost) {
                 gameData.gold -= repairCost;
-                gameData.durability = maxDur;
+                gameData.durability = 100;
             }
         }
 
@@ -528,11 +573,6 @@
 
             gameData.skillPoints -= 1;
             gameData.skills[type] += 1;
-            
-            let maxDur = getMaxDurability();
-            if (type === 'repair') {
-                gameData.durability = Math.min(maxDur, gameData.durability + 20);
-            }
 
             updateUI();
             autoSaveGame();
@@ -543,6 +583,7 @@
             saveTimeout = setTimeout(() => {
                 try { 
                     sanitizeData();
+                    gameData.lastSaveTime = Date.now();
                     localStorage.setItem('mineCraftUltimateSave', JSON.stringify(gameData)); 
                 } catch (e) { console.error("Save failed:", e); }
             }, 300);
@@ -556,6 +597,7 @@
             gameData.xpMax = isNaN(Number(gameData.xpMax)) || gameData.xpMax < 100 ? 100 : Number(gameData.xpMax);
             gameData.skillPoints = isNaN(Number(gameData.skillPoints)) || gameData.skillPoints < 0 ? 0 : Number(gameData.skillPoints);
             gameData.autoRepair = Boolean(gameData.autoRepair);
+            gameData.lastSaveTime = isNaN(Number(gameData.lastSaveTime)) ? Date.now() : Number(gameData.lastSaveTime);
             
             if (!gameData.skills || typeof gameData.skills !== 'object') {
                 gameData.skills = { speed: 0, xp: 0, repair: 0 };
@@ -565,8 +607,7 @@
                 gameData.skills.repair = Math.min(5, Math.max(0, isNaN(Number(gameData.skills.repair)) ? 0 : Number(gameData.skills.repair)));
             }
 
-            let maxDur = 100 + (gameData.skills.repair * 20);
-            gameData.durability = isNaN(Number(gameData.durability)) || gameData.durability < 0 ? maxDur : Math.min(maxDur, Number(gameData.durability));
+            gameData.durability = isNaN(Number(gameData.durability)) || gameData.durability < 0 ? 100 : Math.min(100, Number(gameData.durability));
 
             gameData.iron = isNaN(Number(gameData.iron)) || gameData.iron < 0 ? 0 : Number(gameData.iron);
             gameData.silver = isNaN(Number(gameData.silver)) || gameData.silver < 0 ? 0 : Number(gameData.silver);
@@ -577,10 +618,87 @@
             if (!gameData.quests || typeof gameData.quests !== 'object') gameData.quests = { 1: false, 2: false };
             if (!gameData.mines || typeof gameData.mines !== 'object') {
                 gameData.mines = {
-                    iron: { level: 1, cost: 500 },
-                    silver: { level: 1, cost: 1200 },
-                    goldOre: { level: 1, cost: 3000 }
+                    iron: { level: 1, cost: 500, active: false },
+                    silver: { level: 1, cost: 1200, active: false },
+                    goldOre: { level: 1, cost: 3000, active: false }
                 };
+            }
+        }
+
+        function calculateOfflineProgress() {
+            let now = Date.now();
+            let offlineSeconds = (now - gameData.lastSaveTime) / 1000;
+            
+            // จำกัดเวลาออฟไลน์สูงสุด 12 ชั่วโมง (43200 วินาที)
+            let maxOfflineSeconds = 12 * 60 * 60;
+            if (offlineSeconds > maxOfflineSeconds) {
+                offlineSeconds = maxOfflineSeconds;
+            }
+
+            if (offlineSeconds < 10) return; // ถ้าน้อยกว่า 10 วิ ไม่ต้องคำนวณ
+
+            let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
+            let totalMinesActive = ['iron', 'silver', 'goldOre'].filter(t => gameData.mines[t].active).length;
+            
+            if (totalMinesActive === 0) return;
+
+            let simulatedCycles = 0;
+            let totalIronGained = 0;
+            let totalSilverGained = 0;
+            let totalGoldGained = 0;
+            let totalXpGained = 0;
+
+            // จำลองการขุดทีละรอบ
+            while (offlineSeconds > 0 && gameData.durability > 0) {
+                let baseSeconds = 6; // ค่าเฉลี่ยกลางๆ
+                let cycleTime = baseSeconds * speedMultiplier;
+                
+                if (offlineSeconds < cycleTime) break;
+                
+                offlineSeconds -= cycleTime;
+                simulatedCycles++;
+
+                // เช็คซ่อมออโต้
+                if (gameData.autoRepair && gameData.durability <= 20) {
+                    let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
+                    if (gameData.gold >= repairCost) {
+                        gameData.gold -= repairCost;
+                        gameData.durability = 100;
+                    }
+                }
+
+                gameData.durability = Math.max(0, gameData.durability - 2);
+
+                if (gameData.mines.iron.active) {
+                    let yieldIron = 20 * gameData.mines.iron.level;
+                    totalIronGained += yieldIron;
+                    totalXpGained += 5 * gameData.mines.iron.level;
+                }
+                if (gameData.mines.silver.active && gameData.level >= 3) {
+                    let yieldSilver = 10 * gameData.mines.silver.level;
+                    totalSilverGained += yieldSilver;
+                    totalXpGained += 12 * gameData.mines.silver.level;
+                }
+                if (gameData.mines.goldOre.active && gameData.level >= 5) {
+                    let yieldGold = 5 * gameData.mines.goldOre.level;
+                    totalGoldGained += yieldGold;
+                    totalXpGained += 25 * gameData.mines.goldOre.level;
+                }
+
+                if (gameData.durability <= 0) {
+                    // ปิดเหมืองทั้งหมดถ้าพัง
+                    gameData.mines.iron.active = false;
+                    gameData.mines.silver.active = false;
+                    gameData.mines.goldOre.active = false;
+                    break;
+                }
+            }
+
+            if (simulatedCycles > 0) {
+                miningStates.iron.collected += totalIronGained;
+                miningStates.silver.collected += totalSilverGained;
+                miningStates.goldOre.collected += totalGoldGained;
+                if (totalXpGained > 0) addXP(totalXpGained);
             }
         }
 
@@ -596,6 +714,7 @@
                     gameData.xpMax = parsed.xpMax || 100;
                     gameData.skillPoints = parsed.skillPoints !== undefined ? parsed.skillPoints : 0;
                     gameData.autoRepair = parsed.autoRepair !== undefined ? parsed.autoRepair : false;
+                    gameData.lastSaveTime = parsed.lastSaveTime || Date.now();
                     if (parsed.skills) gameData.skills = parsed.skills;
                     gameData.iron = parsed.iron !== undefined ? parsed.iron : 0;
                     gameData.silver = parsed.silver !== undefined ? parsed.silver : 0;
@@ -609,6 +728,8 @@
             } catch (e) { console.error("Load failed:", e); }
             
             sanitizeData();
+            calculateOfflineProgress(); // คำนวณผลออฟไลน์ทันทีที่โหลดเซฟ
+
             let btn = document.getElementById('auto-repair-btn');
             if (gameData.autoRepair) {
                 btn.innerText = "Auto: เปิด";
@@ -629,7 +750,7 @@
 
         function updateUI() {
             sanitizeData();
-            checkAutoRepair(); // เช็คเงื่อนไขซ่อมออโต้ทุกครั้งที่อัปเดตหน้าจอ
+            checkAutoRepair();
             
             document.getElementById('gold-val').innerText = gameData.gold.toLocaleString();
             document.getElementById('gems-val').innerText = gameData.gems.toLocaleString();
@@ -673,38 +794,29 @@
             document.getElementById('goldOre-xp-text').innerText = `+${Math.floor(25 * goldLv * xpMultiplier)} XP / รอบ`;
             document.getElementById('gold-mine-up-cost').innerText = Number(gameData.mines.goldOre.cost).toLocaleString();
 
+            // ปุ่มขุดและสถานะ
+            ['iron', 'silver', 'goldOre'].forEach(type => {
+                let btn = document.getElementById(`${type}-mine-btn`);
+                let dashStat = document.getElementById(`dash-${type === 'goldOre' ? 'gold' : type}-status`);
+                if (gameData.mines[type].active) {
+                    btn.innerText = "หยุด";
+                    btn.className = "btn btn-danger";
+                    dashStat.innerText = "กำลังขุด...";
+                    dashStat.style.color = "var(--success)";
+                } else {
+                    btn.innerText = "เริ่มขุด";
+                    btn.className = "btn btn-success";
+                    dashStat.innerText = "หยุดทำงาน";
+                    dashStat.style.color = "var(--text-muted)";
+                }
+            });
+
             document.getElementById('dash-iron-lvl').innerText = `Lv.${ironLv}`;
             document.getElementById('dash-iron-collected').innerText = Number(miningStates.iron.collected).toLocaleString();
-            let ironStatEl = document.getElementById('dash-iron-status');
-            if (miningStates.iron.active) {
-                ironStatEl.innerText = "กำลังขุด...";
-                ironStatEl.style.color = "var(--success)";
-            } else {
-                ironStatEl.innerText = "หยุดทำงาน";
-                ironStatEl.style.color = "var(--text-muted)";
-            }
-
             document.getElementById('dash-silver-lvl').innerText = `Lv.${silverLv}`;
             document.getElementById('dash-silver-collected').innerText = Number(miningStates.silver.collected).toLocaleString();
-            let silverStatEl = document.getElementById('dash-silver-status');
-            if (miningStates.silver.active) {
-                silverStatEl.innerText = "กำลังขุด...";
-                silverStatEl.style.color = "var(--success)";
-            } else {
-                silverStatEl.innerText = "หยุดทำงาน";
-                silverStatEl.style.color = "var(--text-muted)";
-            }
-
             document.getElementById('dash-gold-lvl').innerText = `Lv.${goldLv}`;
             document.getElementById('dash-gold-collected').innerText = Number(miningStates.goldOre.collected).toLocaleString();
-            let goldStatEl = document.getElementById('dash-gold-status');
-            if (miningStates.goldOre.active) {
-                goldStatEl.innerText = "กำลังขุด...";
-                goldStatEl.style.color = "var(--success)";
-            } else {
-                goldStatEl.innerText = "หยุดทำงาน";
-                goldStatEl.style.color = "var(--text-muted)";
-            }
 
             document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
             document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
@@ -712,7 +824,6 @@
             document.getElementById('skill-xp-val').innerText = (gameData.skills.xp * 10);
             document.getElementById('skill-repair-lvl').innerText = gameData.skills.repair;
             document.getElementById('skill-repair-val').innerText = (gameData.skills.repair * 15);
-            document.getElementById('skill-durability-bonus').innerText = (gameData.skills.repair * 20);
 
             document.getElementById('craft-xp-1').innerText = `+${Math.floor(60 * xpMultiplier)} XP`;
             document.getElementById('craft-xp-2').innerText = `+${Math.floor(150 * xpMultiplier)} XP`;
@@ -724,14 +835,36 @@
             document.getElementById('collected-silver').innerText = Number(miningStates.silver.collected).toLocaleString();
             document.getElementById('collected-goldOre').innerText = Number(miningStates.goldOre.collected).toLocaleString();
 
-            let maxDur = getMaxDurability();
             document.getElementById('durability-val').innerText = Math.round(gameData.durability);
-            document.getElementById('max-durability-val').innerText = maxDur;
             
             const bar = document.getElementById('durability-bar');
-            let durPercent = Math.min(100, (gameData.durability / maxDur) * 100);
-            bar.style.width = durPercent + '%';
-            bar.style.background = durPercent > 30 ? 'var(--success)' : 'var(--danger)';
+            bar.style.width = gameData.durability + '%';
+            bar.style.background = gameData.durability > 30 ? 'var(--success)' : 'var(--danger)';
+
+            let totalIronVal = gameData.iron * 5;
+            let totalSilverVal = gameData.silver * 15;
+            let totalGoldVal = gameData.goldOre * 40;
+            let netWorth = gameData.gold + totalIronVal + totalSilverVal + totalGoldVal;
+
+            document.getElementById('stat-net-worth').innerText = netWorth.toLocaleString() + " Gold";
+            document.getElementById('stat-lvl').innerText = gameData.level;
+            document.getElementById('stat-skill-points').innerText = gameData.skillPoints;
+            
+            let questsDoneCount = (gameData.quests[1] ? 1 : 0) + (gameData.quests[2] ? 1 : 0);
+            document.getElementById('stat-quests-done').innerText = `${questsDoneCount} / 2`;
+
+            document.getElementById('stat-total-iron').innerText = gameData.iron.toLocaleString();
+            document.getElementById('stat-val-iron').innerText = totalIronVal.toLocaleString();
+            document.getElementById('stat-total-silver').innerText = gameData.silver.toLocaleString();
+            document.getElementById('stat-val-silver').innerText = totalSilverVal.toLocaleString();
+            document.getElementById('stat-total-gold').innerText = gameData.goldOre.toLocaleString();
+            document.getElementById('stat-val-gold').innerText = totalGoldVal.toLocaleString();
+
+            document.getElementById('stat-steel-axe').innerText = gameData.steelAxe.toLocaleString();
+            document.getElementById('stat-diamond-axe').innerText = gameData.diamondAxe.toLocaleString();
+            document.getElementById('stat-mine-iron-lvl').innerText = ironLv;
+            document.getElementById('stat-mine-silver-lvl').innerText = silverLv;
+            document.getElementById('stat-mine-gold-lvl').innerText = goldLv;
 
             if (gameData.quests && gameData.quests[1]) {
                 document.getElementById('quest-btn-1').innerText = "รับแล้ว";
@@ -768,63 +901,51 @@
             if (gameData.durability <= 0) return;
 
             let state = miningStates[type];
-            let btn = document.getElementById(`${type}-mine-btn`);
-            let progressBar = document.getElementById(`bar-${type}`);
+            let mineObj = gameData.mines[type];
             let baseSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
-
             let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
             let totalSeconds = baseSeconds * speedMultiplier;
 
-            if (!state.active) {
-                state.active = true;
-                btn.innerText = "หยุด";
-                btn.className = "btn btn-danger";
-                state.progress = 0;
+            mineObj.active = !mineObj.active;
 
+            if (mineObj.active) {
                 let intervalMs = 100;
                 let step = (intervalMs / (totalSeconds * 1000)) * 100;
 
-                if (state.progressInterval) clearInterval(state.progressInterval);
+                if (window[`interval_${type}`]) clearInterval(window[`interval_${type}`]);
 
-                state.progressInterval = setInterval(() => {
-                    if (!state.active) {
-                        clearInterval(state.progressInterval);
+                window[`interval_${type}`] = setInterval(() => {
+                    if (!mineObj.active || gameData.durability <= 0) {
+                        clearInterval(window[`interval_${type}`]);
+                        mineObj.active = false;
+                        updateUI();
                         return;
                     }
-                    state.progress += step;
+
+                    state.progress = (state.progress || 0) + step;
                     if (state.progress >= 100) {
                         state.progress = 0;
                         
-                        if (gameData.durability <= 0) {
-                            toggleMining(type);
-                            return;
-                        }
-
                         gameData.durability = Math.max(0, gameData.durability - 2);
                         
                         let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
-                        let mineLevel = gameData.mines[type].level;
-                        let totalYield = baseYield * mineLevel;
+                        let totalYield = baseYield * mineObj.level;
                         state.collected += totalYield;
                         
                         let baseXpPerRound = type === 'iron' ? 5 : (type === 'silver' ? 12 : 25);
-                        let mineXpGain = baseXpPerRound * mineLevel;
-                        addXP(mineXpGain);
-
+                        addXP(baseXpPerRound * mineObj.level);
                         updateUI();
                     }
+                    let progressBar = document.getElementById(`bar-${type}`);
                     if (progressBar) progressBar.style.width = state.progress + '%';
                 }, intervalMs);
-
             } else {
-                if (state.progressInterval) clearInterval(state.progressInterval);
-                state.active = false;
-                state.progress = 0;
+                if (window[`interval_${type}`]) clearInterval(window[`interval_${type}`]);
+                let progressBar = document.getElementById(`bar-${type}`);
                 if (progressBar) progressBar.style.width = '0%';
-                btn.innerText = "เริ่มขุด";
-                btn.className = "btn btn-success";
             }
             updateUI();
+            autoSaveGame();
         }
 
         function claimOre(type) {
@@ -844,11 +965,10 @@
 
         function repairTools() {
             sanitizeData();
-            let maxDur = getMaxDurability();
             let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
-            if (gameData.gold < repairCost || gameData.durability >= maxDur) return;
+            if (gameData.gold < repairCost || gameData.durability >= 100) return;
             gameData.gold -= repairCost;
-            gameData.durability = maxDur;
+            gameData.durability = 100;
             updateUI();
             autoSaveGame();
         }
