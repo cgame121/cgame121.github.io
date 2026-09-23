@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mine & Craft Economy - Ultimate Stable Edition</title>
+    <title>Mine & Craft Economy - Ultra Smooth Edition</title>
     <style>
+        /* ==========================================
+           1. ROOT VARIABLES & GLOBAL STYLES
+           ================================---------- */
         :root {
             --bg-body: #07090e;
             --bg-sidebar: #0b0f17;
@@ -12,233 +15,288 @@
             --bg-card-hover: #1a253f;
             --border: #1e293b;
             --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.3);
+            --primary-glow: rgba(59, 130, 246, 0.35);
             --accent: #f59e0b;
             --success: #10b981;
             --danger: #ef4444;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 
-        aside { 
-            width: 260px; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================
+           2. SIDEBAR & NAVIGATION STYLES
+           ================================---------- */
+        aside {
+            width: 260px;
             min-width: 260px;
-            background-color: var(--bg-sidebar); 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
             position: relative;
             height: 100%;
-            transition: all 0.3s ease; 
-            z-index: 1000; 
-            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+            transition: var(--transition-smooth);
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-        }
-        
-        @media (max-width: 767px) {
-            aside {
-                position: fixed;
-                top: 0; left: 0;
-                transform: translateX(0);
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-                padding-left: env(safe-area-inset-left);
-            }
-            aside.collapsed { transform: translateX(-100%); }
+            will-change: width, transform;
         }
 
-        @media (min-width: 768px) {
-            aside.collapsed { 
-                width: 0 !important; 
-                min-width: 0 !important;
-                border-right: none !important;
-                opacity: 0; 
-                visibility: hidden; 
-            }
-        }
-        
-        .brand { 
-            padding: 20px 16px; 
-            font-size: 1.1rem; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            align-items: center; 
+        .brand {
+            padding: 20px 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
             justify-content: space-between;
             background: linear-gradient(180deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
             white-space: nowrap;
         }
-        .close-sidebar { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; display: none; }
 
-        .menu-list { list-style: none; padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; white-space: nowrap; }
-        .menu-item { 
-            padding: 12px 14px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            color: var(--text-muted); 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            transition: var(--transition-smooth);
+        }
+        .close-sidebar:hover { color: var(--text-main); }
+
+        .menu-list {
+            list-style: none;
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            white-space: nowrap;
+        }
+
+        .menu-item {
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 12px;
             border: 1px solid transparent;
+            will-change: background-color, transform;
         }
-        .menu-item:hover, .menu-item:active { 
-            background-color: var(--bg-card-hover); 
-            color: var(--text-main); 
+
+        .menu-item:hover {
+            background-color: var(--bg-card-hover);
+            color: var(--text-main);
             border-color: var(--border);
+            transform: translateX(3px);
         }
-        .menu-item.active { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-            color: #fff; 
+
+        .menu-item.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
             box-shadow: 0 4px 14px var(--primary-glow);
             border-color: rgba(59, 130, 246, 0.5);
         }
 
-        .main-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; position: relative; }
-        
-        header { 
-            height: auto; 
-            min-height: calc(64px + env(safe-area-inset-top)); 
-            background-color: var(--bg-sidebar); 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
+        /* ==========================================
+           3. MAIN CONTAINER & HEADER STYLES
+           ================================---------- */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        header {
+            height: auto;
+            min-height: calc(64px + env(safe-area-inset-top));
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding-top: max(10px, env(safe-area-inset-top));
             padding-bottom: 10px;
             padding-left: max(16px, env(safe-area-inset-left));
             padding-right: max(16px, env(safe-area-inset-right));
-            gap: 10px; 
+            gap: 10px;
         }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .toggle-btn { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border); 
-            color: var(--text-main); 
-            width: 40px; height: 40px; 
-            border-radius: 8px; 
-            font-size: 1.1rem; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        .user-stats { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-        .stat-badge { 
-            background: var(--bg-card); 
-            padding: 5px 10px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            display: flex; 
-            align-items: center; 
-            gap: 4px; 
-            white-space: nowrap;
-        }
-        .stat-badge span { color: var(--accent); }
 
-        #toast-box {
-            position: absolute;
-            top: calc(20px + env(safe-area-inset-top)); 
-            right: 20px;
-            z-index: 2000;
-            display: flex; flex-direction: column; gap: 8px;
-            pointer-events: none;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .toast {
+
+        .toggle-btn {
             background: var(--bg-card);
-            border: 1px solid var(--primary);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 10px 16px;
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
-            pointer-events: auto;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
         }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .toggle-btn:hover { background-color: var(--bg-card-hover); border-color: var(--primary); }
 
-        .content-viewport { 
-            flex: 1; 
-            padding: 16px; 
+        .user-stats {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .stat-badge {
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .stat-badge span {
+            color: var(--accent);
+        }
+
+        /* ==========================================
+           4. VIEWPORT & SMOOTH TAB ANIMATIONS
+           ================================---------- */
+        .content-viewport {
+            flex: 1;
+            padding: 16px;
             padding-bottom: max(16px, env(safe-area-inset-bottom));
             padding-left: max(16px, env(safe-area-inset-left));
             padding-right: max(16px, env(safe-area-inset-right));
-            overflow-y: auto; 
-            background: radial-gradient(circle at top right, #0f172a 0%, var(--bg-body) 70%); 
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #0f172a 0%, var(--bg-body) 70%);
+            scroll-behavior: smooth;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab-content { display: none; will-change: opacity, transform; }
+        .tab-content.active { display: block; animation: smoothFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes smoothFadeIn {
+            0% { opacity: 0; transform: translateY(8px) scale(0.99); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
         .grid-3 { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
-        
-        @media (min-width: 768px) {
-            .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .close-sidebar { display: none !important; }
-            .stat-badge { font-size: 0.85rem; padding: 6px 12px; }
-            .content-viewport { padding: 24px; }
-        }
 
-        @media (max-width: 767px) {
-            .close-sidebar { display: block; }
-        }
-
-        .card { 
-            background-color: var(--bg-card); 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            padding: 16px; 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
+            transition: var(--transition-smooth);
+            will-change: transform, box-shadow, border-color;
         }
-        .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
-        .card p { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px; line-height: 1.4; }
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
 
+        .card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        /* ==========================================
+           5. FLUID ANIMATIONS (PULSE & FLOATING)
+           ================================---------- */
         @keyframes pulseGlow {
-            0% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-            50% { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
-            100% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-        }
-        .card.mining-active {
-            animation: pulseGlow 2s infinite ease-in-out;
+            0% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
+            50% { border-color: var(--primary); box-shadow: 0 0 22px var(--primary-glow); }
+            100% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.9); opacity: 1; }
-            100% { transform: translateY(-35px) scale(1.1); opacity: 0; }
+        .card.mining-active {
+            animation: pulseGlow 2.2s infinite ease-in-out;
         }
+
+        @keyframes floatUpSmooth {
+            0% { transform: translateY(0) scale(0.85); opacity: 0; }
+            20% { transform: translateY(-8px) scale(1.05); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1); opacity: 0; }
+        }
+
         .floating-reward {
             position: absolute;
             bottom: 25px;
             right: 20px;
             color: var(--success);
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
+            animation: floatUpSmooth 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
             z-index: 50;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
         }
+
         .floating-reward.failure {
             color: var(--danger);
         }
 
+        /* ==========================================
+           6. BUTTONS, INPUTS & TOASTS
+           ================================---------- */
         .text-input {
             width: 100%;
             background: var(--bg-body);
@@ -249,62 +307,121 @@
             font-size: 0.85rem;
             resize: none;
             outline: none;
+            transition: var(--transition-smooth);
         }
+        .text-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
 
-        .btn { 
-            background-color: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 10px 12px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 0.8rem; 
-            display: inline-flex; 
-            align-items: center; 
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            gap: 6px; 
-            box-shadow: 0 4px 10px var(--primary-glow);
+            gap: 6px;
+            box-shadow: 0 4px 12px var(--primary-glow);
             width: 100%;
             touch-action: manipulation;
+            transition: var(--transition-smooth);
+            will-change: transform, background-color;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn-success { background-color: var(--success); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn:active { transform: scale(0.97) translateY(0); }
+        .btn-success { background-color: var(--success); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
         .btn-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: none; }
-        .btn-warning { background-color: var(--accent); color: #000; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
-        .btn:disabled { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-warning { background-color: var(--accent); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
+        .btn:disabled { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border); cursor: not-allowed; box-shadow: none; transform: none; filter: none; }
 
         .btn-row { display: flex; gap: 6px; margin-top: 6px; }
         .btn-row .btn { margin-top: 0; flex: 1; }
 
         .progress-bar-container { background: var(--bg-body); border-radius: 6px; height: 8px; width: 100%; border: 1px solid var(--border); overflow: hidden; margin-bottom: 10px; }
-        .progress-bar { background: var(--success); height: 100%; width: 100%; transition: width 0.3s; }
-        .mining-progress { background: var(--primary); height: 100%; width: 0%; transition: width 0.1s linear; }
+        .progress-bar { background: linear-gradient(90deg, #059669, var(--success)); height: 100%; width: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mining-progress { background: linear-gradient(90deg, #2563eb, var(--primary)); height: 100%; width: 0%; transition: width 0.1s linear; will-change: width; }
+
+        #toast-box {
+            position: absolute;
+            top: calc(20px + env(safe-area-inset-top));
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1), toastFadeOut 0.3s ease 2.5s forwards;
+            pointer-events: auto;
+            will-change: transform, opacity;
+        }
+
+        @keyframes toastSlideIn { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+        @keyframes toastFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
 
         .sidebar-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 999;
             display: none;
+            transition: var(--transition-smooth);
         }
         .sidebar-overlay.show { display: block; }
+
         .badge-trend { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .trend-up { background: rgba(16, 185, 129, 0.2); color: var(--success); }
         .trend-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        
+
         .market-chart-mini { width: 100%; height: 110px; background: #07090e; border-radius: 6px; border: 1px solid var(--border); display: block; margin-bottom: 12px; }
+
+        /* ==========================================
+           7. MEDIA QUERIES (RESPONSIVE)
+           ================================---------- */
         @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .close-sidebar { display: none !important; }
+            .stat-badge { font-size: 0.85rem; padding: 6px 12px; }
+            .content-viewport { padding: 24px; }
             .market-chart-mini { height: 90px; }
+        }
+
+        @media (max-width: 767px) {
+            .close-sidebar { display: block; }
+            aside {
+                position: fixed;
+                top: 0; left: 0;
+                transform: translateX(0);
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+            }
+            aside.collapsed { transform: translateX(-100%); }
         }
     </style>
 </head>
 <body>
 
+    <!-- Toast Notification Container -->
     <div id="toast-box"></div>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
+    <!-- Sidebar Navigation -->
     <aside id="sidebar">
         <div class="brand">
             <span>⛏️</span> Mine & Craft Hub
@@ -319,6 +436,7 @@
         </ul>
     </aside>
 
+    <!-- Main Container -->
     <div class="main-container">
         <header>
             <div class="header-left">
@@ -333,7 +451,7 @@
 
         <div class="content-viewport">
             
-            <!-- 1. แดชบอร์ดหลัก -->
+            <!-- Tab 1: Dashboard -->
             <div id="dashboard" class="tab-content active">
                 <div class="grid-2">
                     <div class="card">
@@ -354,7 +472,7 @@
                 </div>
             </div>
 
-            <!-- 2. ศูนย์ขุดเหมือง -->
+            <!-- Tab 2: Mining Center -->
             <div id="mining" class="tab-content">
                 <div class="grid-3">
                     <div id="card-iron" class="card">
@@ -389,12 +507,12 @@
                 </div>
             </div>
 
-            <!-- 3. ตลาดกลาง & ร้านค้า -->
+            <!-- Tab 3: Market & Shop -->
             <div id="market" class="tab-content">
                 <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">🛒 กระดานซื้อขายแร่ & กราฟเรียลไทม์</h2>
                 <div class="grid-3" style="margin-bottom: 24px;">
                     
-                    <!-- การ์ดแร่เหล็ก -->
+                    <!-- Iron Card -->
                     <div class="card">
                         <h3>🔹 แร่เหล็ก <span id="trend-iron" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-iron" class="market-chart-mini"></canvas>
@@ -409,7 +527,7 @@
                         </div>
                     </div>
 
-                    <!-- การ์ดแร่เงิน -->
+                    <!-- Silver Card -->
                     <div class="card">
                         <h3>🥈 แร่เงิน <span id="trend-silver" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-silver" class="market-chart-mini"></canvas>
@@ -424,7 +542,7 @@
                         </div>
                     </div>
 
-                    <!-- การ์ดแร่ทอง -->
+                    <!-- Gold Ore Card -->
                     <div class="card">
                         <h3>🥇 แร่ทอง <span id="trend-goldOre" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-goldOre" class="market-chart-mini"></canvas>
@@ -460,7 +578,7 @@
                 </div>
             </div>
 
-            <!-- 4. ช่องเก็บของ -->
+            <!-- Tab 4: Inventory -->
             <div id="inventory" class="tab-content">
                 <div class="grid-3">
                     <div class="card"><h3>แร่เหล็ก</h3><p><span id="inv-iron" style="color:var(--success); font-weight:bold;">0</span> ชิ้น</p></div>
@@ -469,7 +587,7 @@
                 </div>
             </div>
 
-            <!-- 5. ระบบเซฟเกม -->
+            <!-- Tab 5: Save & System Management -->
             <div id="save-system" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -517,12 +635,22 @@
         </div>
     </div>
 
+    <!-- ==========================================
+       JAVASCRIPT GAME LOGIC
+       ========================================== -->
     <script>
         const defaultGameData = {
-            gold: 50000, gems: 120, level: 1, xp: 0, xpMax: 100,
-            autoRepair: false, lastSaveTime: Date.now(),
+            gold: 50000,
+            gems: 120,
+            level: 1,
+            xp: 0,
+            xpMax: 100,
+            autoRepair: false,
+            lastSaveTime: Date.now(),
             repairCount: 0,
-            iron: 50, silver: 0, goldOre: 0,
+            iron: 50,
+            silver: 0,
+            goldOre: 0,
             durability: 100,
             marketPrices: { iron: 5, silver: 15, goldOre: 40 },
             marketMultipliers: { iron: 1.0, silver: 1.0, goldOre: 1.0 },
@@ -538,14 +666,6 @@
         let activeMiningIntervals = {};
         let globalIntervals = [];
         let actionLocked = false;
-
-        function debounceAction(callback) {
-            if (actionLocked) return false;
-            actionLocked = true;
-            setTimeout(() => { actionLocked = false; }, 250);
-            callback();
-            return true;
-        }
 
         window.onload = function() {
             try {
@@ -589,6 +709,14 @@
             Object.values(activeMiningIntervals).forEach(id => clearInterval(id));
         };
 
+        function debounceAction(callback) {
+            if (actionLocked) return false;
+            actionLocked = true;
+            setTimeout(() => { actionLocked = false; }, 250);
+            callback();
+            return true;
+        }
+
         function showToast(message) {
             let box = document.getElementById('toast-box');
             if (!box) return;
@@ -596,7 +724,7 @@
             t.className = 'toast';
             t.innerText = message;
             box.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+            setTimeout(() => { if (t && t.parentNode) t.remove(); }, 2800);
         }
 
         function showFloatingReward(type, text, isFailure = false) {
@@ -606,7 +734,7 @@
             el.className = isFailure ? 'floating-reward failure' : 'floating-reward';
             el.innerText = text;
             card.appendChild(el);
-            setTimeout(() => el.remove(), 800);
+            setTimeout(() => { if (el && el.parentNode) el.remove(); }, 900);
         }
 
         function toggleSidebar() { 
@@ -678,6 +806,23 @@
             });
         }
 
+        function autoSaveGame() {
+            try { 
+                sanitizeData();
+                gameData.lastSaveTime = Date.now();
+                let dataStr = JSON.stringify(gameData);
+                localStorage.setItem('mineCraftPrimarySave', dataStr);
+                localStorage.setItem('mineCraftBackupSave', dataStr); 
+                let saveText = document.getElementById('last-save-text');
+                if (saveText) {
+                    let d = new Date();
+                    saveText.innerText = d.toLocaleTimeString();
+                }
+            } catch (e) {
+                console.error("Auto save failed:", e);
+            }
+        }
+
         function downloadSaveFile() {
             autoSaveGame();
             let dataStr = JSON.stringify(gameData, null, 2);
@@ -740,6 +885,50 @@
                     location.reload();
                 } else { alert("โค้ดไม่ถูกต้อง"); }
             } catch (e) { alert("รูปแบบโค้ดผิดพลาดหรือโค้ดไม่ถูกต้อง"); }
+        }
+
+        function resetGame() {
+            if (confirm("ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?")) {
+                localStorage.removeItem('mineCraftPrimarySave');
+                localStorage.removeItem('mineCraftBackupSave');
+                location.reload();
+            }
+        }
+
+        function sanitizeData() {
+            if (!gameData || typeof gameData !== 'object') gameData = JSON.parse(JSON.stringify(defaultGameData));
+            gameData.gold = (gameData.gold !== undefined && !isNaN(gameData.gold)) ? Number(gameData.gold) : 50000;
+            gameData.gems = (gameData.gems !== undefined && !isNaN(gameData.gems)) ? Number(gameData.gems) : 120;
+            gameData.level = Number(gameData.level) || 1;
+            gameData.xp = Number(gameData.xp) || 0;
+            gameData.xpMax = Number(gameData.xpMax) || 100;
+            gameData.durability = isNaN(gameData.durability) ? 100 : Math.max(0, Math.min(100, gameData.durability));
+            gameData.iron = Number(gameData.iron) || 0;
+            gameData.silver = Number(gameData.silver) || 0;
+            gameData.goldOre = Number(gameData.goldOre) || 0;
+
+            if (!gameData.marketPrices || typeof gameData.marketPrices !== 'object') {
+                gameData.marketPrices = { iron: 5, silver: 15, goldOre: 40 };
+            }
+            if (!gameData.marketMultipliers || typeof gameData.marketMultipliers !== 'object') {
+                gameData.marketMultipliers = { iron: 1.0, silver: 1.0, goldOre: 1.0 };
+            }
+            if (!gameData.priceHistory || typeof gameData.priceHistory !== 'object') {
+                gameData.priceHistory = { iron: [5], silver: [15], goldOre: [40] };
+            }
+            if (!gameData.mines || typeof gameData.mines !== 'object') {
+                gameData.mines = JSON.parse(JSON.stringify(defaultGameData.mines));
+            } else {
+                ['iron', 'silver', 'goldOre'].forEach(type => {
+                    if (!gameData.mines[type]) {
+                        gameData.mines[type] = { level: 1, cost: type === 'iron' ? 500 : (type === 'silver' ? 1200 : 3000), active: false };
+                    } else {
+                        gameData.mines[type].level = Number(gameData.mines[type].level) || 1;
+                        gameData.mines[type].cost = Number(gameData.mines[type].cost) || 500;
+                        gameData.mines[type].active = Boolean(gameData.mines[type].active);
+                    }
+                });
+            }
         }
 
         function updateMarketPricesRealtime() {
@@ -875,17 +1064,29 @@
             ctx.fillText(`Min: ${minVal}`, pad, pad + chartH);
         }
 
+        function addXP(amount) {
+            sanitizeData();
+            let finalXp = Math.floor(amount);
+            gameData.xp = Number(gameData.xp) + finalXp;
+            while (gameData.xp >= gameData.xpMax) {
+                gameData.level += 1;
+                gameData.xp -= gameData.xpMax;
+                gameData.xpMax = Math.floor(gameData.xpMax * 1.5);
+                showToast(`เลเวลอัพ! ยินดีด้วย คุณขึ้นสู่เลเวล ${gameData.level} แล้ว`);
+            }
+        }
+
+        function getRepairCost() {
+            let missingPercent = Math.max(0, 100 - gameData.durability);
+            return Math.round(missingPercent * 2);
+        }
+
         function toggleAutoRepair() {
             gameData.autoRepair = !gameData.autoRepair;
             if (gameData.autoRepair) {
                 checkAutoRepair();
             }
             updateUI();
-        }
-
-        function getRepairCost() {
-            let missingPercent = Math.max(0, 100 - gameData.durability);
-            return Math.round(missingPercent * 2);
         }
 
         function checkAutoRepair() {
@@ -922,72 +1123,6 @@
             }
         }
 
-        function addXP(amount) {
-            sanitizeData();
-            let finalXp = Math.floor(amount);
-            gameData.xp = Number(gameData.xp) + finalXp;
-            while (gameData.xp >= gameData.xpMax) {
-                gameData.level += 1;
-                gameData.xp -= gameData.xpMax;
-                gameData.xpMax = Math.floor(gameData.xpMax * 1.5);
-                showToast(`เลเวลอัพ! ยินดีด้วย คุณขึ้นสู่เลเวล ${gameData.level} แล้ว`);
-            }
-        }
-
-        function autoSaveGame() {
-            try { 
-                sanitizeData();
-                gameData.lastSaveTime = Date.now();
-                let dataStr = JSON.stringify(gameData);
-                localStorage.setItem('mineCraftPrimarySave', dataStr);
-                localStorage.setItem('mineCraftBackupSave', dataStr); 
-                let saveText = document.getElementById('last-save-text');
-                if (saveText) {
-                    let d = new Date();
-                    saveText.innerText = d.toLocaleTimeString();
-                }
-            } catch (e) {
-                console.error("Auto save failed:", e);
-            }
-        }
-
-        function sanitizeData() {
-            if (!gameData || typeof gameData !== 'object') gameData = JSON.parse(JSON.stringify(defaultGameData));
-            gameData.gold = (gameData.gold !== undefined && !isNaN(gameData.gold)) ? Number(gameData.gold) : 50000;
-            gameData.gems = (gameData.gems !== undefined && !isNaN(gameData.gems)) ? Number(gameData.gems) : 120;
-            gameData.level = Number(gameData.level) || 1;
-            gameData.xp = Number(gameData.xp) || 0;
-            gameData.xpMax = Number(gameData.xpMax) || 100;
-            gameData.durability = isNaN(gameData.durability) ? 100 : Math.max(0, Math.min(100, gameData.durability));
-            gameData.iron = Number(gameData.iron) || 0;
-            gameData.silver = Number(gameData.silver) || 0;
-            gameData.goldOre = Number(gameData.goldOre) || 0;
-
-            if (!gameData.marketPrices || typeof gameData.marketPrices !== 'object') {
-                gameData.marketPrices = { iron: 5, silver: 15, goldOre: 40 };
-            }
-            if (!gameData.marketMultipliers || typeof gameData.marketMultipliers !== 'object') {
-                gameData.marketMultipliers = { iron: 1.0, silver: 1.0, goldOre: 1.0 };
-            }
-            if (!gameData.priceHistory || typeof gameData.priceHistory !== 'object') {
-                gameData.priceHistory = { iron: [5], silver: [15], goldOre: [40] };
-            }
-            if (!gameData.mines || typeof gameData.mines !== 'object') {
-                gameData.mines = JSON.parse(JSON.stringify(defaultGameData.mines));
-            } else {
-                ['iron', 'silver', 'goldOre'].forEach(type => {
-                    if (!gameData.mines[type]) {
-                        gameData.mines[type] = { level: 1, cost: type === 'iron' ? 500 : (type === 'silver' ? 1200 : 3000), active: false };
-                    } else {
-                        gameData.mines[type].level = Number(gameData.mines[type].level) || 1;
-                        gameData.mines[type].cost = Number(gameData.mines[type].cost) || 500;
-                        gameData.mines[type].active = Boolean(gameData.mines[type].active);
-                    }
-                });
-            }
-        }
-
-        // คำนวณออฟไลน์แบบไร้รอยต่อ ป้องกันอาการหน้าจอค้าง (Optimized Offline Loop)
         function calcOfflineProgress() {
             if (!gameData.lastSaveTime) return;
             let now = Date.now();
@@ -1141,14 +1276,6 @@
                 }
             });
             updateUI();
-        }
-
-        function resetGame() {
-            if (confirm("ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?")) {
-                localStorage.removeItem('mineCraftPrimarySave');
-                localStorage.removeItem('mineCraftBackupSave');
-                location.reload();
-            }
         }
 
         function updateUI() {
