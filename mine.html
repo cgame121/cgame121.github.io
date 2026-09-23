@@ -150,6 +150,21 @@
         .card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
         .card p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px; line-height: 1.6; }
 
+        /* Input & Textarea */
+        .text-input {
+            width: 100%;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .text-input:focus { border-color: var(--primary); }
+
         /* Buttons Styling */
         .btn { 
             background-color: var(--primary); 
@@ -254,24 +269,25 @@
                     </div>
                 </div>
 
-                <!-- สรุปเหมืองแร่แบบเรียลไทม์ -->
+                <!-- ระบบโอนย้ายเซฟด้วยโค้ดสั้น -->
                 <div class="card" style="margin-bottom: 24px;">
-                    <h3>⛏️ สถานะเหมืองแร่ทั้งหมด (Real-time Mines Overview)</h3>
-                    <div class="grid-3" style="margin-top: 16px; margin-bottom: 0;">
-                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเหล็ก [<span id="dash-iron-lvl">Lv.1</span>]</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-iron-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                    <h3>☁️ ระบบโอนย้ายเซฟข้ามเครื่อง (Short Save Code)</h3>
+                    <p>คัดลอกโค้ดเซฟแบบสั้นจากเครื่องเก่าไปวางที่เครื่องใหม่เพื่อย้ายไอดีหรือสำรองข้อมูล</p>
+                    
+                    <div class="grid-2" style="margin-top: 16px; margin-bottom: 0;">
+                        <div>
+                            <label style="font-size: 0.82rem; color: var(--text-muted); display: block; margin-bottom: 6px;">1. โค้ดเซฟสั้นของคุณ (กดเพื่อคัดลอกออก):</label>
+                            <textarea id="export-code-box" class="text-input" rows="3" readonly placeholder="กดปุ่มสร้างโค้ดเซฟด้านล่าง..."></textarea>
+                            <div class="btn-row" style="margin-top: 8px;">
+                                <button class="btn btn-success" onclick="exportSaveCode()">สร้าง/คัดลอกโค้ดเซฟ</button>
+                            </div>
                         </div>
-                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเงิน [<span id="dash-silver-lvl">Lv.1</span>]</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-silver-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
-                        </div>
-                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองทอง [<span id="dash-gold-lvl">Lv.1</span>]</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-gold-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                        <div>
+                            <label style="font-size: 0.82rem; color: var(--text-muted); display: block; margin-bottom: 6px;">2. นำเข้าโค้ดเซฟสั้น (วางโค้ดจากเครื่องเก่า):</label>
+                            <textarea id="import-code-box" class="text-input" rows="3" placeholder="วางโค้ดเซฟที่นี่เพื่อโหลดข้อมูล..."></textarea>
+                            <div class="btn-row" style="margin-top: 8px;">
+                                <button class="btn btn-warning" onclick="importSaveCode()">โหลดข้อมูลจากโค้ด</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -279,7 +295,7 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>⚙️ ระบบจัดการข้อมูลเกม</h3>
-                        <p>ระบบ Offline Progression (12 ชั่วโมง) ทำงานเสถียร 100%</p>
+                        <p>ระบบเซฟสั้นและระบบเซฟอัตโนมัติพร้อมใช้งาน 100%</p>
                         <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 10px;">ล้างข้อมูลเซฟใหม่ทั้งหมด</button>
                     </div>
                 </div>
@@ -664,6 +680,72 @@
             if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('collapsed');
         }
 
+        // ฟังก์ชันสร้างโค้ดเซฟสั้น (Short Export Code)
+        function exportSaveCode() {
+            autoSaveGame();
+            try {
+                let shortData = [
+                    gameData.level,
+                    gameData.skillPoints,
+                    gameData.gold,
+                    gameData.gems,
+                    gameData.iron,
+                    gameData.silver,
+                    gameData.goldOre,
+                    gameData.steelAxe,
+                    gameData.diamondAxe,
+                    gameData.mines.iron.level,
+                    gameData.mines.silver.level,
+                    gameData.mines.goldOre.level
+                ].join("-");
+
+                let shortCode = btoa(shortData);
+                let textBox = document.getElementById('export-code-box');
+                textBox.value = shortCode;
+                textBox.select();
+                navigator.clipboard.writeText(shortCode);
+                alert("คัดลอกโค้ดเซฟแบบสั้นลงคลิปบอร์ดเรียบร้อยแล้ว!");
+            } catch (e) {
+                alert("เกิดข้อผิดพลาดในการสร้างโค้ดสั้น");
+            }
+        }
+
+        // ฟังก์ชันโหลดข้อมูลจากโค้ดสั้น (Short Import Code)
+        function importSaveCode() {
+            let code = document.getElementById('import-code-box').value.trim();
+            if (!code) {
+                alert("กรุณากรอกโค้ดเซฟสั้นก่อนกดโหลด");
+                return;
+            }
+            try {
+                let decoded = atob(code);
+                let parts = decoded.split("-");
+
+                if (parts.length >= 12) {
+                    gameData.level = parseInt(parts[0]) || 1;
+                    gameData.skillPoints = parseInt(parts[1]) || 0;
+                    gameData.gold = parseInt(parts[2]) || 0;
+                    gameData.gems = parseInt(parts[3]) || 0;
+                    gameData.iron = parseInt(parts[4]) || 0;
+                    gameData.silver = parseInt(parts[5]) || 0;
+                    gameData.goldOre = parseInt(parts[6]) || 0;
+                    gameData.steelAxe = parseInt(parts[7]) || 0;
+                    gameData.diamondAxe = parseInt(parts[8]) || 0;
+                    gameData.mines.iron.level = parseInt(parts[9]) || 1;
+                    gameData.mines.silver.level = parseInt(parts[10]) || 1;
+                    gameData.mines.goldOre.level = parseInt(parts[11]) || 1;
+
+                    autoSaveGame();
+                    alert("กู้คืนข้อมูลด้วยโค้ดสั้นสำเร็จ! กำลังรีโหลดเกม...");
+                    location.reload();
+                } else {
+                    alert("โค้ดเซฟสั้นไม่ถูกต้อง (ข้อมูลไม่ครบถ้วน)");
+                }
+            } catch (e) {
+                alert("โค้ดเซฟไม่ถูกต้องหรือรูปแบบผิดพลาด");
+            }
+        }
+
         function toggleAutoRepair() {
             gameData.autoRepair = !gameData.autoRepair;
             let btn = document.getElementById('auto-repair-btn');
@@ -978,7 +1060,6 @@
                 }
             }
 
-            // อัปเดตหน้า Skill Tree แบบเรียลไทม์พร้อมเช็คแต้มและลิมิต
             document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
             document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
             let btnSkillSpeed = document.getElementById('skill-btn-speed');
