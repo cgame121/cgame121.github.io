@@ -279,7 +279,7 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>⚙️ ระบบจัดการข้อมูลเกม</h3>
-                        <p>ระบบตรวจสอบบัคและอัปเดตสถานะอัตโนมัติ 100%</p>
+                        <p>ระบบสกิลและระบบเซฟตรวจสอบสมบูรณ์ 100%</p>
                         <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 10px;">ล้างข้อมูลเซฟใหม่ทั้งหมด</button>
                     </div>
                 </div>
@@ -371,20 +371,26 @@
             <!-- 4. ทักษะสกิล (Skill Tree) -->
             <div id="skills" class="tab-content">
                 <div class="grid-3">
-                    <div class="card">
-                        <h3>⛏️ ช่างขุดมือฉกาจ</h3>
-                        <p>เพิ่มความเร็วในการขุดเหมืองแร่ให้ไวขึ้น<br><b>โบนัสปัจจุบัน:</b> ลดเวลาขุดลง <span id="skill-speed-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-speed-lvl">0</span> / 10</p>
-                        <button class="btn btn-warning" onclick="upgradeSkill('speed')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3>⛏️ ช่างขุดมือฉกาจ</h3>
+                            <p>เพิ่มความเร็วในการขุดเหมืองแร่ให้ไวขึ้น<br><b>โบนัสปัจจุบัน:</b> ลดเวลาขุดลง <span id="skill-speed-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-speed-lvl">0</span> / 10</p>
+                        </div>
+                        <button id="skill-btn-speed" class="btn btn-warning" onclick="upgradeSkill('speed')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
-                    <div class="card">
-                        <h3>⭐ ผู้รอบรู้ (XP Scholar)</h3>
-                        <p>เพิ่มค่าประสบการณ์ (XP) ที่ได้รับเพิ่มขึ้นจากทุกกิจกรรม<br><b>โบนัสปัจจุบัน:</b> +<span id="skill-xp-val">0</span>% XP<br><b>เลเวลสกิล:</b> <span id="skill-xp-lvl">0</span> / 10</p>
-                        <button class="btn btn-warning" onclick="upgradeSkill('xp')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3>⭐ ผู้รอบรู้ (XP Scholar)</h3>
+                            <p>เพิ่มค่าประสบการณ์ (XP) ที่ได้รับเพิ่มขึ้นจากทุกกิจกรรม<br><b>โบนัสปัจจุบัน:</b> +<span id="skill-xp-val">0</span>% XP<br><b>เลเวลสกิล:</b> <span id="skill-xp-lvl">0</span> / 10</p>
+                        </div>
+                        <button id="skill-btn-xp" class="btn btn-warning" onclick="upgradeSkill('xp')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
-                    <div class="card">
-                        <h3>🛠️ ช่างซ่อมประหยัด</h3>
-                        <p>ลดค่าใช้จ่ายในการซ่อมแซมอุปกรณ์เครื่องมือ<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
-                        <button class="btn btn-warning" onclick="upgradeSkill('repair')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3>🛠️ ช่างซ่อมประหยัด</h3>
+                            <p>ลดค่าใช้จ่ายในการซ่อมแซมอุปกรณ์เครื่องมือ<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
+                        </div>
+                        <button id="skill-btn-repair" class="btn btn-warning" onclick="upgradeSkill('repair')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
                 </div>
             </div>
@@ -972,6 +978,49 @@
                 }
             }
 
+            // อัปเดตหน้า Skill Tree แบบเรียลไทม์พร้อมเช็คแต้มและลิมิต
+            document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
+            document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
+            let btnSkillSpeed = document.getElementById('skill-btn-speed');
+            if (gameData.skills.speed >= 10) {
+                btnSkillSpeed.disabled = true;
+                btnSkillSpeed.innerText = "เลเวลสูงสุดแล้ว";
+            } else if (gameData.skillPoints <= 0) {
+                btnSkillSpeed.disabled = true;
+                btnSkillSpeed.innerText = "แต้มสกิลไม่พอ";
+            } else {
+                btnSkillSpeed.disabled = false;
+                btnSkillSpeed.innerText = "อัปเกรดสกิล (ใช้ 1 แต้ม)";
+            }
+
+            document.getElementById('skill-xp-lvl').innerText = gameData.skills.xp;
+            document.getElementById('skill-xp-val').innerText = (gameData.skills.xp * 10);
+            let btnSkillXp = document.getElementById('skill-btn-xp');
+            if (gameData.skills.xp >= 10) {
+                btnSkillXp.disabled = true;
+                btnSkillXp.innerText = "เลเวลสูงสุดแล้ว";
+            } else if (gameData.skillPoints <= 0) {
+                btnSkillXp.disabled = true;
+                btnSkillXp.innerText = "แต้มสกิลไม่พอ";
+            } else {
+                btnSkillXp.disabled = false;
+                btnSkillXp.innerText = "อัปเกรดสกิล (ใช้ 1 แต้ม)";
+            }
+
+            document.getElementById('skill-repair-lvl').innerText = gameData.skills.repair;
+            document.getElementById('skill-repair-val').innerText = (gameData.skills.repair * 15);
+            let btnSkillRepair = document.getElementById('skill-btn-repair');
+            if (gameData.skills.repair >= 5) {
+                btnSkillRepair.disabled = true;
+                btnSkillRepair.innerText = "เลเวลสูงสุดแล้ว";
+            } else if (gameData.skillPoints <= 0) {
+                btnSkillRepair.disabled = true;
+                btnSkillRepair.innerText = "แต้มสกิลไม่พอ";
+            } else {
+                btnSkillRepair.disabled = false;
+                btnSkillRepair.innerText = "อัปเกรดสกิล (ใช้ 1 แต้ม)";
+            }
+
             let ironLv = gameData.mines.iron.level;
             let silverLv = gameData.mines.silver.level;
             let goldLv = gameData.mines.goldOre.level;
@@ -1016,13 +1065,6 @@
             document.getElementById('dash-iron-lvl').innerText = `Lv.${ironLv}`;
             document.getElementById('dash-silver-lvl').innerText = `Lv.${silverLv}`;
             document.getElementById('dash-gold-lvl').innerText = `Lv.${goldLv}`;
-
-            document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
-            document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
-            document.getElementById('skill-xp-lvl').innerText = gameData.skills.xp;
-            document.getElementById('skill-xp-val').innerText = (gameData.skills.xp * 10);
-            document.getElementById('skill-repair-lvl').innerText = gameData.skills.repair;
-            document.getElementById('skill-repair-val').innerText = (gameData.skills.repair * 15);
 
             document.getElementById('craft-xp-1').innerText = `+${Math.floor(60 * xpMultiplier)} XP`;
             document.getElementById('craft-xp-2').innerText = `+${Math.floor(150 * xpMultiplier)} XP`;
