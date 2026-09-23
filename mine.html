@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mine & Craft Economy - Safe Area Edition</title>
+    <title>Mine & Craft Economy - Ultimate Stable Edition</title>
     <style>
         :root {
             --bg-body: #07090e;
@@ -204,9 +204,40 @@
             border-radius: 12px; 
             padding: 16px; 
             box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
         .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
         .card p { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px; line-height: 1.4; }
+
+        @keyframes pulseGlow {
+            0% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+            50% { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+            100% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        }
+        .card.mining-active {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.9); opacity: 1; }
+            100% { transform: translateY(-35px) scale(1.1); opacity: 0; }
+        }
+        .floating-reward {
+            position: absolute;
+            bottom: 25px;
+            right: 20px;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 0.9rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 50;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .floating-reward.failure {
+            color: var(--danger);
+        }
 
         .text-input {
             width: 100%;
@@ -326,7 +357,7 @@
             <!-- 2. ศูนย์ขุดเหมือง -->
             <div id="mining" class="tab-content">
                 <div class="grid-3">
-                    <div class="card">
+                    <div id="card-iron" class="card">
                         <h3>เหมืองเหล็ก <span id="iron-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>อัตรา: <span id="iron-rate">20</span> ชิ้น / 5 วิ<br>🎁 ผลตอบแทน: <b>+5 XP</b><br>อัปเกรด: <span id="iron-up-cost" style="color:var(--accent);">500</span> Gold</p>
                         <div class="btn-row">
@@ -336,7 +367,7 @@
                         <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-iron" class="mining-progress"></div></div>
                     </div>
 
-                    <div class="card">
+                    <div id="card-silver" class="card">
                         <h3>เหมืองเงิน <span id="silver-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>เงื่อนไข: <b>เลเวล 3 ขึ้นไป</b><br>อัตรา: <span id="silver-rate">10</span> ชิ้น / 6 วิ<br>🎁 ผลตอบแทน: <b>+12 XP</b><br>อัปเกรด: <span id="silver-up-cost" style="color:var(--accent);">1,200</span> Gold</p>
                         <div class="btn-row">
@@ -346,7 +377,7 @@
                         <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-silver" class="mining-progress"></div></div>
                     </div>
 
-                    <div class="card">
+                    <div id="card-goldOre" class="card">
                         <h3>เหมืองทอง <span id="gold-mine-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>เงื่อนไข: <b>เลเวล 5 ขึ้นไป</b><br>อัตรา: <span id="goldOre-rate">5</span> ชิ้น / 8 วิ<br>🎁 ผลตอบแทน: <b>+25 XP</b><br>อัปเกรด: <span id="gold-mine-up-cost" style="color:var(--accent);">3,000</span> Gold</p>
                         <div class="btn-row">
@@ -566,6 +597,16 @@
             t.innerText = message;
             box.appendChild(t);
             setTimeout(() => t.remove(), 3000);
+        }
+
+        function showFloatingReward(type, text, isFailure = false) {
+            let card = document.getElementById(`card-${type}`);
+            if (!card) return;
+            let el = document.createElement('div');
+            el.className = isFailure ? 'floating-reward failure' : 'floating-reward';
+            el.innerText = text;
+            card.appendChild(el);
+            setTimeout(() => el.remove(), 800);
         }
 
         function toggleSidebar() { 
@@ -891,7 +932,6 @@
                 gameData.xpMax = Math.floor(gameData.xpMax * 1.5);
                 showToast(`เลเวลอัพ! ยินดีด้วย คุณขึ้นสู่เลเวล ${gameData.level} แล้ว`);
             }
-            updateUI();
         }
 
         function autoSaveGame() {
@@ -947,6 +987,7 @@
             }
         }
 
+        // คำนวณออฟไลน์แบบไร้รอยต่อ ป้องกันอาการหน้าจอค้าง (Optimized Offline Loop)
         function calcOfflineProgress() {
             if (!gameData.lastSaveTime) return;
             let now = Date.now();
@@ -988,9 +1029,17 @@
                     mp.elapsed += 1;
                     if (mp.elapsed >= mp.interval) {
                         mp.elapsed = 0;
-                        gameData[type] += mp.yield;
-                        summaryGains[type] += mp.yield;
-                        addXP(mp.xp);
+                        if (Math.random() >= 0.07) {
+                            gameData[type] += mp.yield;
+                            summaryGains[type] += mp.yield;
+                            let finalXp = Math.floor(mp.xp);
+                            gameData.xp += finalXp;
+                            while (gameData.xp >= gameData.xpMax) {
+                                gameData.level += 1;
+                                gameData.xp -= gameData.xpMax;
+                                gameData.xpMax = Math.floor(gameData.xpMax * 1.5);
+                            }
+                        }
                         minedThisSecond = true;
                     }
                 });
@@ -1043,10 +1092,16 @@
                         return;
                     }
 
-                    let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
-                    let totalYield = baseYield * mineObj.level;
-                    gameData[type] += totalYield;
-                    addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level);
+                    let isFailed = Math.random() < 0.07;
+                    if (isFailed) {
+                        showFloatingReward(type, "❌ พลาด!", true);
+                    } else {
+                        let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
+                        let totalYield = baseYield * mineObj.level;
+                        gameData[type] += totalYield;
+                        showFloatingReward(type, `+${totalYield}`, false);
+                        addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level);
+                    }
                     updateUI();
                 }
                 let progressBar = document.getElementById(`bar-${type}`);
@@ -1212,13 +1267,16 @@
             ['iron', 'silver', 'goldOre'].forEach(type => {
                 let mineObj = gameData.mines[type];
                 let btn = document.getElementById(`${type}-mine-btn`);
+                let card = document.getElementById(`card-${type}`);
                 if (btn) {
                     if (mineObj.active) {
                         btn.innerText = "หยุด";
                         btn.className = "btn btn-danger";
+                        if (card) card.classList.add('mining-active');
                     } else {
                         btn.innerText = "เริ่มขุด";
                         btn.className = "btn btn-success";
+                        if (card) card.classList.remove('mining-active');
                     }
                 }
             });
