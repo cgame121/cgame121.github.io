@@ -228,31 +228,31 @@
                         <div class="progress-bar-container" style="margin-top: 12px;"><div id="durability-bar" class="progress-bar"></div></div>
                         <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span> / <span id="max-durability-val">100</span>%</p>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 12px;">
-                            💡 <em>เครื่องมือเสื่อมสภาพ 2% ต่อรอบ ขุดต่อเนื่องได้ยาวนานขึ้นด้วยสกิลช่างซ่อม</em>
+                            💡 <em>ระบบ Auto-Repair จะซ่อมแซมให้อัตโนมัติเมื่อความทนทานลดเหลือ ≤ 20%</em>
                         </p>
-                        <button class="btn btn-warning" onclick="repairTools()">ซ่อมแซมอุปกรณ์ (<span id="repair-cost-val">50</span> Gold)</button>
+                        <div class="btn-row">
+                            <button class="btn btn-warning" onclick="repairTools()" style="flex: 2;">ซ่อมแซม (<span id="repair-cost-val">50</span> Gold)</button>
+                            <button id="auto-repair-btn" class="btn btn-danger" onclick="toggleAutoRepair()" style="flex: 1;">Auto: ปิด</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- เพิ่มรายละเอียดสรุปเหมืองแบบเรียลไทม์ -->
+                <!-- สรุปเหมืองแร่แบบเรียลไทม์ -->
                 <div class="card" style="margin-bottom: 24px;">
                     <h3>⛏️ สถานะเหมืองแร่ทั้งหมด (Real-time Mines Overview)</h3>
                     <div class="grid-3" style="margin-top: 16px; margin-bottom: 0;">
-                        <!-- สรุปเหมืองเหล็ก -->
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเหล็ก [<span id="dash-iron-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-iron-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-iron-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
                             <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
                         </div>
-                        <!-- สรุปเหมืองเงิน -->
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเงิน [<span id="dash-silver-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-silver-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-silver-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
                             <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
                         </div>
-                        <!-- สรุปเหมืองทอง -->
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองทอง [<span id="dash-gold-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-gold-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
@@ -265,7 +265,7 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>⚙️ ระบบจัดการข้อมูลเกม</h3>
-                        <p>ระบบเสถียร ตรวจสอบและป้องกันบั๊กสมบูรณ์ 100%</p>
+                        <p>ระบบเสถียร รองรับระบบ Auto-Repair สมบูรณ์ 100%</p>
                         <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 10px;">ล้างข้อมูลเซฟใหม่ทั้งหมด</button>
                     </div>
                 </div>
@@ -274,56 +274,38 @@
             <!-- 2. ศูนย์ขุดเหมือง -->
             <div id="mining" class="tab-content">
                 <div class="grid-3">
-                    <!-- เหมืองเหล็ก -->
                     <div class="card">
                         <h3>เหมืองเหล็ก <span id="iron-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>เงื่อนไข: ไม่มี (เลเวล 1+)<br>อัตรา: <span id="iron-rate">20</span> ชิ้น / <span id="iron-sec">5</span> วิ<br>🎁 ผลตอบแทน: <b id="iron-xp-text">+5 XP / รอบ</b><br>อัปเกรด: <span id="iron-up-cost" style="color:var(--accent);">500</span> Gold</p>
-                        
                         <div class="btn-row">
                             <button class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรดเหมือง</button>
                             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
                         </div>
-                        
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;">
-                            <div id="bar-iron" class="mining-progress"></div>
-                        </div>
-
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-iron" class="mining-progress"></div></div>
                         <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-iron" style="color:var(--accent);">0</span> ชิ้น</p>
                         <button class="btn" onclick="claimOre('iron')">เก็บเข้ากระเป๋า</button>
                     </div>
 
-                    <!-- เหมืองเงิน -->
                     <div class="card">
                         <h3>เหมืองเงิน <span id="silver-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>เงื่อนไข: <b>เลเวล 3 ขึ้นไป</b><br>อัตรา: <span id="silver-rate">10</span> ชิ้น / <span id="silver-sec">6</span> วิ<br>🎁 ผลตอบแทน: <b id="silver-xp-text">+12 XP / รอบ</b><br>อัปเกรด: <span id="silver-up-cost" style="color:var(--accent);">1,200</span> Gold</p>
-                        
                         <div class="btn-row">
                             <button class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรดเหมือง</button>
                             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
                         </div>
-
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;">
-                            <div id="bar-silver" class="mining-progress"></div>
-                        </div>
-
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-silver" class="mining-progress"></div></div>
                         <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-silver" style="color:var(--accent);">0</span> ชิ้น</p>
                         <button class="btn" onclick="claimOre('silver')">เก็บเข้ากระเป๋า</button>
                     </div>
 
-                    <!-- เหมืองทอง -->
                     <div class="card">
                         <h3>เหมืองทอง <span id="gold-mine-lvl" style="font-size:0.8rem; color:var(--primary);">Lv.1</span></h3>
                         <p>เงื่อนไข: <b>เลเวล 5 ขึ้นไป</b><br>อัตรา: <span id="goldOre-rate">5</span> ชิ้น / <span id="goldOre-sec">8</span> วิ<br>🎁 ผลตอบแทน: <b id="goldOre-xp-text">+25 XP / รอบ</b><br>อัปเกรด: <span id="gold-mine-up-cost" style="color:var(--accent);">3,000</span> Gold</p>
-                        
                         <div class="btn-row">
                             <button class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรดเหมือง</button>
                             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
                         </div>
-
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;">
-                            <div id="bar-goldOre" class="mining-progress"></div>
-                        </div>
-
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-goldOre" class="mining-progress"></div></div>
                         <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-goldOre" style="color:var(--accent);">0</span> ชิ้น</p>
                         <button class="btn" onclick="claimOre('goldOre')">เก็บเข้ากระเป๋า</button>
                     </div>
@@ -349,19 +331,16 @@
             <!-- 4. ทักษะสกิล (Skill Tree) -->
             <div id="skills" class="tab-content">
                 <div class="grid-3">
-                    <!-- สกิล 1 -->
                     <div class="card">
                         <h3>⛏️ ช่างขุดมือฉกาจ</h3>
                         <p>เพิ่มความเร็วในการขุดแร่ให้ไวขึ้น<br><b>โบนัสปัจจุบัน:</b> ลดเวลาขุดลง <span id="skill-speed-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-speed-lvl">0</span> / 10</p>
                         <button class="btn btn-warning" onclick="upgradeSkill('speed')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
-                    <!-- สกิล 2 -->
                     <div class="card">
                         <h3>⭐ ผู้รอบรู้ (XP Scholar)</h3>
                         <p>เพิ่มค่าประสบการณ์ (XP) ที่ได้รับเพิ่มขึ้นจากทุกกิจกรรม<br><b>โบนัสปัจจุบัน:</b> +<span id="skill-xp-val">0</span>% XP<br><b>เลเวลสกิล:</b> <span id="skill-xp-lvl">0</span> / 10</p>
                         <button class="btn btn-warning" onclick="upgradeSkill('xp')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
-                    <!-- สกิล 3 -->
                     <div class="card">
                         <h3>🛠️ ช่างซ่อมประหยัด</h3>
                         <p>ลดค่าซ่อมและเพิ่มขีดจำกัดความทนทานสูงสุด<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>% | เพิ่มความทนทาน +<span id="skill-durability-bonus">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
@@ -375,7 +354,6 @@
                 <div class="card">
                     <h3>ตลาดกลางแลกเปลี่ยนด่วน (Instant Marketplace)</h3>
                     <p>เปลี่ยนแร่ในกระเป๋าของคุณเป็นเงิน Gold ได้ทันทีตามราคาตลาดกลาง</p>
-                    
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
                             <span>ขายแร่เหล็กดิบ (เรท 5 Gold / ชิ้น)</span>
@@ -445,6 +423,7 @@
             xp: 0,
             xpMax: 100,
             skillPoints: 0,
+            autoRepair: false, // เพิ่มสถานะ Auto-Repair
             skills: {
                 speed: 0,
                 xp: 0,
@@ -500,6 +479,30 @@
             return 100 + (gameData.skills.repair * 20);
         }
 
+        function toggleAutoRepair() {
+            gameData.autoRepair = !gameData.autoRepair;
+            let btn = document.getElementById('auto-repair-btn');
+            if (gameData.autoRepair) {
+                btn.innerText = "Auto: เปิด";
+                btn.className = "btn btn-success";
+            } else {
+                btn.innerText = "Auto: ปิด";
+                btn.className = "btn btn-danger";
+            }
+            autoSaveGame();
+        }
+
+        function checkAutoRepair() {
+            if (!gameData.autoRepair) return;
+            let maxDur = getMaxDurability();
+            let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
+            // ซ่อมเมื่อความทนทานลดลงเหลือ 20% หรือต่ำกว่า และมีเงินพอ
+            if (gameData.durability <= (maxDur * 0.2) && gameData.gold >= repairCost) {
+                gameData.gold -= repairCost;
+                gameData.durability = maxDur;
+            }
+        }
+
         function addXP(amount) {
             sanitizeData();
             let bonusMultiplier = 1 + (gameData.skills.xp * 0.10);
@@ -552,6 +555,7 @@
             gameData.xp = isNaN(Number(gameData.xp)) || gameData.xp < 0 ? 0 : Number(gameData.xp);
             gameData.xpMax = isNaN(Number(gameData.xpMax)) || gameData.xpMax < 100 ? 100 : Number(gameData.xpMax);
             gameData.skillPoints = isNaN(Number(gameData.skillPoints)) || gameData.skillPoints < 0 ? 0 : Number(gameData.skillPoints);
+            gameData.autoRepair = Boolean(gameData.autoRepair);
             
             if (!gameData.skills || typeof gameData.skills !== 'object') {
                 gameData.skills = { speed: 0, xp: 0, repair: 0 };
@@ -591,8 +595,9 @@
                     gameData.xp = parsed.xp || 0;
                     gameData.xpMax = parsed.xpMax || 100;
                     gameData.skillPoints = parsed.skillPoints !== undefined ? parsed.skillPoints : 0;
+                    gameData.autoRepair = parsed.autoRepair !== undefined ? parsed.autoRepair : false;
                     if (parsed.skills) gameData.skills = parsed.skills;
-                    gameData.iron = parsed.iron !== undefined ? parsed.iron : (parsed.ironOre || 0);
+                    gameData.iron = parsed.iron !== undefined ? parsed.iron : 0;
                     gameData.silver = parsed.silver !== undefined ? parsed.silver : 0;
                     gameData.goldOre = parsed.goldOre !== undefined ? parsed.goldOre : 0;
                     gameData.steelAxe = parsed.steelAxe || 0;
@@ -604,6 +609,14 @@
             } catch (e) { console.error("Load failed:", e); }
             
             sanitizeData();
+            let btn = document.getElementById('auto-repair-btn');
+            if (gameData.autoRepair) {
+                btn.innerText = "Auto: เปิด";
+                btn.className = "btn btn-success";
+            } else {
+                btn.innerText = "Auto: ปิด";
+                btn.className = "btn btn-danger";
+            }
             updateUI();
         }
 
@@ -616,6 +629,7 @@
 
         function updateUI() {
             sanitizeData();
+            checkAutoRepair(); // เช็คเงื่อนไขซ่อมออโต้ทุกครั้งที่อัปเดตหน้าจอ
             
             document.getElementById('gold-val').innerText = gameData.gold.toLocaleString();
             document.getElementById('gems-val').innerText = gameData.gems.toLocaleString();
@@ -641,7 +655,6 @@
             let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
             let xpMultiplier = 1 + (gameData.skills.xp * 0.10);
 
-            // อัปเดตหน้าเหมือง
             document.getElementById('iron-lvl').innerText = `Lv.${ironLv}`;
             document.getElementById('iron-rate').innerText = 20 * ironLv;
             document.getElementById('iron-sec').innerText = (5 * speedMultiplier).toFixed(1);
@@ -660,7 +673,6 @@
             document.getElementById('goldOre-xp-text').innerText = `+${Math.floor(25 * goldLv * xpMultiplier)} XP / รอบ`;
             document.getElementById('gold-mine-up-cost').innerText = Number(gameData.mines.goldOre.cost).toLocaleString();
 
-            // อัปเดตสรุปเหมืองหน้าแดชบอร์ดหลักแบบเรียลไทม์
             document.getElementById('dash-iron-lvl').innerText = `Lv.${ironLv}`;
             document.getElementById('dash-iron-collected').innerText = Number(miningStates.iron.collected).toLocaleString();
             let ironStatEl = document.getElementById('dash-iron-status');
@@ -694,7 +706,6 @@
                 goldStatEl.style.color = "var(--text-muted)";
             }
 
-            // สกิลและอื่นๆ
             document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
             document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
             document.getElementById('skill-xp-lvl').innerText = gameData.skills.xp;
