@@ -7,24 +7,24 @@
     <style>
         :root {
             --bg-body: #07090e;
-            --bg-sidebar: #0d111a;
+            --bg-sidebar: #0b0f17;
             --bg-card: #131b2c;
             --bg-card-hover: #1a253f;
-            --border: #212d4a;
+            --border: #1e293b;
             --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.2);
+            --primary-glow: rgba(59, 130, 246, 0.3);
             --accent: #f59e0b;
             --success: #10b981;
             --danger: #ef4444;
             --text-main: #f1f5f9;
-            --text-muted: #64748b;
+            --text-muted: #94a3b8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         /* Sidebar Design */
         aside { 
-            width: 260px; 
+            width: 280px; 
             background-color: var(--bg-sidebar); 
             border-right: 1px solid var(--border); 
             display: flex; 
@@ -32,37 +32,51 @@
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease; 
             z-index: 100; 
             flex-shrink: 0; 
+            box-shadow: 4px 0 24px rgba(0,0,0,0.4);
         }
-        aside.collapsed { width: 0; transform: translateX(-260px); overflow: hidden; border-right: none; }
+        aside.collapsed { width: 0; transform: translateX(-280px); overflow: hidden; border-right: none; }
         
         .brand { 
-            padding: 24px 20px; 
-            font-size: 1.1rem; 
+            padding: 26px 22px; 
+            font-size: 1.15rem; 
             font-weight: 700; 
             color: var(--text-main); 
             border-bottom: 1px solid var(--border); 
             display: flex; 
             align-items: center; 
-            gap: 12px; 
+            gap: 14px; 
             white-space: nowrap; 
             letter-spacing: 0.5px;
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
         }
-        .brand span { font-size: 1.4rem; }
+        .brand span { font-size: 1.5rem; }
 
-        .menu-list { list-style: none; padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; white-space: nowrap; }
+        .menu-list { list-style: none; padding: 20px 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; white-space: nowrap; overflow-y: auto; }
         .menu-item { 
-            padding: 12px 16px; 
-            border-radius: 10px; 
+            padding: 13px 18px; 
+            border-radius: 12px; 
             cursor: pointer; 
             color: var(--text-muted); 
-            font-size: 0.9rem; 
+            font-size: 0.92rem; 
             font-weight: 600; 
-            transition: all 0.2s ease; 
+            transition: all 0.25s ease; 
             display: flex; 
             align-items: center; 
+            gap: 14px; 
+            border: 1px solid transparent;
         }
-        .menu-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
-        .menu-item.active { background-color: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
+        .menu-item:hover { 
+            background-color: var(--bg-card-hover); 
+            color: var(--text-main); 
+            border-color: var(--border);
+            transform: translateX(4px);
+        }
+        .menu-item.active { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+            color: #fff; 
+            box-shadow: 0 4px 16px var(--primary-glow);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
 
         /* Main Layout */
         .main-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -94,17 +108,17 @@
         }
         .toggle-btn:hover { background-color: var(--bg-card-hover); border-color: var(--primary); }
         
-        .user-stats { display: flex; gap: 12px; align-items: center; }
+        .user-stats { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
         .stat-badge { 
             background: var(--bg-card); 
-            padding: 8px 18px; 
+            padding: 8px 14px; 
             border-radius: 12px; 
             border: 1px solid var(--border); 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             font-weight: 600; 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
+            gap: 8px; 
         }
         .stat-badge span { color: var(--accent); }
 
@@ -188,14 +202,15 @@
             <span>⛏️</span> Mine & Craft Hub
         </div>
         <ul class="menu-list">
-            <li class="menu-item active" onclick="switchTab(event, 'dashboard')">แดชบอร์ดหลัก</li>
-            <li class="menu-item" onclick="switchTab(event, 'mining')">ศูนย์ขุดเหมือง</li>
-            <li class="menu-item" onclick="switchTab(event, 'crafting')">โรงงานคราฟต์</li>
-            <li class="menu-item" onclick="switchTab(event, 'skills')">ทักษะสกิล (Skill Tree)</li>
+            <li class="menu-item active" onclick="switchTab(event, 'dashboard')">🏠 แดชบอร์ดหลัก</li>
+            <li class="menu-item" onclick="switchTab(event, 'mining')">⛰️ ศูนย์ขุดเหมือง</li>
+            <li class="menu-item" onclick="switchTab(event, 'crafting')">⚙️ โรงงานคราฟต์</li>
+            <li class="menu-item" onclick="switchTab(event, 'skills')">📜 ทักษะสกิล (Skill Tree)</li>
+            <li class="menu-item" onclick="switchTab(event, 'achievements')">🏆 ความสำเร็จ & ฉายา</li>
             <li class="menu-item" onclick="switchTab(event, 'analytics')">📊 สรุปสถิติเชิงลึก</li>
-            <li class="menu-item" onclick="switchTab(event, 'market')">ตลาดกลาง</li>
-            <li class="menu-item" onclick="switchTab(event, 'quests')">ภารกิจเควสต์</li>
-            <li class="menu-item" onclick="switchTab(event, 'inventory')">ช่องเก็บของ</li>
+            <li class="menu-item" onclick="switchTab(event, 'market')">🛒 ตลาดกลาง</li>
+            <li class="menu-item" onclick="switchTab(event, 'quests')">🎯 ภารกิจเควสต์</li>
+            <li class="menu-item" onclick="switchTab(event, 'inventory')">🎒 ช่องเก็บของ</li>
         </ul>
     </aside>
 
@@ -206,6 +221,7 @@
                 <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
             </div>
             <div class="user-stats">
+                <div class="stat-badge" style="border-color: var(--accent);">🏷️ ฉายา: <span id="current-title-val" style="color:var(--accent);">ผู้เล่นใหม่</span></div>
                 <div class="stat-badge">⭐ เลเวล: <span id="lvl-val">1</span></div>
                 <div class="stat-badge">✨ แต้มสกิล: <span id="skill-points-val" style="color:var(--primary);">0</span></div>
                 <div class="stat-badge">💰 Gold: <span id="gold-val">5,450</span></div>
@@ -229,7 +245,7 @@
                         <div class="progress-bar-container" style="margin-top: 12px;"><div id="durability-bar" class="progress-bar"></div></div>
                         <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span> / 100%</p>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 12px;">
-                            💡 <em>ระบบ Auto-Repair ช่วยขุดออฟไลน์ได้สูงสุด 12 ชั่วโมง</em>
+                            💡 <em>ระบบ Auto-Repair ช่วยขุดออฟไลน์ได้สูงสุด 12 ชั่วโมง (เข้ากระเป๋าอัตโนมัติ)</em>
                         </p>
                         <div class="btn-row">
                             <button class="btn btn-warning" onclick="repairTools()" style="flex: 2;">ซ่อมแซม (<span id="repair-cost-val">50</span> Gold)</button>
@@ -245,20 +261,17 @@
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเหล็ก [<span id="dash-iron-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-iron-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-iron-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
                         </div>
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเงิน [<span id="dash-silver-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-silver-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-silver-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
                         </div>
                         <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
                             <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองทอง [<span id="dash-gold-lvl">Lv.1</span>]</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-gold-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
-                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-gold-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
-                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem; margin-top: 8px;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
                         </div>
                     </div>
                 </div>
@@ -266,7 +279,7 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>⚙️ ระบบจัดการข้อมูลเกม</h3>
-                        <p>ระบบเสถียร รองรับระบบ Offline 12 ชม. สมบูรณ์ 100%</p>
+                        <p>ระบบตรวจสอบบัคและอัปเดตสถานะอัตโนมัติ 100%</p>
                         <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 10px;">ล้างข้อมูลเซฟใหม่ทั้งหมด</button>
                     </div>
                 </div>
@@ -282,9 +295,7 @@
                             <button class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรดเหมือง</button>
                             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-iron" class="mining-progress"></div></div>
-                        <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-iron" style="color:var(--accent);">0</span> ชิ้น</p>
-                        <button class="btn" onclick="claimOre('iron')">เก็บเข้ากระเป๋า</button>
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 0;"><div id="bar-iron" class="mining-progress"></div></div>
                     </div>
 
                     <div class="card">
@@ -294,9 +305,7 @@
                             <button class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรดเหมือง</button>
                             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-silver" class="mining-progress"></div></div>
-                        <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-silver" style="color:var(--accent);">0</span> ชิ้น</p>
-                        <button class="btn" onclick="claimOre('silver')">เก็บเข้ากระเป๋า</button>
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 0;"><div id="bar-silver" class="mining-progress"></div></div>
                     </div>
 
                     <div class="card">
@@ -306,25 +315,55 @@
                             <button class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรดเหมือง</button>
                             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 8px;"><div id="bar-goldOre" class="mining-progress"></div></div>
-                        <p style="margin-top:4px; font-size:0.8rem;">รอเก็บ: <span id="collected-goldOre" style="color:var(--accent);">0</span> ชิ้น</p>
-                        <button class="btn" onclick="claimOre('goldOre')">เก็บเข้ากระเป๋า</button>
+                        <div class="progress-bar-container" style="margin-top: 12px; margin-bottom: 0;"><div id="bar-goldOre" class="mining-progress"></div></div>
                     </div>
                 </div>
             </div>
 
             <!-- 3. โรงงานคราฟต์ -->
             <div id="crafting" class="tab-content">
+                <div class="card" style="margin-bottom: 24px;">
+                    <h3>⚙️ โรงงานแปรรูปและสร้างอุปกรณ์ (Crafting Workshop)</h3>
+                    <p>ใช้แร่ดิบและเงินทุนในการสร้างเครื่องมือระดับสูงเพื่อเพิ่มประสิทธิภาพและรับค่าประสบการณ์จำนวนมาก</p>
+                </div>
+
                 <div class="grid-2">
-                    <div class="card">
-                        <h3>สูตร: ขวานเหล็กกล้า (Steel Pickaxe)</h3>
-                        <p>วัตถุดิบ: แร่เหล็ก x20<br>ค่าธรรมเนียม: 100 Gold<br>🎁 ผลตอบแทน: <b id="craft-xp-1">+60 XP</b><br><br>สถานะ: <span id="craft-timer-1" style="color: var(--accent);">พร้อมสร้าง</span></p>
-                        <button id="craft-btn-1" class="btn" onclick="startCrafting('steelAxe', 20, 100, 3, 60)">คราฟต์ขวานเหล็กกล้า</button>
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3>⛏️ ขวานเหล็กกล้า (Steel Pickaxe)</h3>
+                            <div style="background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin: 12px 0;">
+                                <p style="margin-bottom: 6px;">📦 วัตถุดิบ: แร่เหล็ก <span id="craft-mat-1" style="color: var(--accent); font-weight: bold;">0</span> / 20 ชิ้น</p>
+                                <p style="margin-bottom: 6px;">💰 ค่าธรรมเนียม: Gold <span id="craft-gold-1" style="color: var(--accent); font-weight: bold;">5,450</span> / 100 Gold</p>
+                                <p style="margin-bottom: 0;">🎁 รางวัลตอบแทน: <b id="craft-xp-1" style="color: var(--success);">+60 XP</b> (ใช้เวลา 3 วินาที)</p>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                                    <span>สถานะการสร้าง:</span>
+                                    <span id="craft-status-text-1" style="color: var(--accent);">พร้อมสร้าง</span>
+                                </div>
+                                <div class="progress-bar-container" style="margin-bottom: 0;"><div id="craft-bar-1" class="mining-progress" style="width: 0%;"></div></div>
+                            </div>
+                        </div>
+                        <button id="craft-btn-1" class="btn" onclick="startCrafting('steelAxe', 20, 100, 3, 60, 0, 0, 1)">คราฟต์ขวานเหล็กกล้า</button>
                     </div>
-                    <div class="card">
-                        <h3>สูตร: ขวานเพชร (Diamond Pickaxe)</h3>
-                        <p>วัตถุดิบ: แร่เงิน x15, แร่ทอง x5<br>ค่าธรรมเนียม: 500 Gold<br>🎁 ผลตอบแทน: <b id="craft-xp-2">+150 XP</b><br><br>สถานะ: <span id="craft-timer-2" style="color: var(--accent);">พร้อมสร้าง</span></p>
-                        <button id="craft-btn-2" class="btn" onclick="startCrafting('diamondAxe', 0, 500, 5, 150, 15, 5)">คราฟต์ขวานเพชร</button>
+
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3>💎 ขวานเพชร (Diamond Pickaxe)</h3>
+                            <div style="background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin: 12px 0;">
+                                <p style="margin-bottom: 6px;">📦 วัตถุดิบ: แร่เงิน <span id="craft-mat-2-silver" style="color: var(--accent); font-weight: bold;">0</span> / 15 | แร่ทอง <span id="craft-mat-2-gold" style="color: var(--accent); font-weight: bold;">0</span> / 5 ชิ้น</p>
+                                <p style="margin-bottom: 6px;">💰 ค่าธรรมเนียม: Gold <span id="craft-gold-2" style="color: var(--accent); font-weight: bold;">5,450</span> / 500 Gold</p>
+                                <p style="margin-bottom: 0;">🎁 รางวัลตอบแทน: <b id="craft-xp-2" style="color: var(--success);">+150 XP</b> (ใช้เวลา 5 วินาที)</p>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                                    <span>สถานะการสร้าง:</span>
+                                    <span id="craft-status-text-2" style="color: var(--accent);">พร้อมสร้าง</span>
+                                </div>
+                                <div class="progress-bar-container" style="margin-bottom: 0;"><div id="craft-bar-2" class="mining-progress" style="width: 0%;"></div></div>
+                            </div>
+                        </div>
+                        <button id="craft-btn-2" class="btn" onclick="startCrafting('diamondAxe', 0, 500, 5, 150, 15, 5, 2)">คราฟต์ขวานเพชร</button>
                     </div>
                 </div>
             </div>
@@ -334,7 +373,7 @@
                 <div class="grid-3">
                     <div class="card">
                         <h3>⛏️ ช่างขุดมือฉกาจ</h3>
-                        <p>เพิ่มความเร็วในการขุดแร่ให้ไวขึ้น<br><b>โบนัสปัจจุบัน:</b> ลดเวลาขุดลง <span id="skill-speed-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-speed-lvl">0</span> / 10</p>
+                        <p>เพิ่มความเร็วในการขุดเหมืองแร่ให้ไวขึ้น<br><b>โบนัสปัจจุบัน:</b> ลดเวลาขุดลง <span id="skill-speed-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-speed-lvl">0</span> / 10</p>
                         <button class="btn btn-warning" onclick="upgradeSkill('speed')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
                     <div class="card">
@@ -350,7 +389,85 @@
                 </div>
             </div>
 
-            <!-- 5. สรุปสถิติเชิงลึก -->
+            <!-- 5. ระบบความสำเร็จ & ฉายา -->
+            <div id="achievements" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>⛏️ ความสำเร็จ: นักขุดมือฉกาจ</h3>
+                        <p>เงื่อนไข: สะสมแร่รวมกัน (เหล็ก + เงิน + ทอง) ครบ 500 ชิ้น<br>
+                           รางวัล: 💎 10 Gems + ฉายา <b>[นักขุดหน้าใหม่]</b><br>
+                           ความคืบหน้า: <span id="ach-1-prog">0</span> / 500</p>
+                        <button id="ach-btn-1" class="btn btn-success" onclick="claimAchievement(1)">รับรางวัล</button>
+                    </div>
+                    <div class="card">
+                        <h3>🏭 ความสำเร็จ: ช่างตีเหล็กผู้ยิ่งใหญ่</h3>
+                        <p>เงื่อนไข: คราฟต์ขวาน (เหล็กกล้าหรือเพชร) รวมกันครบ 5 อัน<br>
+                           รางวัล: 💎 20 Gems + ฉายา <b>[ช่างตีเหล็กขั้นเทพ]</b><br>
+                           ความคืบหน้า: <span id="ach-2-prog">0</span> / 5</p>
+                        <button id="ach-btn-2" class="btn btn-success" onclick="claimAchievement(2)">รับรางวัล</button>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>⭐ ความสำเร็จ: ผู้รอบรู้แห่งเหมือง</h3>
+                        <p>เงื่อนไข: อัปเกรดเลเวลผู้เล่นถึง เลเวล 5<br>
+                           รางวัล: 💎 30 Gems + ฉายา <b>[ปรมาจารย์เหมืองแร่]</b><br>
+                           ความคืบหน้า: เลเวล <span id="ach-3-prog">1</span> / 5</p>
+                        <button id="ach-btn-3" class="btn btn-success" onclick="claimAchievement(3)">รับรางวัล</button>
+                    </div>
+                    <div class="card">
+                        <h3>🛠️ ความสำเร็จ: เซียนซ่อมบำรุง</h3>
+                        <p>เงื่อนไข: กดซ่อมแซมอุปกรณ์เครื่องมือครบ 10 ครั้ง<br>
+                           รางวัล: 💎 15 Gems + ฉายา <b>[ช่างซ่อมมือหนึ่ง]</b><br>
+                           ความคืบหน้า: <span id="ach-4-prog">0</span> / 10</p>
+                        <button id="ach-btn-4" class="btn btn-success" onclick="claimAchievement(4)">รับรางวัล</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <h3>🏷️ ห้องแต่งตั้งฉายา (Select Your Title)</h3>
+                    <p>เลือกฉายาที่คุณปลดล็อกแล้วมาสวมใส่เพื่อแสดงตัวตนบนโปรไฟล์</p>
+                    <div class="grid-3" style="margin-top: 16px; margin-bottom: 0;">
+                        <div style="background: var(--bg-body); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--text-main); font-size: 0.95rem;">ผู้เล่นใหม่ (เริ่มต้น)</h4>
+                                <p style="font-size: 0.8rem; margin-top: 4px; color: var(--success);">ปลดล็อกแล้ว</p>
+                            </div>
+                            <button id="title-btn-default" class="btn" style="padding: 6px; font-size: 0.8rem; margin-top: 10px;" onclick="setTitle('ผู้เล่นใหม่')">สวมใส่</button>
+                        </div>
+                        <div style="background: var(--bg-body); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--text-main); font-size: 0.95rem;">นักขุดหน้าใหม่</h4>
+                                <p id="title-status-1" style="font-size: 0.8rem; margin-top: 4px; color: var(--danger);">ยังไม่ปลดล็อก</p>
+                            </div>
+                            <button id="title-btn-1" class="btn" style="padding: 6px; font-size: 0.8rem; margin-top: 10px;" onclick="setTitle('นักขุดหน้าใหม่')" disabled>สวมใส่</button>
+                        </div>
+                        <div style="background: var(--bg-body); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--text-main); font-size: 0.95rem;">ช่างตีเหล็กขั้นเทพ</h4>
+                                <p id="title-status-2" style="font-size: 0.8rem; margin-top: 4px; color: var(--danger);">ยังไม่ปลดล็อก</p>
+                            </div>
+                            <button id="title-btn-2" class="btn" style="padding: 6px; font-size: 0.8rem; margin-top: 10px;" onclick="setTitle('ช่างตีเหล็กขั้นเทพ')" disabled>สวมใส่</button>
+                        </div>
+                        <div style="background: var(--bg-body); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--text-main); font-size: 0.95rem;">ปรมาจารย์เหมืองแร่</h4>
+                                <p id="title-status-3" style="font-size: 0.8rem; margin-top: 4px; color: var(--danger);">ยังไม่ปลดล็อก</p>
+                            </div>
+                            <button id="title-btn-3" class="btn" style="padding: 6px; font-size: 0.8rem; margin-top: 10px;" onclick="setTitle('ปรมาจารย์เหมืองแร่')" disabled>สวมใส่</button>
+                        </div>
+                        <div style="background: var(--bg-body); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--text-main); font-size: 0.95rem;">ช่างซ่อมมือหนึ่ง</h4>
+                                <p id="title-status-4" style="font-size: 0.8rem; margin-top: 4px; color: var(--danger);">ยังไม่ปลดล็อก</p>
+                            </div>
+                            <button id="title-btn-4" class="btn" style="padding: 6px; font-size: 0.8rem; margin-top: 10px;" onclick="setTitle('ช่างซ่อมมือหนึ่ง')" disabled>สวมใส่</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. สรุปสถิติเชิงลึก -->
             <div id="analytics" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -399,29 +516,50 @@
                 </div>
             </div>
 
-            <!-- 6. ตลาดกลาง -->
+            <!-- 7. ตลาดกลาง -->
             <div id="market" class="tab-content">
-                <div class="card">
-                    <h3>ตลาดกลางแลกเปลี่ยนด่วน (Instant Marketplace)</h3>
-                    <p>เปลี่ยนแร่ในกระเป๋าของคุณเป็นเงิน Gold ได้ทันทีตามราคาตลาดกลาง</p>
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
-                            <span>ขายแร่เหล็กดิบ (เรท 5 Gold / ชิ้น)</span>
-                            <button class="btn btn-success" style="width: auto; padding: 6px 14px;" onclick="sellOre('iron', 5)">ขายทั้งหมด</button>
+                <div class="card" style="margin-bottom: 24px;">
+                    <h3>🛒 ตลาดกลางแลกเปลี่ยนด่วน (Instant Marketplace)</h3>
+                    <p>เปลี่ยนแร่ในกระเป๋าของคุณเป็นเงิน Gold ได้ทันทีตามเรทราคามาตรฐานของตลาดกลาง</p>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>🔹 แร่เหล็กดิบ</h3>
+                        <p>มีในกระเป๋า: <span id="market-inv-iron" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>
+                           เรทราคา: <span style="color: var(--accent);">5 Gold</span> / ชิ้น<br>
+                           มูลค่ารวม: <span id="market-val-iron" style="color: var(--accent); font-weight: bold;">0</span> Gold</p>
+                        <div class="btn-row" style="margin-top: 16px;">
+                            <button class="btn btn-warning" onclick="sellOreCustom('iron', 5, 10)">ขาย 10 ชิ้น</button>
+                            <button class="btn btn-success" onclick="sellOreCustom('iron', 5, 'all')">ขายทั้งหมด</button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
-                            <span>ขายแร่เงิน (เรท 15 Gold / ชิ้น)</span>
-                            <button class="btn btn-success" style="width: auto; padding: 6px 14px;" onclick="sellOre('silver', 15)">ขายทั้งหมด</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>🥈 แร่เงิน</h3>
+                        <p>มีในกระเป๋า: <span id="market-inv-silver" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>
+                           เรทราคา: <span style="color: var(--accent);">15 Gold</span> / ชิ้น<br>
+                           มูลค่ารวม: <span id="market-val-silver" style="color: var(--accent); font-weight: bold;">0</span> Gold</p>
+                        <div class="btn-row" style="margin-top: 16px;">
+                            <button class="btn btn-warning" onclick="sellOreCustom('silver', 15, 10)">ขาย 10 ชิ้น</button>
+                            <button class="btn btn-success" onclick="sellOreCustom('silver', 15, 'all')">ขายทั้งหมด</button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-body); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
-                            <span>ขายแร่ทอง (เรท 40 Gold / ชิ้น)</span>
-                            <button class="btn btn-success" style="width: auto; padding: 6px 14px;" onclick="sellOre('goldOre', 40)">ขายทั้งหมด</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>🥇 แร่ทอง</h3>
+                        <p>มีในกระเป๋า: <span id="market-inv-goldOre" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>
+                           เรทราคา: <span style="color: var(--accent);">40 Gold</span> / ชิ้น<br>
+                           มูลค่ารวม: <span id="market-val-gold" style="color: var(--accent); font-weight: bold;">0</span> Gold</p>
+                        <div class="btn-row" style="margin-top: 16px;">
+                            <button class="btn btn-warning" onclick="sellOreCustom('goldOre', 40, 10)">ขาย 10 ชิ้น</button>
+                            <button class="btn btn-success" onclick="sellOreCustom('goldOre', 40, 'all')">ขายทั้งหมด</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 7. ภารกิจเควสต์ -->
+            <!-- 8. ภารกิจเควสต์ -->
             <div id="quests" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -437,7 +575,7 @@
                 </div>
             </div>
 
-            <!-- 8. ช่องเก็บของ -->
+            <!-- 9. ช่องเก็บของ -->
             <div id="inventory" class="tab-content">
                 <div class="grid-3">
                     <div class="card">
@@ -474,12 +612,11 @@
             xpMax: 100,
             skillPoints: 0,
             autoRepair: false,
-            lastSaveTime: Date.now(), // เก็บเวลาล่าสุดสำหรับการคำนวณออฟไลน์
-            skills: {
-                speed: 0,
-                xp: 0,
-                repair: 0
-            },
+            lastSaveTime: Date.now(),
+            repairCount: 0,
+            currentTitle: "ผู้เล่นใหม่",
+            achievements: { 1: false, 2: false, 3: false, 4: false },
+            skills: { speed: 0, xp: 0, repair: 0 },
             iron: 50,
             silver: 0,
             goldOre: 0,
@@ -494,17 +631,12 @@
             }
         };
 
-        let miningStates = {
-            iron: { collected: 0 },
-            silver: { collected: 0 },
-            goldOre: { collected: 0 }
-        };
-
         let saveTimeout = null;
 
         window.onload = function() {
             loadGame();
             setInterval(autoSaveGame, 15000);
+            window.addEventListener("beforeunload", autoSaveGame);
         };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
@@ -545,6 +677,7 @@
             if (gameData.durability <= 20 && gameData.gold >= repairCost) {
                 gameData.gold -= repairCost;
                 gameData.durability = 100;
+                gameData.repairCount++;
             }
         }
 
@@ -579,14 +712,11 @@
         }
 
         function autoSaveGame() {
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                try { 
-                    sanitizeData();
-                    gameData.lastSaveTime = Date.now();
-                    localStorage.setItem('mineCraftUltimateSave', JSON.stringify(gameData)); 
-                } catch (e) { console.error("Save failed:", e); }
-            }, 300);
+            try { 
+                sanitizeData();
+                gameData.lastSaveTime = Date.now();
+                localStorage.setItem('mineCraftUltimateSave', JSON.stringify(gameData)); 
+            } catch (e) { console.error("Save failed:", e); }
         }
 
         function sanitizeData() {
@@ -597,8 +727,11 @@
             gameData.xpMax = isNaN(Number(gameData.xpMax)) || gameData.xpMax < 100 ? 100 : Number(gameData.xpMax);
             gameData.skillPoints = isNaN(Number(gameData.skillPoints)) || gameData.skillPoints < 0 ? 0 : Number(gameData.skillPoints);
             gameData.autoRepair = Boolean(gameData.autoRepair);
+            gameData.repairCount = isNaN(Number(gameData.repairCount)) ? 0 : Number(gameData.repairCount);
+            gameData.currentTitle = gameData.currentTitle || "ผู้เล่นใหม่";
             gameData.lastSaveTime = isNaN(Number(gameData.lastSaveTime)) ? Date.now() : Number(gameData.lastSaveTime);
             
+            if (!gameData.achievements) gameData.achievements = { 1: false, 2: false, 3: false, 4: false };
             if (!gameData.skills || typeof gameData.skills !== 'object') {
                 gameData.skills = { speed: 0, xp: 0, repair: 0 };
             } else {
@@ -629,13 +762,12 @@
             let now = Date.now();
             let offlineSeconds = (now - gameData.lastSaveTime) / 1000;
             
-            // จำกัดเวลาออฟไลน์สูงสุด 12 ชั่วโมง (43200 วินาที)
             let maxOfflineSeconds = 12 * 60 * 60;
             if (offlineSeconds > maxOfflineSeconds) {
                 offlineSeconds = maxOfflineSeconds;
             }
 
-            if (offlineSeconds < 10) return; // ถ้าน้อยกว่า 10 วิ ไม่ต้องคำนวณ
+            if (offlineSeconds < 10) return;
 
             let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
             let totalMinesActive = ['iron', 'silver', 'goldOre'].filter(t => gameData.mines[t].active).length;
@@ -648,9 +780,8 @@
             let totalGoldGained = 0;
             let totalXpGained = 0;
 
-            // จำลองการขุดทีละรอบ
             while (offlineSeconds > 0 && gameData.durability > 0) {
-                let baseSeconds = 6; // ค่าเฉลี่ยกลางๆ
+                let baseSeconds = 6;
                 let cycleTime = baseSeconds * speedMultiplier;
                 
                 if (offlineSeconds < cycleTime) break;
@@ -658,35 +789,31 @@
                 offlineSeconds -= cycleTime;
                 simulatedCycles++;
 
-                // เช็คซ่อมออโต้
                 if (gameData.autoRepair && gameData.durability <= 20) {
                     let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
                     if (gameData.gold >= repairCost) {
                         gameData.gold -= repairCost;
                         gameData.durability = 100;
+                        gameData.repairCount++;
                     }
                 }
 
                 gameData.durability = Math.max(0, gameData.durability - 2);
 
                 if (gameData.mines.iron.active) {
-                    let yieldIron = 20 * gameData.mines.iron.level;
-                    totalIronGained += yieldIron;
+                    totalIronGained += 20 * gameData.mines.iron.level;
                     totalXpGained += 5 * gameData.mines.iron.level;
                 }
                 if (gameData.mines.silver.active && gameData.level >= 3) {
-                    let yieldSilver = 10 * gameData.mines.silver.level;
-                    totalSilverGained += yieldSilver;
+                    totalSilverGained += 10 * gameData.mines.silver.level;
                     totalXpGained += 12 * gameData.mines.silver.level;
                 }
                 if (gameData.mines.goldOre.active && gameData.level >= 5) {
-                    let yieldGold = 5 * gameData.mines.goldOre.level;
-                    totalGoldGained += yieldGold;
+                    totalGoldGained += 5 * gameData.mines.goldOre.level;
                     totalXpGained += 25 * gameData.mines.goldOre.level;
                 }
 
                 if (gameData.durability <= 0) {
-                    // ปิดเหมืองทั้งหมดถ้าพัง
                     gameData.mines.iron.active = false;
                     gameData.mines.silver.active = false;
                     gameData.mines.goldOre.active = false;
@@ -695,9 +822,9 @@
             }
 
             if (simulatedCycles > 0) {
-                miningStates.iron.collected += totalIronGained;
-                miningStates.silver.collected += totalSilverGained;
-                miningStates.goldOre.collected += totalGoldGained;
+                gameData.iron += totalIronGained;
+                gameData.silver += totalSilverGained;
+                gameData.goldOre += totalGoldGained;
                 if (totalXpGained > 0) addXP(totalXpGained);
             }
         }
@@ -714,9 +841,12 @@
                     gameData.xpMax = parsed.xpMax || 100;
                     gameData.skillPoints = parsed.skillPoints !== undefined ? parsed.skillPoints : 0;
                     gameData.autoRepair = parsed.autoRepair !== undefined ? parsed.autoRepair : false;
+                    gameData.repairCount = parsed.repairCount !== undefined ? parsed.repairCount : 0;
+                    gameData.currentTitle = parsed.currentTitle || "ผู้เล่นใหม่";
+                    if (parsed.achievements) gameData.achievements = parsed.achievements;
                     gameData.lastSaveTime = parsed.lastSaveTime || Date.now();
                     if (parsed.skills) gameData.skills = parsed.skills;
-                    gameData.iron = parsed.iron !== undefined ? parsed.iron : 0;
+                    gameData.iron = parsed.iron !== undefined ? parsed.iron : 50;
                     gameData.silver = parsed.silver !== undefined ? parsed.silver : 0;
                     gameData.goldOre = parsed.goldOre !== undefined ? parsed.goldOre : 0;
                     gameData.steelAxe = parsed.steelAxe || 0;
@@ -728,7 +858,14 @@
             } catch (e) { console.error("Load failed:", e); }
             
             sanitizeData();
-            calculateOfflineProgress(); // คำนวณผลออฟไลน์ทันทีที่โหลดเซฟ
+            calculateOfflineProgress();
+
+            ['iron', 'silver', 'goldOre'].forEach(type => {
+                if (gameData.mines[type].active && gameData.durability > 0) {
+                    gameData.mines[type].active = false;
+                    toggleMining(type);
+                }
+            });
 
             let btn = document.getElementById('auto-repair-btn');
             if (gameData.autoRepair) {
@@ -748,6 +885,35 @@
             }
         }
 
+        function claimAchievement(id) {
+            sanitizeData();
+            if (gameData.achievements[id]) return;
+
+            let totalOres = gameData.iron + gameData.silver + gameData.goldOre;
+            let totalAxes = gameData.steelAxe + gameData.diamondAxe;
+
+            let canClaim = false;
+            let gemReward = 0;
+
+            if (id === 1 && totalOres >= 500) { canClaim = true; gemReward = 10; }
+            else if (id === 2 && totalAxes >= 5) { canClaim = true; gemReward = 20; }
+            else if (id === 3 && gameData.level >= 5) { canClaim = true; gemReward = 30; }
+            else if (id === 4 && gameData.repairCount >= 10) { canClaim = true; gemReward = 15; }
+
+            if (canClaim) {
+                gameData.achievements[id] = true;
+                gameData.gems += gemReward;
+                updateUI();
+                autoSaveGame();
+            }
+        }
+
+        function setTitle(titleName) {
+            gameData.currentTitle = titleName;
+            updateUI();
+            autoSaveGame();
+        }
+
         function updateUI() {
             sanitizeData();
             checkAutoRepair();
@@ -759,6 +925,7 @@
             document.getElementById('dash-lvl').innerText = gameData.level;
             document.getElementById('dash-xp').innerText = gameData.xp.toLocaleString();
             document.getElementById('dash-xp-max').innerText = gameData.xpMax.toLocaleString();
+            document.getElementById('current-title-val').innerText = gameData.currentTitle;
 
             let xpPercent = Math.min(100, (gameData.xp / gameData.xpMax) * 100);
             document.getElementById('xp-bar').style.width = xpPercent + '%';
@@ -768,6 +935,42 @@
             document.getElementById('inv-goldOre').innerText = gameData.goldOre.toLocaleString();
             document.getElementById('inv-steelAxe').innerText = gameData.steelAxe.toLocaleString();
             document.getElementById('inv-diamondAxe').innerText = gameData.diamondAxe.toLocaleString();
+
+            document.getElementById('market-inv-iron').innerText = gameData.iron.toLocaleString();
+            document.getElementById('market-val-iron').innerText = (gameData.iron * 5).toLocaleString();
+            document.getElementById('market-inv-silver').innerText = gameData.silver.toLocaleString();
+            document.getElementById('market-val-silver').innerText = (gameData.silver * 15).toLocaleString();
+            document.getElementById('market-inv-goldOre').innerText = gameData.goldOre.toLocaleString();
+            document.getElementById('market-val-gold').innerText = (gameData.goldOre * 40).toLocaleString();
+
+            document.getElementById('craft-mat-1').innerText = gameData.iron.toLocaleString();
+            document.getElementById('craft-gold-1').innerText = gameData.gold.toLocaleString();
+            
+            let btn1 = document.getElementById('craft-btn-1');
+            if (!btn1.hasAttribute('data-crafting')) {
+                if (gameData.iron < 20 || gameData.gold < 100) {
+                    btn1.disabled = true;
+                    btn1.innerText = "วัตถุดิบหรือ Gold ไม่พอ";
+                } else {
+                    btn1.disabled = false;
+                    btn1.innerText = "คราฟต์ขวานเหล็กกล้า";
+                }
+            }
+
+            document.getElementById('craft-mat-2-silver').innerText = gameData.silver.toLocaleString();
+            document.getElementById('craft-mat-2-gold').innerText = gameData.goldOre.toLocaleString();
+            document.getElementById('craft-gold-2').innerText = gameData.gold.toLocaleString();
+
+            let btn2 = document.getElementById('craft-btn-2');
+            if (!btn2.hasAttribute('data-crafting')) {
+                if (gameData.silver < 15 || gameData.goldOre < 5 || gameData.gold < 500) {
+                    btn2.disabled = true;
+                    btn2.innerText = "วัตถุดิบหรือ Gold ไม่พอ";
+                } else {
+                    btn2.disabled = false;
+                    btn2.innerText = "คราฟต์ขวานเพชร";
+                }
+            }
 
             let ironLv = gameData.mines.iron.level;
             let silverLv = gameData.mines.silver.level;
@@ -794,7 +997,6 @@
             document.getElementById('goldOre-xp-text').innerText = `+${Math.floor(25 * goldLv * xpMultiplier)} XP / รอบ`;
             document.getElementById('gold-mine-up-cost').innerText = Number(gameData.mines.goldOre.cost).toLocaleString();
 
-            // ปุ่มขุดและสถานะ
             ['iron', 'silver', 'goldOre'].forEach(type => {
                 let btn = document.getElementById(`${type}-mine-btn`);
                 let dashStat = document.getElementById(`dash-${type === 'goldOre' ? 'gold' : type}-status`);
@@ -812,11 +1014,8 @@
             });
 
             document.getElementById('dash-iron-lvl').innerText = `Lv.${ironLv}`;
-            document.getElementById('dash-iron-collected').innerText = Number(miningStates.iron.collected).toLocaleString();
             document.getElementById('dash-silver-lvl').innerText = `Lv.${silverLv}`;
-            document.getElementById('dash-silver-collected').innerText = Number(miningStates.silver.collected).toLocaleString();
             document.getElementById('dash-gold-lvl').innerText = `Lv.${goldLv}`;
-            document.getElementById('dash-gold-collected').innerText = Number(miningStates.goldOre.collected).toLocaleString();
 
             document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
             document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
@@ -831,15 +1030,89 @@
             let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
             document.getElementById('repair-cost-val').innerText = repairCost;
 
-            document.getElementById('collected-iron').innerText = Number(miningStates.iron.collected).toLocaleString();
-            document.getElementById('collected-silver').innerText = Number(miningStates.silver.collected).toLocaleString();
-            document.getElementById('collected-goldOre').innerText = Number(miningStates.goldOre.collected).toLocaleString();
-
             document.getElementById('durability-val').innerText = Math.round(gameData.durability);
             
             const bar = document.getElementById('durability-bar');
             bar.style.width = gameData.durability + '%';
             bar.style.background = gameData.durability > 30 ? 'var(--success)' : 'var(--danger)';
+
+            let totalOres = gameData.iron + gameData.silver + gameData.goldOre;
+            let totalAxes = gameData.steelAxe + gameData.diamondAxe;
+
+            document.getElementById('ach-1-prog').innerText = Math.min(500, totalOres);
+            document.getElementById('ach-2-prog').innerText = Math.min(5, totalAxes);
+            document.getElementById('ach-3-prog').innerText = Math.min(5, gameData.level);
+            document.getElementById('ach-4-prog').innerText = Math.min(10, gameData.repairCount);
+
+            for (let i = 1; i <= 4; i++) {
+                let btn = document.getElementById(`ach-btn-${i}`);
+                if (gameData.achievements[i]) {
+                    btn.innerText = "รับแล้ว";
+                    btn.className = "btn btn-success";
+                    btn.disabled = true;
+                } else {
+                    let eligible = false;
+                    if (i === 1 && totalOres >= 500) eligible = true;
+                    if (i === 2 && totalAxes >= 5) eligible = true;
+                    if (i === 3 && gameData.level >= 5) eligible = true;
+                    if (i === 4 && gameData.repairCount >= 10) eligible = true;
+
+                    if (eligible) {
+                        btn.innerText = "รับรางวัล";
+                        btn.className = "btn btn-warning";
+                        btn.disabled = false;
+                    } else {
+                        btn.innerText = "ยังไม่ผ่านเงื่อนไข";
+                        btn.className = "btn";
+                        btn.disabled = true;
+                    }
+                }
+            }
+
+            const titlesMap = {
+                1: { name: "นักขุดหน้าใหม่", req: totalOres >= 500 },
+                2: { name: "ช่างตีเหล็กขั้นเทพ", req: totalAxes >= 5 },
+                3: { name: "ปรมาจารย์เหมืองแร่", req: gameData.level >= 5 },
+                4: { name: "ช่างซ่อมมือหนึ่ง", req: gameData.repairCount >= 10 }
+            };
+
+            let defBtn = document.getElementById('title-btn-default');
+            if (gameData.currentTitle === "ผู้เล่นใหม่") {
+                defBtn.innerText = "สวมใส่อยู่";
+                defBtn.className = "btn btn-success";
+                defBtn.disabled = true;
+            } else {
+                defBtn.innerText = "สวมใส่";
+                defBtn.className = "btn";
+                defBtn.disabled = false;
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                let statusEl = document.getElementById(`title-status-${i}`);
+                let btnEl = document.getElementById(`title-btn-${i}`);
+                let tName = titlesMap[i].name;
+
+                if (gameData.achievements[i]) {
+                    statusEl.innerText = "ปลดล็อกแล้ว (กดรับรางวัลแล้ว)";
+                    statusEl.style.color = "var(--success)";
+                    
+                    if (gameData.currentTitle === tName) {
+                        btnEl.innerText = "สวมใส่อยู่";
+                        btnEl.className = "btn btn-success";
+                        btnEl.disabled = true;
+                    } else {
+                        btnEl.innerText = "สวมใส่";
+                        btnEl.className = "btn";
+                        btnEl.disabled = false;
+                    }
+                } else {
+                    statusEl.innerText = "ยังไม่ปลดล็อก";
+                    statusEl.style.color = "var(--danger)";
+                    btnEl.innerText = "สวมใส่";
+                    btnEl.className = "btn";
+                    btnEl.disabled = true;
+                }
+            }
 
             let totalIronVal = gameData.iron * 5;
             let totalSilverVal = gameData.silver * 15;
@@ -900,7 +1173,6 @@
             if (type === 'goldOre' && gameData.level < 5) return;
             if (gameData.durability <= 0) return;
 
-            let state = miningStates[type];
             let mineObj = gameData.mines[type];
             let baseSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
             let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
@@ -911,6 +1183,7 @@
             if (mineObj.active) {
                 let intervalMs = 100;
                 let step = (intervalMs / (totalSeconds * 1000)) * 100;
+                let progress = 0;
 
                 if (window[`interval_${type}`]) clearInterval(window[`interval_${type}`]);
 
@@ -919,25 +1192,28 @@
                         clearInterval(window[`interval_${type}`]);
                         mineObj.active = false;
                         updateUI();
+                        autoSaveGame();
                         return;
                     }
 
-                    state.progress = (state.progress || 0) + step;
-                    if (state.progress >= 100) {
-                        state.progress = 0;
+                    progress += step;
+                    if (progress >= 100) {
+                        progress = 0;
                         
                         gameData.durability = Math.max(0, gameData.durability - 2);
                         
                         let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
                         let totalYield = baseYield * mineObj.level;
-                        state.collected += totalYield;
                         
-                        let baseXpPerRound = type === 'iron' ? 5 : (type === 'silver' ? 12 : 25);
-                        addXP(baseXpPerRound * mineObj.level);
+                        gameData[type] += totalYield;
+                        let bonusXp = Math.floor(totalYield / 4);
+                        addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level + bonusXp);
+
                         updateUI();
+                        autoSaveGame();
                     }
                     let progressBar = document.getElementById(`bar-${type}`);
-                    if (progressBar) progressBar.style.width = state.progress + '%';
+                    if (progressBar) progressBar.style.width = progress + '%';
                 }, intervalMs);
             } else {
                 if (window[`interval_${type}`]) clearInterval(window[`interval_${type}`]);
@@ -948,38 +1224,28 @@
             autoSaveGame();
         }
 
-        function claimOre(type) {
-            sanitizeData();
-            let state = miningStates[type];
-            if (state.collected === 0) return;
-            let collectedAmount = Number(state.collected);
-            gameData[type] += collectedAmount;
-            
-            let bonusXp = Math.floor(collectedAmount / 2);
-            addXP(bonusXp);
-
-            state.collected = 0;
-            updateUI();
-            autoSaveGame();
-        }
-
         function repairTools() {
             sanitizeData();
             let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
             if (gameData.gold < repairCost || gameData.durability >= 100) return;
             gameData.gold -= repairCost;
             gameData.durability = 100;
+            gameData.repairCount++;
             updateUI();
             autoSaveGame();
         }
 
-        function sellOre(type, rate) {
+        function sellOreCustom(type, rate, amountToSell) {
             sanitizeData();
-            let amount = Number(gameData[type]);
-            if (amount <= 0 || isNaN(amount)) return;
-            let income = amount * Number(rate);
-            gameData[type] = 0;
-            gameData.gold += income; 
+            let currentAmount = Number(gameData[type]);
+            if (currentAmount <= 0) return;
+
+            let sellQty = (amountToSell === 'all') ? currentAmount : Math.min(currentAmount, amountToSell);
+            if (sellQty <= 0) return;
+
+            gameData[type] -= sellQty;
+            gameData.gold += sellQty * rate;
+
             updateUI();
             autoSaveGame();
         }
@@ -1003,7 +1269,7 @@
             autoSaveGame();
         }
 
-        function startCrafting(itemType, ironReq, goldCost, timeSec, baseXpReward, silverReq = 0, goldOreReq = 0) {
+        function startCrafting(itemType, ironReq, goldCost, timeSec, baseXpReward, silverReq = 0, goldOreReq = 0, btnIndex) {
             sanitizeData();
             if (gameData.iron < ironReq || gameData.silver < silverReq || gameData.goldOre < goldOreReq || gameData.gold < goldCost) return;
 
@@ -1013,26 +1279,39 @@
             gameData.gold -= goldCost; 
             updateUI(); 
 
-            let btnIndex = itemType === 'steelAxe' ? 1 : 2;
             const craftBtn = document.getElementById(`craft-btn-${btnIndex}`);
-            const craftTimer = document.getElementById(`craft-timer-${btnIndex}`);
+            const craftStatusText = document.getElementById(`craft-status-text-${btnIndex}`);
+            const craftBar = document.getElementById(`craft-bar-${btnIndex}`);
             
             craftBtn.disabled = true; 
-            let craftSeconds = timeSec;
+            craftBtn.setAttribute('data-crafting', 'true');
+            craftBtn.innerText = "กำลังสร้าง...";
+
+            let totalMs = timeSec * 1000;
+            let elapsedMs = 0;
+            let intervalMs = 100;
 
             const craftInterval = setInterval(() => {
-                craftTimer.innerText = `กำลังสร้าง... อีก ${craftSeconds} วินาที`;
-                craftSeconds--;
-                if (craftSeconds < 0) {
+                elapsedMs += intervalMs;
+                let percent = Math.min(100, (elapsedMs / totalMs) * 100);
+                craftBar.style.width = percent + '%';
+                
+                let timeLeft = ((totalMs - elapsedMs) / 1000).toFixed(1);
+                craftStatusText.innerText = `กำลังสร้าง... (${Math.max(0, timeLeft)} วิ)`;
+
+                if (elapsedMs >= totalMs) {
                     clearInterval(craftInterval);
                     gameData[itemType] += 1; 
                     addXP(baseXpReward); 
+                    
+                    craftBar.style.width = '0%';
+                    craftStatusText.innerText = "พร้อมสร้าง";
+                    craftBtn.removeAttribute('data-crafting');
+                    
                     updateUI(); 
                     autoSaveGame();
-                    craftTimer.innerText = "พร้อมสร้าง";
-                    craftBtn.disabled = false; 
                 }
-            }, 1000);
+            }, intervalMs);
         }
     </script>
 </body>
