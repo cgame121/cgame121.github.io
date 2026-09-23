@@ -226,11 +226,39 @@
                     <div class="card">
                         <h3>🛠️ ความทนทานเครื่องมือขุด (Tool Durability)</h3>
                         <div class="progress-bar-container" style="margin-top: 12px;"><div id="durability-bar" class="progress-bar"></div></div>
-                        <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span>%</p>
+                        <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success); font-weight:bold;">100</span> / <span id="max-durability-val">100</span>%</p>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 12px;">
-                            💡 <em>เครื่องมือจะเสื่อมสภาพลง 2% ทุกครั้งที่ขุดแร่สำเร็จ 1 รอบ หากความทนทานลดเหลือ 0% จะไม่สามารถขุดต่อได้ ต้องกดซ่อมแซมก่อน</em>
+                            💡 <em>เครื่องมือเสื่อมสภาพ 2% ต่อรอบ ขุดต่อเนื่องได้ยาวนานขึ้นด้วยสกิลช่างซ่อม</em>
                         </p>
                         <button class="btn btn-warning" onclick="repairTools()">ซ่อมแซมอุปกรณ์ (<span id="repair-cost-val">50</span> Gold)</button>
+                    </div>
+                </div>
+
+                <!-- เพิ่มรายละเอียดสรุปเหมืองแบบเรียลไทม์ -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <h3>⛏️ สถานะเหมืองแร่ทั้งหมด (Real-time Mines Overview)</h3>
+                    <div class="grid-3" style="margin-top: 16px; margin-bottom: 0;">
+                        <!-- สรุปเหมืองเหล็ก -->
+                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเหล็ก [<span id="dash-iron-lvl">Lv.1</span>]</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-iron-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-iron-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                        </div>
+                        <!-- สรุปเหมืองเงิน -->
+                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองเงิน [<span id="dash-silver-lvl">Lv.1</span>]</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-silver-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-silver-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                        </div>
+                        <!-- สรุปเหมืองทอง -->
+                        <div style="background: var(--bg-body); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">เหมืองทอง [<span id="dash-gold-lvl">Lv.1</span>]</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">สถานะ: <span id="dash-gold-status" style="color: var(--text-muted);">หยุดทำงาน</span></p>
+                            <p style="font-size: 0.85rem; margin-bottom: 6px;">แร่รอเก็บ: <span id="dash-gold-collected" style="color: var(--accent); font-weight: bold;">0</span> ชิ้น</p>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchTab(null, 'mining')">จัดการเหมือง</button>
+                        </div>
                     </div>
                 </div>
 
@@ -336,7 +364,7 @@
                     <!-- สกิล 3 -->
                     <div class="card">
                         <h3>🛠️ ช่างซ่อมประหยัด</h3>
-                        <p>ลดค่าใช้จ่ายในการซ่อมแซมอุปกรณ์เครื่องมือ<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
+                        <p>ลดค่าซ่อมและเพิ่มขีดจำกัดความทนทานสูงสุด<br><b>โบนัสปัจจุบัน:</b> ประหยัดค่าซ่อม <span id="skill-repair-val">0</span>% | เพิ่มความทนทาน +<span id="skill-durability-bonus">0</span>%<br><b>เลเวลสกิล:</b> <span id="skill-repair-lvl">0</span> / 5</p>
                         <button class="btn btn-warning" onclick="upgradeSkill('repair')">อัปเกรดสกิล (ใช้ 1 แต้ม)</button>
                     </div>
                 </div>
@@ -468,6 +496,10 @@
             if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('collapsed');
         }
 
+        function getMaxDurability() {
+            return 100 + (gameData.skills.repair * 20);
+        }
+
         function addXP(amount) {
             sanitizeData();
             let bonusMultiplier = 1 + (gameData.skills.xp * 0.10);
@@ -493,6 +525,12 @@
 
             gameData.skillPoints -= 1;
             gameData.skills[type] += 1;
+            
+            let maxDur = getMaxDurability();
+            if (type === 'repair') {
+                gameData.durability = Math.min(maxDur, gameData.durability + 20);
+            }
+
             updateUI();
             autoSaveGame();
         }
@@ -523,12 +561,15 @@
                 gameData.skills.repair = Math.min(5, Math.max(0, isNaN(Number(gameData.skills.repair)) ? 0 : Number(gameData.skills.repair)));
             }
 
+            let maxDur = 100 + (gameData.skills.repair * 20);
+            gameData.durability = isNaN(Number(gameData.durability)) || gameData.durability < 0 ? maxDur : Math.min(maxDur, Number(gameData.durability));
+
             gameData.iron = isNaN(Number(gameData.iron)) || gameData.iron < 0 ? 0 : Number(gameData.iron);
             gameData.silver = isNaN(Number(gameData.silver)) || gameData.silver < 0 ? 0 : Number(gameData.silver);
             gameData.goldOre = isNaN(Number(gameData.goldOre)) || gameData.goldOre < 0 ? 0 : Number(gameData.goldOre);
             gameData.steelAxe = isNaN(Number(gameData.steelAxe)) || gameData.steelAxe < 0 ? 0 : Number(gameData.steelAxe);
             gameData.diamondAxe = isNaN(Number(gameData.diamondAxe)) || gameData.diamondAxe < 0 ? 0 : Number(gameData.diamondAxe);
-            gameData.durability = isNaN(Number(gameData.durability)) || gameData.durability < 0 ? 100 : Math.min(100, Number(gameData.durability));
+            
             if (!gameData.quests || typeof gameData.quests !== 'object') gameData.quests = { 1: false, 2: false };
             if (!gameData.mines || typeof gameData.mines !== 'object') {
                 gameData.mines = {
@@ -600,6 +641,7 @@
             let speedMultiplier = Math.max(0.5, 1 - (gameData.skills.speed * 0.05));
             let xpMultiplier = 1 + (gameData.skills.xp * 0.10);
 
+            // อัปเดตหน้าเหมือง
             document.getElementById('iron-lvl').innerText = `Lv.${ironLv}`;
             document.getElementById('iron-rate').innerText = 20 * ironLv;
             document.getElementById('iron-sec').innerText = (5 * speedMultiplier).toFixed(1);
@@ -618,12 +660,48 @@
             document.getElementById('goldOre-xp-text').innerText = `+${Math.floor(25 * goldLv * xpMultiplier)} XP / รอบ`;
             document.getElementById('gold-mine-up-cost').innerText = Number(gameData.mines.goldOre.cost).toLocaleString();
 
+            // อัปเดตสรุปเหมืองหน้าแดชบอร์ดหลักแบบเรียลไทม์
+            document.getElementById('dash-iron-lvl').innerText = `Lv.${ironLv}`;
+            document.getElementById('dash-iron-collected').innerText = Number(miningStates.iron.collected).toLocaleString();
+            let ironStatEl = document.getElementById('dash-iron-status');
+            if (miningStates.iron.active) {
+                ironStatEl.innerText = "กำลังขุด...";
+                ironStatEl.style.color = "var(--success)";
+            } else {
+                ironStatEl.innerText = "หยุดทำงาน";
+                ironStatEl.style.color = "var(--text-muted)";
+            }
+
+            document.getElementById('dash-silver-lvl').innerText = `Lv.${silverLv}`;
+            document.getElementById('dash-silver-collected').innerText = Number(miningStates.silver.collected).toLocaleString();
+            let silverStatEl = document.getElementById('dash-silver-status');
+            if (miningStates.silver.active) {
+                silverStatEl.innerText = "กำลังขุด...";
+                silverStatEl.style.color = "var(--success)";
+            } else {
+                silverStatEl.innerText = "หยุดทำงาน";
+                silverStatEl.style.color = "var(--text-muted)";
+            }
+
+            document.getElementById('dash-gold-lvl').innerText = `Lv.${goldLv}`;
+            document.getElementById('dash-gold-collected').innerText = Number(miningStates.goldOre.collected).toLocaleString();
+            let goldStatEl = document.getElementById('dash-gold-status');
+            if (miningStates.goldOre.active) {
+                goldStatEl.innerText = "กำลังขุด...";
+                goldStatEl.style.color = "var(--success)";
+            } else {
+                goldStatEl.innerText = "หยุดทำงาน";
+                goldStatEl.style.color = "var(--text-muted)";
+            }
+
+            // สกิลและอื่นๆ
             document.getElementById('skill-speed-lvl').innerText = gameData.skills.speed;
             document.getElementById('skill-speed-val').innerText = (gameData.skills.speed * 5);
             document.getElementById('skill-xp-lvl').innerText = gameData.skills.xp;
             document.getElementById('skill-xp-val').innerText = (gameData.skills.xp * 10);
             document.getElementById('skill-repair-lvl').innerText = gameData.skills.repair;
             document.getElementById('skill-repair-val').innerText = (gameData.skills.repair * 15);
+            document.getElementById('skill-durability-bonus').innerText = (gameData.skills.repair * 20);
 
             document.getElementById('craft-xp-1').innerText = `+${Math.floor(60 * xpMultiplier)} XP`;
             document.getElementById('craft-xp-2').innerText = `+${Math.floor(150 * xpMultiplier)} XP`;
@@ -635,10 +713,14 @@
             document.getElementById('collected-silver').innerText = Number(miningStates.silver.collected).toLocaleString();
             document.getElementById('collected-goldOre').innerText = Number(miningStates.goldOre.collected).toLocaleString();
 
-            document.getElementById('durability-val').innerText = gameData.durability;
+            let maxDur = getMaxDurability();
+            document.getElementById('durability-val').innerText = Math.round(gameData.durability);
+            document.getElementById('max-durability-val').innerText = maxDur;
+            
             const bar = document.getElementById('durability-bar');
-            bar.style.width = gameData.durability + '%';
-            bar.style.background = gameData.durability > 30 ? 'var(--success)' : 'var(--danger)';
+            let durPercent = Math.min(100, (gameData.durability / maxDur) * 100);
+            bar.style.width = durPercent + '%';
+            bar.style.background = durPercent > 30 ? 'var(--success)' : 'var(--danger)';
 
             if (gameData.quests && gameData.quests[1]) {
                 document.getElementById('quest-btn-1').innerText = "รับแล้ว";
@@ -731,6 +813,7 @@
                 btn.innerText = "เริ่มขุด";
                 btn.className = "btn btn-success";
             }
+            updateUI();
         }
 
         function claimOre(type) {
@@ -750,10 +833,11 @@
 
         function repairTools() {
             sanitizeData();
+            let maxDur = getMaxDurability();
             let repairCost = Math.max(10, Math.floor(50 * (1 - gameData.skills.repair * 0.15)));
-            if (gameData.gold < repairCost || gameData.durability >= 100) return;
+            if (gameData.gold < repairCost || gameData.durability >= maxDur) return;
             gameData.gold -= repairCost;
-            gameData.durability = 100;
+            gameData.durability = maxDur;
             updateUI();
             autoSaveGame();
         }
