@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mine & Craft Economy - Ultra Smooth Edition</title>
+    <title>Mine & Craft Economy - Web Worker Edition</title>
     <style>
-        /* ==========================================
-           1. ROOT VARIABLES & GLOBAL STYLES
-           ================================---------- */
         :root {
             --bg-body: #07090e;
             --bg-sidebar: #0b0f17;
@@ -42,9 +39,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ==========================================
-           2. SIDEBAR & NAVIGATION STYLES
-           ================================---------- */
         aside {
             width: 260px;
             min-width: 260px;
@@ -125,9 +119,6 @@
             border-color: rgba(59, 130, 246, 0.5);
         }
 
-        /* ==========================================
-           3. MAIN CONTAINER & HEADER STYLES
-           ================================---------- */
         .main-container {
             flex: 1;
             display: flex;
@@ -196,13 +187,8 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
-        .stat-badge span {
-            color: var(--accent);
-        }
+        .stat-badge span { color: var(--accent); }
 
-        /* ==========================================
-           4. VIEWPORT & SMOOTH TAB ANIMATIONS
-           ================================---------- */
         .content-viewport {
             flex: 1;
             padding: 16px;
@@ -258,18 +244,13 @@
             line-height: 1.4;
         }
 
-        /* ==========================================
-           5. FLUID ANIMATIONS (PULSE & FLOATING)
-           ================================---------- */
         @keyframes pulseGlow {
             0% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
             50% { border-color: var(--primary); box-shadow: 0 0 22px var(--primary-glow); }
             100% { border-color: var(--border); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
         }
 
-        .card.mining-active {
-            animation: pulseGlow 2.2s infinite ease-in-out;
-        }
+        .card.mining-active { animation: pulseGlow 2.2s infinite ease-in-out; }
 
         @keyframes floatUpSmooth {
             0% { transform: translateY(0) scale(0.85); opacity: 0; }
@@ -289,14 +270,8 @@
             z-index: 50;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
         }
+        .floating-reward.failure { color: var(--danger); }
 
-        .floating-reward.failure {
-            color: var(--danger);
-        }
-
-        /* ==========================================
-           6. BUTTONS, INPUTS & TOASTS
-           ================================---------- */
         .text-input {
             width: 100%;
             background: var(--bg-body);
@@ -389,9 +364,6 @@
 
         .market-chart-mini { width: 100%; height: 110px; background: #07090e; border-radius: 6px; border: 1px solid var(--border); display: block; margin-bottom: 12px; }
 
-        /* ==========================================
-           7. MEDIA QUERIES (RESPONSIVE)
-           ================================---------- */
         @media (min-width: 768px) {
             .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -417,11 +389,9 @@
 </head>
 <body>
 
-    <!-- Toast Notification Container -->
     <div id="toast-box"></div>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <!-- Sidebar Navigation -->
     <aside id="sidebar">
         <div class="brand">
             <span>⛏️</span> Mine & Craft Hub
@@ -436,7 +406,6 @@
         </ul>
     </aside>
 
-    <!-- Main Container -->
     <div class="main-container">
         <header>
             <div class="header-left">
@@ -451,7 +420,6 @@
 
         <div class="content-viewport">
             
-            <!-- Tab 1: Dashboard -->
             <div id="dashboard" class="tab-content active">
                 <div class="grid-2">
                     <div class="card">
@@ -472,7 +440,6 @@
                 </div>
             </div>
 
-            <!-- Tab 2: Mining Center -->
             <div id="mining" class="tab-content">
                 <div class="grid-3">
                     <div id="card-iron" class="card">
@@ -507,12 +474,10 @@
                 </div>
             </div>
 
-            <!-- Tab 3: Market & Shop -->
             <div id="market" class="tab-content">
                 <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">🛒 กระดานซื้อขายแร่ & กราฟเรียลไทม์</h2>
                 <div class="grid-3" style="margin-bottom: 24px;">
                     
-                    <!-- Iron Card -->
                     <div class="card">
                         <h3>🔹 แร่เหล็ก <span id="trend-iron" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-iron" class="market-chart-mini"></canvas>
@@ -527,7 +492,6 @@
                         </div>
                     </div>
 
-                    <!-- Silver Card -->
                     <div class="card">
                         <h3>🥈 แร่เงิน <span id="trend-silver" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-silver" class="market-chart-mini"></canvas>
@@ -542,7 +506,6 @@
                         </div>
                     </div>
 
-                    <!-- Gold Ore Card -->
                     <div class="card">
                         <h3>🥇 แร่ทอง <span id="trend-goldOre" class="badge-trend trend-up">1.0x</span></h3>
                         <canvas id="chart-goldOre" class="market-chart-mini"></canvas>
@@ -578,7 +541,6 @@
                 </div>
             </div>
 
-            <!-- Tab 4: Inventory -->
             <div id="inventory" class="tab-content">
                 <div class="grid-3">
                     <div class="card"><h3>แร่เหล็ก</h3><p><span id="inv-iron" style="color:var(--success); font-weight:bold;">0</span> ชิ้น</p></div>
@@ -587,7 +549,6 @@
                 </div>
             </div>
 
-            <!-- Tab 5: Save & System Management -->
             <div id="save-system" class="tab-content">
                 <div class="grid-2">
                     <div class="card">
@@ -635,9 +596,6 @@
         </div>
     </div>
 
-    <!-- ==========================================
-       JAVASCRIPT GAME LOGIC
-       ========================================== -->
     <script>
         const defaultGameData = {
             gold: 50000,
@@ -663,9 +621,35 @@
         };
 
         let gameData = JSON.parse(JSON.stringify(defaultGameData));
-        let activeMiningIntervals = {};
-        let globalIntervals = [];
+        let backgroundWorker = null;
         let actionLocked = false;
+        let miningProgressUI = { iron: 0, silver: 0, goldOre: 0 };
+
+        // สร้าง Web Worker ผ่าน Blob เพื่อรันเบื้องหลังแบบไม่โดนเบราว์เซอร์หน่วงเวลา
+        function initBackgroundWorker() {
+            const workerCode = `
+                let timerId = null;
+                self.onmessage = function(e) {
+                    if (e.data === 'start') {
+                        if (timerId) clearInterval(timerId);
+                        timerId = setInterval(() => {
+                            self.postMessage('tick');
+                        }, 100);
+                    } else if (e.data === 'stop') {
+                        if (timerId) clearInterval(timerId);
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            backgroundWorker = new Worker(URL.createObjectURL(blob));
+            
+            backgroundWorker.onmessage = function(e) {
+                if (e.data === 'tick') {
+                    processGameTick();
+                }
+            };
+            backgroundWorker.postMessage('start');
+        }
 
         window.onload = function() {
             try {
@@ -674,14 +658,10 @@
                     if (sidebar) sidebar.classList.add('collapsed');
                 }
                 loadGame();
-                
-                globalIntervals.push(setInterval(() => {
-                    checkAutoRepair();
-                    updateUI();
-                }, 100));
+                initBackgroundWorker();
 
-                globalIntervals.push(setInterval(updateMarketPricesRealtime, 4000));
-                globalIntervals.push(setInterval(autoSaveGame, 15000));
+                setInterval(updateMarketPricesRealtime, 4000);
+                setInterval(autoSaveGame, 15000);
 
                 window.addEventListener("beforeunload", autoSaveGame);
                 
@@ -705,8 +685,7 @@
         };
 
         window.onunload = function() {
-            globalIntervals.forEach(id => clearInterval(id));
-            Object.values(activeMiningIntervals).forEach(id => clearInterval(id));
+            if (backgroundWorker) backgroundWorker.terminate();
         };
 
         function debounceAction(callback) {
@@ -741,9 +720,7 @@
             let sidebar = document.getElementById('sidebar');
             let overlay = document.getElementById('sidebar-overlay');
             if (!sidebar) return;
-            
             sidebar.classList.toggle('collapsed');
-            
             if (window.innerWidth < 768) {
                 if (sidebar.classList.contains('collapsed')) {
                     if (overlay) overlay.classList.remove('show');
@@ -1200,27 +1177,22 @@
             }
         }
 
-        function startMiningInterval(type) {
-            let mineObj = gameData.mines[type];
-            let totalSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
-            let intervalMs = 100;
-            let step = (intervalMs / (totalSeconds * 1000)) * 100;
-            let progress = 0;
+        // ประมวลผลรอบเวลาผ่าน Web Worker (รันต่อเนื่องแม้เปิดแท็บอื่น)
+        function processGameTick() {
+            checkAutoRepair();
+            
+            ['iron', 'silver', 'goldOre'].forEach(type => {
+                let mineObj = gameData.mines[type];
+                if (!mineObj.active) return;
 
-            if (activeMiningIntervals[type]) clearInterval(activeMiningIntervals[type]);
+                let totalSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
+                let step = (0.1 / totalSeconds) * 100;
 
-            activeMiningIntervals[type] = setInterval(() => {
-                if (!mineObj.active) {
-                    clearInterval(activeMiningIntervals[type]);
-                    return;
-                }
-
-                progress += step;
-                if (progress >= 100) {
-                    progress = 0;
+                miningProgressUI[type] += step;
+                if (miningProgressUI[type] >= 100) {
+                    miningProgressUI[type] = 0;
                     
                     if (!consumeDurability(2)) {
-                        clearInterval(activeMiningIntervals[type]);
                         mineObj.active = false;
                         showToast("ความทนทานหมดและ Gold ไม่พอซ่อม! เหมืองหยุดทำงาน");
                         updateUI();
@@ -1237,11 +1209,12 @@
                         showFloatingReward(type, `+${totalYield}`, false);
                         addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level);
                     }
-                    updateUI();
                 }
+                
                 let progressBar = document.getElementById(`bar-${type}`);
-                if (progressBar) progressBar.style.width = progress + '%';
-            }, intervalMs);
+                if (progressBar) progressBar.style.width = miningProgressUI[type] + '%';
+            });
+            updateUI();
         }
 
         function loadGame() {
@@ -1265,16 +1238,6 @@
             
             gameData.lastSaveTime = Date.now();
             autoSaveGame();
-            
-            ['iron', 'silver', 'goldOre'].forEach(type => {
-                if (gameData.mines[type] && gameData.mines[type].active) {
-                    if (gameData.durability > 0) {
-                        startMiningInterval(type);
-                    } else {
-                        gameData.mines[type].active = false;
-                    }
-                }
-            });
             updateUI();
         }
 
@@ -1440,10 +1403,8 @@
 
                 mineObj.active = !mineObj.active;
 
-                if (mineObj.active) {
-                    startMiningInterval(type);
-                } else {
-                    if (activeMiningIntervals[type]) clearInterval(activeMiningIntervals[type]);
+                if (!mineObj.active) {
+                    miningProgressUI[type] = 0;
                     let progressBar = document.getElementById(`bar-${type}`);
                     if (progressBar) progressBar.style.width = '0%';
                 }
