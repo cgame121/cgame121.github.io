@@ -86,6 +86,21 @@ header{min-height:calc(64px + env(safe-area-inset-top));background:var(--bg-side
 .trend-up{background:rgba(0,255,127,.12);color:var(--success)}
 .trend-down{background:rgba(255,45,85,.12);color:var(--danger)}
 .market-chart-mini{width:100%;height:110px;background:#000;border:3px solid var(--border);display:block;margin-bottom:12px}
+.market-hero{background:linear-gradient(135deg,var(--bg-card),#000 120%);border:3px solid #000;box-shadow:0 0 0 2px var(--gold),6px 6px 0 #000;padding:16px 18px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:space-between;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+.market-hero-stat{display:flex;flex-direction:column;gap:5px}
+.market-hero-label{font-size:.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.market-hero-value{font-size:1.35rem;font-weight:700;color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.2}
+.market-hero-value.best-mover{color:var(--text-main);font-size:1.05rem}
+.market-card{padding-top:16px}
+.ticker-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ticker-icon{width:44px;height:44px;flex-shrink:0;background:#000;border:3px solid var(--border);box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.ticker-name-wrap{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ticker-name-wrap h3{margin:0;padding:0;border:none;font-size:1rem;color:var(--text-main);display:block}
+.ticker-price-row{display:flex;justify-content:space-between;align-items:baseline;background:#000;border:3px solid var(--border);padding:9px 12px;margin-bottom:12px}
+.ticker-price-label{font-size:.85rem;color:var(--text-muted)}
+.ticker-price-value{font-size:1.25rem;font-weight:700;color:var(--accent);text-shadow:2px 2px 0 #000}
+.ticker-price-value b{font-size:1.25rem}
+@media(max-width:480px){.market-hero{padding:14px}.market-hero-value{font-size:1.15rem}}
 .profile-card{display:flex;flex-direction:column;align-items:center;text-align:center}
 .avatar-box{width:88px;height:88px;background:#000;border:4px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 3px #000,0 0 0 6px var(--primary),6px 6px 0 #000;margin:0 auto 16px}
 .profile-stats{width:100%;background:#000;padding:4px 12px;border:3px solid var(--border);margin-top:10px;text-align:left}
@@ -189,6 +204,18 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .info .d{color:var(--text-main);padding:2px 0 8px;line-height:1.5}
 .info .warn{margin-top:8px;padding:6px 10px;background:rgba(255,45,85,.12);border:2px solid var(--danger);color:#ff8fa5;font-size:.85rem}
 .hint{background:#000;border:3px solid var(--border);border-left:5px solid var(--primary);padding:10px 14px;margin-bottom:16px;font-size:.9rem;color:var(--text-muted);line-height:1.6}
+.dash-hero{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+@media(min-width:700px){.dash-hero{grid-template-columns:repeat(4,1fr)}}
+.dash-hero-stat{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--border),4px 4px 0 #000;padding:14px;display:flex;flex-direction:column;gap:6px;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:var(--ts)}
+@media(hover:hover){.dash-hero-stat:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--border-light),4px 6px 0 #000}}
+.dash-hero-label{font-size:.8rem;color:var(--text-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-hero-value{font-size:1.2rem;font-weight:700;color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.2}
+.dash-ore-row{display:flex;flex-wrap:wrap;gap:12px}
+.dash-ore-item{flex:1;min-width:110px;background:#000;border:3px solid var(--border);padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.dash-ore-icon{font-size:1.5rem}
+.dash-ore-name{font-size:.85rem;color:var(--text-muted)}
+.dash-ore-qty{font-size:1.15rem;font-weight:700;color:var(--success)}
+@media(max-width:480px){.dash-hero-value{font-size:1.05rem}}
 .hint b{color:var(--gold)}
 .guide{list-style:none;counter-reset:s;display:grid;gap:10px}
 .guide li{counter-increment:s;position:relative;padding:8px 0 8px 44px;color:var(--text-muted);font-size:.92rem;line-height:1.5;border-bottom:2px dashed var(--border)}
@@ -252,6 +279,25 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   <div class="content-viewport" id="main-viewport">
 
     <div id="dashboard" class="tab-content active">
+      <div class="dash-hero">
+        <div class="dash-hero-stat">
+          <span class="dash-hero-label">💰 Gold</span>
+          <span class="dash-hero-value" id="dash-gold">50,000</span>
+        </div>
+        <div class="dash-hero-stat">
+          <span class="dash-hero-label">💎 Gems</span>
+          <span class="dash-hero-value" id="dash-gems">120</span>
+        </div>
+        <div class="dash-hero-stat">
+          <span class="dash-hero-label">🛒 มูลค่าแร่ในคลัง</span>
+          <span class="dash-hero-value" id="dash-ore-value">0 Gold</span>
+        </div>
+        <div class="dash-hero-stat">
+          <span class="dash-hero-label">🏞️ รายได้ที่ดิน/ชม.</span>
+          <span class="dash-hero-value" id="dash-land-income">0 Gold</span>
+        </div>
+      </div>
+
       <div class="grid-2">
         <div class="card">
           <h3>⭐ ข้อมูลและเลเวลผู้เล่น</h3>
@@ -266,6 +312,15 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <button id="repair-btn" class="btn btn-warning" style="flex:2" onclick="repairTools()">ซ่อมแซม</button>
             <button id="auto-repair-btn" class="btn btn-danger" onclick="toggleAutoRepair()">Auto: ปิด</button>
           </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px">
+        <h3>⛏️ คลังแร่ปัจจุบัน</h3>
+        <div class="dash-ore-row">
+          <div class="dash-ore-item"><span class="dash-ore-icon">🔹</span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon">🥈</span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon">🥇</span><span class="dash-ore-name">แร่ทอง</span><span class="dash-ore-qty" id="dash-ore-goldOre">0</span></div>
         </div>
       </div>
 
@@ -287,7 +342,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <h3>⛏️ เหมืองเหล็ก <span id="iron-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
           <div class="info"><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="iron-rate">20</span> ชิ้น / <span id="iron-time">5.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="iron-up-cost" style="color:var(--accent)">500</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="iron-up-bar">1</span> แท่งเหล็กกล้า <span style="color:var(--text-muted);font-weight:400">(มี <span id="iron-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="iron-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
-            <button class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรด</button>
+            <button id="iron-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรด</button>
             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
@@ -299,7 +354,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <h3>🥈 เหมืองเงิน <span id="silver-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
           <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 3</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="silver-rate">10</span> ชิ้น / <span id="silver-time">6.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="silver-up-cost" style="color:var(--accent)">1,200</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="silver-up-bar">1</span> แท่งเงิน <span style="color:var(--text-muted);font-weight:400">(มี <span id="silver-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="silver-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
-            <button class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรด</button>
+            <button id="silver-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรด</button>
             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
@@ -311,7 +366,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <h3>🥇 เหมืองทอง <span id="goldOre-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
           <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="goldOre-rate">5</span> ชิ้น / <span id="goldOre-time">8.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="goldOre-up-cost" style="color:var(--accent)">3,000</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="goldOre-up-bar">1</span> แท่งทองคำ <span style="color:var(--text-muted);font-weight:400">(มี <span id="goldOre-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="goldOre-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
-            <button class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรด</button>
+            <button id="goldOre-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรด</button>
             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
@@ -367,11 +422,11 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         <div class="card">
           <h3>🛠️ อุปกรณ์สวมใส่</h3>
           <div class="info"><div class="d"><b>⛏️ พลั่ว (Lv.<span id="eq-pickaxe-lvl">1</span>)</b> — เร็ว +5% / ผลผลิต +10%</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-pickaxe-cost" style="color:var(--accent)">50</span> Gems + <span id="eq-pickaxe-barcost" style="color:var(--gold)">1</span> แท่งทองคำ + <span id="eq-pickaxe-orecost" style="color:var(--primary)">5</span> แร่ทองดิบ</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-pickaxe-barhave">0</span> แท่ง / <span id="eq-pickaxe-orehave">0</span> แร่</span></div></div>
-          <button class="btn btn-warning" style="margin-bottom:10px" onclick="upgradeEquipment('pickaxe')">อัปเกรดพลั่ว</button>
+          <button id="eq-pickaxe-upgrade-btn" class="btn btn-warning" style="margin-bottom:10px" onclick="upgradeEquipment('pickaxe')">อัปเกรดพลั่ว</button>
           <div class="info"><div class="d"><b>🪖 หมวก (Lv.<span id="eq-helmet-lvl">0</span>)</b> — ลดสึกหรอทุก 3 เลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-helmet-cost" style="color:var(--accent)">25,000</span> Gold + <span id="eq-helmet-barcost" style="color:var(--gold)">1</span> แท่งเหล็กกล้า + <span id="eq-helmet-orecost" style="color:var(--primary)">40</span> แร่เหล็ก</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-helmet-barhave">0</span> แท่ง / <span id="eq-helmet-orehave">50</span> แร่</span></div></div>
-          <button class="btn btn-success" style="margin-bottom:10px" onclick="upgradeEquipment('helmet')">อัปเกรดหมวก</button>
+          <button id="eq-helmet-upgrade-btn" class="btn btn-success" style="margin-bottom:10px" onclick="upgradeEquipment('helmet')">อัปเกรดหมวก</button>
           <div class="info"><div class="d"><b>🛡️ เกราะ (Lv.<span id="eq-armor-lvl">0</span>)</b> — ลดโอกาสพลาด 1% ต่อเลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-armor-cost" style="color:var(--accent)">40,000</span> Gold + <span id="eq-armor-barcost" style="color:var(--gold)">1</span> แท่งเงิน + <span id="eq-armor-orecost" style="color:var(--primary)">25</span> แร่เงิน</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-armor-barhave">0</span> แท่ง / <span id="eq-armor-orehave">0</span> แร่</span></div></div>
-          <button class="btn btn-success" onclick="upgradeEquipment('armor')">อัปเกรดเกราะ</button>
+          <button id="eq-armor-upgrade-btn" class="btn btn-success" onclick="upgradeEquipment('armor')">อัปเกรดเกราะ</button>
         </div>
       </div>
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)">👕 เลือกและซื้อสกินตัวละคร</h2>
@@ -385,17 +440,17 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         <div class="card">
           <h3>🛡️ พลทหารยาม</h3>
           <div class="info"><div class="d">กำลังพลพื้นฐาน คุ้มกันเหมือง</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-guard-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">7,000 Gold + 100 เหล็ก + 1 แท่งเหล็กกล้า</span></div></div>
-          <button class="btn btn-success" onclick="trainTroop('guard')">เกณฑ์ทหารยาม</button>
+          <button id="train-guard-btn" class="btn btn-success" onclick="trainTroop('guard')">เกณฑ์ทหารยาม</button>
         </div>
         <div class="card">
           <h3>⚔️ นักรบดาบเหล็ก</h3>
           <div class="info"><div class="d">ทหารแนวหน้า บุกเบิกดันเจี้ยน</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-swordsman-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">24,000 Gold + 55 เงิน + 2 แท่งเงิน</span></div></div>
-          <button class="btn btn-warning" onclick="trainTroop('swordsman')">เกณฑ์นักรบ</button>
+          <button id="train-swordsman-btn" class="btn btn-warning" onclick="trainTroop('swordsman')">เกณฑ์นักรบ</button>
         </div>
         <div class="card">
           <h3>🐎 อัศวินเกราะทอง</h3>
           <div class="info"><div class="d">กองกำลังชั้นยอด ลุยพื้นที่อันตราย</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-knight-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">85,000 Gold + 35 ทอง + 3 แท่งทองคำ</span></div></div>
-          <button class="btn btn-success" onclick="trainTroop('knight')">เกณฑ์อัศวิน</button>
+          <button id="train-knight-btn" class="btn btn-success" onclick="trainTroop('knight')">เกณฑ์อัศวิน</button>
         </div>
       </div>
 
@@ -472,25 +527,56 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     <div id="market" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🛒 ตลาดกลาง (VWAP Model)</h2>
       <div class="hint">💡 ราคาเปลี่ยนแปลงทุก 4 วินาที · <b>ค่าธรรมเนียมตลาด 5%</b> หักจากยอดขายทุกครั้ง · ขายเยอะในครั้งเดียว <b>ราคาเฉลี่ยจะลดลง</b> และกดราคาตลาดลง แนะนำทยอยขายตอนราคาสูง</div>
+      <div class="market-hero">
+        <div class="market-hero-stat">
+          <span class="market-hero-label">มูลค่าแร่ในคลังรวม</span>
+          <span class="market-hero-value" id="market-portfolio-value">0 Gold</span>
+        </div>
+        <div class="market-hero-stat">
+          <span class="market-hero-label">แร่มาแรงที่สุดตอนนี้</span>
+          <span class="market-hero-value best-mover"><span id="market-best-mover" class="badge-trend trend-up">-</span></span>
+        </div>
+      </div>
       <div class="grid-3">
-        <div class="card">
-          <h3>🔹 แร่เหล็ก <span id="trend-iron" class="badge-trend trend-up">0%</span></h3>
+        <div class="card market-card">
+          <div class="ticker-head">
+            <div class="ticker-icon">🔹</div>
+            <div class="ticker-name-wrap">
+              <h3>แร่เหล็ก</h3>
+              <span id="trend-iron" class="badge-trend trend-up">0%</span>
+            </div>
+          </div>
+          <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-iron">5</b> Gold</span></div>
           <canvas id="chart-iron" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">ราคา</span><span class="v"><b id="price-iron" style="color:var(--accent)">5</b> Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-iron">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('iron',1)">ขาย 1</button><button class="btn btn-warning" onclick="sellOre('iron',10)">ขาย 10</button></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('iron',50)">ขาย 50</button><button class="btn btn-success" onclick="sellOre('iron','all')">ขายทั้งหมด</button></div>
         </div>
-        <div class="card">
-          <h3>🥈 แร่เงิน <span id="trend-silver" class="badge-trend trend-up">0%</span></h3>
+        <div class="card market-card">
+          <div class="ticker-head">
+            <div class="ticker-icon">🥈</div>
+            <div class="ticker-name-wrap">
+              <h3>แร่เงิน</h3>
+              <span id="trend-silver" class="badge-trend trend-up">0%</span>
+            </div>
+          </div>
+          <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-silver">15</b> Gold</span></div>
           <canvas id="chart-silver" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">ราคา</span><span class="v"><b id="price-silver" style="color:var(--accent)">15</b> Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-silver">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('silver',1)">ขาย 1</button><button class="btn btn-warning" onclick="sellOre('silver',10)">ขาย 10</button></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('silver',50)">ขาย 50</button><button class="btn btn-success" onclick="sellOre('silver','all')">ขายทั้งหมด</button></div>
         </div>
-        <div class="card">
-          <h3>🥇 แร่ทอง <span id="trend-goldOre" class="badge-trend trend-up">0%</span></h3>
+        <div class="card market-card">
+          <div class="ticker-head">
+            <div class="ticker-icon">🥇</div>
+            <div class="ticker-name-wrap">
+              <h3>แร่ทอง</h3>
+              <span id="trend-goldOre" class="badge-trend trend-up">0%</span>
+            </div>
+          </div>
+          <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-goldOre">40</b> Gold</span></div>
           <canvas id="chart-goldOre" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">ราคา</span><span class="v"><b id="price-goldOre" style="color:var(--accent)">40</b> Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-goldOre">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('goldOre',1)">ขาย 1</button><button class="btn btn-warning" onclick="sellOre('goldOre',10)">ขาย 10</button></div>
           <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('goldOre',50)">ขาย 50</button><button class="btn btn-success" onclick="sellOre('goldOre','all')">ขายทั้งหมด</button></div>
         </div>
@@ -503,12 +589,12 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         <div class="card">
           <h3>⚡ ชุดซ่อมเครื่องมือฉุกเฉิน</h3>
           <p>ซ่อมความทนทานกลับมาเต็ม 100% ทันที</p>
-          <button class="btn btn-success" onclick="buyShopItem('repairKit')">ซื้อและใช้งาน (200 Gold)</button>
+          <button id="shop-repairkit-btn" class="btn btn-success" onclick="buyShopItem('repairKit')">ซื้อและใช้งาน (200 Gold)</button>
         </div>
         <div class="card">
           <h3>🎁 กล่องสุ่มวัตถุดิบ</h3>
           <p>ลุ้นรับ Gold, แร่ หรือ Gems จำนวนมาก</p>
-          <button class="btn btn-warning" onclick="buyShopItem('mysteryBox')">เปิดกล่องสุ่ม (30 Gems)</button>
+          <button id="shop-mysterybox-btn" class="btn btn-warning" onclick="buyShopItem('mysteryBox')">เปิดกล่องสุ่ม (30 Gems)</button>
         </div>
       </div>
     </div>
@@ -613,6 +699,11 @@ const SMELT_TYPES = ['iron','silver','goldOre'];
 const LAND_TYPES = ['smallPlot','mediumMine','goldEstate'];
 const EQUIP_TYPES = ['pickaxe','helmet','armor'];
 const LAND_BUY_LABEL = { smallPlot:'ซื้อที่ดิน', mediumMine:'ซื้อเหมือง', goldEstate:'ซื้อคฤหาสน์' };
+const TRAIN_CFG = {
+  guard:     { costGold:7000,  ore:'iron',    qty:100, bar:'ingotIron',   barQty:1, barLabel:'แท่งเหล็กกล้า', btnCls:'btn btn-success' },
+  swordsman: { costGold:24000, ore:'silver',  qty:55,  bar:'ingotSilver', barQty:2, barLabel:'แท่งเงิน',      btnCls:'btn btn-warning' },
+  knight:    { costGold:85000, ore:'goldOre', qty:35,  bar:'ingotGold',   barQty:3, barLabel:'แท่งทองคำ',     btnCls:'btn btn-success' }
+};
 
 const EXP_CFG = {
   goblin: { name:'ถ้ำก๊อบลินรกร้าง', reqType:'guard', reqNum:3, duration:45, cost:{gold:1000,iron:20}, reward:{gold:3200,iron:30,gems:4}, deathChance:0.40, label:'goblin', bg:0x08302a },
@@ -1651,10 +1742,8 @@ function repairTools(){
 
 function trainTroop(type){
   sanitizeData();
-  let costGold=0, ore='', qty=0, bar='', barQty=0, barLabel='';
-  if(type==='guard'){ costGold=7000; ore='iron'; qty=100; bar='ingotIron'; barQty=1; barLabel='แท่งเหล็กกล้า'; }
-  else if(type==='swordsman'){ costGold=24000; ore='silver'; qty=55; bar='ingotSilver'; barQty=2; barLabel='แท่งเงิน'; }
-  else if(type==='knight'){ costGold=85000; ore='goldOre'; qty=35; bar='ingotGold'; barQty=3; barLabel='แท่งทองคำ'; }
+  const c = TRAIN_CFG[type]; if(!c) return;
+  const costGold = c.costGold, ore = c.ore, qty = c.qty, bar = c.bar, barQty = c.barQty, barLabel = c.barLabel;
   if(gameData.gold < costGold){ alert('Gold ไม่พอฝึกทหาร!'); return; }
   if(gameData[ore] < qty){ alert('วัตถุดิบแร่ไม่เพียงพอ!'); return; }
   if((gameData[bar]||0) < barQty){ alert(barLabel+' ไม่พอ! ต้องใช้ '+barQty+' แท่ง (ตอนนี้มี '+(gameData[bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
@@ -1897,7 +1986,10 @@ function renderSkinShop(){
     else if(owned) btn = '<button class="btn btn-success" onclick="buyOrEquipSkin(\''+id+'\')">สวมใส่</button>';
     else{
       const price = (s.priceType==='gold') ? s.price.toLocaleString()+' Gold' : s.price.toLocaleString()+' Gems';
-      btn = '<button class="btn btn-warning" onclick="buyOrEquipSkin(\''+id+'\')">ซื้อ ('+price+')</button>';
+      const canAfford = s.priceType==='gold' ? gameData.gold >= s.price : gameData.gems >= s.price;
+      btn = canAfford
+        ? '<button class="btn btn-warning" onclick="buyOrEquipSkin(\''+id+'\')">ซื้อ ('+price+')</button>'
+        : '<button class="btn btn-locked" disabled>🔒 ซื้อ ('+price+')</button>';
     }
     html += '<div class="card" style="text-align:center;'+(equipped?'border-color:var(--primary);':'')+'">'
       + '<div class="skin-avatar">'+s.svg+'</div>'
@@ -2101,6 +2193,8 @@ function updateUI(){
   updateNotifBtn();
   setNum('gold-val', gameData.gold);
   setNum('gems-val', gameData.gems);
+  setNum('dash-gold', gameData.gold);
+  setNum('dash-gems', gameData.gems);
   setText('lvl-val', gameData.level);
   setText('dash-lvl', gameData.level);
   setText('dash-xp', Math.floor(gameData.xp).toLocaleString());
@@ -2115,11 +2209,33 @@ function updateUI(){
     dBar.style.background = gameData.durability > 30 ? 'var(--success)' : 'var(--danger)';
   }
   const rBtn = document.getElementById('repair-btn');
-  if(rBtn) setTxt(rBtn, gameData.durability >= 100 ? 'ซ่อมแซม (เต็มแล้ว)' : 'ซ่อมแซม ('+getRepairCost().toLocaleString()+' Gold)');
+  if(rBtn){
+    const repairCost = getRepairCost();
+    if(gameData.durability >= 100){
+      setTxt(rBtn, 'ซ่อมแซม (เต็มแล้ว)'); setCls(rBtn, 'btn btn-locked'); rBtn.disabled = true;
+    }else if(gameData.gold < repairCost){
+      setTxt(rBtn, 'ซ่อมแซม (Gold ไม่พอ)'); setCls(rBtn, 'btn btn-locked'); rBtn.disabled = true;
+    }else{
+      setTxt(rBtn, 'ซ่อมแซม ('+repairCost.toLocaleString()+' Gold)'); setCls(rBtn, 'btn btn-warning'); rBtn.disabled = false;
+    }
+  }
   const aBtn = document.getElementById('auto-repair-btn');
   if(aBtn){
     setTxt(aBtn, gameData.autoRepair ? 'Auto: เปิด' : 'Auto: ปิด');
     setCls(aBtn, gameData.autoRepair ? 'btn btn-success' : 'btn btn-danger');
+  }
+
+  const repairKitBtn = document.getElementById('shop-repairkit-btn');
+  if(repairKitBtn){
+    const canRepairKit = gameData.durability < 100 && gameData.gold >= 200;
+    setCls(repairKitBtn, canRepairKit ? 'btn btn-success' : 'btn btn-locked');
+    repairKitBtn.disabled = !canRepairKit;
+  }
+  const mysteryBoxBtn = document.getElementById('shop-mysterybox-btn');
+  if(mysteryBoxBtn){
+    const canMysteryBox = gameData.gems >= 30;
+    setCls(mysteryBoxBtn, canMysteryBox ? 'btn btn-warning' : 'btn btn-locked');
+    mysteryBoxBtn.disabled = !canMysteryBox;
   }
 
   setText('inv2-gold', gameData.gold.toLocaleString());
@@ -2134,15 +2250,21 @@ function updateUI(){
     setText('inv-troop-swordsman', gameData.troops.swordsman);
     setText('inv-troop-knight', gameData.troops.knight);
   }
+  let marketPortfolioValue = 0, marketBestType = null, marketBestPct = -Infinity;
   MINE_TYPES.forEach(t=>{
     setText('inv-'+t, gameData[t].toLocaleString());
     setText('market-inv-'+t, gameData[t].toLocaleString());
+    setText('dash-ore-'+t, gameData[t].toLocaleString());
     setText('price-'+t, gameData.marketPrices[t].toLocaleString());
+    const stockValue = (gameData[t]||0) * (gameData.marketPrices[t]||0);
+    marketPortfolioValue += stockValue;
+    setText('market-value-'+t, stockValue.toLocaleString()+' Gold');
     const tr = document.getElementById('trend-'+t);
     if(tr){
       const pct = Math.round((gameData.marketMultipliers[t]-1)*100);
       setTxt(tr, (pct>0?'+':'')+pct+'%');
       setCls(tr, 'badge-trend ' + (pct>=0 ? 'trend-up' : 'trend-down'));
+      if(pct > marketBestPct){ marketBestPct = pct; marketBestType = t; }
     }
     setText(t+'-lvl', 'Lv.'+gameData.mines[t].level);
     setText(t+'-rate', getMineYield(t).toLocaleString());
@@ -2151,8 +2273,25 @@ function updateUI(){
     setText(t+'-up-bar', mineBarCost(t));
     setText(t+'-up-have', (gameData[MINE_UP_BAR[t].bar]||0).toLocaleString());
     setText(t+'-total', (gameData.totalMined[t]||0).toLocaleString());
+    const upBtn = document.getElementById(t+'-upgrade-btn');
+    if(upBtn){
+      const canUp = gameData.gold >= gameData.mines[t].cost && (gameData[MINE_UP_BAR[t].bar]||0) >= mineBarCost(t);
+      setCls(upBtn, canUp ? 'btn btn-warning' : 'btn btn-locked');
+      upBtn.disabled = !canUp;
+    }
     const mb = document.getElementById(t+'-manual-btn');
     if(mb) mb.disabled = gameData.level < MINE_CFG[t].reqLv;
+
+    if(t === MINE_TYPES[MINE_TYPES.length-1]){
+      setText('market-portfolio-value', marketPortfolioValue.toLocaleString()+' Gold');
+      setText('dash-ore-value', marketPortfolioValue.toLocaleString()+' Gold');
+      const nameMap = { iron:'แร่เหล็ก', silver:'แร่เงิน', goldOre:'แร่ทอง' };
+      const bestEl = document.getElementById('market-best-mover');
+      if(bestEl && marketBestType){
+        setTxt(bestEl, nameMap[marketBestType]+' ('+(marketBestPct>0?'+':'')+marketBestPct+'%)');
+        setCls(bestEl, 'badge-trend ' + (marketBestPct>=0 ? 'trend-up' : 'trend-down'));
+      }
+    }
 
     const btn = document.getElementById(t+'-mine-btn');
     const card = document.getElementById('card-'+t);
@@ -2175,6 +2314,15 @@ function updateUI(){
     setText('troop-guard-count', gameData.troops.guard);
     setText('troop-swordsman-count', gameData.troops.swordsman);
     setText('troop-knight-count', gameData.troops.knight);
+    ['guard','swordsman','knight'].forEach(tp=>{
+      const c = TRAIN_CFG[tp];
+      const trBtn = document.getElementById('train-'+tp+'-btn');
+      if(trBtn){
+        const canTrain = gameData.gold >= c.costGold && (gameData[c.ore]||0) >= c.qty && (gameData[c.bar]||0) >= c.barQty;
+        setCls(trBtn, canTrain ? c.btnCls : 'btn btn-locked');
+        trBtn.disabled = !canTrain;
+      }
+    });
   }
 
   const now = Date.now();
@@ -2183,10 +2331,15 @@ function updateUI(){
     const statusEl = document.getElementById('exp-status-' + cfg.label);
     const btnEl = document.getElementById('exp-btn-' + cfg.label);
     const exp = gameData.expeditions[key];
+    const troopHave = (gameData.troops && gameData.troops[cfg.reqType]) || 0;
+    const troopOk = troopHave >= cfg.reqNum;
     if(exp && exp.endTime > now){
       const remain = Math.ceil((exp.endTime - now)/1000);
       if(statusEl) setTxt(statusEl, 'สถานะ: กำลังสำรวจ (' + remain + ' วิ)');
       if(btnEl){ setTxt(btnEl, 'กำลังลุย...'); setCls(btnEl, 'btn btn-locked'); btnEl.disabled = true; }
+    }else if(!troopOk){
+      if(statusEl) setTxt(statusEl, 'สถานะ: กำลังพลไม่พอ');
+      if(btnEl){ setTxt(btnEl, '🔒 ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' '+cfg.reqNum+' นาย (มี '+troopHave+')'); setCls(btnEl, 'btn btn-locked'); btnEl.disabled = true; }
     }else{
       if(statusEl) setTxt(statusEl, 'สถานะ: พร้อมออกเดินทาง');
       if(btnEl){ setTxt(btnEl, 'ส่งกองทัพสำรวจ'); setCls(btnEl, 'btn btn-success'); btnEl.disabled = false; }
@@ -2215,10 +2368,13 @@ function updateUI(){
     }
     const b = document.getElementById('land-'+t+'-btn');
     if(b){
+      const resOk = !rc || (gameData[rc.res]||0) >= landResCost(t);
       if(gameData.level < cfg.reqLv){
         setTxt(b, 'ต้องการ Lv.'+cfg.reqLv); setCls(b, 'btn btn-locked'); b.disabled = true;
       }else if(lv >= LAND_MAX_LEVEL){
         setTxt(b, 'เต็มระดับสูงสุด'); setCls(b, 'btn btn-locked'); b.disabled = true;
+      }else if(gameData.gold < cost || !resOk){
+        setTxt(b, 'Gold/วัตถุดิบไม่พอ'); setCls(b, 'btn btn-locked'); b.disabled = true;
       }else{
         setTxt(b, lv === 0 ? (LAND_BUY_LABEL[t] || 'ซื้อที่ดิน') : 'อัปเกรดที่ดิน'); setCls(b, 'btn btn-success'); b.disabled = false;
       }
@@ -2226,7 +2382,9 @@ function updateUI(){
   });
   setText('land-total-income', landTotal5s.toLocaleString()+' Gold / 5 วิ');
   setText('land-total-hour', Math.round(landTotal5s*720).toLocaleString()+' Gold / ชม.');
+  setText('dash-land-income', Math.round(landTotal5s*720).toLocaleString()+' Gold');
 
+  const EQUIP_BTN_CLASS = { pickaxe:'btn btn-warning', helmet:'btn btn-success', armor:'btn btn-success' };
   EQUIP_TYPES.forEach(t=>{
     setText('eq-'+t+'-lvl', gameData.equipment[t].level);
     setText('eq-'+t+'-cost', gameData.equipment[t].cost.toLocaleString());
@@ -2234,6 +2392,14 @@ function updateUI(){
     setText('eq-'+t+'-barhave', gameData[EQUIP_CFG[t].barType] || 0);
     setText('eq-'+t+'-orecost', equipOreCost(t).toLocaleString());
     setText('eq-'+t+'-orehave', (gameData[EQUIP_CFG[t].oreType] || 0).toLocaleString());
+    const eqBtn = document.getElementById('eq-'+t+'-upgrade-btn');
+    if(eqBtn){
+      const eCfg = EQUIP_CFG[t];
+      const currencyOk = eCfg.currency === 'gems' ? gameData.gems >= gameData.equipment[t].cost : gameData.gold >= gameData.equipment[t].cost;
+      const canEq = currencyOk && (gameData[eCfg.barType]||0) >= equipBarCost(t) && (gameData[eCfg.oreType]||0) >= equipOreCost(t);
+      setCls(eqBtn, canEq ? EQUIP_BTN_CLASS[t] : 'btn btn-locked');
+      eqBtn.disabled = !canEq;
+    }
   });
 
   SMELT_TYPES.forEach(t=>{
