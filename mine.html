@@ -2,8 +2,8 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mine & Craft Economy - Web Worker Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mine & Craft Economy - VWAP Market Edition</title>
     <style>
         :root {
             --bg-body: #07090e;
@@ -18,14 +18,14 @@
             --danger: #ef4444;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -52,11 +52,17 @@
             z-index: 1000;
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            will-change: width, transform;
+        }
+
+        aside.collapsed {
+            width: 0 !important;
+            min-width: 0 !important;
+            border-right: none;
+            opacity: 0;
         }
 
         .brand {
-            padding: 20px 16px;
+            padding: calc(20px + env(safe-area-inset-top)) 16px 20px 16px;
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-main);
@@ -75,13 +81,12 @@
             font-size: 1.2rem;
             cursor: pointer;
             display: none;
-            transition: var(--transition-smooth);
         }
-        .close-sidebar:hover { color: var(--text-main); }
 
         .menu-list {
             list-style: none;
             padding: 12px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -102,14 +107,12 @@
             align-items: center;
             gap: 12px;
             border: 1px solid transparent;
-            will-change: background-color, transform;
         }
 
         .menu-item:hover {
             background-color: var(--bg-card-hover);
             color: var(--text-main);
             border-color: var(--border);
-            transform: translateX(3px);
         }
 
         .menu-item.active {
@@ -136,10 +139,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: max(10px, env(safe-area-inset-top));
-            padding-bottom: 10px;
-            padding-left: max(16px, env(safe-area-inset-left));
-            padding-right: max(16px, env(safe-area-inset-right));
+            padding: max(10px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left));
             gap: 10px;
         }
 
@@ -184,7 +184,6 @@
             align-items: center;
             gap: 6px;
             white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
         .stat-badge span { color: var(--accent); }
@@ -197,15 +196,16 @@
             padding-right: max(16px, env(safe-area-inset-right));
             overflow-y: auto;
             background: radial-gradient(circle at top right, #0f172a 0%, var(--bg-body) 70%);
+            -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
         }
 
-        .tab-content { display: none; will-change: opacity, transform; }
-        .tab-content.active { display: block; animation: smoothFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
+        .tab-content { display: none; animation: smoothFadeIn 0.3s ease forwards; }
+        .tab-content.active { display: block; }
+        
         @keyframes smoothFadeIn {
-            0% { opacity: 0; transform: translateY(8px) scale(0.99); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
@@ -220,11 +220,6 @@
             position: relative;
             overflow: hidden;
             transition: var(--transition-smooth);
-            will-change: transform, box-shadow, border-color;
-        }
-        .card:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .card h3 {
@@ -266,7 +261,7 @@
             font-weight: bold;
             font-size: 0.95rem;
             pointer-events: none;
-            animation: floatUpSmooth 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: floatUpSmooth 0.9s ease-out forwards;
             z-index: 50;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
         }
@@ -282,7 +277,6 @@
             font-size: 0.85rem;
             resize: none;
             outline: none;
-            transition: var(--transition-smooth);
         }
         .text-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
 
@@ -303,7 +297,6 @@
             width: 100%;
             touch-action: manipulation;
             transition: var(--transition-smooth);
-            will-change: transform, background-color;
         }
 
         .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
@@ -311,14 +304,13 @@
         .btn-success { background-color: var(--success); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
         .btn-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: none; }
         .btn-warning { background-color: var(--accent); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
-        .btn:disabled { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border); cursor: not-allowed; box-shadow: none; transform: none; filter: none; }
 
         .btn-row { display: flex; gap: 6px; margin-top: 6px; }
         .btn-row .btn { margin-top: 0; flex: 1; }
 
         .progress-bar-container { background: var(--bg-body); border-radius: 6px; height: 8px; width: 100%; border: 1px solid var(--border); overflow: hidden; margin-bottom: 10px; }
-        .progress-bar { background: linear-gradient(90deg, #059669, var(--success)); height: 100%; width: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .mining-progress { background: linear-gradient(90deg, #2563eb, var(--primary)); height: 100%; width: 0%; transition: width 0.1s linear; will-change: width; }
+        .progress-bar { background: linear-gradient(90deg, #059669, var(--success)); height: 100%; width: 100%; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mining-progress { background: linear-gradient(90deg, #2563eb, var(--primary)); height: 100%; width: 0%; display: block; will-change: width; }
 
         #toast-box {
             position: absolute;
@@ -339,13 +331,14 @@
             border-radius: 10px;
             font-size: 0.85rem;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1), toastFadeOut 0.3s ease 2.5s forwards;
             pointer-events: auto;
-            will-change: transform, opacity;
+            animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes toastSlideIn { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
-        @keyframes toastFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%) scale(0.9); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
 
         .sidebar-overlay {
             position: fixed;
@@ -354,9 +347,33 @@
             backdrop-filter: blur(4px);
             z-index: 999;
             display: none;
-            transition: var(--transition-smooth);
         }
         .sidebar-overlay.show { display: block; }
+
+        #reset-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.2s ease;
+        }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--danger);
+            border-radius: 14px;
+            padding: 24px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        }
 
         .badge-trend { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .trend-up { background: rgba(16, 185, 129, 0.2); color: var(--success); }
@@ -364,26 +381,27 @@
 
         .market-chart-mini { width: 100%; height: 110px; background: #07090e; border-radius: 6px; border: 1px solid var(--border); display: block; margin-bottom: 12px; }
 
-        @media (min-width: 768px) {
-            .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .close-sidebar { display: none !important; }
-            .stat-badge { font-size: 0.85rem; padding: 6px 12px; }
-            .content-viewport { padding: 24px; }
-            .market-chart-mini { height: 90px; }
-        }
-
         @media (max-width: 767px) {
             .close-sidebar { display: block; }
             aside {
                 position: fixed;
                 top: 0; left: 0;
-                transform: translateX(0);
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-                padding-left: env(safe-area-inset-left);
+                width: 260px !important;
+                min-width: 260px !important;
+                transform: translateX(-100%);
+                height: 100%;
             }
-            aside.collapsed { transform: translateX(-100%); }
+            aside.mobile-show {
+                transform: translateX(0) !important;
+                opacity: 1 !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .close-sidebar { display: none !important; }
+            .market-chart-mini { height: 90px; }
         }
     </style>
 </head>
@@ -391,6 +409,17 @@
 
     <div id="toast-box"></div>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div id="reset-modal">
+        <div class="modal-content">
+            <h3 style="color: var(--danger); margin-bottom: 12px; font-size: 1.15rem;">⚠️ ยืนยันการล้างข้อมูล</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5;">ข้อมูลการเล่น Gold, แร่, เลเวล และความก้าวหน้าทั้งหมดจะถูกลบและเริ่มต้นใหม่ทันที ไม่สามารถกู้คืนได้!</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" style="background: var(--border); color: var(--text-main); flex: 1;" onclick="closeResetModal()">ยกเลิก</button>
+                <button class="btn" style="background: var(--danger); color: white; flex: 1; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);" onclick="executeResetGame()">ยืนยันล้างข้อมูล</button>
+            </div>
+        </div>
+    </div>
 
     <aside id="sidebar">
         <div class="brand">
@@ -418,7 +447,7 @@
             </div>
         </header>
 
-        <div class="content-viewport">
+        <div class="content-viewport" id="main-viewport">
             
             <div id="dashboard" class="tab-content active">
                 <div class="grid-2">
@@ -449,7 +478,7 @@
                             <button class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรด</button>
                             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-iron" class="mining-progress"></div></div>
+                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-iron" class="mining-progress" style="width: 0%;"></div></div>
                     </div>
 
                     <div id="card-silver" class="card">
@@ -459,7 +488,7 @@
                             <button class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรด</button>
                             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-silver" class="mining-progress"></div></div>
+                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-silver" class="mining-progress" style="width: 0%;"></div></div>
                     </div>
 
                     <div id="card-goldOre" class="card">
@@ -469,17 +498,17 @@
                             <button class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรด</button>
                             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
                         </div>
-                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-goldOre" class="mining-progress"></div></div>
+                        <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 0;"><div id="bar-goldOre" class="mining-progress" style="width: 0%;"></div></div>
                     </div>
                 </div>
             </div>
 
             <div id="market" class="tab-content">
-                <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">🛒 กระดานซื้อขายแร่ & กราฟเรียลไทม์</h2>
+                <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">🛒 กระดานซื้อขายแร่ & กราฟเรียลไทม์ (VWAP Model)</h2>
                 <div class="grid-3" style="margin-bottom: 24px;">
                     
                     <div class="card">
-                        <h3>🔹 แร่เหล็ก <span id="trend-iron" class="badge-trend trend-up">1.0x</span></h3>
+                        <h3>🔹 แร่เหล็ก <span id="trend-iron" class="badge-trend trend-up">0%</span></h3>
                         <canvas id="chart-iron" class="market-chart-mini"></canvas>
                         <p>มีในคลัง: <span id="market-inv-iron" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>ราคาปัจจุบัน: <b id="price-iron" style="color:var(--accent);">5</b> Gold</p>
                         <div class="btn-row">
@@ -493,7 +522,7 @@
                     </div>
 
                     <div class="card">
-                        <h3>🥈 แร่เงิน <span id="trend-silver" class="badge-trend trend-up">1.0x</span></h3>
+                        <h3>🥈 แร่เงิน <span id="trend-silver" class="badge-trend trend-up">0%</span></h3>
                         <canvas id="chart-silver" class="market-chart-mini"></canvas>
                         <p>มีในคลัง: <span id="market-inv-silver" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>ราคาปัจจุบัน: <b id="price-silver" style="color:var(--accent);">15</b> Gold</p>
                         <div class="btn-row">
@@ -507,7 +536,7 @@
                     </div>
 
                     <div class="card">
-                        <h3>🥇 แร่ทอง <span id="trend-goldOre" class="badge-trend trend-up">1.0x</span></h3>
+                        <h3>🥇 แร่ทอง <span id="trend-goldOre" class="badge-trend trend-up">0%</span></h3>
                         <canvas id="chart-goldOre" class="market-chart-mini"></canvas>
                         <p>มีในคลัง: <span id="market-inv-goldOre" style="color: var(--success); font-weight: bold;">0</span> ชิ้น<br>ราคาปัจจุบัน: <b id="price-goldOre" style="color:var(--accent);">40</b> Gold</p>
                         <div class="btn-row">
@@ -621,77 +650,109 @@
         };
 
         let gameData = JSON.parse(JSON.stringify(defaultGameData));
-        let backgroundWorker = null;
         let actionLocked = false;
-        let miningProgressUI = { iron: 0, silver: 0, goldOre: 0 };
-
-        // สร้าง Web Worker ผ่าน Blob เพื่อรันเบื้องหลังแบบไม่โดนเบราว์เซอร์หน่วงเวลา
-        function initBackgroundWorker() {
-            const workerCode = `
-                let timerId = null;
-                self.onmessage = function(e) {
-                    if (e.data === 'start') {
-                        if (timerId) clearInterval(timerId);
-                        timerId = setInterval(() => {
-                            self.postMessage('tick');
-                        }, 100);
-                    } else if (e.data === 'stop') {
-                        if (timerId) clearInterval(timerId);
-                    }
-                };
-            `;
-            const blob = new Blob([workerCode], { type: 'application/javascript' });
-            backgroundWorker = new Worker(URL.createObjectURL(blob));
-            
-            backgroundWorker.onmessage = function(e) {
-                if (e.data === 'tick') {
-                    processGameTick();
-                }
-            };
-            backgroundWorker.postMessage('start');
-        }
+        let miningProgress = { iron: 0, silver: 0, goldOre: 0 };
+        let lastFrameTime = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+        const mineTypes = ['iron', 'silver', 'goldOre'];
+        let backupSaveCounter = 0;
 
         window.onload = function() {
             try {
-                if (window.innerWidth < 768) {
-                    let sidebar = document.getElementById('sidebar');
-                    if (sidebar) sidebar.classList.add('collapsed');
-                }
                 loadGame();
-                initBackgroundWorker();
 
                 setInterval(updateMarketPricesRealtime, 4000);
-                setInterval(autoSaveGame, 15000);
+                setInterval(function() { autoSaveGame(false); }, 15000);
 
-                window.addEventListener("beforeunload", autoSaveGame);
-                
                 document.addEventListener("visibilitychange", function() {
                     if (document.hidden) {
-                        autoSaveGame();
+                        autoSaveGame(true);
                     } else {
                         calcOfflineProgress();
                     }
                 });
 
-                window.addEventListener("resize", () => {
+                window.addEventListener("resize", function() {
                     let marketTab = document.getElementById('market');
                     if (marketTab && marketTab.classList.contains('active')) {
                         drawAllMarketCharts();
                     }
                 });
+
+                const requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) { return window.setTimeout(callback, 1000 / 60); };
+                
+                function universalGameLoop(currentTime) {
+                    let now = currentTime || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+                    let deltaTime = (now - lastFrameTime) / 1000;
+                    if (!isFinite(deltaTime) || deltaTime > 0.1 || deltaTime < 0) deltaTime = 0.016;
+                    lastFrameTime = now;
+
+                    updateMiningProgress(deltaTime);
+                    requestAnimFrame(universalGameLoop);
+                }
+                requestAnimFrame(universalGameLoop);
+
             } catch (err) {
                 console.error("Game initialization error:", err);
             }
         };
 
-        window.onunload = function() {
-            if (backgroundWorker) backgroundWorker.terminate();
-        };
+        function updateMiningProgress(dt) {
+            checkAutoRepair();
+            let needsUIUpdate = false;
+
+            mineTypes.forEach(function(type) {
+                let mineObj = gameData.mines[type];
+                let progressBar = document.getElementById(`bar-${type}`);
+                
+                if (!mineObj || !mineObj.active) {
+                    if (miningProgress[type] > 0) {
+                        miningProgress[type] = 0;
+                        if (progressBar) progressBar.style.width = '0%';
+                    }
+                    return;
+                }
+
+                let totalSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
+                let percentPerSec = (1 / totalSeconds) * 100;
+                miningProgress[type] += percentPerSec * dt;
+
+                if (miningProgress[type] >= 100) {
+                    miningProgress[type] = 0;
+                    
+                    if (!consumeDurability(2)) {
+                        mineObj.active = false;
+                        showToast("ความทนทานหมดและ Gold ไม่พอซ่อม! เหมืองหยุดทำงาน");
+                        needsUIUpdate = true;
+                        return;
+                    }
+
+                    let isFailed = Math.random() < 0.07;
+                    if (isFailed) {
+                        showFloatingReward(type, "❌ พลาด!", true);
+                    } else {
+                        let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
+                        let totalYield = baseYield * mineObj.level;
+                        gameData[type] += totalYield;
+                        showFloatingReward(type, `+${totalYield.toLocaleString()}`, false);
+                        addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level);
+                    }
+                    needsUIUpdate = true;
+                }
+
+                if (progressBar) {
+                    progressBar.style.width = Math.min(100, Math.max(0, miningProgress[type])) + '%';
+                }
+            });
+
+            if (needsUIUpdate) {
+                updateUI();
+            }
+        }
 
         function debounceAction(callback) {
             if (actionLocked) return false;
             actionLocked = true;
-            setTimeout(() => { actionLocked = false; }, 250);
+            setTimeout(function() { actionLocked = false; }, 250);
             callback();
             return true;
         }
@@ -703,93 +764,120 @@
             t.className = 'toast';
             t.innerText = message;
             box.appendChild(t);
-            setTimeout(() => { if (t && t.parentNode) t.remove(); }, 2800);
+            setTimeout(function() { if (t && t.parentNode) t.remove(); }, 2800);
         }
 
-        function showFloatingReward(type, text, isFailure = false) {
+        function showFloatingReward(type, text, isFailure) {
             let card = document.getElementById(`card-${type}`);
             if (!card) return;
             let el = document.createElement('div');
             el.className = isFailure ? 'floating-reward failure' : 'floating-reward';
             el.innerText = text;
             card.appendChild(el);
-            setTimeout(() => { if (el && el.parentNode) el.remove(); }, 900);
+            setTimeout(function() { if (el && el.parentNode) el.remove(); }, 900);
         }
 
         function toggleSidebar() { 
             let sidebar = document.getElementById('sidebar');
             let overlay = document.getElementById('sidebar-overlay');
             if (!sidebar) return;
-            sidebar.classList.toggle('collapsed');
+
             if (window.innerWidth < 768) {
-                if (sidebar.classList.contains('collapsed')) {
-                    if (overlay) overlay.classList.remove('show');
-                } else {
+                sidebar.classList.toggle('mobile-show');
+                if (sidebar.classList.contains('mobile-show')) {
                     if (overlay) overlay.classList.add('show');
+                } else {
+                    if (overlay) overlay.classList.remove('show');
                 }
+            } else {
+                sidebar.classList.toggle('collapsed');
+                setTimeout(function() {
+                    let marketTab = document.getElementById('market');
+                    if (marketTab && marketTab.classList.contains('active')) {
+                        drawAllMarketCharts();
+                    }
+                }, 300);
             }
         }
 
         function closeSidebar() {
             let sidebar = document.getElementById('sidebar');
             let overlay = document.getElementById('sidebar-overlay');
-            if (sidebar) sidebar.classList.add('collapsed');
+            if (sidebar) {
+                sidebar.classList.remove('mobile-show');
+            }
             if (overlay) overlay.classList.remove('show');
         }
 
         function switchTab(event, tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            let tabs = document.querySelectorAll('.tab-content');
+            for (let i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+            
+            let menuItems = document.querySelectorAll('.menu-item');
+            for (let i = 0; i < menuItems.length; i++) { menuItems[i].classList.remove('active'); }
             
             let targetTab = document.getElementById(tabId);
             if (targetTab) targetTab.classList.add('active');
 
+            let viewport = document.getElementById('main-viewport');
+            if (viewport) viewport.scrollTop = 0;
+
             if (event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             } else {
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    let onclickAttr = item.getAttribute('onclick');
-                    if (onclickAttr && onclickAttr.includes(tabId)) {
-                        item.classList.add('active');
+                let items = document.querySelectorAll('.menu-item');
+                for (let i = 0; i < items.length; i++) {
+                    let onclickAttr = items[i].getAttribute('onclick');
+                    if (onclickAttr && onclickAttr.indexOf(tabId) !== -1) {
+                        items[i].classList.add('active');
                     }
-                });
+                }
             }
 
             if (tabId === 'market') {
-                setTimeout(drawAllMarketCharts, 50);
+                setTimeout(drawAllMarketCharts, 20);
             }
 
-            if (window.innerWidth < 768) {
-                closeSidebar();
-            }
+            closeSidebar();
         }
 
         function safeBtoa(str) {
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-                return String.fromCharCode('0x' + p1);
-            }));
+            try {
+                return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
+            } catch (e) { return ''; }
         }
 
         function safeAtob(b64) {
-            return decodeURIComponent(Array.prototype.map.call(atob(b64), function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+            try {
+                return decodeURIComponent(Array.prototype.map.call(atob(b64), function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            } catch (e) { return '{}'; }
         }
 
         function manualSaveGame() {
-            debounceAction(() => {
-                autoSaveGame();
+            debounceAction(function() {
+                autoSaveGame(true);
                 showToast("💾 บันทึกเกมสำเร็จเรียบร้อยแล้ว!");
             });
         }
 
-        function autoSaveGame() {
+        function autoSaveGame(forceBackup) {
             try { 
                 sanitizeData();
                 gameData.lastSaveTime = Date.now();
                 let dataStr = JSON.stringify(gameData);
+                
                 localStorage.setItem('mineCraftPrimarySave', dataStr);
-                localStorage.setItem('mineCraftBackupSave', dataStr); 
+                
+                backupSaveCounter++;
+                if (backupSaveCounter >= 20 || forceBackup) {
+                    localStorage.setItem('mineCraftBackupSave', dataStr); 
+                    backupSaveCounter = 0;
+                }
+
                 let saveText = document.getElementById('last-save-text');
                 if (saveText) {
                     let d = new Date();
@@ -801,7 +889,7 @@
         }
 
         function downloadSaveFile() {
-            autoSaveGame();
+            autoSaveGame(true);
             let dataStr = JSON.stringify(gameData, null, 2);
             let blob = new Blob([dataStr], { type: 'application/json' });
             let url = URL.createObjectURL(blob);
@@ -824,7 +912,7 @@
                     let decoded = JSON.parse(e.target.result);
                     if (decoded && typeof decoded === 'object') {
                         gameData = decoded;
-                        autoSaveGame();
+                        autoSaveGame(true);
                         alert("กู้คืนข้อมูลจากไฟล์สำเร็จ!");
                         location.reload();
                     } else { alert("ไฟล์เซฟไม่ถูกต้อง"); }
@@ -835,7 +923,7 @@
         }
 
         function exportSaveCode() {
-            autoSaveGame();
+            autoSaveGame(true);
             try {
                 let code = safeBtoa(JSON.stringify(gameData));
                 let textBox = document.getElementById('export-code-box');
@@ -843,8 +931,10 @@
                     textBox.value = code;
                     textBox.select();
                 }
-                navigator.clipboard.writeText(code);
-                showToast("คัดลอกโค้ดเซฟลงคลิปบอร์ดแล้ว!");
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code);
+                }
+                showToast("สร้างและคัดลอกโค้ดเซฟแล้ว!");
             } catch (e) { alert("เกิดข้อผิดพลาดในการสร้างโค้ดเซฟ"); }
         }
 
@@ -857,7 +947,7 @@
                 let decoded = JSON.parse(safeAtob(code));
                 if (decoded && typeof decoded === 'object') {
                     gameData = decoded;
-                    autoSaveGame();
+                    autoSaveGame(true);
                     alert("กู้คืนข้อมูลสำเร็จ!");
                     location.reload();
                 } else { alert("โค้ดไม่ถูกต้อง"); }
@@ -865,11 +955,19 @@
         }
 
         function resetGame() {
-            if (confirm("ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?")) {
-                localStorage.removeItem('mineCraftPrimarySave');
-                localStorage.removeItem('mineCraftBackupSave');
-                location.reload();
-            }
+            let modal = document.getElementById('reset-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeResetModal() {
+            let modal = document.getElementById('reset-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function executeResetGame() {
+            localStorage.removeItem('mineCraftPrimarySave');
+            localStorage.removeItem('mineCraftBackupSave');
+            location.reload();
         }
 
         function sanitizeData() {
@@ -886,17 +984,41 @@
 
             if (!gameData.marketPrices || typeof gameData.marketPrices !== 'object') {
                 gameData.marketPrices = { iron: 5, silver: 15, goldOre: 40 };
+            } else {
+                mineTypes.forEach(function(type) {
+                    gameData.marketPrices[type] = Number(gameData.marketPrices[type]) || (type === 'iron' ? 5 : type === 'silver' ? 15 : 40);
+                });
             }
+
             if (!gameData.marketMultipliers || typeof gameData.marketMultipliers !== 'object') {
                 gameData.marketMultipliers = { iron: 1.0, silver: 1.0, goldOre: 1.0 };
             }
+
             if (!gameData.priceHistory || typeof gameData.priceHistory !== 'object') {
-                gameData.priceHistory = { iron: [5], silver: [15], goldOre: [40] };
+                gameData.priceHistory = { 
+                    iron: [gameData.marketPrices.iron], 
+                    silver: [gameData.marketPrices.silver], 
+                    goldOre: [gameData.marketPrices.goldOre] 
+                };
+            } else {
+                mineTypes.forEach(function(type) {
+                    if (!Array.isArray(gameData.priceHistory[type]) || gameData.priceHistory[type].length === 0) {
+                        gameData.priceHistory[type] = [gameData.marketPrices[type]];
+                    } else {
+                        gameData.priceHistory[type] = gameData.priceHistory[type]
+                            .map(v => Number(v))
+                            .filter(v => !isNaN(v));
+                        if (gameData.priceHistory[type].length === 0) {
+                            gameData.priceHistory[type] = [gameData.marketPrices[type]];
+                        }
+                    }
+                });
             }
+
             if (!gameData.mines || typeof gameData.mines !== 'object') {
                 gameData.mines = JSON.parse(JSON.stringify(defaultGameData.mines));
             } else {
-                ['iron', 'silver', 'goldOre'].forEach(type => {
+                mineTypes.forEach(function(type) {
                     if (!gameData.mines[type]) {
                         gameData.mines[type] = { level: 1, cost: type === 'iron' ? 500 : (type === 'silver' ? 1200 : 3000), active: false };
                     } else {
@@ -915,18 +1037,24 @@
                 goldOre: { min: 20, max: 200, base: 40 }
             };
 
-            ['iron', 'silver', 'goldOre'].forEach(type => {
+            mineTypes.forEach(function(type) {
                 let current = gameData.marketPrices[type];
-                let changePercent = (Math.random() * 0.16 - 0.075);
-                let newPrice = Math.round(current * (1 + changePercent));
+                let base = limits[type].base;
+                
+                let changePercent = (Math.random() * 0.22 - 0.1);
+                
+                if (current < base) {
+                    let deficitRatio = (base - current) / base;
+                    changePercent += deficitRatio * 0.15; 
+                }
 
+                let newPrice = Math.round(current * (1 + changePercent));
                 if (newPrice < limits[type].min) newPrice = limits[type].min;
                 if (newPrice > limits[type].max) newPrice = limits[type].max;
 
                 gameData.marketPrices[type] = newPrice;
-                gameData.marketMultipliers[type] = parseFloat((newPrice / limits[type].base).toFixed(2));
+                gameData.marketMultipliers[type] = parseFloat((newPrice / base).toFixed(2));
 
-                if (!gameData.priceHistory) gameData.priceHistory = { iron: [], silver: [], goldOre: [] };
                 if (!gameData.priceHistory[type]) gameData.priceHistory[type] = [];
                 gameData.priceHistory[type].push(newPrice);
                 if (gameData.priceHistory[type].length > 20) {
@@ -953,7 +1081,9 @@
             
             let displayWidth = canvas.clientWidth;
             let displayHeight = canvas.clientHeight;
-            if (displayWidth === 0 || displayHeight === 0) return;
+            
+            if (displayWidth === 0) displayWidth = 280;
+            if (displayHeight === 0) displayHeight = 90;
 
             if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
                 canvas.width = displayWidth;
@@ -965,16 +1095,24 @@
             let h = canvas.height;
             ctx.clearRect(0, 0, w, h);
 
+            if (!Array.isArray(data) || data.length === 0) data = [5, 5];
+            data = data.map(v => Number(v)).filter(v => !isNaN(v));
+            if (data.length === 0) data = [5, 5];
             if (data.length < 2) data = [data[0], data[0]];
 
-            let minVal = Math.min(...data);
-            let maxVal = Math.max(...data);
-            if (minVal === maxVal) { minVal -= 3; maxVal += 3; }
+            let minVal = Math.min.apply(null, data);
+            let maxVal = Math.max.apply(null, data);
+            
+            if (minVal === maxVal) { 
+                minVal = Math.max(0, minVal - 2); 
+                maxVal += 2; 
+            }
             let range = maxVal - minVal;
+            if (range <= 0) range = 1;
 
             let pad = 15;
-            let chartW = w - pad * 2;
-            let chartH = h - pad * 2;
+            let chartW = Math.max(10, w - pad * 2);
+            let chartH = Math.max(10, h - pad * 2);
 
             function getX(idx, total) {
                 return pad + (idx / Math.max(1, total - 1)) * chartW;
@@ -985,15 +1123,15 @@
 
             ctx.strokeStyle = '#1e293b';
             ctx.lineWidth = 1;
-            ctx.setLineDash([2, 2]);
+            if (ctx.setLineDash) ctx.setLineDash([2, 2]);
             ctx.beginPath();
             ctx.moveTo(pad, pad + chartH / 2);
             ctx.lineTo(w - pad, pad + chartH / 2);
             ctx.stroke();
-            ctx.setLineDash([]);
+            if (ctx.setLineDash) ctx.setLineDash([]);
 
             ctx.beginPath();
-            data.forEach((val, idx) => {
+            data.forEach(function(val, idx) {
                 let x = getX(idx, data.length);
                 let y = getY(val);
                 if (idx === 0) ctx.moveTo(x, y);
@@ -1011,19 +1149,16 @@
 
             ctx.strokeStyle = lineColor;
             ctx.lineWidth = 2.5;
-            ctx.shadowColor = lineColor;
-            ctx.shadowBlur = 6;
             ctx.beginPath();
-            data.forEach((val, idx) => {
+            data.forEach(function(val, idx) {
                 let x = getX(idx, data.length);
                 let y = getY(val);
                 if (idx === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             });
             ctx.stroke();
-            ctx.shadowBlur = 0;
 
-            data.forEach((val, idx) => {
+            data.forEach(function(val, idx) {
                 let x = getX(idx, data.length);
                 let y = getY(val);
                 ctx.fillStyle = '#07090e';
@@ -1109,11 +1244,11 @@
             let processSec = Math.min(elapsedSec, 12 * 3600);
             let summaryGains = { iron: 0, silver: 0, goldOre: 0 };
             
-            let activeTypes = ['iron', 'silver', 'goldOre'].filter(type => gameData.mines[type].active);
+            let activeTypes = mineTypes.filter(function(type) { return gameData.mines[type].active; });
             if (activeTypes.length === 0 || gameData.durability <= 0) return;
 
             let mineProgress = {};
-            activeTypes.forEach(type => {
+            activeTypes.forEach(function(type) {
                 mineProgress[type] = {
                     elapsed: 0,
                     interval: type === 'iron' ? 5 : (type === 'silver' ? 6 : 8),
@@ -1136,7 +1271,7 @@
                 }
 
                 let minedThisSecond = false;
-                activeTypes.forEach(type => {
+                activeTypes.forEach(function(type) {
                     let mp = mineProgress[type];
                     mp.elapsed += 1;
                     if (mp.elapsed >= mp.interval) {
@@ -1162,7 +1297,7 @@
             }
 
             if (gameData.durability <= 0) {
-                activeTypes.forEach(type => {
+                activeTypes.forEach(function(type) {
                     gameData.mines[type].active = false;
                 });
             }
@@ -1177,56 +1312,16 @@
             }
         }
 
-        // ประมวลผลรอบเวลาผ่าน Web Worker (รันต่อเนื่องแม้เปิดแท็บอื่น)
-        function processGameTick() {
-            checkAutoRepair();
-            
-            ['iron', 'silver', 'goldOre'].forEach(type => {
-                let mineObj = gameData.mines[type];
-                if (!mineObj.active) return;
-
-                let totalSeconds = type === 'iron' ? 5 : (type === 'silver' ? 6 : 8);
-                let step = (0.1 / totalSeconds) * 100;
-
-                miningProgressUI[type] += step;
-                if (miningProgressUI[type] >= 100) {
-                    miningProgressUI[type] = 0;
-                    
-                    if (!consumeDurability(2)) {
-                        mineObj.active = false;
-                        showToast("ความทนทานหมดและ Gold ไม่พอซ่อม! เหมืองหยุดทำงาน");
-                        updateUI();
-                        return;
-                    }
-
-                    let isFailed = Math.random() < 0.07;
-                    if (isFailed) {
-                        showFloatingReward(type, "❌ พลาด!", true);
-                    } else {
-                        let baseYield = type === 'iron' ? 20 : (type === 'silver' ? 10 : 5);
-                        let totalYield = baseYield * mineObj.level;
-                        gameData[type] += totalYield;
-                        showFloatingReward(type, `+${totalYield}`, false);
-                        addXP((type === 'iron' ? 5 : (type === 'silver' ? 12 : 25)) * mineObj.level);
-                    }
-                }
-                
-                let progressBar = document.getElementById(`bar-${type}`);
-                if (progressBar) progressBar.style.width = miningProgressUI[type] + '%';
-            });
-            updateUI();
-        }
-
         function loadGame() {
             try {
-                const saved = localStorage.getItem('mineCraftPrimarySave') || localStorage.getItem('mineCraftBackupSave');
+                let saved = localStorage.getItem('mineCraftPrimarySave') || localStorage.getItem('mineCraftBackupSave');
                 if (saved) {
                     let parsed = JSON.parse(saved);
                     if (parsed && typeof parsed === 'object') gameData = parsed;
                 }
             } catch (e) {
                 try {
-                    const backup = localStorage.getItem('mineCraftBackupSave');
+                    let backup = localStorage.getItem('mineCraftBackupSave');
                     if (backup) gameData = JSON.parse(backup);
                 } catch (err) {
                     localStorage.removeItem('mineCraftPrimarySave');
@@ -1237,7 +1332,7 @@
             calcOfflineProgress();
             
             gameData.lastSaveTime = Date.now();
-            autoSaveGame();
+            autoSaveGame(true);
             updateUI();
         }
 
@@ -1302,14 +1397,16 @@
             let mktGold = document.getElementById('market-inv-goldOre');
             if (mktGold) mktGold.innerText = gameData.goldOre.toLocaleString();
 
-            ['iron', 'silver', 'goldOre'].forEach(type => {
+            mineTypes.forEach(function(type) {
                 let priceEl = document.getElementById(`price-${type}`);
-                if (priceEl) priceEl.innerText = gameData.marketPrices[type];
+                if (priceEl) priceEl.innerText = gameData.marketPrices[type].toLocaleString();
 
                 let trendEl = document.getElementById(`trend-${type}`);
                 if (trendEl) {
                     let mult = gameData.marketMultipliers[type];
-                    trendEl.innerText = mult + 'x';
+                    let percent = Math.round((mult - 1) * 100);
+                    let sign = percent > 0 ? '+' : '';
+                    trendEl.innerText = `${sign}${percent}%`;
                     trendEl.className = mult >= 1.0 ? 'badge-trend trend-up' : 'badge-trend trend-down';
                 }
             });
@@ -1322,7 +1419,7 @@
             if (elIronLvl) elIronLvl.innerText = `Lv.${ironLv}`;
 
             let elIronRate = document.getElementById('iron-rate');
-            if (elIronRate) elIronRate.innerText = 20 * ironLv;
+            if (elIronRate) elIronRate.innerText = (20 * ironLv).toLocaleString();
 
             let elIronCost = document.getElementById('iron-up-cost');
             if (elIronCost) elIronCost.innerText = gameData.mines.iron.cost.toLocaleString();
@@ -1331,7 +1428,7 @@
             if (elSilverLvl) elSilverLvl.innerText = `Lv.${silverLv}`;
 
             let elSilverRate = document.getElementById('silver-rate');
-            if (elSilverRate) elSilverRate.innerText = 10 * silverLv;
+            if (elSilverRate) elSilverRate.innerText = (10 * silverLv).toLocaleString();
 
             let elSilverCost = document.getElementById('silver-up-cost');
             if (elSilverCost) elSilverCost.innerText = gameData.mines.silver.cost.toLocaleString();
@@ -1340,7 +1437,7 @@
             if (elGoldMineLvl) elGoldMineLvl.innerText = `Lv.${goldLv}`;
 
             let elGoldRate = document.getElementById('goldOre-rate');
-            if (elGoldRate) elGoldRate.innerText = 5 * goldLv;
+            if (elGoldRate) elGoldRate.innerText = (5 * goldLv).toLocaleString();
 
             let elGoldCost = document.getElementById('gold-mine-up-cost');
             if (elGoldCost) elGoldCost.innerText = gameData.mines.goldOre.cost.toLocaleString();
@@ -1348,13 +1445,13 @@
             let elDurVal = document.getElementById('durability-val');
             if (elDurVal) elDurVal.innerText = Math.round(gameData.durability);
             
-            const bar = document.getElementById('durability-bar');
+            let bar = document.getElementById('durability-bar');
             if (bar) {
-                bar.style.width = gameData.durability + '%';
+                bar.style.width = Math.max(0, gameData.durability) + '%';
                 bar.style.background = gameData.durability > 30 ? 'var(--success)' : 'var(--danger)';
             }
 
-            ['iron', 'silver', 'goldOre'].forEach(type => {
+            mineTypes.forEach(function(type) {
                 let mineObj = gameData.mines[type];
                 let btn = document.getElementById(`${type}-mine-btn`);
                 let card = document.getElementById(`card-${type}`);
@@ -1373,7 +1470,7 @@
         }
 
         function upgradeMine(type) {
-            debounceAction(() => {
+            debounceAction(function() {
                 sanitizeData();
                 let mine = gameData.mines[type];
                 let cost = Number(mine.cost);
@@ -1387,7 +1484,7 @@
         }
 
         function toggleMining(type) {
-            debounceAction(() => {
+            debounceAction(function() {
                 sanitizeData();
                 if (type === 'silver' && gameData.level < 3) { alert("ต้องมีเลเวล 3 ขึ้นไป!"); return; }
                 if (type === 'goldOre' && gameData.level < 5) { alert("ต้องมีเลเวล 5 ขึ้นไป!"); return; }
@@ -1404,7 +1501,7 @@
                 mineObj.active = !mineObj.active;
 
                 if (!mineObj.active) {
-                    miningProgressUI[type] = 0;
+                    miningProgress[type] = 0;
                     let progressBar = document.getElementById(`bar-${type}`);
                     if (progressBar) progressBar.style.width = '0%';
                 }
@@ -1413,7 +1510,7 @@
         }
 
         function repairTools() {
-            debounceAction(() => {
+            debounceAction(function() {
                 sanitizeData();
                 if (gameData.durability >= 100) { alert("ความทนทานเต็มแล้ว"); return; }
                 let repairCost = getRepairCost();
@@ -1427,33 +1524,93 @@
             });
         }
 
+        // ระบบคำนวณราคาเฉลี่ยตามสัดส่วนปริมาณ (Tiered Volume Pricing / VWAP Model)
+        function calculateTieredSale(sellQty, currentPrice) {
+            let remaining = sellQty;
+            let totalGold = 0;
+            
+            // Tier 1: 1 - 100 ชิ้น @ ราคาเต็ม 100%
+            let t1 = Math.min(remaining, 100);
+            totalGold += t1 * currentPrice * 1.0;
+            remaining -= t1;
+            
+            // Tier 2: 101 - 500 ชิ้น (400 ชิ้น) @ 80%
+            if (remaining > 0) {
+                let t2 = Math.min(remaining, 400);
+                totalGold += t2 * currentPrice * 0.8;
+                remaining -= t2;
+            }
+            
+            // Tier 3: 501 - 2,000 ชิ้น (1,500 ชิ้น) @ 60%
+            if (remaining > 0) {
+                let t3 = Math.min(remaining, 1500);
+                totalGold += t3 * currentPrice * 0.6;
+                remaining -= t3;
+            }
+            
+            // Tier 4: 2,001 ชิ้นขึ้นไป @ 40% (ราคาขั้นต่ำป้องกันตลาดพัง)
+            if (remaining > 0) {
+                let t4 = remaining;
+                totalGold += t4 * currentPrice * 0.4;
+            }
+            
+            let avgPrice = Math.max(1, Math.round(totalGold / sellQty));
+            return { totalGold, avgPrice };
+        }
+
         function sellOre(type, amountToSell) {
-            debounceAction(() => {
+            debounceAction(function() {
                 sanitizeData();
                 let currentAmount = Number(gameData[type]);
                 if (currentAmount <= 0) { alert("ไม่มีแร่ให้ขาย"); return; }
                 let sellQty = (amountToSell === 'all') ? currentAmount : Math.min(currentAmount, Number(amountToSell));
                 if (sellQty <= 0) { alert("ไม่มีแร่เพียงพอสำหรับการขายจำนวนนี้"); return; }
 
-                let effectivePrice = gameData.marketPrices[type];
+                const limits = {
+                    iron: { min: 2, max: 25, base: 5 },
+                    silver: { min: 8, max: 80, base: 15 },
+                    goldOre: { min: 20, max: 200, base: 40 }
+                };
 
-                if (sellQty >= 100) {
-                    effectivePrice = Math.round(effectivePrice * 0.85);
-                    gameData.marketPrices[type] = Math.max(2, Math.round(gameData.marketPrices[type] * 0.9));
-                    showToast(`⚠️ ตลาดอิ่มตัว! การเทขาย ${sellQty} ชิ้น ทำให้ราคาแร่ดิ่งลงชั่วคราว!`);
+                let currentMarketPrice = gameData.marketPrices[type];
+
+                // ใช้ VWAP Model คำนวณราคาเฉลี่ยและรายได้
+                let saleResult = calculateTieredSale(sellQty, currentMarketPrice);
+                let earnedGold = saleResult.totalGold;
+                let effectivePrice = saleResult.avgPrice;
+
+                // อัปเดตราคาตลาดปัจจุบันให้ตอบรับแรงเทขายแบบสมเหตุสมผล
+                let newMarketPrice = Math.round(currentMarketPrice * 0.75 + effectivePrice * 0.25);
+                newMarketPrice = Math.max(limits[type].min, Math.min(limits[type].max, newMarketPrice));
+
+                gameData.marketPrices[type] = newMarketPrice;
+                gameData.marketMultipliers[type] = parseFloat((newMarketPrice / limits[type].base).toFixed(2));
+
+                if (!gameData.priceHistory[type]) gameData.priceHistory[type] = [];
+                gameData.priceHistory[type].push(newMarketPrice);
+                if (gameData.priceHistory[type].length > 20) {
+                    gameData.priceHistory[type].shift();
                 }
 
                 gameData[type] -= sellQty;
-                let earnedGold = sellQty * effectivePrice;
                 gameData.gold += earnedGold;
 
-                showToast(`ขายแร่สำเร็จ ได้รับ ${earnedGold.toLocaleString()} Gold (${sellQty} ชิ้น)`);
+                if (sellQty >= 50) {
+                    showToast(`📦 เทขาย ${sellQty.toLocaleString()} ชิ้น (VWAP เฉลี่ย ${effectivePrice} Gold) ได้รับ ${earnedGold.toLocaleString()} Gold`);
+                } else {
+                    showToast(`ขายแร่สำเร็จ ได้รับ ${earnedGold.toLocaleString()} Gold (${sellQty} ชิ้น)`);
+                }
+
                 updateUI();
+                let marketTab = document.getElementById('market');
+                if (marketTab && marketTab.classList.contains('active')) {
+                    drawAllMarketCharts();
+                }
             });
         }
 
         function buyShopItem(item) {
-            debounceAction(() => {
+            debounceAction(function() {
                 sanitizeData();
                 if (item === 'repairKit') {
                     let cost = 200;
@@ -1475,7 +1632,7 @@
                     } else if (roll < 0.85) {
                         let rewardIron = 50;
                         gameData.iron += rewardIron;
-                        showToast(`🎁 เปิดกล่องสุ่มได้แร่เหล็ก: ${rewardIron} ชิ้น!`);
+                        showToast(`🎁 เปิดกล่องสุ่มได้แร่เหล็ก: ${rewardIron.toLocaleString()} ชิ้น!`);
                     } else {
                         let rewardGems = 50;
                         gameData.gems += rewardGems;
