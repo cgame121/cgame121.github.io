@@ -157,7 +157,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .tab-content.active .card:nth-child(5){--i:4}.tab-content.active .card:nth-child(6){--i:5}.tab-content.active .card:nth-child(n+7){--i:6}
 #skin-shop-grid .card{animation:none}
 /* header numbers flash green on gain / red on spend */
-.stat-badge span{display:inline-block}
+.stat-badge span{display:inline-block;white-space:nowrap}
 @keyframes gainFlash{0%{color:var(--success);transform:scale(1.14)}100%{color:var(--gold);transform:none}}
 @keyframes lossFlash{0%{color:var(--danger);transform:scale(.94)}100%{color:var(--gold);transform:none}}
 .stat-badge.gain span{animation:gainFlash .55s var(--ease-out)}
@@ -835,6 +835,14 @@ const MARKET_CFG = { iron:{min:2,max:25,base:5}, silver:{min:8,max:80,base:15}, 
 const LAND_CFG = { smallPlot:{baseCost:10000,baseIncome:20,reqLv:1}, mediumMine:{baseCost:75000,baseIncome:150,reqLv:5}, goldEstate:{baseCost:350000,baseIncome:700,reqLv:12} };
 const LAND_RES_CFG = { smallPlot:null, mediumMine:{res:'iron',label:'แร่เหล็ก',base:50}, goldEstate:{res:'goldOre',label:'แร่ทองดิบ',base:20} };
 const LAND_MAX_LEVEL = 25;
+// --- ปรับสมดุลรายได้จากที่ดิน (แก้เฉพาะ "จังหวะเวลา" การจ่ายเงิน ไม่แตะสูตรรายได้ต่อระดับ) ---
+// ตอนออนไลน์ยังจ่ายทุก 5 วิ เหมือนเดิม (ไม่กระทบความรู้สึกตอนเล่นจริง)
+// แต่ตอนออฟไลน์/AFK ที่ดินจะ "จ่ายช้าลง" เหลือประสิทธิภาพ 25% (ทุก 20 วิ แทนที่จะเป็นทุก 5 วิ)
+// เพราะรายได้จากที่ดินไม่มีความเสี่ยง/ไม่ต้องกดอะไรเลย ต่างจากการขุดที่ต้องดูแลความทนทาน/เสี่ยงพลาด/ค่าธรรมเนียมตลาด
+// ถ้าออฟไลน์จ่ายเท่าออนไลน์ 100% เงินจากที่ดินจะโตไม่จำกัดตามจำนวน "วันตามปฏิทิน" ที่ผ่านไป โดยไม่ขึ้นกับเวลาที่ผู้เล่นเล่นจริงเลย
+// นี่คือสาเหตุหลักของเงินเฟ้อระยะยาว จึงลดทั้งอัตราจ่าย (25%) และเพดานเวลาที่นับให้สั้นลง (8 ชม. แทน 12 ชม.)
+const LAND_OFFLINE_TICK_SEC = 20;   // เดิมอิงจากรอบ 5 วิ (ออนไลน์) -> ออฟไลน์ยืดเป็น 20 วิ = ได้แค่ 25% ของอัตราออนไลน์
+const LAND_OFFLINE_CAP_HOURS = 8;   // เพดานเวลานับรายได้ที่ดินตอนออฟไลน์ (แยกจากเพดานจำลองการขุด 12 ชม. เดิม)
 function landResCost(type){ const rc = LAND_RES_CFG[type]; if(!rc) return 0; const l = gameData.lands[type]; const step = (l?l.level:0)+1; return Math.round(rc.base * step); }
 const EQUIP_CFG = { pickaxe:{baseCost:50,growth:1.5,currency:'gems',barType:'ingotGold',barLabel:'แท่งทองคำ',oreType:'goldOre',oreLabel:'แร่ทองดิบ',oreBase:5}, helmet:{baseCost:25000,growth:1.6,currency:'gold',barType:'ingotIron',barLabel:'แท่งเหล็กกล้า',oreType:'iron',oreLabel:'แร่เหล็ก',oreBase:40}, armor:{baseCost:40000,growth:1.6,currency:'gold',barType:'ingotSilver',barLabel:'แท่งเงิน',oreType:'silver',oreLabel:'แร่เงิน',oreBase:25} };
 const SMELT_CFG = {
@@ -1753,23 +1761,44 @@ function setCls(el, c){ if(el && el.className !== c) el.className = c; }
 function setText(id, val){ setTxt(document.getElementById(id), val); }
 // Counters roll to the new value (and the badge flashes green/red) instead of jumping
 const numAnim = {};
-function setNum(id, target){
+// ย่อเลขจำนวนมาก ๆ ให้เป็น K/M/B/T (ใช้เฉพาะ badge บนหัวจอที่พื้นที่แคบ) กันตัวเลขยาวจนล้น/ตกบรรทัดซ้อนกัน
+// ตัวเลขต่ำกว่า 1 ล้านยังแสดงแบบเต็มมีจุลภาคเหมือนเดิม เพื่อความคุ้นเคย/แม่นยำในช่วงต้นเกม
+function compactNum(n){
+  n = Math.floor(n);
+  const sign = n < 0 ? '-' : ''; n = Math.abs(n);
+  if(n < 1e6) return sign + n.toLocaleString();
+  const units = [[1e12,'T'],[1e9,'B'],[1e6,'M']];
+  for(let i=0;i<units.length;i++){
+    const val = units[i][0], suf = units[i][1];
+    if(n >= val){
+      const v = n/val;
+      const decimals = v < 10 ? 2 : (v < 100 ? 1 : 0);
+      let s = v.toFixed(decimals);
+      if(s.indexOf('.') !== -1) s = s.replace(/0+$/,'').replace(/\.$/,'');
+      return sign + s + suf;
+    }
+  }
+  return sign + n.toLocaleString();
+}
+function setNum(id, target, compact){
   const el = document.getElementById(id); if(!el) return;
   target = Math.floor(target);
+  const fmt = compact ? compactNum : (v => v.toLocaleString());
   const st = numAnim[id] || (numAnim[id] = { shown:target, target:target, from:target, t0:0, raf:0, first:true });
-  if(st.first){ st.first = false; setTxt(el, target.toLocaleString()); return; }
+  if(compact) el.title = target.toLocaleString();
+  if(st.first){ st.first = false; setTxt(el, fmt(target)); return; }
   if(target === st.target) return;
   const gain = target > st.target;
   st.from = st.shown; st.target = target; st.t0 = performance.now();
   const calm = document.hidden || Math.abs(target - st.from) < 2 || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  if(calm){ st.shown = target; setTxt(el, target.toLocaleString()); return; }
+  if(calm){ st.shown = target; setTxt(el, fmt(target)); return; }
   const badge = el.parentNode;
   if(badge && badge.classList){ badge.classList.remove('gain','loss'); void badge.offsetWidth; badge.classList.add(gain ? 'gain' : 'loss'); }
   if(st.raf) return;
   const step = function(now){
     const k = Math.min(1, (now - st.t0)/450), e = 1 - Math.pow(1-k, 3);
     st.shown = k >= 1 ? st.target : Math.round(st.from + (st.target - st.from)*e);
-    setTxt(el, st.shown.toLocaleString());
+    setTxt(el, fmt(st.shown));
     st.raf = k < 1 ? requestAnimationFrame(step) : 0;
   };
   st.raf = requestAnimationFrame(step);
@@ -2351,8 +2380,11 @@ function calcOfflineProgress(){
   const gains = { iron:0, silver:0, goldOre:0, gold:0 };
   let per5 = 0;
   LAND_TYPES.forEach(t=>{ per5 += landIncome(t); });
-  const ticks = Math.floor(sec/5);
-  if(per5 > 0 && ticks > 0){ gains.gold = per5*ticks; gameData.gold += gains.gold; }
+  // รายได้จากที่ดินตอนออฟไลน์: ใช้จังหวะเวลาของตัวเอง (ช้ากว่าออนไลน์ + เพดานสั้นกว่า) เพื่อกันเงินเฟ้อระยะยาว
+  // ไม่ใช้ตัวแปร sec/ticks ร่วมกับการจำลองขุดแร่ด้านล่าง เพื่อไม่ให้กระทบการขุดแบบออฟไลน์ที่ยังทำงานเหมือนเดิม
+  const landElapsed = Math.min(elapsed, LAND_OFFLINE_CAP_HOURS*3600);
+  const landTicks = Math.floor(landElapsed/LAND_OFFLINE_TICK_SEC);
+  if(per5 > 0 && landTicks > 0){ gains.gold = per5*landTicks; gameData.gold += gains.gold; }
   const active = MINE_TYPES.filter(t=>gameData.mines[t].active);
   if(active.length > 0 && gameData.durability > 0){
     const sim = Math.min(sec, 6*3600);
@@ -2388,10 +2420,10 @@ function calcOfflineProgress(){
 
 function updateUI(){
   updateNotifBtn();
-  setNum('gold-val', gameData.gold);
-  setNum('gems-val', gameData.gems);
-  setNum('dash-gold', gameData.gold);
-  setNum('dash-gems', gameData.gems);
+  setNum('gold-val', gameData.gold, true);
+  setNum('gems-val', gameData.gems, true);
+  setNum('dash-gold', gameData.gold, true);
+  setNum('dash-gems', gameData.gems, true);
   setNum('lvl-val', gameData.level);
   setNum('dash-lvl', gameData.level);
   setNum('dash-xp', Math.floor(gameData.xp));
