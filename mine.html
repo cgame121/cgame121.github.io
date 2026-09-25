@@ -1781,17 +1781,17 @@ body {
       <div class="grid-3" style="margin-bottom:16px">
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> พลทหารยาม</h3>
-          <div class="info"><div class="d">กำลังพลพื้นฐาน คุ้มกันเหมือง</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-guard-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">7,000 Gold + 100 เหล็ก + 1 แท่งเหล็กกล้า</span></div></div>
+          <div class="info"><div class="d">กำลังพลพื้นฐาน คุ้มกันเหมือง</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-guard-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">7,000 Gold + 100 เหล็ก + 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ของที่มี</span><span class="v"><span id="train-guard-goldhave" style="color:var(--success)">0</span> Gold · <span id="train-guard-orehave" style="color:var(--success)">0</span> เหล็ก · <span id="train-guard-barhave" style="color:var(--success)">0</span> แท่ง</span></div></div>
           <button id="train-guard-btn" class="btn btn-success" onclick="trainTroop('guard')">เกณฑ์ทหารยาม</button>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-sword"></use></svg> นักรบดาบเหล็ก</h3>
-          <div class="info"><div class="d">ทหารแนวหน้า บุกเบิกดันเจี้ยน</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-swordsman-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">24,000 Gold + 55 เงิน + 2 แท่งเงิน</span></div></div>
+          <div class="info"><div class="d">ทหารแนวหน้า บุกเบิกดันเจี้ยน</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-swordsman-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">24,000 Gold + 55 เงิน + 2 แท่งเงิน</span></div><div class="r"><span class="k">ของที่มี</span><span class="v"><span id="train-swordsman-goldhave" style="color:var(--success)">0</span> Gold · <span id="train-swordsman-orehave" style="color:var(--success)">0</span> เงิน · <span id="train-swordsman-barhave" style="color:var(--success)">0</span> แท่ง</span></div></div>
           <button id="train-swordsman-btn" class="btn btn-warning" onclick="trainTroop('swordsman')">เกณฑ์นักรบ</button>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-horse"></use></svg> อัศวินเกราะทอง</h3>
-          <div class="info"><div class="d">กองกำลังชั้นยอด ลุยพื้นที่อันตราย</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-knight-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">85,000 Gold + 35 ทอง + 3 แท่งทองคำ</span></div></div>
+          <div class="info"><div class="d">กองกำลังชั้นยอด ลุยพื้นที่อันตราย</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-knight-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">85,000 Gold + 35 ทอง + 3 แท่งทองคำ</span></div><div class="r"><span class="k">ของที่มี</span><span class="v"><span id="train-knight-goldhave" style="color:var(--success)">0</span> Gold · <span id="train-knight-orehave" style="color:var(--success)">0</span> ทอง · <span id="train-knight-barhave" style="color:var(--success)">0</span> แท่ง</span></div></div>
           <button id="train-knight-btn" class="btn btn-success" onclick="trainTroop('knight')">เกณฑ์อัศวิน</button>
         </div>
       </div>
@@ -3766,9 +3766,16 @@ function updateUI(){
     setText('troop-knight-count', gameData.troops.knight);
     ['guard','swordsman','knight'].forEach(tp=>{
       const c = TRAIN_CFG[tp];
+      const haveGold = gameData.gold, haveOre = gameData[c.ore]||0, haveBar = gameData[c.bar]||0;
+      const goldEl = document.getElementById('train-'+tp+'-goldhave');
+      const oreEl = document.getElementById('train-'+tp+'-orehave');
+      const barEl = document.getElementById('train-'+tp+'-barhave');
+      if(goldEl){ setTxt(goldEl, haveGold.toLocaleString()); goldEl.style.color = haveGold >= c.costGold ? 'var(--success)' : 'var(--danger)'; }
+      if(oreEl){ setTxt(oreEl, haveOre.toLocaleString()); oreEl.style.color = haveOre >= c.qty ? 'var(--success)' : 'var(--danger)'; }
+      if(barEl){ setTxt(barEl, haveBar.toLocaleString()); barEl.style.color = haveBar >= c.barQty ? 'var(--success)' : 'var(--danger)'; }
       const trBtn = document.getElementById('train-'+tp+'-btn');
       if(trBtn){
-        const canTrain = gameData.gold >= c.costGold && (gameData[c.ore]||0) >= c.qty && (gameData[c.bar]||0) >= c.barQty;
+        const canTrain = haveGold >= c.costGold && haveOre >= c.qty && haveBar >= c.barQty;
         setCls(trBtn, canTrain ? c.btnCls : 'btn btn-locked');
         trBtn.disabled = !canTrain;
       }
