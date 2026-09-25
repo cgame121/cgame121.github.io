@@ -66,15 +66,19 @@
 .ticker-price-value b,
 .badge-trend {
   font-family: var(--pxnum),var(--px)!important;
-  letter-spacing: .5px;
-  font-size: .86em;
+  letter-spacing: .3px;
+  font-size: .68em;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .dash-hero-value {
   font-family: var(--pxnum),var(--px)!important;
-  letter-spacing: .5px;
-  font-size: .78em!important;
+  letter-spacing: .3px;
+  font-size: .58em!important;
   line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 /* ===== Pixel icon sprite instances ===== */
 .picon {
@@ -132,156 +136,6 @@
   width: 100%!important;
   height: 100%!important;
   touch-action: pan-y!important;
-}
-.miner-arm {
-  transform-box: view-box;
-  transform-origin: 16px 12px;
-  transform: rotate(-15deg);
-}
-.card.mining-active .miner-arm {
-  animation: mineSwing 1.1s steps(6) infinite;
-}
-@keyframes mineSwing {
-  0% {
-    transform: rotate(-15deg);
-  }
-  35% {
-    transform: rotate(-15deg);
-  }
-  50% {
-    transform: rotate(55deg);
-  }
-  65% {
-    transform: rotate(55deg);
-  }
-  100% {
-    transform: rotate(-15deg);
-  }
-}
-.rock-cluster {
-  transform-box: view-box;
-  transform-origin: center;
-}
-.card.mining-active .rock-cluster {
-  animation: rockShake 1.1s infinite;
-}
-@keyframes rockShake {
-  0%,48% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(-1px);
-  }
-  53% {
-    transform: translateX(1px);
-  }
-  56% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-.impact-spark,
-.ore-chip,
-.dust-puff {
-  opacity: 0;
-}
-.card.mining-active .impact-spark {
-  animation: sparkFlash 1.1s infinite;
-}
-@keyframes sparkFlash {
-  0%,48% {
-    opacity: 0;
-    transform: scale(.4);
-  }
-  52% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-  62% {
-    opacity: 0;
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.card.mining-active .ore-chip-1 {
-  animation: chip1 1.1s infinite;
-}
-.card.mining-active .ore-chip-2 {
-  animation: chip2 1.1s infinite;
-}
-.card.mining-active .ore-chip-3 {
-  animation: chip3 1.1s infinite;
-}
-@keyframes chip1 {
-  0%,50% {
-    opacity: 0;
-    transform: translate(0,0);
-  }
-  53% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-9px,-11px);
-  }
-}
-@keyframes chip2 {
-  0%,50% {
-    opacity: 0;
-    transform: translate(0,0);
-  }
-  53% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(5px,-13px);
-  }
-}
-@keyframes chip3 {
-  0%,51% {
-    opacity: 0;
-    transform: translate(0,0) rotate(0deg);
-  }
-  54% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-3px,9px) rotate(45deg);
-  }
-}
-.card.mining-active .dust-puff {
-  animation: dustPuff 1.1s infinite;
-}
-@keyframes dustPuff {
-  0%,49% {
-    opacity: 0;
-    transform: scale(.5);
-  }
-  55% {
-    opacity: .5;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.7);
-  }
-}
-@media(prefers-reduced-motion:reduce) {
-  .card.mining-active .miner-arm,
-  .card.mining-active .rock-cluster,
-  .card.mining-active .impact-spark,
-  .card.mining-active .ore-chip-1,
-  .card.mining-active .ore-chip-2,
-  .card.mining-active .ore-chip-3,
-  .card.mining-active .dust-puff {
-    animation: none;
-  }
 }
 /* ===== Mine "atmosphere": faint stone grain + drifting dust ===== */
 .content-viewport {
@@ -933,10 +787,11 @@ header {
   clip-path: polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
 }
 .badge-trend {
-  font-size: .85rem;
-  padding: 3px 7px;
+  font-size: .62rem;
+  padding: 3px 6px;
   font-weight: bold;
   border: 2px solid currentColor;
+  white-space: nowrap;
 }
 .trend-up {
   background: rgba(0,255,127,.12);
@@ -980,15 +835,17 @@ header {
   font-weight: 600;
 }
 .market-hero-value {
-  font-size: 1.35rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--gold);
   text-shadow: 2px 2px 0 #000;
   line-height: 1.2;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .market-hero-value.best-mover {
   color: var(--text-main);
-  font-size: 1.05rem;
+  font-size: .8rem;
 }
 .market-card {
   padding-top: 16px;
@@ -1039,20 +896,22 @@ header {
   color: var(--text-muted);
 }
 .ticker-price-value {
-  font-size: 1.25rem;
+  font-size: .95rem;
   font-weight: 700;
   color: var(--accent);
   text-shadow: 2px 2px 0 #000;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .ticker-price-value b {
-  font-size: 1.25rem;
+  font-size: .95rem;
 }
 @media(max-width:480px) {
   .market-hero {
     padding: 14px;
   }
   .market-hero-value {
-    font-size: 1.15rem;
+    font-size: .88rem;
   }
 }
 .profile-card {
@@ -1566,11 +1425,13 @@ body {
   text-overflow: ellipsis;
 }
 .dash-hero-value {
-  font-size: 1.2rem;
+  font-size: .95rem;
   font-weight: 700;
   color: var(--gold);
   text-shadow: 2px 2px 0 #000;
   line-height: 1.2;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .dash-ore-row {
   display: flex;
@@ -1597,13 +1458,15 @@ body {
   color: var(--text-muted);
 }
 .dash-ore-qty {
-  font-size: 1.15rem;
+  font-size: .92rem;
   font-weight: 700;
   color: var(--success);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 @media(max-width:480px) {
   .dash-hero-value {
-    font-size: 1.05rem;
+    font-size: .85rem;
   }
 }
 /* When the number of dash-hero cards is odd, the last card would otherwise
@@ -2320,7 +2183,7 @@ const skinDatabase = {
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="2" fill="#1e293b"/><rect x="9" y="3" width="6" height="1" fill="#334155"/><rect x="7" y="6" width="10" height="7" fill="#1e293b"/><rect x="8" y="9" width="8" height="2" fill="#0f172a"/><rect x="9" y="9" width="2" height="1" fill="#ef4444"/><rect x="13" y="9" width="2" height="1" fill="#ef4444"/><rect x="9" y="9" width="1" height="1" fill="#fca5a5"/><rect x="13" y="9" width="1" height="1" fill="#fca5a5"/><rect x="17" y="7" width="2" height="1" fill="#dc2626"/><rect x="18" y="8" width="2" height="1" fill="#dc2626"/><rect x="7" y="13" width="10" height="1" fill="#0f172a"/><rect x="9" y="14" width="6" height="7" fill="#0f172a"/><rect x="9" y="14" width="6" height="1" fill="#1e293b"/><rect x="9" y="17" width="6" height="1" fill="#7f1d1d"/><rect x="6" y="14" width="3" height="5" fill="#334155"/><rect x="15" y="14" width="3" height="5" fill="#334155"/><rect x="6" y="18" width="3" height="1" fill="#1e293b"/><rect x="15" y="18" width="3" height="1" fill="#1e293b"/><rect x="16" y="17" width="2" height="2" fill="#94a3b8"/><rect x="16" y="17" width="1" height="1" fill="#e2e8f0"/><rect x="9" y="21" width="3" height="2" fill="#0f172a"/><rect x="13" y="21" width="3" height="2" fill="#0f172a"/></svg>' },
   golem:{ name:"โกเลมหินผา", priceType:"gems", price:1100, desc:"ร่างศิลาโบราณทนทานทุกสภาพ", bonus:"ลดการสึกหรอ 30% / ผลผลิต +10%", speedBonus:0, yieldBonus:0.10, durabilityBonus:0.30, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="10" fill="#64748b"/><rect x="6" y="4" width="12" height="2" fill="#94a3b8"/><rect x="6" y="12" width="12" height="2" fill="#475569"/><rect x="6" y="7" width="1" height="1" fill="#334155"/><rect x="17" y="9" width="1" height="1" fill="#334155"/><rect x="10" y="4" width="1" height="1" fill="#334155"/><rect x="7" y="5" width="2" height="2" fill="#65a30d"/><rect x="9" y="8" width="2" height="2" fill="#f97316"/><rect x="13" y="8" width="2" height="2" fill="#f97316"/><rect x="9" y="8" width="1" height="1" fill="#fed7aa"/><rect x="13" y="8" width="1" height="1" fill="#fed7aa"/><rect x="11" y="11" width="2" height="2" fill="#fbbf24"/><rect x="4" y="13" width="3" height="3" fill="#94a3b8"/><rect x="17" y="13" width="3" height="3" fill="#94a3b8"/><rect x="8" y="14" width="8" height="7" fill="#475569"/><rect x="8" y="14" width="8" height="1" fill="#64748b"/><rect x="10" y="18" width="1" height="2" fill="#f97316"/><rect x="13" y="18" width="1" height="2" fill="#f97316"/><rect x="5" y="14" width="3" height="6" fill="#334155"/><rect x="16" y="14" width="3" height="6" fill="#334155"/><rect x="5" y="19" width="3" height="1" fill="#64748b"/><rect x="16" y="19" width="3" height="1" fill="#64748b"/><rect x="8" y="21" width="3" height="2" fill="#1e293b"/><rect x="13" y="21" width="3" height="2" fill="#1e293b"/></svg>' },
-  king:{ name:"ราชาทองคำ", priceType:"gold", price:350000, desc:"มงกุฎแห่งมหาเศรษฐีเหมืองแร่", bonus:"ราคาขายแร่ +15%", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0.15,
+  king:{ name:"ราชาทองคำ", priceType:"gems", price:1000, desc:"มงกุฎแห่งมหาเศรษฐีเหมืองแร่", bonus:"ราคาขายแร่ +15%", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0.15,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><polygon points="7,6 10,2 12,5 14,2 17,6" fill="#facc15"/><rect x="11" y="1" width="2" height="1" fill="#fef08a"/><rect x="11" y="3" width="2" height="2" fill="#dc2626"/><rect x="7" y="6" width="10" height="2" fill="#eab308"/><rect x="7" y="6" width="10" height="1" fill="#fde047"/><rect x="7" y="8" width="10" height="6" fill="#fef08a"/><rect x="7" y="8" width="10" height="1" fill="#fef9c3"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="9" y="10" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="9" y="12" width="2" height="1" fill="#78350f"/><rect x="13" y="12" width="2" height="1" fill="#78350f"/><rect x="6" y="13" width="12" height="2" fill="#f8fafc"/><rect x="8" y="13" width="1" height="1" fill="#1e293b"/><rect x="15" y="13" width="1" height="1" fill="#1e293b"/><rect x="9" y="14" width="6" height="7" fill="#b45309"/><rect x="9" y="14" width="6" height="1" fill="#d97706"/><rect x="10" y="17" width="1" height="1" fill="#facc15"/><rect x="13" y="19" width="1" height="1" fill="#facc15"/><rect x="6" y="14" width="3" height="5" fill="#78350f"/><rect x="15" y="14" width="3" height="5" fill="#78350f"/><rect x="6" y="18" width="3" height="1" fill="#f8fafc"/><rect x="15" y="18" width="3" height="1" fill="#f8fafc"/><rect x="18" y="10" width="1" height="10" fill="#78350f"/><rect x="17" y="8" width="3" height="3" fill="#facc15"/><rect x="18" y="9" width="1" height="1" fill="#fef9c3"/><rect x="9" y="21" width="3" height="2" fill="#78350f"/><rect x="13" y="21" width="3" height="2" fill="#78350f"/></svg>' },
   dwarf:{ name:"คนแคระผู้บุกเบิก", priceType:"gems", price:350, desc:"ผู้เชี่ยวชาญงานเหมืองมาหลายชั่วอายุคน", bonus:"ผลผลิตแร่ +8%", speedBonus:0, yieldBonus:0.08, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="2" width="2" height="1" fill="#f87171"/><rect x="7" y="3" width="10" height="3" fill="#dc2626"/><rect x="6" y="6" width="12" height="2" fill="#991b1b"/><rect x="7" y="8" width="10" height="4" fill="#fbbf24"/><rect x="7" y="8" width="10" height="1" fill="#fcd34d"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="9" y="10" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="8" y="11" width="1" height="1" fill="#fca5a5"/><rect x="15" y="11" width="1" height="1" fill="#fca5a5"/><rect x="6" y="12" width="12" height="3" fill="#e5e7eb"/><rect x="6" y="15" width="12" height="1" fill="#cbd5e1"/><rect x="7" y="16" width="2" height="1" fill="#e5e7eb"/><rect x="15" y="16" width="2" height="1" fill="#e5e7eb"/><rect x="8" y="17" width="8" height="4" fill="#78350f"/><rect x="8" y="19" width="8" height="1" fill="#5c2c06"/><rect x="10" y="19" width="4" height="1" fill="#facc15"/><rect x="4" y="17" width="3" height="4" fill="#451a03"/><rect x="2" y="14" width="1" height="7" fill="#78350f"/><rect x="1" y="13" width="3" height="1" fill="#9ca3af"/><rect x="0" y="14" width="1" height="1" fill="#9ca3af"/><rect x="4" y="14" width="1" height="1" fill="#9ca3af"/><rect x="17" y="17" width="3" height="4" fill="#451a03"/><rect x="8" y="21" width="3" height="2" fill="#1c1917"/><rect x="13" y="21" width="3" height="2" fill="#1c1917"/></svg>' },
@@ -3029,7 +2892,7 @@ function getSpeedBonus(){ return Math.min(0.6, (gameData.equipment.pickaxe.level
 function getYieldBonus(){ return (gameData.equipment.pickaxe.level-1)*0.10 + getSkin().yieldBonus; }
 function getDurabilityReduce(){ return Math.min(0.8, gameData.equipment.helmet.level*0.06 + getSkin().durabilityBonus); }
 function getMarketBonus(){ return getSkin().marketBonus; }
-function getFailChance(){ return Math.max(0.01, 0.07 - gameData.equipment.armor.level*0.01); }
+function getFailChance(){ return Math.max(0.01, 0.50 - gameData.equipment.armor.level*0.01); }
 function getMineTime(type){ return Math.max(1, MINE_CFG[type].baseTime * (1 - getSpeedBonus())); }
 function getMineYield(type){ return Math.max(1, Math.round(MINE_CFG[type].baseYield * gameData.mines[type].level * (1 + getYieldBonus()))); }
 function getDurabilityCost(){ return Math.max(0.5, 2 * (1 - getDurabilityReduce())); }
@@ -3315,15 +3178,46 @@ function syncPixiTickers(){
 }
 
 // =====================================================================
-// ===== ฉากขุดเหมืองพิกเซลอาร์ตด้วย PixiJS (คนขุด + กำแพงแร่ + อนุภาค) =====
+// ===== ฉากขุดเหมืองพิกเซลอาร์ตด้วย PixiJS (rebuilt v2) =====
+// คนขุด + สายแร่ที่แตกลายเป็นขั้นแล้ว "แตกละเอียด/งอกใหม่" เป็นรอบ + อนุภาค
+// รองรับ prefers-reduced-motion และปรับจูนสปริงให้ตอบสนองไวกว่าเดิม
 // =====================================================================
 let mineScenes = {};
 let pixiMineStale = false;
 const MINE_ORE_COLOR = { iron:0x8fa3c9, silver:0xdde3f0, goldOre:0xffcf3d };
 const MINE_SCENE_BG  = { iron:0x0c1119, silver:0x11121d, goldOre:0x191207 };
+const MINE_REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const MINE_HITS_PER_SHATTER = 4; // จำนวนครั้งที่ต้องฟันโดนก่อนสายแร่ "แตกละเอียด" แล้วงอกก้อนใหม่
 
-// ---- Pixel matrix ของตัวละครนักขุด: หมวกนิรภัยมีไฟหน้า เครายาว ชุดหม้อฮ้อมสายเอี๊ยม รองเท้าบูท ----
-// (แขนไม่รวมอยู่ในลายนี้ - ต่อแยกเป็นชิ้น เพื่อให้หมุนสวิงจอบได้อิสระ)
+// ===== ค่าฟิสิกของฉากขุดเหมือง: ทุกการเคลื่อนไหวขับเคลื่อนด้วยสปริง (mass-spring-damper) =====
+const MINE_PHYS = {
+  armWindupK: 130,  armWindupC: 13,
+  armStrikeK: 420,  armStrikeC: 17,   // ฟันลงไวและหนักขึ้นกว่าเดิม
+  armHoldK:   170,  armHoldC:   18,
+  armRestK:    85,  armRestC:   13,
+  leanK: 80, leanC: 11,
+  squashK: 150, squashC: 11,
+  rockShakeK: 100, rockShakeC: 9,
+  camShakeK: 90,  camShakeC: 8.5,
+  popK: 120, popC: 12,              // สปริงคุมการ "ผุดโผล่" ของก้อนแร่ก้อนใหม่หลังแตกละเอียด
+  gravity: 360, airDrag: 1.4,
+  chipRestitution: 0.36, chipFriction: 0.55,
+  impactAngle: 34
+};
+function springStep(S, key, target, k, c, dt){
+  const vKey = key+'V';
+  const acc = -k*(S[key]-target) - c*S[vKey];
+  S[vKey] += acc*dt;
+  S[key] += S[vKey]*dt;
+}
+function shadeColor(hex, amt){
+  const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
+  const t = amt>0 ? 255 : 0, f = Math.abs(amt);
+  const mix=(c)=>Math.round(c+(t-c)*f);
+  return (mix(r)<<16)|(mix(g)<<8)|mix(b);
+}
+
+// ---- Pixel matrix ของตัวละครนักขุด (แขนแยกชิ้นต่างหากเพื่อสวิงจอบได้อิสระ) ----
 const M_MINER = [
   "......YYYYY......",
   ".....YYYYYYY.....",
@@ -3343,31 +3237,87 @@ const M_MINER = [
   "....RRRR..RRRR..."
 ];
 const C_MINER = { Y:0xfbbf24, D:0xb45309, L:0xfef9c3, F:0xffd7a8, V:0x1e293b, K:0x78350f, N:0xffd7a8, O:0x1d4ed8, S:0x1e3a8a, P:0x2563eb, T:0x1c1917, R:0x44403c };
-const MINER_REACH = 34; // ระยะจากหัวไหล่ถึงปลายจอบ (โดยประมาณ) ใช้คำนวณเส้นแนวสวิงและจุดปะทะ
+const MINER_REACH = 34;
 
-// จอบขุดแบบสองปลาย ด้ามไม้ + หัวเหล็กมันวาว มีเส้นขอบดำให้คมชัดสไตล์พิกเซล
 function buildPickaxeGraphic(){
   const g = new PIXI.Graphics();
-  // ด้ามไม้
   g.lineStyle(1, 0x2b1608, 1);
   g.beginFill(0x92400e); g.drawRoundedRect(0,-2,16,4,1.5); g.endFill();
   g.lineStyle(0);
   g.beginFill(0xb45309,0.7); g.drawRect(2,-2,12,1); g.endFill();
-  // ปลอกเหล็กยึดหัวจอบ
   g.lineStyle(1, 0x1e293b, 1);
   g.beginFill(0x475569); g.drawRect(10,-3.5,4,7); g.endFill();
-  // หัวจอบสองปลาย (แหลม-แบน)
+  g.beginFill(0x64748b,0.6); g.drawRect(10,-3.5,4,1.5); g.endFill();
   const hx = 13, hy = 0;
-  g.beginFill(0xcbd5e1);
+  g.lineStyle(0);
+  g.beginFill(0x94a3b8);
   g.moveTo(hx-1,hy-2.5); g.lineTo(hx+8,hy-10); g.lineTo(hx+11,hy-7.5); g.lineTo(hx+3,hy+1.5); g.closePath();
   g.moveTo(hx-1,hy+2.5); g.lineTo(hx+6,hy+11); g.lineTo(hx+3,hy+13); g.lineTo(hx-4,hy+4); g.closePath();
   g.endFill();
-  g.lineStyle(0);
-  // แนวไฮไลต์เหล็กมันวาว
-  g.beginFill(0xf8fafc,0.7);
+  g.beginFill(0x1e293b,0.35);
+  g.moveTo(hx-1,hy-2.5); g.lineTo(hx+3,hy+1.5); g.lineTo(hx-1,hy+2.5); g.lineTo(hx-4,hy+4); g.closePath();
+  g.endFill();
+  g.beginFill(0xf8fafc,0.8);
   g.moveTo(hx+1,hy-4); g.lineTo(hx+6,hy-8.5); g.lineTo(hx+7.5,hy-7.5); g.lineTo(hx+2,hy-3); g.closePath();
+  g.moveTo(hx+0.5,hy+3.5); g.lineTo(hx+4.5,hy+9.5); g.lineTo(hx+3.3,hy+10.3); g.lineTo(hx-0.3,hy+4.5); g.closePath();
   g.endFill();
   return g;
+}
+
+// ===== ก้อนแร่พิกเซลแบบผลึก: ฐานหินเข้ม + ผลึกหลายก้อน มีด้านสว่าง/มืดให้ดูมีมิติ =====
+function drawCrystal(g, cx, baseY, w, h, rot, oreColor){
+  const light = shadeColor(oreColor, 0.55), dark = shadeColor(oreColor, -0.45);
+  const local = [[-w,0],[w,0],[w*0.55,-h*0.52],[0,-h],[-w*0.55,-h*0.52]];
+  const cos = Math.cos(rot), sin = Math.sin(rot);
+  const p = local.map(function(pt){ return [cx+pt[0]*cos-pt[1]*sin, baseY+pt[0]*sin+pt[1]*cos]; });
+  g.lineStyle(1, shadeColor(oreColor,-0.6), 0.5);
+  g.beginFill(oreColor);
+  g.moveTo(p[0][0],p[0][1]); for(let i=1;i<p.length;i++) g.lineTo(p[i][0],p[i][1]); g.closePath();
+  g.endFill();
+  g.lineStyle(0);
+  g.beginFill(light,0.55);
+  g.moveTo(p[3][0],p[3][1]); g.lineTo(p[2][0],p[2][1]); g.lineTo(p[1][0],p[1][1]); g.closePath();
+  g.endFill();
+  g.beginFill(dark,0.45);
+  g.moveTo(p[3][0],p[3][1]); g.lineTo(p[4][0],p[4][1]); g.lineTo(p[0][0],p[0][1]); g.closePath();
+  g.endFill();
+  g.beginFill(0xffffff,0.65); g.drawRect(p[3][0]-0.5, p[3][1]+h*0.12, 1.4, 1.4); g.endFill();
+  return [p[3][0], p[3][1]];
+}
+// สุ่มตำแหน่งผลึกใหม่ทุกครั้งที่สายแร่งอกใหม่ (ไม่ตายตัวเหมือนเดิม เพิ่มความหลากหลาย)
+function randomCrystalLayout(){
+  const out = [];
+  for(let i=0;i<5;i++){
+    out.push([8+Math.random()*44, 40+Math.random()*8, 6+Math.random()*8, 24+Math.random()*44, (Math.random()*0.36-0.18)]);
+  }
+  return out;
+}
+function buildRockClusterGraphic(oreColor, layout){
+  const g = new PIXI.Graphics();
+  g.beginFill(0x1c1712); g.drawRoundedRect(-6,8,66,40,7); g.endFill();
+  g.beginFill(0x120e0a,0.6); g.drawRoundedRect(-6,30,66,18,6); g.endFill();
+  g.lineStyle(1,0x0a0806,0.7);
+  g.moveTo(4,14); g.lineTo(12,24); g.lineTo(8,34);
+  g.moveTo(38,10); g.lineTo(30,22); g.lineTo(40,30);
+  g.lineStyle(0);
+  const tips = [];
+  layout.forEach(function(c){ tips.push(drawCrystal(g, c[0],c[1],c[2],c[3],c[4], oreColor)); });
+  return { g: g, tips: tips };
+}
+// รอยแตกที่ค่อยๆ ปรากฏบนก้อนแร่ตามจำนวนครั้งที่โดนฟัน (ภาพสะท้อนว่าใกล้จะ "แตกละเอียด" แค่ไหน)
+function drawCrackOverlay(g, stage){
+  g.clear();
+  if(stage <= 0) return;
+  const seedSets = [
+    [[6,20,20,34],[20,34,14,44]],
+    [[6,20,20,34],[20,34,14,44],[40,16,30,30],[30,30,38,42]],
+    [[6,20,20,34],[20,34,14,44],[40,16,30,30],[30,30,38,42],[24,12,18,22],[36,38,44,46]]
+  ];
+  const set = seedSets[Math.min(seedSets.length,stage)-1] || [];
+  g.lineStyle(1, 0x000000, 0.55 + stage*0.1);
+  set.forEach(function(l){ g.moveTo(l[0],l[1]); g.lineTo(l[2],l[3]); });
+  g.lineStyle(1, 0xffffff, 0.12);
+  set.forEach(function(l){ g.moveTo(l[0]-0.5,l[1]-0.5); g.lineTo(l[2]-0.5,l[3]-0.5); });
 }
 
 function destroyPixiMineScenes(){
@@ -3379,7 +3329,6 @@ function destroyPixiMineScenes(){
   });
   pixiMineStale = false;
 }
-// If the layout changed enough (rotate, resize, sidebar) that the canvas is now shown at a different size, re-create it at the right resolution
 function checkPixiMineRes(){
   const keys = Object.keys(mineScenes); if(!keys.length) return;
   const host = document.getElementById('pixi-mine-'+keys[0]);
@@ -3388,24 +3337,25 @@ function checkPixiMineRes(){
   }else{ pixiMineStale = true; }
 }
 
-function spawnMineSpark(S,x,y){
-  if(S.sparkLayer.children.length > 40) return;
+function spawnMineSpark(S,x,y,boost){
+  if(S.sparkLayer.children.length > 44) return;
   const sp = S.sparkPool.pop() || makeSquare(2);
   sp.tint = Math.random()<0.5 ? 0xfff3b0 : 0xffffff;
   sp.visible = true; sp.alpha = 1;
   sp.x = x + (Math.random()*4-2); sp.y = y + (Math.random()*4-2);
-  const a = -Math.PI*0.85 - Math.random()*Math.PI*0.7; // fan out mostly upward/outward, some downward stragglers
-  const spd = 1.6 + Math.random()*3.2;
+  const a = -Math.PI*0.85 - Math.random()*Math.PI*0.7;
+  const spd = (1.6 + Math.random()*3.2)*60*(boost||1);
   sp.life = sp.maxLife = 0.3 + Math.random()*0.14; sp.vx = Math.cos(a)*spd; sp.vy = Math.sin(a)*spd;
   S.sparkLayer.addChild(sp);
 }
-function spawnOreChip(S,x,y){
-  if(S.chipLayer.children.length > 30) return;
+function spawnOreChip(S,x,y,boost){
+  if(S.chipLayer.children.length > 34) return;
   const c = S.chipPool.pop() || makeSquare(2);
   c.tint = Math.random()<0.55 ? S.oreColor : 0xf1f5f9;
   c.visible = true; c.alpha = 1; c.rotation = 0;
   c.x = x; c.y = y;
-  c.life = 0.85; c.vx = (Math.random()*3.4-1.5); c.vy = -(1.4+Math.random()*2.2); c.spin = (Math.random()*0.5-0.25);
+  const b = boost||1;
+  c.life = 0.85; c.vx = (Math.random()*3.4-1.5)*60*b; c.vy = -(1.4+Math.random()*2.4)*60*b; c.spin = (Math.random()*5-2.5);
   c.groundY = S.H - 21; c.bounced = false;
   S.chipLayer.addChild(c);
 }
@@ -3418,57 +3368,15 @@ function spawnDust(S,x,y){
   d.x = x; d.y = y + 5; d.life = 0.55;
   S.dustLayer.addChild(d);
 }
-function updateMineParticles(S,dt){
-  const k = dt*60;
-  for(let i=S.sparkLayer.children.length-1;i>=0;i--){
-    const sp = S.sparkLayer.children[i];
-    sp.x += sp.vx*k; sp.y += sp.vy*k; sp.vy += 5*dt; sp.life -= dt; sp.alpha = Math.max(0, sp.life/sp.maxLife);
-    if(sp.life <= 0) poolPut(S,'sparkPool',S.sparkLayer,sp);
-  }
-  for(let i=S.chipLayer.children.length-1;i>=0;i--){
-    const c = S.chipLayer.children[i];
-    c.x += c.vx*k; c.y += c.vy*k; c.vy += 6*dt; c.rotation += c.spin*k*0.15; c.life -= dt; c.alpha = Math.max(0, c.life/0.85);
-    if(!c.bounced && c.groundY!=null && c.y >= c.groundY){ c.y = c.groundY; c.vy *= -0.32; c.vx *= 0.55; c.bounced = true; }
-    if(c.life <= 0) poolPut(S,'chipPool',S.chipLayer,c);
-  }
-  for(let i=S.dustLayer.children.length-1;i>=0;i--){
-    const d = S.dustLayer.children[i];
-    d.life -= dt; d.scale.set(1+(0.55-d.life)*2.2); d.alpha = Math.max(0, (d.life/0.55)*0.4);
-    if(d.life <= 0) poolPut(S,'dustPool',S.dustLayer,d);
-  }
-  for(let i=S.trailLayer.children.length-1;i>=0;i--){
-    const t = S.trailLayer.children[i];
-    t.life -= dt; t.alpha = Math.max(0, (t.life/0.16)*0.55); t.scale.set(1+(0.16-t.life)*3);
-    if(t.life <= 0) poolPut(S,'trailPool',S.trailLayer,t);
-  }
+function spawnEmber(S,x,y){
+  if(S.emberLayer.children.length > 6) return;
+  let e = S.emberPool.pop();
+  if(!e) e = new PIXI.Graphics();
+  e.clear(); e.beginFill(Math.random()<0.5?0xffb020:0xff7a1a); e.drawRect(0,0,1,1); e.endFill();
+  e.visible = true; e.x = x + (Math.random()*4-2); e.y = y;
+  e.life = e.maxLife = 0.6 + Math.random()*0.5; e.vy = -(12+Math.random()*14); e.seed = Math.random()*10;
+  S.emberLayer.addChild(e);
 }
-function mineImpact(S){
-  for(let i=0;i<6;i++) spawnMineSpark(S,S.impactX,S.impactY);
-  for(let i=0;i<5;i++) spawnOreChip(S,S.impactX,S.impactY);
-  spawnDust(S,S.impactX-4,S.impactY+8);
-  spawnDust(S,S.impactX+3,S.impactY+6);
-  // ---- แฟลชสว่างวาบ + คลื่นกระแทกวงแหวนตรงจุดปะทะ ----
-  S.flashT = 1;
-  S.impactFlash.scale.set(0.4);
-  S.ringT = 1;
-  S.impactRing.scale.set(0.3);
-  S.impactRing.rotation = Math.random()*Math.PI;
-  // ---- ประกายแร่ใกล้จุดปะทะสว่างวาบขึ้นชั่วครู่ ----
-  S.glints.forEach(function(g){
-    const dx = g.x - (S.impactX - S.rockBaseX), dy = g.y - (S.impactY - S.rockBaseY);
-    if(dx*dx+dy*dy < 30*30) g.hitBoost = 0.6 + Math.random()*0.3;
-  });
-  S.rockShakeT = 0.22;
-  S.worldShakeT = 0.13;
-}
-// A single manual-tap "punch" burst, used by the ขุดด้วยมือ button for instant feedback outside the auto swing cycle
-function mineScenePunch(type){
-  const S = mineScenes[type]; if(!S) return;
-  mineImpact(S);
-  S.armRig.rotation = 46*Math.PI/180;
-  S.punchHold = 0.14;
-}
-
 function spawnSwingTrail(S,x,y){
   if(S.trailLayer.children.length > 10) return;
   let t = S.trailPool.pop();
@@ -3477,26 +3385,116 @@ function spawnSwingTrail(S,x,y){
   t.visible = true; t.alpha = 0.55; t.x = x; t.y = y; t.life = 0.16;
   S.trailLayer.addChild(t);
 }
+function updateMineParticles(S,dt){
+  const drag = Math.exp(-MINE_PHYS.airDrag*dt);
+  for(let i=S.sparkLayer.children.length-1;i>=0;i--){
+    const sp = S.sparkLayer.children[i];
+    sp.vy = (sp.vy + MINE_PHYS.gravity*0.5*dt)*drag; sp.vx *= drag;
+    sp.x += sp.vx*dt; sp.y += sp.vy*dt; sp.life -= dt; sp.alpha = Math.max(0, sp.life/sp.maxLife);
+    if(sp.life <= 0) poolPut(S,'sparkPool',S.sparkLayer,sp);
+  }
+  for(let i=S.chipLayer.children.length-1;i>=0;i--){
+    const c = S.chipLayer.children[i];
+    c.vy = (c.vy + MINE_PHYS.gravity*dt)*drag; c.vx *= drag;
+    c.x += c.vx*dt; c.y += c.vy*dt; c.rotation += c.spin*dt; c.life -= dt; c.alpha = Math.max(0, c.life/0.85);
+    if(!c.bounced && c.groundY!=null && c.y >= c.groundY){
+      c.y = c.groundY; c.vy *= -MINE_PHYS.chipRestitution; c.vx *= MINE_PHYS.chipFriction;
+      if(Math.abs(c.vy) < 20) c.bounced = true;
+    }
+    if(c.life <= 0) poolPut(S,'chipPool',S.chipLayer,c);
+  }
+  for(let i=S.dustLayer.children.length-1;i>=0;i--){
+    const d = S.dustLayer.children[i];
+    d.y -= 3*dt; d.life -= dt; d.scale.set(1+(0.55-d.life)*2.2); d.alpha = Math.max(0, (d.life/0.55)*0.4);
+    if(d.life <= 0) poolPut(S,'dustPool',S.dustLayer,d);
+  }
+  for(let i=S.trailLayer.children.length-1;i>=0;i--){
+    const t = S.trailLayer.children[i];
+    t.life -= dt; t.alpha = Math.max(0, (t.life/0.16)*0.55); t.scale.set(1+(0.16-t.life)*3);
+    if(t.life <= 0) poolPut(S,'trailPool',S.trailLayer,t);
+  }
+  for(let i=S.emberLayer.children.length-1;i>=0;i--){
+    const e = S.emberLayer.children[i];
+    e.x += Math.sin(S.t*4+e.seed)*0.08; e.y += e.vy*dt; e.life -= dt; e.alpha = Math.max(0, (e.life/e.maxLife)*0.8);
+    if(e.life <= 0) poolPut(S,'emberPool',S.emberLayer,e);
+  }
+}
+// สร้างสายแร่ก้อนใหม่ทั้งหมด (สุ่มผลึกใหม่) แล้วผุดโผล่ขึ้นด้วยสปริง ใช้ตอนเริ่มฉากและตอนงอกใหม่หลังแตกละเอียด
+function regrowRock(S){
+  S.rockCluster.removeChildren();
+  const built = buildRockClusterGraphic(S.oreColor, randomCrystalLayout());
+  S.rockCluster.addChild(built.g);
+  S.crackOverlay = new PIXI.Graphics();
+  S.rockCluster.addChild(S.crackOverlay);
+  S.glints.length = 0;
+  built.tips.forEach(function(tip){
+    const gl = new PIXI.Graphics(); gl.beginFill(0xffffff); gl.drawRect(0,0,2,2); gl.endFill();
+    gl.x = tip[0]; gl.y = tip[1]+2;
+    gl.baseAlpha = 0.2 + Math.random()*0.3; gl.speed = 1+Math.random()*2; gl.seed = Math.random()*10;
+    S.rockCluster.addChild(gl); S.glints.push(gl);
+  });
+  S.hits = 0;
+  S.pop = 0; S.popV = 0; // สปริงเริ่มจากยุบสุด (0) แล้วผุดขึ้นไปสู่ 1
+}
+// จอบฟันโดนหิน 1 ครั้ง: อนุภาคปกติ + นับครบตามกำหนดแล้วสั่ง "แตกละเอียด"
+function mineImpact(S){
+  const boost = MINE_REDUCED_MOTION ? 0.5 : 1;
+  for(let i=0;i<6;i++) spawnMineSpark(S,S.impactX,S.impactY,boost);
+  for(let i=0;i<5;i++) spawnOreChip(S,S.impactX,S.impactY,boost);
+  spawnDust(S,S.impactX-4,S.impactY+8);
+  spawnDust(S,S.impactX+3,S.impactY+6);
+  S.flashT = 1; S.impactFlash.scale.set(0.4);
+  S.ringT = 1; S.impactRing.scale.set(0.3); S.impactRing.rotation = Math.random()*Math.PI;
+  S.glints.forEach(function(g){
+    const dx = g.x - (S.impactX - S.rockBaseX), dy = g.y - (S.impactY - S.rockBaseY);
+    if(dx*dx+dy*dy < 34*34) g.hitBoost = 0.6 + Math.random()*0.3;
+  });
+  const shakeMul = MINE_REDUCED_MOTION ? 0.2 : 1;
+  S.rockShakeXV += (Math.random()*2-1)*70;
+  S.rockSquashV -= 5.5;
+  S.camShakeXV += (Math.random()*2-1)*46*shakeMul;
+  S.camShakeYV += (Math.random()*2-1)*28*shakeMul;
+  S.camShakeRV += (Math.random()*2-1)*0.55*shakeMul;
+  S.squashV -= 6;
+
+  S.hits = (S.hits||0) + 1;
+  drawCrackOverlay(S.crackOverlay, S.hits);
+  if(S.hits >= MINE_HITS_PER_SHATTER) shatterRock(S);
+}
+// สายแร่ "แตกละเอียด" หมด: ก้อนหินเดิมระเบิดเป็นเศษจำนวนมาก แล้วงอกก้อนใหม่ขึ้นมาแทนที่
+function shatterRock(S){
+  const boost = MINE_REDUCED_MOTION ? 1 : 2.2;
+  const n = MINE_REDUCED_MOTION ? 8 : 16;
+  for(let i=0;i<n;i++) spawnOreChip(S, S.impactX, S.impactY, boost);
+  for(let i=0;i<10;i++) spawnMineSpark(S, S.impactX, S.impactY, boost);
+  spawnDust(S,S.rockBaseX+10,S.impactY+10); spawnDust(S,S.rockBaseX+28,S.impactY+6);
+  S.flashT = 1.4; S.impactFlash.scale.set(0.5);
+  S.ringT = 1.6; S.impactRing.scale.set(0.3);
+  S.camShakeXV += (Math.random()*2-1)*(MINE_REDUCED_MOTION?20:90);
+  S.camShakeYV += (Math.random()*2-1)*(MINE_REDUCED_MOTION?12:60);
+  regrowRock(S);
+}
+// การฟันแบบกดปุ่ม "ขุดด้วยมือ" — เร่งให้แขนฟันทันทีนอกรอบอัตโนมัติ แล้วนับเป็นฮิตจริงเหมือนกัน
+function mineScenePunch(type){
+  const S = mineScenes[type]; if(!S) return;
+  mineImpact(S);
+  S.hitArmed = false;
+  S.punchHold = 0.16;
+}
 
 function tickMineScene(S, type, dt){
-  // ---- คบเพลิงกระพริบ ----
   const flick = 0.75 + Math.sin(S.t*9)*0.15 + Math.sin(S.t*23)*0.08;
   S.torchFlame.clear();
   S.torchFlame.beginFill(0xb91c1c,0.9); S.torchFlame.drawRect(-2,-13*flick,4,6*flick); S.torchFlame.endFill();
   S.torchFlame.beginFill(0xf59e0b,0.95); S.torchFlame.drawRect(-1.5,-11*flick,3,7*flick); S.torchFlame.endFill();
   S.torchFlame.beginFill(0xfde047,0.9); S.torchFlame.drawRect(-1,-8*flick,2,5*flick); S.torchFlame.endFill();
   S.torchGlow.alpha = 0.14 + Math.sin(S.t*6)*0.04;
-
-  // ---- แสงไฟหน้าหมวกนักขุดส่องไปทางกำแพงแร่ ----
   if(S.beam) S.beam.alpha = 0.05 + Math.sin(S.t*7+1.5)*0.015;
 
-  // ---- ประกายแร่ในกำแพงหินระยิบระยับ ----
   S.glints.forEach(function(g){
     if(g.hitBoost) g.hitBoost = Math.max(0, g.hitBoost - dt*2.6);
     g.alpha = g.baseAlpha + Math.sin(S.t*g.speed+g.seed)*0.18 + (g.hitBoost||0);
   });
-
-  // ---- ฝุ่นละอองลอยเป็นบรรยากาศในถ้ำ ----
   S.motes.forEach(function(m){
     m.y += m.vy; m.x += m.vx;
     if(m.y < -2) m.y = S.H+2;
@@ -3505,74 +3503,59 @@ function tickMineScene(S, type, dt){
 
   const mineState = gameData.mines && gameData.mines[type];
   const active = !!(mineState && mineState.active);
-  const STEPS = 8; // จำนวนเฟรมย่อยของการสวิง (ยิ่งมากยิ่งลื่น แต่ยังคงลุคพิกเซลสเต็ปๆ)
-  function stepAng(a,b,p){ p = Math.max(0,Math.min(1,p)); return lerp(a,b, Math.floor(p*STEPS)/STEPS); }
-  let ang = -12, swinging = false, lean = 0;
 
+  let armTarget = -12, armK = MINE_PHYS.armRestK, armC = MINE_PHYS.armRestC, swinging = false;
   if(S.punchHold > 0){
-    // ค้างท่าฟันจากการขุดด้วยมือสั้นๆ ก่อนคืนท่า
     S.punchHold -= dt;
-    ang = 58; lean = 1.6;
+    armTarget = 54; armK = MINE_PHYS.armStrikeK; armC = MINE_PHYS.armStrikeC; swinging = true;
   }else if(active){
     const phase = (S.t % S.cycle)/S.cycle;
-    const cycleIdx = Math.floor(S.t/S.cycle);
-    if(phase < 0.20){
-      // ท่าพัก
-      ang = -12;
-    }else if(phase < 0.30){
-      // ท่าเหวี่ยงจอบขึ้นเตรียมฟัน (anticipation)
-      ang = stepAng(-12,-34,(phase-0.20)/0.10);
-      swinging = true;
-    }else if(phase < 0.42){
-      // ฟันลงเร็ว แรง เหวี่ยงเลยจุดกระแทกเล็กน้อย (overshoot)
-      ang = stepAng(-34,58,(phase-0.30)/0.12);
-      lean = ((phase-0.30)/0.12)*1.6;
-      swinging = true;
-    }else if(phase < 0.50){
-      // สะบัดกลับจากโอเวอร์ชูตมาค้างที่แนวกระแทกจริง
-      ang = stepAng(58,46,(phase-0.42)/0.08);
-      lean = 1.6 - ((phase-0.42)/0.08)*1.0;
-    }else if(phase < 0.62){
-      ang = 46; lean = 0.6;
-    }else{
-      // ดึงจอบกลับสู่ท่าพัก
-      ang = stepAng(46,-12,(phase-0.62)/0.38);
-      lean = 0.6*(1-(phase-0.62)/0.38);
-      swinging = true;
-    }
-    S.minerRig.y = S.minerBaseY + (phase>0.30 && phase<0.50 ? 1 : 0);
-    if(phase >= 0.42 && phase < 0.50 && S.lastHitCycle !== cycleIdx){
-      S.lastHitCycle = cycleIdx;
-      mineImpact(S);
-    }
+    if(phase < 0.18){ armTarget = -12; armK = MINE_PHYS.armRestK; armC = MINE_PHYS.armRestC; }
+    else if(phase < 0.32){ armTarget = -40; armK = MINE_PHYS.armWindupK; armC = MINE_PHYS.armWindupC; swinging = true; }
+    else if(phase < 0.48){ armTarget = 56; armK = MINE_PHYS.armStrikeK; armC = MINE_PHYS.armStrikeC; swinging = true; }
+    else if(phase < 0.62){ armTarget = 44; armK = MINE_PHYS.armHoldK; armC = MINE_PHYS.armHoldC; }
+    else{ armTarget = -12; armK = MINE_PHYS.armRestK; armC = MINE_PHYS.armRestC; swinging = true; }
   }else{
-    ang = -12 + Math.sin(S.t*1.4)*2;
-    S.minerRig.y = S.minerBaseY + Math.sin(S.t*1.4)*0.6;
+    // ---- ท่าพัก: หายใจเบาๆ + เหลือบมองสายแร่เป็นระยะ (glance) ----
+    armTarget = -12 + Math.sin(S.t*1.4)*3;
+    const glance = Math.sin(S.t*0.6);
+    if(glance > 0.9) S.minerRig.rotation = Math.sin(S.t*0.6)*0.03; else S.minerRig.rotation *= 0.9;
   }
-  S.armRig.rotation = ang*Math.PI/180;
-  S.minerRig.x = S.minerBaseX + lean;
+  const prevArmAngle = S.armAngle;
+  springStep(S, 'armAngle', armTarget, armK, armC, dt);
+  S.armRig.rotation = S.armAngle*Math.PI/180;
 
-  // ---- ภาพเบลอเล็กๆ ตามปลายจอบตอนฟันเร็ว ----
-  if(swinging && Math.random() < 0.7){
-    const rad = ang*Math.PI/180;
+  if(S.hitArmed && prevArmAngle < MINE_PHYS.impactAngle && S.armAngle >= MINE_PHYS.impactAngle){
+    mineImpact(S); S.hitArmed = false;
+  }
+  if(S.armAngle < 6) S.hitArmed = true;
+
+  const leanTarget = Math.max(0, Math.min(1, (S.armAngle+12)/66)) * 1.8;
+  springStep(S, 'lean', leanTarget, MINE_PHYS.leanK, MINE_PHYS.leanC, dt);
+  S.minerRig.x = S.minerBaseX + S.lean;
+  S.minerRig.y = S.minerBaseY - Math.max(0,S.lean)*0.7 + Math.sin(S.t*1.7)*(active?0:0.6);
+
+  springStep(S, 'squash', 1, MINE_PHYS.squashK, MINE_PHYS.squashC, dt);
+  S.minerRig.scale.set(1+(1-S.squash)*0.5, S.squash);
+
+  if(swinging && Math.abs(S.armAngleV) > 60 && Math.random() < 0.7){
+    const rad = S.armAngle*Math.PI/180;
     spawnSwingTrail(S, S.shoulderX + MINER_REACH*Math.cos(rad), S.shoulderY + MINER_REACH*Math.sin(rad));
   }
 
-  // ---- กำแพงแร่สั่น + ยุบตัวเล็กน้อยตอนโดนอัด + กล้องสั่นหนักแน่นขึ้น ----
-  if(S.rockShakeT > 0){
-    const p = S.rockShakeT/0.22;
-    S.rockShakeT -= dt;
-    S.rockCluster.x = S.rockBaseX + (Math.random()*2-1)*1.6*p;
-    S.rockCluster.scale.set(1 + p*0.05, 1 - p*0.06);
-  }else{ S.rockCluster.x = S.rockBaseX; S.rockCluster.scale.set(1,1); }
-  if(S.worldShakeT > 0){
-    const wp = S.worldShakeT/0.13;
-    S.worldShakeT -= dt;
-    S.world.x = (Math.random()*2-1)*1.3*wp; S.world.y = (Math.random()*2-1)*0.8*wp;
-    S.world.rotation = (Math.random()*2-1)*0.012*wp;
-  }else{ S.world.x = 0; S.world.y = 0; S.world.rotation = 0; }
+  springStep(S, 'rockShakeX', 0, MINE_PHYS.rockShakeK, MINE_PHYS.rockShakeC, dt);
+  springStep(S, 'rockSquash', 1, MINE_PHYS.squashK, MINE_PHYS.squashC, dt);
+  springStep(S, 'pop', 1, MINE_PHYS.popK, MINE_PHYS.popC, dt);
+  const popScale = Math.max(0, S.pop);
+  S.rockCluster.x = S.rockBaseX + S.rockShakeX;
+  S.rockCluster.scale.set(popScale*(1+(1-S.rockSquash)*0.4), popScale*S.rockSquash);
 
-  // ---- แฟลชวาบและคลื่นกระแทกวงแหวนตรงจุดโดนจอบ ----
+  const shakeScale = MINE_REDUCED_MOTION ? 0 : 1;
+  springStep(S, 'camShakeX', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
+  springStep(S, 'camShakeY', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
+  springStep(S, 'camShakeR', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
+  S.world.x = S.camShakeX*shakeScale; S.world.y = S.camShakeY*shakeScale; S.world.rotation = S.camShakeR*shakeScale;
+
   if(S.flashT > 0){
     S.flashT -= dt*8;
     S.impactFlash.alpha = Math.max(0, S.flashT)*0.85;
@@ -3584,6 +3567,7 @@ function tickMineScene(S, type, dt){
     S.impactRing.scale.set(0.3 + (1-Math.max(0,S.ringT))*2.8);
   }else{ S.impactRing.alpha = 0; }
 
+  if(Math.random() < dt*3.5) spawnEmber(S, S.torchTipX, S.torchTipY);
   updateMineParticles(S, dt);
 }
 
@@ -3606,29 +3590,47 @@ function initPixiMines(){
       const stage = app.stage;
       const world = new PIXI.Container(); stage.addChild(world);
 
-      // ---- ผนังถ้ำ (วาดครั้งเดียว อบเป็นเท็กซ์เจอร์) ----
+      // ---- ผนังถ้ำ (อบเป็นเท็กซ์เจอร์ครั้งเดียว) ----
       const wallG = new PIXI.Graphics();
       for(let r=0; r<Math.ceil(H/10)+1; r++){
         for(let c=0; c<Math.ceil(W/16)+1; c++){
           const dark = (r+c)%2===0;
+          const jx = (r*7+c*3)%3-1, jy = (r*5+c*2)%3-1;
           wallG.beginFill(dark ? 0x0a0e17 : 0x0d121c);
-          wallG.drawRect(c*16 + (r%2?8:0), r*10, 15, 9);
+          wallG.drawRect(c*16 + (r%2?8:0) + jx, r*10 + jy, 15, 9);
           wallG.endFill();
         }
       }
+      const veinColor = MINE_ORE_COLOR[type];
+      for(let i=0;i<5;i++){
+        wallG.lineStyle(1, veinColor, 0.16);
+        let vx = Math.random()*W, vy = Math.random()*H*0.7;
+        wallG.moveTo(vx,vy);
+        for(let s=0;s<3;s++){ vx += (Math.random()*18-4); vy += Math.random()*10-2; wallG.lineTo(vx,vy); }
+      }
+      wallG.lineStyle(0);
       const wallTex = app.renderer.generateTexture(wallG, { resolution:RES });
       const wall = new PIXI.Sprite(wallTex); world.addChild(wall);
       wallG.destroy();
+
+      const depthShade = new PIXI.Graphics();
+      for(let i=0;i<5;i++){ depthShade.beginFill(0x000000, 0.05); depthShade.drawRect(0, i*(H/5), W, H/5+2); depthShade.endFill(); }
+      depthShade.beginFill(0x000000,0.22); depthShade.drawRect(0,0,W,H*0.28); depthShade.endFill();
+      world.addChild(depthShade);
 
       const vig = new PIXI.Graphics();
       vig.beginFill(0x000000,0.5); vig.drawRect(0,0,W,12); vig.drawRect(0,H-8,W,8); vig.endFill();
       world.addChild(vig);
 
-      // ---- พื้นถ้ำ ----
       const floor = new PIXI.Graphics();
       floor.beginFill(0x05070c); floor.drawRect(0,H-20,W,20); floor.endFill();
       floor.beginFill(0x1c1917); floor.drawRect(0,H-22,W,3); floor.endFill();
-      for(let i=0;i<W;i+=10){ floor.beginFill(0x100d0a,0.6); floor.drawRect(i,H-14,5,3); floor.endFill(); }
+      for(let i=0;i<W;i+=8){
+        const rubbleH = 2+((i*7)%3);
+        floor.beginFill(((i/8)%2===0) ? 0x100d0a : 0x171310, 0.65);
+        floor.drawRect(i+((i*3)%4), H-11-rubbleH, 4+((i*5)%3), rubbleH);
+      }
+      floor.endFill();
       world.addChild(floor);
 
       // ---- คบเพลิงที่ผนัง ----
@@ -3637,49 +3639,36 @@ function initPixiMines(){
       const torchGlow = new PIXI.Graphics(); torchGlow.beginFill(0xffb020,0.18); torchGlow.drawCircle(0,-4,26); torchGlow.endFill(); torch.addChild(torchGlow);
       const torchFlame = new PIXI.Graphics(); torch.addChild(torchFlame);
 
-      // ---- กำแพงแร่ / ก้อนหินสำหรับขุด (ด้านขวา) ----
+      // ---- สายแร่ / ก้อนหินสำหรับขุด ----
       const rockBaseX = 116, rockBaseY = H-62;
       const rockLayer = new PIXI.Container(); world.addChild(rockLayer);
       const rockShadow = new PIXI.Graphics();
-      rockShadow.beginFill(0x000000,0.35);
-      [[2,-16,20,58],[20,-26,20,72],[20,4,20,42],[38,-20,16,62]].forEach(function(r){ rockShadow.drawRect(r[0],r[1],r[2],r[3]); });
-      rockShadow.endFill();
-      rockShadow.x = rockBaseX; rockShadow.y = rockBaseY;
+      rockShadow.beginFill(0x000000,0.35); rockShadow.drawRoundedRect(-6,10,68,42,8); rockShadow.endFill();
+      rockShadow.x = rockBaseX; rockShadow.y = rockBaseY+2;
       rockLayer.addChild(rockShadow);
+
+      // เรืองแสงสีแร่จางๆ อยู่หลังก้อนหิน เพิ่มมิติแสง (ของใหม่ที่ไม่มีในเวอร์ชั่นก่อน)
+      const rockGlow = new PIXI.Graphics();
+      rockGlow.beginFill(oreColor, 0.14); rockGlow.drawCircle(30,20,34); rockGlow.endFill();
+      rockGlow.x = rockBaseX; rockGlow.y = rockBaseY;
+      rockLayer.addChild(rockGlow);
 
       const rockCluster = new PIXI.Container(); rockCluster.x = rockBaseX; rockCluster.y = rockBaseY;
       rockLayer.addChild(rockCluster);
-      const rockG = new PIXI.Graphics();
-      rockG.beginFill(oreColor);
-      [[0,-18,20,56],[18,-28,20,70],[18,2,20,40],[36,-22,16,60]].forEach(function(r){ rockG.drawRect(r[0],r[1],r[2],r[3]); });
-      rockG.endFill();
-      rockG.beginFill(0xffffff,0.3); rockG.drawRect(6,-24,6,6); rockG.drawRect(24,-32,5,5); rockG.endFill();
-      rockG.beginFill(0x000000,0.25); rockG.drawRect(20,-16,2,34); rockG.drawRect(36,-14,2,38); rockG.endFill();
-      rockCluster.addChild(rockG);
 
-      const glints = [];
-      [[8,-10],[26,-20],[14,10],[32,-4],[42,-14],[48,10]].forEach(function(p){
-        const gl = new PIXI.Graphics(); gl.beginFill(0xffffff); gl.drawRect(0,0,2,2); gl.endFill();
-        gl.x = p[0]; gl.y = p[1];
-        gl.baseAlpha = 0.2 + Math.random()*0.3; gl.speed = 1+Math.random()*2; gl.seed = Math.random()*10;
-        rockCluster.addChild(gl); glints.push(gl);
-      });
-
-      // ---- ตัวละครนักขุด: ถือจอบจริงในมือ แขนหลังนิ่ง แขนหน้าสวิงจอบ ----
+      // ---- ตัวละครนักขุด ----
       const minerRig = new PIXI.Container();
       const minerX = 56;
       const minerBody = bakeSprite(buildPixelSprite(M_MINER, C_MINER, PX), app.renderer);
       const minerRows = M_MINER.length;
       const minerShadow = new PIXI.Graphics(); minerShadow.beginFill(0x000000,0.35); minerShadow.drawEllipse(minerBody.logicW/2, minerRows*PX, minerBody.logicW*0.55, 3); minerShadow.endFill();
 
-      // แขนหลัง (นิ่ง อยู่ด้านหลังลำตัว)
       const backArm = new PIXI.Graphics();
       backArm.lineStyle(1,0x0f172a,0.5); backArm.beginFill(0x1e3a8a); backArm.drawRoundedRect(-2,0,6,16,2); backArm.endFill();
       backArm.x = 15; backArm.y = 26;
 
       minerRig.addChild(minerShadow, backArm, minerBody);
 
-      // แขนหน้า: ต้นแขนเสื้อ + ถุงมือ + จอบ หมุนสวิงรอบหัวไหล่
       const armPivotX = 39, armPivotY = 22;
       const armRig = new PIXI.Container(); armRig.x = armPivotX; armRig.y = armPivotY;
       const sleeve = new PIXI.Graphics(); sleeve.lineStyle(1,0x0f172a,0.5); sleeve.beginFill(0x1d4ed8); sleeve.drawRoundedRect(0,-3,9,6,2); sleeve.endFill();
@@ -3689,21 +3678,21 @@ function initPixiMines(){
       armRig.rotation = -12*Math.PI/180;
       minerRig.addChild(armRig);
 
-      minerRig.x = minerX; minerRig.y = H - 20 - minerRows*PX;
+      minerRig.pivot.set(0, minerRows*PX);
+      minerRig.x = minerX; minerRig.y = H - 20;
       world.addChild(minerRig);
 
-      // ---- ลำแสงไฟหน้าหมวก ส่องเฉียงไปทางกำแพงแร่ ----
       const beam = new PIXI.Graphics();
       beam.beginFill(0xfff7d6,0.08);
       beam.moveTo(0,0); beam.lineTo(96,-20); beam.lineTo(96,26); beam.closePath(); beam.endFill();
-      beam.x = minerRig.x + 34; beam.y = minerRig.y + 10;
+      beam.x = minerRig.x + 34; beam.y = (H - 20 - minerRows*PX) + 10;
       world.addChildAt(beam, world.getChildIndex(minerRig));
 
-      // ---- อนุภาค: ประกายไฟ / เศษแร่ / ฝุ่น / เส้นเบลอปลายจอบ ----
       const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
       const chipLayer = new PIXI.Container(); world.addChild(chipLayer);
       const dustLayer = new PIXI.Container(); world.addChild(dustLayer);
       const trailLayer = new PIXI.Container(); world.addChild(trailLayer);
+      const emberLayer = new PIXI.Container(); world.addChild(emberLayer);
 
       const motes = [];
       for(let i=0;i<7;i++){
@@ -3712,8 +3701,7 @@ function initPixiMines(){
         world.addChild(m); motes.push(m);
       }
 
-      // ---- แฟลชวาบ + วงแหวนคลื่นกระแทก แสดงตรงจุดที่จอบฟันโดนหิน ----
-      const impactX = rockBaseX+8, impactY = rockBaseY+30;
+      const impactX = rockBaseX+18, impactY = rockBaseY+26;
       const impactFlash = new PIXI.Graphics();
       impactFlash.beginFill(0xfff8e1); impactFlash.drawCircle(0,0,7); impactFlash.endFill();
       impactFlash.blendMode = PIXI.BLEND_MODES.ADD;
@@ -3726,14 +3714,24 @@ function initPixiMines(){
       world.addChild(impactRing);
 
       mineScenes[type] = {
-        app, world, minerRig, armRig, beam, rockCluster, rockBaseX, glints, torchFlame, torchGlow, motes,
-        sparkLayer, chipLayer, dustLayer, trailLayer, sparkPool:[], chipPool:[], dustPool:[], trailPool:[],
+        app, world, minerRig, armRig, beam, rockCluster, rockBaseX, glints:[], crackOverlay:null, torchFlame, torchGlow, motes,
+        sparkLayer, chipLayer, dustLayer, trailLayer, emberLayer, sparkPool:[], chipPool:[], dustPool:[], trailPool:[], emberPool:[],
         impactFlash, impactRing, flashT:0, ringT:0,
         oreColor, impactX, impactY, W, H, t: Math.random()*2,
-        cycle: 1.1, lastHitCycle: -1, rockShakeT: 0, worldShakeT: 0, punchHold: 0,
+        torchTipX: torch.x, torchTipY: torch.y-15,
+        cycle: 1.05, punchHold: 0, hitArmed: true, hits: 0,
+        armAngle: -12, armAngleV: 0,
+        lean: 0, leanV: 0,
+        squash: 1, squashV: 0,
+        rockShakeX: 0, rockShakeXV: 0,
+        rockSquash: 1, rockSquashV: 0,
+        pop: 1, popV: 0,
+        camShakeX: 0, camShakeXV: 0, camShakeY: 0, camShakeYV: 0, camShakeR: 0, camShakeRV: 0,
         minerBaseX: minerRig.x, minerBaseY: minerRig.y, shoulderX: minerX + armPivotX, shoulderY: (H - 20 - minerRows*PX) + armPivotY,
         res: RES, inView: undefined, io: null
       };
+      regrowRock(mineScenes[type]);
+      mineScenes[type].pop = 1; mineScenes[type].popV = 0; // ก้อนแรกโผล่มาเต็มขนาดทันที ไม่ต้องผุดตอนเปิดฉาก
 
       if('IntersectionObserver' in window){
         const io = new IntersectionObserver(function(entries){
