@@ -13,252 +13,1507 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root{--ease-out:cubic-bezier(.22,1,.36,1);--bg-body:#0a0a14;--bg-sidebar:#0f0f1c;--bg-card:#161625;--bg-card-hover:#1f1f33;--border:#33334d;--border-light:#5555aa;--primary:#00f0ff;--primary-dark:#0088a3;--accent:#ffb300;--gold:#ffe135;--success:#00ff7f;--success-dark:#00a352;--danger:#ff2d55;--danger-dark:#b3001f;--text-main:#f2f2ff;--text-muted:#a9a9d0;--px:'Noto Sans Thai','Sarabun','Leelawadee UI','Thonburi',Tahoma,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--pxh:var(--px);--pxnum:'Press Start 2P',var(--px);--ts:transform .18s cubic-bezier(.25,.8,.35,1),background-color .18s cubic-bezier(.25,.8,.35,1),color .18s cubic-bezier(.25,.8,.35,1),box-shadow .18s cubic-bezier(.25,.8,.35,1),filter .18s cubic-bezier(.25,.8,.35,1),opacity .18s cubic-bezier(.25,.8,.35,1),width .18s cubic-bezier(.25,.8,.35,1),min-width .18s cubic-bezier(.25,.8,.35,1);--cut:10px}
-*{box-sizing:border-box;margin:0;padding:0;font-family:var(--px);-webkit-tap-highlight-color:transparent}
-.avatar-box svg,.skin-avatar svg,.picon{shape-rendering:crispEdges}
+:root {
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --bg-body: #0a0a14;
+  --bg-sidebar: #0f0f1c;
+  --bg-card: #161625;
+  --bg-card-hover: #1f1f33;
+  --border: #33334d;
+  --border-light: #5555aa;
+  --primary: #00f0ff;
+  --primary-dark: #0088a3;
+  --accent: #ffb300;
+  --gold: #ffe135;
+  --success: #00ff7f;
+  --success-dark: #00a352;
+  --danger: #ff2d55;
+  --danger-dark: #b3001f;
+  --text-main: #f2f2ff;
+  --text-muted: #a9a9d0;
+  --px: 'Noto Sans Thai','Sarabun','Leelawadee UI','Thonburi',Tahoma,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --pxh: var(--px);
+  --pxnum: 'Press Start 2P',var(--px);
+  --ts: transform .18s cubic-bezier(.25,.8,.35,1),background-color .18s cubic-bezier(.25,.8,.35,1),color .18s cubic-bezier(.25,.8,.35,1),box-shadow .18s cubic-bezier(.25,.8,.35,1),filter .18s cubic-bezier(.25,.8,.35,1),opacity .18s cubic-bezier(.25,.8,.35,1),width .18s cubic-bezier(.25,.8,.35,1),min-width .18s cubic-bezier(.25,.8,.35,1);
+  --cut: 10px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--px);
+  -webkit-tap-highlight-color: transparent;
+}
+.avatar-box svg,
+.skin-avatar svg,
+.picon {
+  shape-rendering: crispEdges;
+}
 /* ===== Pixel/retro number font: falls back to Thai font per-glyph automatically ===== */
-[id$="-val"],[id$="-total"],[id$="-cost"],[id$="-have"],[id$="-out"],[id$="-lvl"],[id^="dash-"],[id$="-bonus"],[id$="-rate"],[id$="-fail-rate"],.stat-badge span,.market-hero-value,.ticker-price-value,.ticker-price-value b,.badge-trend{font-family:var(--pxnum),var(--px)!important;letter-spacing:.5px;font-size:.86em;line-height:1.6}
-.dash-hero-value{font-family:var(--pxnum),var(--px)!important;letter-spacing:.5px;font-size:.78em!important;line-height:1.7}
+[id$="-val"],
+[id$="-total"],
+[id$="-cost"],
+[id$="-have"],
+[id$="-out"],
+[id$="-lvl"],
+[id^="dash-"],
+[id$="-bonus"],
+[id$="-rate"],
+[id$="-fail-rate"],
+.stat-badge span,
+.market-hero-value,
+.ticker-price-value,
+.ticker-price-value b,
+.badge-trend {
+  font-family: var(--pxnum),var(--px)!important;
+  letter-spacing: .5px;
+  font-size: .86em;
+  line-height: 1.6;
+}
+.dash-hero-value {
+  font-family: var(--pxnum),var(--px)!important;
+  letter-spacing: .5px;
+  font-size: .78em!important;
+  line-height: 1.7;
+}
 /* ===== Pixel icon sprite instances ===== */
-.picon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;margin:0 1px;flex-shrink:0}
+.picon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.15em;
+  margin: 0 1px;
+  flex-shrink: 0;
+}
 /* ===== Diagonal "RPG HP bar" stripe animation while a mine/task is active ===== */
-.mining-progress{position:relative;overflow:hidden}
-.mining-progress::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 6px,transparent 6px 12px);background-size:34px 34px;opacity:0;transition:opacity .2s}
-.card.mining-active .mining-progress::after{opacity:1;animation:stripeMove .6s linear infinite}
-@keyframes stripeMove{from{background-position:0 0}to{background-position:34px 0}}
+.mining-progress {
+  position: relative;
+  overflow: hidden;
+}
+.mining-progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 6px,transparent 6px 12px);
+  background-size: 34px 34px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.card.mining-active .mining-progress::after {
+  opacity: 1;
+  animation: stripeMove .6s linear infinite;
+}
+@keyframes stripeMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 34px 0;
+  }
+}
 /* ===== Mine "atmosphere": faint stone grain + drifting dust ===== */
-.content-viewport{position:relative;background-image:radial-gradient(circle at 15% 25%,rgba(255,255,255,.028) 0 2px,transparent 3px),radial-gradient(circle at 68% 62%,rgba(255,255,255,.022) 0 2px,transparent 3px),radial-gradient(circle at 85% 15%,rgba(255,255,255,.02) 0 1px,transparent 2px),radial-gradient(circle at 35% 85%,rgba(255,255,255,.02) 0 1px,transparent 2px),repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 2px,transparent 2px 28px),repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 2px,transparent 2px 36px);background-size:130px 130px,170px 170px,95px 95px,150px 150px,100% 100%,100% 100%}
-.dust-layer{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden;opacity:.55}
-.dust-layer span{position:absolute;bottom:-12px;width:3px;height:3px;background:rgba(230,230,255,.4);animation:dustRise linear infinite}
-@keyframes dustRise{0%{transform:translate(0,0);opacity:0}8%{opacity:.7}92%{opacity:.25}100%{transform:translate(18px,-640px);opacity:0}}
-@media(prefers-reduced-motion:reduce){.dust-layer{display:none}.mining-progress::after{animation:none!important}}
+.content-viewport {
+  position: relative;
+  background-image: radial-gradient(circle at 15% 25%,rgba(255,255,255,.028) 0 2px,transparent 3px),radial-gradient(circle at 68% 62%,rgba(255,255,255,.022) 0 2px,transparent 3px),radial-gradient(circle at 85% 15%,rgba(255,255,255,.02) 0 1px,transparent 2px),radial-gradient(circle at 35% 85%,rgba(255,255,255,.02) 0 1px,transparent 2px),repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 2px,transparent 2px 28px),repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 2px,transparent 2px 36px);
+  background-size: 130px 130px,170px 170px,95px 95px,150px 150px,100% 100%,100% 100%;
+}
+.dust-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  opacity: .55;
+}
+.dust-layer span {
+  position: absolute;
+  bottom: -12px;
+  width: 3px;
+  height: 3px;
+  background: rgba(230,230,255,.4);
+  animation: dustRise linear infinite;
+}
+@keyframes dustRise {
+  0% {
+    transform: translate(0,0);
+    opacity: 0;
+  }
+  8% {
+    opacity: .7;
+  }
+  92% {
+    opacity: .25;
+  }
+  100% {
+    transform: translate(18px,-640px);
+    opacity: 0;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .dust-layer {
+    display: none;
+  }
+  .mining-progress::after {
+    animation: none!important;
+  }
+}
 /* ===== Big reward modal + confetti ===== */
-.reward-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:10000;align-items:center;justify-content:center;overflow:hidden;animation:fade .2s ease-out}
-.reward-modal-content{background:var(--bg-card);border:4px solid #000;box-shadow:0 0 0 3px var(--gold),8px 8px 0 #000;padding:34px 26px 26px;width:90%;max-width:360px;text-align:center;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);animation:modalIn .35s var(--ease-out);position:relative;z-index:2}
-.reward-modal-icon{font-size:3.2rem;margin-bottom:10px;animation:rewardPop .5s var(--ease-out)}
-@keyframes rewardPop{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.3) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
-#reward-modal-title{color:var(--gold);text-shadow:2px 2px 0 #000;margin-bottom:10px;font-size:1.25rem;font-family:var(--pxnum),var(--px);line-height:1.6}
-#reward-modal-sub{color:var(--text-muted);margin-bottom:20px;font-size:.95rem}
-.confetti-layer{position:absolute;inset:0;pointer-events:none;z-index:1}
-.confetti-piece{position:absolute;top:-14px;width:7px;height:13px;opacity:.95;animation-name:confettiFall;animation-timing-function:ease-in;animation-fill-mode:forwards}
-@keyframes confettiFall{to{transform:translateY(115vh) rotate(680deg);opacity:0}}
-html,body{width:100%;height:100%;background:var(--bg-body);color:var(--text-main);overflow:hidden;font-size:100%;line-height:1.4;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-body{display:flex;height:100vh;height:100dvh;background:var(--bg-body);position:relative}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.38) 100%)}
-@media(max-width:767px),(pointer:coarse){body::after{display:none}}
-
-::-webkit-scrollbar{width:14px;height:14px}
-::-webkit-scrollbar-track{background:#000;border-left:3px solid var(--border)}
-::-webkit-scrollbar-thumb{background:var(--primary);border:3px solid #000}
-::selection{background:var(--accent);color:#000}
-aside{width:260px;min-width:260px;background:var(--bg-sidebar);border-right:5px solid var(--border);display:flex;flex-direction:column;height:100%;transition:var(--ts);z-index:1000;overflow:hidden;box-shadow:6px 0 0 rgba(0,0,0,.4)}
-aside.collapsed{width:0!important;min-width:0!important;border:none;opacity:0}
-.brand{padding:calc(18px + env(safe-area-inset-top)) 16px 18px;font-size:.95rem;font-weight:700;border-bottom:5px solid var(--gold);display:flex;align-items:center;justify-content:space-between;white-space:nowrap;color:var(--gold);text-shadow:3px 3px 0 #000;letter-spacing:.5px;background:#000}
-.brand span::after{content:'_';animation:blink 1s ease-in-out infinite;color:var(--primary)}
-@keyframes blink{50%{opacity:0}}
-.close-sidebar{background:#000;border:3px solid var(--border);color:var(--text-muted);font-size:1.1rem;cursor:pointer;display:none;width:32px;height:32px}
-.menu-list{list-style:none;padding:14px;flex:1;display:flex;flex-direction:column;gap:10px;overflow-y:auto;white-space:nowrap}
-.menu-item{padding:12px 14px 12px 28px;position:relative;cursor:pointer;color:var(--text-muted);font-size:1rem;font-weight:600;transition:var(--ts);border:3px solid #000;background:var(--bg-card);box-shadow:0 0 0 2px var(--border),4px 4px 0 #000;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
-@media(hover:hover){.menu-item:hover{background:var(--bg-card-hover);color:var(--text-main);transform:translate(2px,2px);box-shadow:0 0 0 2px var(--border-light),2px 2px 0 #000}}
-.menu-item.active{background:var(--primary);color:#001318;border-color:#000;box-shadow:0 0 0 2px #000,4px 4px 0 #000}
-.menu-item.active{transition:var(--ts)}
-.menu-item.active::before{content:'▶';position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:.65rem;animation:blink 1s ease-in-out infinite}
-.main-container{flex:1;display:flex;flex-direction:column;overflow:hidden;width:100%}
-header{min-height:calc(64px + env(safe-area-inset-top));background:var(--bg-sidebar);border-bottom:5px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:max(10px,env(safe-area-inset-top)) 16px 10px;gap:10px;flex-shrink:0;box-shadow:0 6px 0 rgba(0,0,0,.35)}
-.toggle-btn{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--border);color:var(--text-main);width:42px;height:42px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.toggle-btn:active{box-shadow:0 0 0 2px var(--border);transform:translate(2px,2px)}
-.user-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.stat-badge{background:var(--bg-card);padding:7px 12px;border:3px solid #000;box-shadow:0 0 0 2px var(--border),3px 3px 0 #000;font-size:.9rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
-.stat-badge span{color:var(--gold);text-shadow:1px 1px 0 #000}
-.content-viewport{flex:1;padding:16px;overflow-y:auto;background:var(--bg-body);-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-.tab-content{display:none;animation:fade .3s ease-out}
-.tab-content.active{display:block}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-.grid-2,.grid-3{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px}
-.card{background:linear-gradient(160deg,var(--bg-card) 55%,var(--bg-card-hover) 160%);--cut:16px;border:3px solid #000;box-shadow:0 0 0 2px var(--border),7px 7px 0 #000;padding:20px;position:relative;overflow:hidden;contain:layout;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:var(--ts)}
-@media(hover:hover){.card:hover{transform:translateY(-4px);box-shadow:0 0 0 2px var(--border-light),9px 12px 0 #000}.card:hover::before{filter:brightness(1.35)}}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--gold),var(--accent) 55%,var(--primary));transition:filter .2s ease}
-.card h3{font-size:.95rem;font-weight:700;margin-bottom:18px;padding-bottom:12px;padding-top:4px;display:flex;justify-content:space-between;align-items:center;color:var(--primary);line-height:1.4;position:relative}
-.card h3::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:42px;background:var(--gold)}
-.card p{color:var(--text-muted);font-size:.95rem;margin-bottom:12px;line-height:1.5}
-@keyframes pulseGlow{0%,100%{opacity:.12}50%{opacity:.85}}
-.card.mining-active::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--primary);animation:pulseGlow 1.4s ease-in-out infinite}
-@keyframes floatUp{0%{transform:translateY(0) scale(.85);opacity:0}25%{transform:translateY(-10px) scale(1.08);opacity:1}100%{transform:translateY(-44px) scale(1);opacity:0}}
-.floating-reward{position:absolute;bottom:25px;right:20px;color:var(--success);font-weight:bold;pointer-events:none;animation:floatUp 1.1s ease-out forwards;z-index:50;font-size:.95rem;text-shadow:2px 2px 0 #000}
-.floating-reward.failure{color:var(--danger)}
-.text-input{width:100%;background:#000;border:3px solid var(--border);color:var(--text-main);padding:10px;font-size:1rem;resize:none;outline:none}
-.text-input:focus{border-color:var(--primary)}
-.btn{background:var(--primary);color:#00181c;border:3px solid #000;padding:10px 14px;cursor:pointer;font-weight:600;font-size:.9rem;letter-spacing:0;font-family:var(--px);display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;touch-action:manipulation;transition:var(--ts);box-shadow:0 0 0 2px #000,4px 4px 0 #000;position:relative}
-@media(hover:hover){.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}}
-.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 2px #000;transition:transform .06s ease,box-shadow .06s ease}
-.btn-success{background:var(--success);color:#00230f}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-warning{background:var(--accent);color:#1a1000}
-.btn-locked{background:#1c1c2e!important;color:#8b8bb0!important;border:3px solid #000!important;box-shadow:0 0 0 2px var(--border)!important;cursor:not-allowed!important;opacity:.75}
-.btn-row{display:flex;gap:8px;margin-top:8px}
-.btn-row .btn{flex:1}
-.progress-bar-container{background:#000;height:16px;width:100%;border:3px solid var(--border);overflow:hidden;margin-bottom:10px}
-.progress-bar{background:var(--success);height:100%;width:100%;transition:width .4s cubic-bezier(.25,.8,.35,1)}
-.mining-progress{background:var(--primary);height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;will-change:transform}
-#toast-box{position:fixed;top:calc(20px + env(safe-area-inset-top));right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.toast{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--primary),5px 5px 0 #000;padding:12px 18px;font-size:.95rem;animation:slideIn .35s cubic-bezier(.25,.8,.35,1)}
-@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}
-@keyframes toastOut{to{transform:translateX(110%);opacity:0}}
-.toast.out{animation:toastOut .26s ease-in forwards}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
-.sidebar-overlay.show{opacity:1;pointer-events:auto}
-#reset-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center}
-.modal-content{background:var(--bg-card);border:4px solid #000;box-shadow:0 0 0 3px var(--danger),8px 8px 0 #000;padding:26px;width:90%;max-width:380px;text-align:center;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
-.badge-trend{font-size:.85rem;padding:3px 7px;font-weight:bold;border:2px solid currentColor}
-.trend-up{background:rgba(0,255,127,.12);color:var(--success)}
-.trend-down{background:rgba(255,45,85,.12);color:var(--danger)}
-.market-chart-mini{width:100%;height:110px;background:#000;border:3px solid var(--border);display:block;margin-bottom:12px}
-.market-hero{background:linear-gradient(135deg,var(--bg-card),#000 120%);border:3px solid #000;box-shadow:0 0 0 2px var(--gold),6px 6px 0 #000;padding:16px 18px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:space-between;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
-.market-hero-stat{display:flex;flex-direction:column;gap:5px}
-.market-hero-label{font-size:.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.market-hero-value{font-size:1.35rem;font-weight:700;color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.2}
-.market-hero-value.best-mover{color:var(--text-main);font-size:1.05rem}
-.market-card{padding-top:16px}
-.ticker-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.ticker-icon{width:44px;height:44px;flex-shrink:0;background:#000;border:3px solid var(--border);box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-.ticker-name-wrap{display:flex;flex-direction:column;gap:5px;min-width:0}
-.ticker-name-wrap h3{margin:0;padding:0;border:none;font-size:1rem;color:var(--text-main);display:block}
-.ticker-price-row{display:flex;justify-content:space-between;align-items:baseline;background:#000;border:3px solid var(--border);padding:9px 12px;margin-bottom:12px}
-.ticker-price-label{font-size:.85rem;color:var(--text-muted)}
-.ticker-price-value{font-size:1.25rem;font-weight:700;color:var(--accent);text-shadow:2px 2px 0 #000}
-.ticker-price-value b{font-size:1.25rem}
-@media(max-width:480px){.market-hero{padding:14px}.market-hero-value{font-size:1.15rem}}
-.profile-card{display:flex;flex-direction:column;align-items:center;text-align:center}
-.avatar-box{width:88px;height:88px;background:#000;border:4px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 3px #000,0 0 0 6px var(--primary),6px 6px 0 #000;margin:0 auto 16px}
-.profile-stats{width:100%;background:#000;padding:4px 12px;border:3px solid var(--border);margin-top:10px;text-align:left}
-.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:.95rem;padding:8px 0;border-bottom:2px dashed var(--border)}
-.stat-row:last-child{border-bottom:none}
-.stat-row span{color:var(--text-muted)}
-.skin-avatar{width:64px;height:64px;margin:0 auto 10px;background:#000;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #000}
-.map-battle-canvas{width:100%;aspect-ratio:7/3;height:auto;background:#000;border:3px solid var(--border);overflow:hidden;margin-bottom:10px}
-.map-battle-canvas canvas{display:block;width:100%!important;height:auto!important;image-rendering:auto}
+.reward-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: fade .2s ease-out;
+}
+.reward-modal-content {
+  background: var(--bg-card);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 3px var(--gold),8px 8px 0 #000;
+  padding: 34px 26px 26px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  clip-path: polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  animation: modalIn .35s var(--ease-out);
+  position: relative;
+  z-index: 2;
+}
+.reward-modal-icon {
+  font-size: 3.2rem;
+  margin-bottom: 10px;
+  animation: rewardPop .5s var(--ease-out);
+}
+@keyframes rewardPop {
+  0% {
+    transform: scale(0) rotate(-15deg);
+  }
+  60% {
+    transform: scale(1.3) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+#reward-modal-title {
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  font-family: var(--pxnum),var(--px);
+  line-height: 1.6;
+}
+#reward-modal-sub {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-size: .95rem;
+}
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 7px;
+  height: 13px;
+  opacity: .95;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes confettiFall {
+  to {
+    transform: translateY(115vh) rotate(680deg);
+    opacity: 0;
+  }
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-body);
+  color: var(--text-main);
+  overflow: hidden;
+  font-size: 100%;
+  line-height: 1.4;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-body);
+  position: relative;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.38) 100%);
+}
+@media(max-width:767px),
+(pointer:coarse) {
+  body::after {
+    display: none;
+  }
+}
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+  border-left: 3px solid var(--border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: 3px solid #000;
+}
+::selection {
+  background: var(--accent);
+  color: #000;
+}
+aside {
+  width: 260px;
+  min-width: 260px;
+  background: var(--bg-sidebar);
+  border-right: 5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: var(--ts);
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 6px 0 0 rgba(0,0,0,.4);
+}
+aside.collapsed {
+  width: 0!important;
+  min-width: 0!important;
+  border: none;
+  opacity: 0;
+}
+.brand {
+  padding: calc(18px + env(safe-area-inset-top)) 16px 18px;
+  font-size: .95rem;
+  font-weight: 700;
+  border-bottom: 5px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  color: var(--gold);
+  text-shadow: 3px 3px 0 #000;
+  letter-spacing: .5px;
+  background: #000;
+}
+.brand span::after {
+  content: '_';
+  animation: blink 1s ease-in-out infinite;
+  color: var(--primary);
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.close-sidebar {
+  background: #000;
+  border: 3px solid var(--border);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: none;
+  width: 32px;
+  height: 32px;
+}
+.menu-list {
+  list-style: none;
+  padding: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.menu-item {
+  padding: 12px 14px 12px 28px;
+  position: relative;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--ts);
+  border: 3px solid #000;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 2px var(--border),4px 4px 0 #000;
+  clip-path: polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+}
+@media(hover:hover) {
+  .menu-item:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-main);
+    transform: translate(2px,2px);
+    box-shadow: 0 0 0 2px var(--border-light),2px 2px 0 #000;
+  }
+}
+.menu-item.active {
+  background: var(--primary);
+  color: #001318;
+  border-color: #000;
+  box-shadow: 0 0 0 2px #000,4px 4px 0 #000;
+}
+.menu-item.active {
+  transition: var(--ts);
+}
+.menu-item.active::before {
+  content: '▶';
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .65rem;
+  animation: blink 1s ease-in-out infinite;
+}
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+}
+header {
+  min-height: calc(64px + env(safe-area-inset-top));
+  background: var(--bg-sidebar);
+  border-bottom: 5px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(10px,env(safe-area-inset-top)) 16px 10px;
+  gap: 10px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 0 rgba(0,0,0,.35);
+}
+.toggle-btn {
+  background: var(--bg-card);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--border);
+  color: var(--text-main);
+  width: 42px;
+  height: 42px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggle-btn:active {
+  box-shadow: 0 0 0 2px var(--border);
+  transform: translate(2px,2px);
+}
+.user-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.stat-badge {
+  background: var(--bg-card);
+  padding: 7px 12px;
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--border),3px 3px 0 #000;
+  font-size: .9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  clip-path: polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+.stat-badge span {
+  color: var(--gold);
+  text-shadow: 1px 1px 0 #000;
+}
+.content-viewport {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: var(--bg-body);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+.tab-content {
+  display: none;
+  animation: fade .3s ease-out;
+}
+.tab-content.active {
+  display: block;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.grid-2,
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.card {
+  background: linear-gradient(160deg,var(--bg-card) 55%,var(--bg-card-hover) 160%);
+  --cut: 16px;
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--border),7px 7px 0 #000;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  contain: layout;
+  clip-path: polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  transition: var(--ts);
+}
+@media(hover:hover) {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 2px var(--border-light),9px 12px 0 #000;
+  }
+  .card:hover::before {
+    filter: brightness(1.35);
+  }
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg,var(--gold),var(--accent) 55%,var(--primary));
+  transition: filter .2s ease;
+}
+.card h3 {
+  font-size: .95rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--primary);
+  line-height: 1.4;
+  position: relative;
+}
+.card h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 42px;
+  background: var(--gold);
+}
+.card p {
+  color: var(--text-muted);
+  font-size: .95rem;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: .12;
+  }
+  50% {
+    opacity: .85;
+  }
+}
+.card.mining-active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 3px var(--primary);
+  animation: pulseGlow 1.4s ease-in-out infinite;
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(.85);
+    opacity: 0;
+  }
+  25% {
+    transform: translateY(-10px) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-44px) scale(1);
+    opacity: 0;
+  }
+}
+.floating-reward {
+  position: absolute;
+  bottom: 25px;
+  right: 20px;
+  color: var(--success);
+  font-weight: bold;
+  pointer-events: none;
+  animation: floatUp 1.1s ease-out forwards;
+  z-index: 50;
+  font-size: .95rem;
+  text-shadow: 2px 2px 0 #000;
+}
+.floating-reward.failure {
+  color: var(--danger);
+}
+.text-input {
+  width: 100%;
+  background: #000;
+  border: 3px solid var(--border);
+  color: var(--text-main);
+  padding: 10px;
+  font-size: 1rem;
+  resize: none;
+  outline: none;
+}
+.text-input:focus {
+  border-color: var(--primary);
+}
+.btn {
+  background: var(--primary);
+  color: #00181c;
+  border: 3px solid #000;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .9rem;
+  letter-spacing: 0;
+  font-family: var(--px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  touch-action: manipulation;
+  transition: var(--ts);
+  box-shadow: 0 0 0 2px #000,4px 4px 0 #000;
+  position: relative;
+}
+@media(hover:hover) {
+  .btn:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+  }
+}
+.btn:active {
+  transform: translate(3px,3px);
+  box-shadow: 0 0 0 2px #000;
+  transition: transform .06s ease,box-shadow .06s ease;
+}
+.btn-success {
+  background: var(--success);
+  color: #00230f;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-warning {
+  background: var(--accent);
+  color: #1a1000;
+}
+.btn-locked {
+  background: #1c1c2e!important;
+  color: #8b8bb0!important;
+  border: 3px solid #000!important;
+  box-shadow: 0 0 0 2px var(--border)!important;
+  cursor: not-allowed!important;
+  opacity: .75;
+}
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-row .btn {
+  flex: 1;
+}
+.progress-bar-container {
+  background: #000;
+  height: 16px;
+  width: 100%;
+  border: 3px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress-bar {
+  background: var(--success);
+  height: 100%;
+  width: 100%;
+  transition: width .4s cubic-bezier(.25,.8,.35,1);
+}
+.mining-progress {
+  background: var(--primary);
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+#toast-box {
+  position: fixed;
+  top: calc(20px + env(safe-area-inset-top));
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg-card);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--primary),5px 5px 0 #000;
+  padding: 12px 18px;
+  font-size: .95rem;
+  animation: slideIn .35s cubic-bezier(.25,.8,.35,1);
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes toastOut {
+  to {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+}
+.toast.out {
+  animation: toastOut .26s ease-in forwards;
+}
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.sidebar-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#reset-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: var(--bg-card);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 3px var(--danger),8px 8px 0 #000;
+  padding: 26px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  clip-path: polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+}
+.badge-trend {
+  font-size: .85rem;
+  padding: 3px 7px;
+  font-weight: bold;
+  border: 2px solid currentColor;
+}
+.trend-up {
+  background: rgba(0,255,127,.12);
+  color: var(--success);
+}
+.trend-down {
+  background: rgba(255,45,85,.12);
+  color: var(--danger);
+}
+.market-chart-mini {
+  width: 100%;
+  height: 110px;
+  background: #000;
+  border: 3px solid var(--border);
+  display: block;
+  margin-bottom: 12px;
+}
+.market-hero {
+  background: linear-gradient(135deg,var(--bg-card),#000 120%);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--gold),6px 6px 0 #000;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  align-items: center;
+  justify-content: space-between;
+  clip-path: polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+}
+.market-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.market-hero-label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  font-weight: 600;
+}
+.market-hero-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000;
+  line-height: 1.2;
+}
+.market-hero-value.best-mover {
+  color: var(--text-main);
+  font-size: 1.05rem;
+}
+.market-card {
+  padding-top: 16px;
+}
+.ticker-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ticker-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #000;
+  border: 3px solid var(--border);
+  box-shadow: 3px 3px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.ticker-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.ticker-name-wrap h3 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-main);
+  display: block;
+}
+.ticker-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: #000;
+  border: 3px solid var(--border);
+  padding: 9px 12px;
+  margin-bottom: 12px;
+}
+.ticker-price-label {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+.ticker-price-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #000;
+}
+.ticker-price-value b {
+  font-size: 1.25rem;
+}
+@media(max-width:480px) {
+  .market-hero {
+    padding: 14px;
+  }
+  .market-hero-value {
+    font-size: 1.15rem;
+  }
+}
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.avatar-box {
+  width: 88px;
+  height: 88px;
+  background: #000;
+  border: 4px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 0 3px #000,0 0 0 6px var(--primary),6px 6px 0 #000;
+  margin: 0 auto 16px;
+}
+.profile-stats {
+  width: 100%;
+  background: #000;
+  padding: 4px 12px;
+  border: 3px solid var(--border);
+  margin-top: 10px;
+  text-align: left;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .95rem;
+  padding: 8px 0;
+  border-bottom: 2px dashed var(--border);
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.stat-row span {
+  color: var(--text-muted);
+}
+.skin-avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  background: #000;
+  border: 3px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 3px 0 #000;
+}
+.map-battle-canvas {
+  width: 100%;
+  aspect-ratio: 7/3;
+  height: auto;
+  background: #000;
+  border: 3px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.map-battle-canvas canvas {
+  display: block;
+  width: 100%!important;
+  height: auto!important;
+  image-rendering: auto;
+}
 /* ===== Mobile / touch foundation ===== */
-html,body{overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.text-input{-webkit-user-select:text;user-select:text}
-.content-viewport{overscroll-behavior:contain;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-.map-battle-canvas canvas{touch-action:pan-y!important}
-.stat-badge .lbl{font-style:normal}
-.card h3{gap:8px;flex-wrap:wrap}
-.btn{min-height:44px}
-.modal-content{max-height:90vh;max-height:90dvh;overflow-y:auto}
-#reset-modal{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
-
+html,
+body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.text-input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+.content-viewport {
+  overscroll-behavior: contain;
+  padding-left: max(16px,env(safe-area-inset-left));
+  padding-right: max(16px,env(safe-area-inset-right));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+.map-battle-canvas canvas {
+  touch-action: pan-y!important;
+}
+.stat-badge .lbl {
+  font-style: normal;
+}
+.card h3 {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  min-height: 44px;
+}
+.modal-content {
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+#reset-modal {
+  padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+}
 /* ===== Smoothness ===== */
 /* cards rise in one after another when a tab opens (backwards = no lingering transform, so hover still works) */
-@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
-.tab-content.active .card{animation:cardIn .42s var(--ease-out) backwards;animation-delay:calc(var(--i,0)*45ms)}
-.tab-content.active .card:nth-child(2){--i:1}.tab-content.active .card:nth-child(3){--i:2}.tab-content.active .card:nth-child(4){--i:3}
-.tab-content.active .card:nth-child(5){--i:4}.tab-content.active .card:nth-child(6){--i:5}.tab-content.active .card:nth-child(n+7){--i:6}
-#skin-shop-grid .card{animation:none}
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.tab-content.active .card {
+  animation: cardIn .42s var(--ease-out) backwards;
+  animation-delay: calc(var(--i,0)*45ms);
+}
+.tab-content.active .card:nth-child(2) {
+  --i: 1;
+}
+.tab-content.active .card:nth-child(3) {
+  --i: 2;
+}
+.tab-content.active .card:nth-child(4) {
+  --i: 3;
+}
+.tab-content.active .card:nth-child(5) {
+  --i: 4;
+}
+.tab-content.active .card:nth-child(6) {
+  --i: 5;
+}
+.tab-content.active .card:nth-child(n+7) {
+  --i: 6;
+}
+#skin-shop-grid .card {
+  animation: none;
+}
 /* header numbers flash green on gain / red on spend */
-.stat-badge span{display:inline-block;white-space:nowrap}
-@keyframes gainFlash{0%{color:var(--success);transform:scale(1.14)}100%{color:var(--gold);transform:none}}
-@keyframes lossFlash{0%{color:var(--danger);transform:scale(.94)}100%{color:var(--gold);transform:none}}
-.stat-badge.gain span{animation:gainFlash .55s var(--ease-out)}
-.stat-badge.loss span{animation:lossFlash .55s var(--ease-out)}
+.stat-badge span {
+  display: inline-block;
+  white-space: nowrap;
+}
+@keyframes gainFlash {
+  0% {
+    color: var(--success);
+    transform: scale(1.14);
+  }
+  100% {
+    color: var(--gold);
+    transform: none;
+  }
+}
+@keyframes lossFlash {
+  0% {
+    color: var(--danger);
+    transform: scale(.94);
+  }
+  100% {
+    color: var(--gold);
+    transform: none;
+  }
+}
+.stat-badge.gain span {
+  animation: gainFlash .55s var(--ease-out);
+}
+.stat-badge.loss span {
+  animation: lossFlash .55s var(--ease-out);
+}
 /* dialogs */
-@keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
-#reset-modal{animation:fade .2s ease-out}
-.modal-content{animation:modalIn .3s var(--ease-out)}
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+#reset-modal {
+  animation: fade .2s ease-out;
+}
+.modal-content {
+  animation: modalIn .3s var(--ease-out);
+}
 /* buttons respond instantly */
-.btn,.menu-item,.toggle-btn{transition-duration:.14s}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
-
-@keyframes toastInM{from{transform:translateY(18px) scale(.96);opacity:0}to{transform:none;opacity:1}}
-@keyframes toastOutM{to{transform:translateY(14px) scale(.96);opacity:0}}
-
+.btn,
+.menu-item,
+.toggle-btn {
+  transition-duration: .14s;
+}
+@media(prefers-reduced-motion:reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms!important;
+    animation-iteration-count: 1!important;
+    transition-duration: .01ms!important;
+    scroll-behavior: auto!important;
+  }
+}
+@keyframes toastInM {
+  from {
+    transform: translateY(18px) scale(.96);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes toastOutM {
+  to {
+    transform: translateY(14px) scale(.96);
+    opacity: 0;
+  }
+}
 /* ===== Phones ( < 768px ) ===== */
-@media(max-width:767px){
-  .close-sidebar{display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0}
-  aside{position:fixed;top:0;left:0;bottom:0;width:min(280px,84vw)!important;min-width:0;transform:translateX(-105%);visibility:hidden;box-shadow:none;transition:transform .34s var(--ease-out),visibility 0s linear .34s;will-change:transform}
-  aside.mobile-show{transform:none!important;opacity:1!important;visibility:visible;box-shadow:6px 0 0 rgba(0,0,0,.4);transition:transform .34s var(--ease-out),visibility 0s}
-  .brand{padding-left:max(16px,env(safe-area-inset-left))}
-  .menu-list{padding:12px 12px calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));-webkit-overflow-scrolling:touch}
-  .menu-item{padding-top:14px;padding-bottom:14px;min-height:48px;font-size:1.05rem}
-  header{min-height:0;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))}
-  .toggle-btn{width:44px;height:44px;flex-shrink:0}
-  .user-stats{flex:1;min-width:0;flex-wrap:nowrap;gap:6px}
-  .stat-badge{flex:1 1 auto;min-width:0;padding:6px 6px;font-size:clamp(.68rem,3.2vw,.85rem);text-align:center;overflow:visible;white-space:normal;overflow-wrap:break-word;word-break:break-word;line-height:1.2;box-shadow:0 0 0 2px var(--border),2px 2px 0 #000}
-  .content-viewport{padding-top:12px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(20px + env(safe-area-inset-bottom))}
-  .grid-2,.grid-3{gap:14px;margin-bottom:14px}
-  .card{padding:14px}
-  .btn{font-size:1rem;padding:10px 8px}
-  .btn-row{gap:8px}
-  .btn-row .btn{min-width:0}
-  #toast-box{top:auto;bottom:calc(14px + env(safe-area-inset-bottom));left:12px;right:12px;align-items:center;flex-direction:column-reverse}
-  .toast{max-width:100%;text-align:center;animation:toastInM .32s var(--ease-out)}
-  .toast.out{animation:toastOutM .24s ease-in forwards}
-  .modal-content{padding:20px}
-  .market-chart-mini{height:100px}
+@media(max-width:767px) {
+  .close-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  aside {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(280px,84vw)!important;
+    min-width: 0;
+    transform: translateX(-105%);
+    visibility: hidden;
+    box-shadow: none;
+    transition: transform .34s var(--ease-out),visibility 0s linear .34s;
+    will-change: transform;
+  }
+  aside.mobile-show {
+    transform: none!important;
+    opacity: 1!important;
+    visibility: visible;
+    box-shadow: 6px 0 0 rgba(0,0,0,.4);
+    transition: transform .34s var(--ease-out),visibility 0s;
+  }
+  .brand {
+    padding-left: max(16px,env(safe-area-inset-left));
+  }
+  .menu-list {
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+    -webkit-overflow-scrolling: touch;
+  }
+  .menu-item {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    min-height: 48px;
+    font-size: 1.05rem;
+  }
+  header {
+    min-height: 0;
+    gap: 8px;
+    padding: max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));
+  }
+  .toggle-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .user-stats {
+    flex: 1;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .stat-badge {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 6px 6px;
+    font-size: clamp(.68rem,3.2vw,.85rem);
+    text-align: center;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.2;
+    box-shadow: 0 0 0 2px var(--border),2px 2px 0 #000;
+  }
+  .content-viewport {
+    padding-top: 12px;
+    padding-left: max(12px,env(safe-area-inset-left));
+    padding-right: max(12px,env(safe-area-inset-right));
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+  .grid-2,
+  .grid-3 {
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .card {
+    padding: 14px;
+  }
+  .btn {
+    font-size: 1rem;
+    padding: 10px 8px;
+  }
+  .btn-row {
+    gap: 8px;
+  }
+  .btn-row .btn {
+    min-width: 0;
+  }
+  #toast-box {
+    top: auto;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    left: 12px;
+    right: 12px;
+    align-items: center;
+    flex-direction: column-reverse;
+  }
+  .toast {
+    max-width: 100%;
+    text-align: center;
+    animation: toastInM .32s var(--ease-out);
+  }
+  .toast.out {
+    animation: toastOutM .24s ease-in forwards;
+  }
+  .modal-content {
+    padding: 20px;
+  }
+  .market-chart-mini {
+    height: 100px;
+  }
 }
-@media(max-width:480px){
-  .stat-badge .lbl{display:none}
-  .card h3{font-size:.9rem}
-  .avatar-box{width:76px;height:76px}
+@media(max-width:480px) {
+  .stat-badge .lbl {
+    display: none;
+  }
+  .card h3 {
+    font-size: .9rem;
+  }
+  .avatar-box {
+    width: 76px;
+    height: 76px;
+  }
 }
-@media(max-width:340px){
-  .stat-badge{padding:5px 4px;font-size:clamp(.62rem,3.4vw,.78rem)}
-  .content-viewport{padding-left:8px;padding-right:8px}
+@media(max-width:340px) {
+  .stat-badge {
+    padding: 5px 4px;
+    font-size: clamp(.62rem,3.4vw,.78rem);
+  }
+  .content-viewport {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
-
 /* ===== Tablets / desktop ===== */
-@media(min-width:768px){.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.close-sidebar{display:none!important}.market-chart-mini{height:90px}}
-@media(min-width:1024px){.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(min-width:768px) and (max-width:1023px){.toggle-btn{flex-shrink:0}.user-stats{flex-wrap:nowrap;min-width:0}.stat-badge{padding:6px 9px;font-size:.85rem}}
-
-/* ===== Landscape phones (short viewport) ===== */
-@media(max-height:480px){
-  header{min-height:0;padding-top:max(6px,env(safe-area-inset-top));padding-bottom:6px}
-  .toggle-btn{width:38px;height:38px}
-  .brand{padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:10px}
-  .menu-list{gap:6px}
-  .menu-item{min-height:40px;padding-top:9px;padding-bottom:9px}
+@media(min-width:768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  .close-sidebar {
+    display: none!important;
+  }
+  .market-chart-mini {
+    height: 90px;
+  }
 }
-
+@media(min-width:1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+}
+@media(min-width:768px) and (max-width:1023px) {
+  .toggle-btn {
+    flex-shrink: 0;
+  }
+  .user-stats {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .stat-badge {
+    padding: 6px 9px;
+    font-size: .85rem;
+  }
+}
+/* ===== Landscape phones (short viewport) ===== */
+@media(max-height:480px) {
+  header {
+    min-height: 0;
+    padding-top: max(6px,env(safe-area-inset-top));
+    padding-bottom: 6px;
+  }
+  .toggle-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .brand {
+    padding-top: calc(10px + env(safe-area-inset-top));
+    padding-bottom: 10px;
+  }
+  .menu-list {
+    gap: 6px;
+  }
+  .menu-item {
+    min-height: 40px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+}
 /* ===== Info rows (อ่านง่าย เป็นระเบียบ) ===== */
-.info{margin-bottom:12px;font-size:.92rem}
-.info .r{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:2px dashed var(--border)}
-.info .r:last-of-type{border-bottom:none}
-.info .k{color:var(--text-muted);flex-shrink:0}
-.info .v{text-align:right;color:var(--text-main);font-weight:600;line-height:1.5}
-.info .d{color:var(--text-main);padding:2px 0 8px;line-height:1.5}
-.info .warn{margin-top:8px;padding:6px 10px;background:rgba(255,45,85,.12);border:2px solid var(--danger);color:#ff8fa5;font-size:.85rem}
-.hint{background:#000;border:3px solid var(--border);border-left:5px solid var(--primary);padding:10px 14px;margin-bottom:16px;font-size:.9rem;color:var(--text-muted);line-height:1.6}
-.dash-hero{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
-@media(min-width:700px){.dash-hero{grid-template-columns:repeat(4,1fr)}}
-.dash-hero-stat{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--border),4px 4px 0 #000;padding:14px;display:flex;flex-direction:column;gap:6px;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:var(--ts)}
-@media(hover:hover){.dash-hero-stat:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--border-light),4px 6px 0 #000}}
-.dash-hero-label{font-size:.8rem;color:var(--text-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash-hero-value{font-size:1.2rem;font-weight:700;color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.2}
-.dash-ore-row{display:flex;flex-wrap:wrap;gap:12px}
-.dash-ore-item{flex:1;min-width:110px;background:#000;border:3px solid var(--border);padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
-.dash-ore-icon{font-size:1.5rem}
-.dash-ore-name{font-size:.85rem;color:var(--text-muted)}
-.dash-ore-qty{font-size:1.15rem;font-weight:700;color:var(--success)}
-@media(max-width:480px){.dash-hero-value{font-size:1.05rem}}
-.hint b{color:var(--gold)}
-.guide{list-style:none;counter-reset:s;display:grid;gap:10px}
-.guide li{counter-increment:s;position:relative;padding:8px 0 8px 44px;color:var(--text-muted);font-size:.92rem;line-height:1.5;border-bottom:2px dashed var(--border)}
-.guide li:last-child{border-bottom:none}
-.guide li::before{content:counter(s);position:absolute;left:0;top:6px;width:32px;height:32px;background:var(--primary);color:#001318;font-weight:700;display:flex;align-items:center;justify-content:center;border:3px solid #000}
-.guide li b{color:var(--text-main);display:block}
-.tab-content>h2{padding-left:10px;border-left:5px solid currentColor}
-@media(max-width:480px){.info .r{flex-direction:column;gap:2px}.info .v{text-align:left}}
-.btn-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}.btn-grid .btn{padding-left:2px;padding-right:2px;font-size:.82rem;white-space:nowrap}
-@media(max-width:380px){.btn-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-.item-list{display:flex;flex-direction:column}
-.item-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:2px dashed var(--border);font-size:.95rem}
-.item-row:last-child{border-bottom:none}
-.item-row .ic{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0}
-.item-row .nm{color:var(--text-muted);flex:1}
-.item-row .qt{font-weight:700;color:var(--text-main)}
+.info {
+  margin-bottom: 12px;
+  font-size: .92rem;
+}
+.info .r {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 2px dashed var(--border);
+}
+.info .r:last-of-type {
+  border-bottom: none;
+}
+.info .k {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.info .v {
+  text-align: right;
+  color: var(--text-main);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.info .d {
+  color: var(--text-main);
+  padding: 2px 0 8px;
+  line-height: 1.5;
+}
+.info .warn {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(255,45,85,.12);
+  border: 2px solid var(--danger);
+  color: #ff8fa5;
+  font-size: .85rem;
+}
+.hint {
+  background: #000;
+  border: 3px solid var(--border);
+  border-left: 5px solid var(--primary);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: .9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.dash-hero {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+@media(min-width:700px) {
+  .dash-hero {
+    grid-template-columns: repeat(4,1fr);
+  }
+}
+.dash-hero-stat {
+  background: var(--bg-card);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--border),4px 4px 0 #000;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  clip-path: polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  transition: var(--ts);
+}
+@media(hover:hover) {
+  .dash-hero-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 2px var(--border-light),4px 6px 0 #000;
+  }
+}
+.dash-hero-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-hero-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000;
+  line-height: 1.2;
+}
+.dash-ore-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dash-ore-item {
+  flex: 1;
+  min-width: 110px;
+  background: #000;
+  border: 3px solid var(--border);
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+.dash-ore-icon {
+  font-size: 1.5rem;
+}
+.dash-ore-name {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+.dash-ore-qty {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--success);
+}
+@media(max-width:480px) {
+  .dash-hero-value {
+    font-size: 1.05rem;
+  }
+}
+.hint b {
+  color: var(--gold);
+}
+.guide {
+  list-style: none;
+  counter-reset: s;
+  display: grid;
+  gap: 10px;
+}
+.guide li {
+  counter-increment: s;
+  position: relative;
+  padding: 8px 0 8px 44px;
+  color: var(--text-muted);
+  font-size: .92rem;
+  line-height: 1.5;
+  border-bottom: 2px dashed var(--border);
+}
+.guide li:last-child {
+  border-bottom: none;
+}
+.guide li::before {
+  content: counter(s);
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  color: #001318;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #000;
+}
+.guide li b {
+  color: var(--text-main);
+  display: block;
+}
+.tab-content>h2 {
+  padding-left: 10px;
+  border-left: 5px solid currentColor;
+}
+@media(max-width:480px) {
+  .info .r {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .info .v {
+    text-align: left;
+  }
+}
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-grid .btn {
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: .82rem;
+  white-space: nowrap;
+}
+@media(max-width:380px) {
+  .btn-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+.item-list {
+  display: flex;
+  flex-direction: column;
+}
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 2px dashed var(--border);
+  font-size: .95rem;
+}
+.item-row:last-child {
+  border-bottom: none;
+}
+.item-row .ic {
+  font-size: 1.1rem;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.item-row .nm {
+  color: var(--text-muted);
+  flex: 1;
+}
+.item-row .qt {
+  font-weight: 700;
+  color: var(--text-main);
+}
 </style>
 </head>
 <body>
@@ -267,6 +1522,46 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <symbol id="pi-diamond" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="2" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
 <symbol id="pi-star" viewBox="0 0 7 7"><rect x="3" y="0" width="1" height="2" fill="currentColor"/><rect x="1" y="2" width="5" height="1" fill="currentColor"/><rect x="0" y="3" width="7" height="1" fill="currentColor"/><rect x="1" y="4" width="5" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/></symbol>
 <symbol id="pi-nugget" viewBox="0 0 8 7"><rect x="1" y="0" width="2" height="1" fill="currentColor"/><rect x="5" y="0" width="2" height="1" fill="currentColor"/><rect x="0" y="1" width="8" height="2" fill="currentColor"/><rect x="1" y="3" width="6" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="1" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-pickaxe" viewBox="0 0 10 10"><rect x="4" y="0" width="4" height="1" fill="currentColor"/><rect x="3" y="1" width="1" height="1" fill="currentColor"/><rect x="8" y="1" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="1" height="1" fill="currentColor"/><rect x="4" y="2" width="1" height="1" fill="currentColor"/><rect x="4" y="3" width="1" height="1" fill="currentColor"/><rect x="3" y="4" width="1" height="1" fill="currentColor"/><rect x="3" y="5" width="1" height="1" fill="currentColor"/><rect x="2" y="6" width="1" height="1" fill="currentColor"/><rect x="2" y="7" width="1" height="1" fill="currentColor"/><rect x="1" y="8" width="2" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-fire" viewBox="0 0 8 8"><rect x="3" y="0" width="1" height="1" fill="currentColor"/><rect x="2" y="1" width="3" height="1" fill="currentColor"/><rect x="2" y="2" width="4" height="1" fill="currentColor"/><rect x="1" y="3" width="6" height="1" fill="currentColor"/><rect x="1" y="4" width="6" height="1" fill="currentColor"/><rect x="2" y="5" width="4" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-person" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="2" fill="currentColor"/><rect x="2" y="2" width="4" height="3" fill="currentColor"/><rect x="2" y="5" width="1" height="3" fill="currentColor"/><rect x="5" y="5" width="1" height="3" fill="currentColor"/></symbol>
+<symbol id="pi-castle" viewBox="0 0 10 8"><rect x="0" y="2" width="2" height="4" fill="currentColor"/><rect x="4" y="0" width="2" height="6" fill="currentColor"/><rect x="8" y="2" width="2" height="4" fill="currentColor"/><rect x="0" y="6" width="10" height="2" fill="currentColor"/><rect x="0" y="1" width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/><rect x="8" y="1" width="1" height="1" fill="currentColor"/><rect x="9" y="1" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-cart" viewBox="0 0 10 8"><rect x="0" y="0" width="1" height="1" fill="currentColor"/><rect x="0" y="1" width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="8" height="1" fill="currentColor"/><rect x="1" y="2" width="8" height="3" fill="currentColor"/><rect x="2" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/><rect x="2" y="7" width="1" height="1" fill="currentColor"/><rect x="6" y="7" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-shopbag" viewBox="0 0 8 8"><rect x="2" y="0" width="1" height="2" fill="currentColor"/><rect x="5" y="0" width="1" height="2" fill="currentColor"/><rect x="1" y="2" width="6" height="6" fill="currentColor"/></symbol>
+<symbol id="pi-backpack" viewBox="0 0 8 8"><rect x="2" y="0" width="4" height="1" fill="currentColor"/><rect x="2" y="1" width="1" height="2" fill="currentColor"/><rect x="5" y="1" width="1" height="2" fill="currentColor"/><rect x="1" y="2" width="6" height="6" fill="currentColor"/></symbol>
+<symbol id="pi-gear" viewBox="0 0 10 10"><rect x="3" y="3" width="4" height="4" fill="currentColor"/><rect x="4" y="0" width="2" height="2" fill="currentColor"/><rect x="4" y="8" width="2" height="2" fill="currentColor"/><rect x="0" y="4" width="2" height="2" fill="currentColor"/><rect x="8" y="4" width="2" height="2" fill="currentColor"/><rect x="1" y="1" width="2" height="2" fill="currentColor"/><rect x="7" y="1" width="2" height="2" fill="currentColor"/><rect x="1" y="7" width="2" height="2" fill="currentColor"/><rect x="7" y="7" width="2" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-house" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="1" y="3" width="6" height="5" fill="currentColor"/></symbol>
+<symbol id="pi-mountain" viewBox="0 0 10 8"><rect x="2" y="1" width="1" height="1" fill="currentColor"/><rect x="1" y="2" width="3" height="1" fill="currentColor"/><rect x="6" y="0" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="3" height="1" fill="currentColor"/><rect x="0" y="3" width="10" height="1" fill="currentColor"/><rect x="0" y="4" width="10" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-book" viewBox="0 0 8 8"><rect x="1" y="1" width="6" height="6" fill="currentColor"/><rect x="5" y="0" width="1" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-bolt" viewBox="0 0 8 8"><rect x="4" y="0" width="2" height="1" fill="currentColor"/><rect x="3" y="1" width="2" height="1" fill="currentColor"/><rect x="2" y="2" width="2" height="1" fill="currentColor"/><rect x="1" y="3" width="2" height="1" fill="currentColor"/><rect x="3" y="4" width="2" height="1" fill="currentColor"/><rect x="4" y="5" width="2" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="4" y="7" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-ingot" viewBox="0 0 8 8"><rect x="1" y="2" width="6" height="4" fill="currentColor"/><rect x="2" y="3" width="4" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-goldbar" viewBox="0 0 8 8"><rect x="1" y="1" width="6" height="2" fill="currentColor"/><rect x="1" y="5" width="6" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-shirt" viewBox="0 0 8 8"><rect x="1" y="0" width="2" height="1" fill="currentColor"/><rect x="5" y="0" width="2" height="1" fill="currentColor"/><rect x="0" y="1" width="2" height="2" fill="currentColor"/><rect x="6" y="1" width="2" height="2" fill="currentColor"/><rect x="2" y="1" width="4" height="6" fill="currentColor"/></symbol>
+<symbol id="pi-shield" viewBox="0 0 8 8"><rect x="1" y="0" width="6" height="1" fill="currentColor"/><rect x="0" y="1" width="8" height="4" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-sword" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="5" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-horse" viewBox="0 0 10 8"><rect x="5" y="0" width="2" height="2" fill="currentColor"/><rect x="4" y="2" width="1" height="1" fill="currentColor"/><rect x="6" y="2" width="2" height="1" fill="currentColor"/><rect x="3" y="3" width="4" height="2" fill="currentColor"/><rect x="4" y="5" width="1" height="1" fill="currentColor"/><rect x="3" y="6" width="1" height="2" fill="currentColor"/><rect x="6" y="6" width="1" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-map" viewBox="0 0 10 8"><rect x="0" y="1" width="10" height="6" fill="currentColor"/><rect x="2" y="1" width="1" height="6" fill="currentColor"/><rect x="4" y="1" width="1" height="6" fill="currentColor"/><rect x="6" y="1" width="1" height="6" fill="currentColor"/><rect x="8" y="1" width="1" height="6" fill="currentColor"/></symbol>
+<symbol id="pi-tent" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="3" fill="currentColor"/></symbol>
+<symbol id="pi-ruins" viewBox="0 0 10 8"><rect x="3" y="0" width="4" height="1" fill="currentColor"/><rect x="2" y="1" width="6" height="1" fill="currentColor"/><rect x="1" y="2" width="1" height="5" fill="currentColor"/><rect x="4" y="2" width="1" height="5" fill="currentColor"/><rect x="7" y="2" width="1" height="5" fill="currentColor"/><rect x="0" y="7" width="10" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-volcano" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="4" fill="currentColor"/></symbol>
+<symbol id="pi-gift" viewBox="0 0 8 8"><rect x="0" y="2" width="8" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="5" fill="currentColor"/><rect x="3" y="0" width="2" height="8" fill="currentColor"/></symbol>
+<symbol id="pi-moneybag" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="5" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-speaker" viewBox="0 0 8 8"><rect x="0" y="2" width="2" height="4" fill="currentColor"/><rect x="2" y="1" width="2" height="6" fill="currentColor"/><rect x="5" y="2" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="6" y="3" width="1" height="2" fill="currentColor"/><rect x="7" y="1" width="1" height="1" fill="currentColor"/><rect x="7" y="6" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-speaker-off" viewBox="0 0 8 8"><rect x="0" y="2" width="2" height="4" fill="currentColor"/><rect x="2" y="1" width="2" height="6" fill="currentColor"/><rect x="5" y="1" width="1" height="1" fill="currentColor"/><rect x="7" y="1" width="1" height="1" fill="currentColor"/><rect x="6" y="2" width="1" height="1" fill="currentColor"/><rect x="5" y="3" width="1" height="1" fill="currentColor"/><rect x="7" y="3" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-note" viewBox="0 0 8 8"><rect x="5" y="0" width="1" height="5" fill="currentColor"/><rect x="6" y="0" width="1" height="2" fill="currentColor"/><rect x="3" y="5" width="3" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-bell" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="3" fill="currentColor"/><rect x="0" y="5" width="8" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-bell-off" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="3" fill="currentColor"/><rect x="0" y="5" width="8" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="0" y="0" width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/><rect x="2" y="2" width="1" height="1" fill="currentColor"/><rect x="3" y="3" width="1" height="1" fill="currentColor"/><rect x="4" y="4" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/><rect x="7" y="7" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-wrench" viewBox="0 0 8 8"><rect x="5" y="0" width="3" height="3" fill="currentColor"/><rect x="4" y="3" width="1" height="1" fill="currentColor"/><rect x="3" y="4" width="1" height="1" fill="currentColor"/><rect x="2" y="5" width="1" height="1" fill="currentColor"/><rect x="1" y="6" width="1" height="1" fill="currentColor"/><rect x="0" y="7" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-medal" viewBox="0 0 8 8"><rect x="2" y="0" width="1" height="3" fill="currentColor"/><rect x="5" y="0" width="1" height="3" fill="currentColor"/><rect x="2" y="3" width="4" height="4" fill="currentColor"/></symbol>
+<symbol id="pi-floppy" viewBox="0 0 8 8"><rect x="0" y="0" width="8" height="8" fill="currentColor"/><rect x="2" y="1" width="4" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-folder" viewBox="0 0 8 8"><rect x="0" y="1" width="3" height="1" fill="currentColor"/><rect x="0" y="2" width="8" height="5" fill="currentColor"/></symbol>
+<symbol id="pi-cloud" viewBox="0 0 8 8"><rect x="2" y="2" width="4" height="1" fill="currentColor"/><rect x="1" y="3" width="6" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="2" fill="currentColor"/><rect x="1" y="6" width="6" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-warning" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="4" fill="currentColor"/></symbol>
+<symbol id="pi-helmet" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="3" fill="currentColor"/><rect x="1" y="4" width="6" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-confetti" viewBox="0 0 8 8"><rect x="0" y="5" width="1" height="3" fill="currentColor"/><rect x="1" y="4" width="1" height="3" fill="currentColor"/><rect x="2" y="3" width="1" height="3" fill="currentColor"/><rect x="4" y="0" width="1" height="1" fill="currentColor"/><rect x="6" y="1" width="1" height="1" fill="currentColor"/><rect x="3" y="2" width="1" height="1" fill="currentColor"/><rect x="5" y="3" width="1" height="1" fill="currentColor"/><rect x="7" y="2" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-menu" viewBox="0 0 8 8"><rect x="0" y="1" width="8" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="1" fill="currentColor"/><rect x="0" y="7" width="8" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-trophy" viewBox="0 0 8 8"><rect x="2" y="2" width="4" height="3" fill="currentColor"/><rect x="1" y="2" width="1" height="2" fill="currentColor"/><rect x="6" y="2" width="1" height="2" fill="currentColor"/><rect x="3" y="5" width="2" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-close" viewBox="0 0 6 6"><rect x="0" y="0" width="2" height="2" fill="currentColor"/><rect x="4" y="0" width="2" height="2" fill="currentColor"/><rect x="2" y="2" width="2" height="2" fill="currentColor"/><rect x="0" y="4" width="2" height="2" fill="currentColor"/><rect x="4" y="4" width="2" height="2" fill="currentColor"/></symbol>
 </defs></svg>
 <div id="toast-box"></div>
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
@@ -274,16 +1569,16 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div id="reward-modal" class="reward-modal">
   <div class="confetti-layer" id="confetti-layer"></div>
   <div class="reward-modal-content">
-    <div class="reward-modal-icon" id="reward-modal-icon">🎉</div>
+    <div class="reward-modal-icon" id="reward-modal-icon"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-confetti"></use></svg></div>
     <h2 id="reward-modal-title">เลเวลอัพ!</h2>
     <p id="reward-modal-sub">ตอนนี้คุณคือเลเวล 2</p>
-    <button class="btn btn-success" onclick="closeRewardModal()">รับทราบ! 🎉</button>
+    <button class="btn btn-success" onclick="closeRewardModal()">รับทราบ! <svg class="picon" viewBox="0 0 8 8"><use href="#pi-confetti"></use></svg></button>
   </div>
 </div>
 
 <div id="reset-modal">
   <div class="modal-content">
-    <h3 style="color:var(--danger);margin-bottom:12px">⚠️ ยืนยันการล้างข้อมูล</h3>
+    <h3 style="color:var(--danger);margin-bottom:12px"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> ยืนยันการล้างข้อมูล</h3>
     <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:20px">ข้อมูลทั้งหมดจะถูกลบและเริ่มใหม่ ไม่สามารถกู้คืนได้!</p>
     <div style="display:flex;gap:10px">
       <button class="btn" style="background:var(--border)" onclick="closeResetModal()">ยกเลิก</button>
@@ -293,27 +1588,23 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </div>
 
 <aside id="sidebar">
-  <div class="brand"><span>⛏️ Mine &amp; Craft Hub</span><button class="close-sidebar" onclick="closeSidebar()">✕</button></div>
+  <div class="brand"><span><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> Mine &amp; Craft Hub</span><button class="close-sidebar" onclick="closeSidebar()"><svg class="picon" viewBox="0 0 6 6"><use href="#pi-close"></use></svg></button></div>
   <ul class="menu-list">
-    <li class="menu-item active" onclick="switchTab(event,'dashboard')">🏠 แดชบอร์ดหลัก</li>
-    <li class="menu-item" onclick="switchTab(event,'mining')">⛰️ ศูนย์ขุดเหมือง</li>
-    <li class="menu-item" onclick="switchTab(event,'smelting')">🔥 เตาหลอมแร่</li>
-    <li class="menu-item" onclick="switchTab(event,'character')">👤 ตัวละคร &amp; อุปกรณ์</li>
-    <li class="menu-item" onclick="switchTab(event,'military')">🏰 ค่ายทหาร &amp; สำรวจ</li>
-    <li class="menu-item" onclick="switchTab(event,'land')">🏞️ ที่ดิน &amp; อสังหาฯ</li>
-    <li class="menu-item" onclick="switchTab(event,'market')">🛒 ตลาดกลางซื้อขายแร่</li>
-    <li class="menu-item" onclick="switchTab(event,'shop')">🛍️ ร้านค้าพิเศษ</li>
-    <li class="menu-item" onclick="switchTab(event,'inventory')">🎒 ช่องเก็บของ</li>
-    <li class="menu-item" onclick="switchTab(event,'save-system')">💾 จัดการข้อมูลเซฟ</li>
+    <li class="menu-item active" onclick="switchTab(event,'dashboard')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-house"></use></svg> แดชบอร์ดหลัก</li>
+    <li class="menu-item" onclick="switchTab(event,'mining')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-mountain"></use></svg> ศูนย์ขุดเหมือง</li>
+    <li class="menu-item" onclick="switchTab(event,'smelting')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-fire"></use></svg> เตาหลอมแร่</li>
+    <li class="menu-item" onclick="switchTab(event,'character')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร &amp; อุปกรณ์</li>
+    <li class="menu-item" onclick="switchTab(event,'military')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-castle"></use></svg> ค่ายทหาร &amp; สำรวจ</li>
+    <li class="menu-item" onclick="switchTab(event,'market')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-cart"></use></svg> ตลาดกลางซื้อขายแร่</li>
+    <li class="menu-item" onclick="switchTab(event,'shop')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> ร้านค้าพิเศษ</li>
+    <li class="menu-item" onclick="switchTab(event,'inventory')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-backpack"></use></svg> ช่องเก็บของ</li>
+    <li class="menu-item" onclick="switchTab(event,'save-system')"><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> ตั้งค่า &amp; จัดการเซฟ</li>
   </ul>
 </aside>
 
 <div class="main-container">
   <header>
-    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-    <button class="toggle-btn" id="sound-toggle-btn" onclick="toggleSound()" title="เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)">🔊</button>
-    <button class="toggle-btn" id="music-toggle-btn" onclick="toggleMusic()" title="เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)">🎵</button>
-    <button class="toggle-btn" id="notif-toggle-btn" onclick="toggleNotifications()" title="การแจ้งเตือน: เปิด (คลิกเพื่อปิด)">🔔</button>
+    <button class="toggle-btn" onclick="toggleSidebar()"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-menu"></use></svg></button>
     <div class="user-stats">
       <div class="stat-badge"><svg class="picon" viewBox="0 0 7 7" style="color:#ffe135"><use href="#pi-star"></use></svg> <em class="lbl">เลเวล: </em><span id="lvl-val">1</span></div>
       <div class="stat-badge"><svg class="picon" viewBox="0 0 8 8" style="color:#ffd23d"><use href="#pi-circle"></use></svg> <em class="lbl">Gold: </em><span id="gold-val">50,000</span></div>
@@ -348,23 +1639,19 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <span class="dash-hero-value" id="dash-gems">120</span>
         </div>
         <div class="dash-hero-stat">
-          <span class="dash-hero-label">🛒 มูลค่าแร่ในคลัง</span>
+          <span class="dash-hero-label"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-cart"></use></svg> มูลค่าแร่ในคลัง</span>
           <span class="dash-hero-value" id="dash-ore-value">0 Gold</span>
-        </div>
-        <div class="dash-hero-stat">
-          <span class="dash-hero-label">🏞️ รายได้ที่ดิน/ชม.</span>
-          <span class="dash-hero-value" id="dash-land-income">0 Gold</span>
         </div>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <h3>⭐ ข้อมูลและเลเวลผู้เล่น</h3>
+          <h3><svg class="picon" viewBox="0 0 7 7"><use href="#pi-star"></use></svg> ข้อมูลและเลเวลผู้เล่น</h3>
           <div class="info"><div class="r"><span class="k">เลเวลปัจจุบัน</span><span class="v"><span id="dash-lvl" style="color:var(--primary);font-weight:bold">1</span></span></div><div class="r"><span class="k">XP</span><span class="v"><span id="dash-xp">0</span> / <span id="dash-xp-max">100</span></span></div></div>
           <div class="progress-bar-container"><div id="xp-bar" class="progress-bar" style="width:0%"></div></div>
         </div>
         <div class="card">
-          <h3>🛠️ ความทนทานเครื่องมือขุด</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg> ความทนทานเครื่องมือขุด</h3>
           <div class="progress-bar-container"><div id="durability-bar" class="progress-bar"></div></div>
           <p>ความทนทานเหลือ: <span id="durability-val" style="color:var(--success);font-weight:bold">100</span> / 100%</p>
           <div class="btn-row">
@@ -375,7 +1662,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
       </div>
 
       <div class="card" style="margin-bottom:18px">
-        <h3>⛏️ คลังแร่ปัจจุบัน</h3>
+        <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> คลังแร่ปัจจุบัน</h3>
         <div class="dash-ore-row">
           <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#8fa3c9"><use href="#pi-nugget"></use></svg></span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
           <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#dde3f0"><use href="#pi-nugget"></use></svg></span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
@@ -384,12 +1671,12 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
       </div>
 
       <div class="card" style="margin-bottom:18px">
-        <h3>📖 วิธีเล่นเบื้องต้น</h3>
+        <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-book"></use></svg> วิธีเล่นเบื้องต้น</h3>
         <ol class="guide">
           <li><b>ขุดแร่</b>ไปที่ "ศูนย์ขุดเหมือง" แล้วกดเริ่มขุด</li>
           <li><b>ขายหรือหลอมแร่</b>ขายที่ตลาดรับ Gold หรือหลอมเป็นแท่งโลหะไว้อัปเกรด</li>
           <li><b>ดูแลเครื่องมือ</b>ทนทานหมด = ขุดไม่ได้ ซ่อมหรือเปิด Auto ไว้</li>
-          <li><b>ขยายกิจการ</b>ซื้อที่ดินรับรายได้อัตโนมัติ · ส่งทหารสำรวจรับรางวัลก้อนใหญ่</li>
+          <li><b>ขยายกิจการ</b>ส่งทหารสำรวจรับรางวัลก้อนใหญ่</li>
         </ol>
       </div>
     </div>
@@ -404,7 +1691,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
-            <button id="iron-manual-btn" class="btn btn-warning" onclick="manualMine('iron')">⚡ ขุดด้วยมือ</button>
+            <button id="iron-manual-btn" class="btn btn-warning" onclick="manualMine('iron')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> ขุดด้วยมือ</button>
           </div>
           <div class="progress-bar-container" style="margin-top:10px;margin-bottom:0"><div id="bar-iron" class="mining-progress"></div></div>
         </div>
@@ -416,7 +1703,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
-            <button id="silver-manual-btn" class="btn btn-warning" onclick="manualMine('silver')">⚡ ขุดด้วยมือ</button>
+            <button id="silver-manual-btn" class="btn btn-warning" onclick="manualMine('silver')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> ขุดด้วยมือ</button>
           </div>
           <div class="progress-bar-container" style="margin-top:10px;margin-bottom:0"><div id="bar-silver" class="mining-progress"></div></div>
         </div>
@@ -428,7 +1715,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
           </div>
           <div class="btn-row">
-            <button id="goldOre-manual-btn" class="btn btn-warning" onclick="manualMine('goldOre')">⚡ ขุดด้วยมือ</button>
+            <button id="goldOre-manual-btn" class="btn btn-warning" onclick="manualMine('goldOre')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> ขุดด้วยมือ</button>
           </div>
           <div class="progress-bar-container" style="margin-top:10px;margin-bottom:0"><div id="bar-goldOre" class="mining-progress"></div></div>
         </div>
@@ -436,20 +1723,20 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     </div>
 
     <div id="smelting" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🔥 เตาหลอมแร่ดิบเป็นแท่งโลหะ</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-fire"></use></svg> เตาหลอมแร่ดิบเป็นแท่งโลหะ</h2>
       <div class="grid-3">
         <div class="card">
-          <h3>🔩 หลอมเหล็ก</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> หลอมเหล็ก</h3>
           <div class="info"><div class="r"><span class="k">แร่เหล็กดิบ</span><span class="v"><b id="smelt-iron-have">50</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">1,000 แร่ → 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">300</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-iron-out" style="color:var(--success)">2</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-iron-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('iron',1000)">หลอม 1,000</button></div>
         </div>
         <div class="card">
-          <h3>⚙️ หลอมเงิน</h3>
+          <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> หลอมเงิน</h3>
           <div class="info"><div class="r"><span class="k">แร่เงินดิบ</span><span class="v"><b id="smelt-silver-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">750 แร่ → 1 แท่งเงิน</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">800</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-silver-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-silver-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('silver',1000)">หลอม 1,000</button></div>
         </div>
         <div class="card">
-          <h3>🟨 หลอมทอง</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-goldbar"></use></svg> หลอมทอง</h3>
           <div class="info"><div class="r"><span class="k">แร่ทองดิบ</span><span class="v"><b id="smelt-goldOre-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">500 แร่ → 1 แท่งทองคำ</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">2,000</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-goldOre-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-goldOre-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('goldOre',1000)">หลอม 1,000</button></div>
         </div>
@@ -461,7 +1748,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     </div>
 
     <div id="character" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">👤 ตัวละคร &amp; อุปกรณ์</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร &amp; อุปกรณ์</h2>
       <div class="grid-2">
         <div class="card profile-card">
           <div id="active-avatar-box" class="avatar-box"></div>
@@ -476,110 +1763,67 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           </div>
         </div>
         <div class="card">
-          <h3>🛠️ อุปกรณ์สวมใส่</h3>
-          <div class="info"><div class="d"><b>⛏️ พลั่ว (Lv.<span id="eq-pickaxe-lvl">1</span>)</b> — เร็ว +5% / ผลผลิต +10%</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-pickaxe-cost" style="color:var(--accent)">50</span> Gems + <span id="eq-pickaxe-barcost" style="color:var(--gold)">1</span> แท่งทองคำ + <span id="eq-pickaxe-orecost" style="color:var(--primary)">5</span> แร่ทองดิบ</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-pickaxe-barhave">0</span> แท่ง / <span id="eq-pickaxe-orehave">0</span> แร่</span></div></div>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg> อุปกรณ์สวมใส่</h3>
+          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> พลั่ว (Lv.<span id="eq-pickaxe-lvl">1</span>)</b> — เร็ว +5% / ผลผลิต +10%</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-pickaxe-cost" style="color:var(--accent)">50</span> Gems + <span id="eq-pickaxe-barcost" style="color:var(--gold)">1</span> แท่งทองคำ + <span id="eq-pickaxe-orecost" style="color:var(--primary)">5</span> แร่ทองดิบ</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-pickaxe-barhave">0</span> แท่ง / <span id="eq-pickaxe-orehave">0</span> แร่</span></div></div>
           <button id="eq-pickaxe-upgrade-btn" class="btn btn-warning" style="margin-bottom:10px" onclick="upgradeEquipment('pickaxe')">อัปเกรดพลั่ว</button>
-          <div class="info"><div class="d"><b>🪖 หมวก (Lv.<span id="eq-helmet-lvl">0</span>)</b> — ลดสึกหรอทุก 3 เลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-helmet-cost" style="color:var(--accent)">25,000</span> Gold + <span id="eq-helmet-barcost" style="color:var(--gold)">1</span> แท่งเหล็กกล้า + <span id="eq-helmet-orecost" style="color:var(--primary)">40</span> แร่เหล็ก</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-helmet-barhave">0</span> แท่ง / <span id="eq-helmet-orehave">50</span> แร่</span></div></div>
+          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 8 8"><use href="#pi-helmet"></use></svg> หมวก (Lv.<span id="eq-helmet-lvl">0</span>)</b> — ลดสึกหรอทุก 3 เลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-helmet-cost" style="color:var(--accent)">25,000</span> Gold + <span id="eq-helmet-barcost" style="color:var(--gold)">1</span> แท่งเหล็กกล้า + <span id="eq-helmet-orecost" style="color:var(--primary)">40</span> แร่เหล็ก</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-helmet-barhave">0</span> แท่ง / <span id="eq-helmet-orehave">50</span> แร่</span></div></div>
           <button id="eq-helmet-upgrade-btn" class="btn btn-success" style="margin-bottom:10px" onclick="upgradeEquipment('helmet')">อัปเกรดหมวก</button>
-          <div class="info"><div class="d"><b>🛡️ เกราะ (Lv.<span id="eq-armor-lvl">0</span>)</b> — ลดโอกาสพลาด 1% ต่อเลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-armor-cost" style="color:var(--accent)">40,000</span> Gold + <span id="eq-armor-barcost" style="color:var(--gold)">1</span> แท่งเงิน + <span id="eq-armor-orecost" style="color:var(--primary)">25</span> แร่เงิน</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-armor-barhave">0</span> แท่ง / <span id="eq-armor-orehave">0</span> แร่</span></div></div>
+          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> เกราะ (Lv.<span id="eq-armor-lvl">0</span>)</b> — ลดโอกาสพลาด 1% ต่อเลเวล</div><div class="r"><span class="k">ราคา</span><span class="v"><span id="eq-armor-cost" style="color:var(--accent)">40,000</span> Gold + <span id="eq-armor-barcost" style="color:var(--gold)">1</span> แท่งเงิน + <span id="eq-armor-orecost" style="color:var(--primary)">25</span> แร่เงิน</span></div><div class="r"><span class="k">มี</span><span class="v"><span id="eq-armor-barhave">0</span> แท่ง / <span id="eq-armor-orehave">0</span> แร่</span></div></div>
           <button id="eq-armor-upgrade-btn" class="btn btn-success" onclick="upgradeEquipment('armor')">อัปเกรดเกราะ</button>
         </div>
       </div>
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)">👕 เลือกและซื้อสกินตัวละคร</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shirt"></use></svg> เลือกและซื้อสกินตัวละคร</h2>
       <div id="skin-shop-grid" class="grid-3"></div>
     </div>
 
     <div id="military" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🏰 โรงฝึกทหาร &amp; เกณฑ์กองกำลัง</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-castle"></use></svg> โรงฝึกทหาร &amp; เกณฑ์กองกำลัง</h2>
       <div class="grid-3" style="margin-bottom:16px">
         <div class="card">
-          <h3>🛡️ พลทหารยาม</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> พลทหารยาม</h3>
           <div class="info"><div class="d">กำลังพลพื้นฐาน คุ้มกันเหมือง</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-guard-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">7,000 Gold + 100 เหล็ก + 1 แท่งเหล็กกล้า</span></div></div>
           <button id="train-guard-btn" class="btn btn-success" onclick="trainTroop('guard')">เกณฑ์ทหารยาม</button>
         </div>
         <div class="card">
-          <h3>⚔️ นักรบดาบเหล็ก</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-sword"></use></svg> นักรบดาบเหล็ก</h3>
           <div class="info"><div class="d">ทหารแนวหน้า บุกเบิกดันเจี้ยน</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-swordsman-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">24,000 Gold + 55 เงิน + 2 แท่งเงิน</span></div></div>
           <button id="train-swordsman-btn" class="btn btn-warning" onclick="trainTroop('swordsman')">เกณฑ์นักรบ</button>
         </div>
         <div class="card">
-          <h3>🐎 อัศวินเกราะทอง</h3>
+          <h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-horse"></use></svg> อัศวินเกราะทอง</h3>
           <div class="info"><div class="d">กองกำลังชั้นยอด ลุยพื้นที่อันตราย</div><div class="r"><span class="k">มีอยู่</span><span class="v"><b id="troop-knight-count" style="color:var(--success)">0</b> นาย</span></div><div class="r"><span class="k">ค่าฝึก</span><span class="v">85,000 Gold + 35 ทอง + 3 แท่งทองคำ</span></div></div>
           <button id="train-knight-btn" class="btn btn-success" onclick="trainTroop('knight')">เกณฑ์อัศวิน</button>
         </div>
       </div>
 
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)">🗺️ แผนที่สำรวจ &amp; ดันเจี้ยนพิกเซลอาร์ต</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-map"></use></svg> แผนที่สำรวจ &amp; ดันเจี้ยนพิกเซลอาร์ต</h2>
       <div class="grid-3">
         <div class="card">
-          <h3>🏕️ ถ้ำก๊อบลินรกร้าง</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-tent"></use></svg> ถ้ำก๊อบลินรกร้าง</h3>
           <div id="pixi-goblin" class="map-battle-canvas"></div>
-          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">พลทหารยาม 3 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">45 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">1,000 Gold + 20 เหล็ก</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">3,200 Gold + 30 เหล็ก + 4 Gems</span></div><div class="warn">⚠️ เสี่ยงทหารเสียชีวิต 40% ต่อภารกิจ</div></div>
+          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">พลทหารยาม 3 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">45 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">1,000 Gold + 20 เหล็ก</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">3,200 Gold + 30 เหล็ก + 4 Gems</span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 40% ต่อภารกิจ</div></div>
           <div id="exp-status-goblin" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
           <button id="exp-btn-goblin" class="btn btn-success" onclick="startExpedition('goblin')">ส่งกองทัพสำรวจ</button>
         </div>
         <div class="card">
-          <h3>🏛️ ซากโบราณสถาน</h3>
+          <h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-ruins"></use></svg> ซากโบราณสถาน</h3>
           <div id="pixi-ruins" class="map-battle-canvas"></div>
-          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">นักรบดาบเหล็ก 5 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">90 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">4,000 Gold + 30 เงิน</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">11,000 Gold + 60 เงิน + 15 Gems</span></div><div class="warn">⚠️ เสี่ยงทหารเสียชีวิต 55% ต่อภารกิจ</div></div>
+          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">นักรบดาบเหล็ก 5 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">90 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">4,000 Gold + 30 เงิน</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">11,000 Gold + 60 เงิน + 15 Gems</span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 55% ต่อภารกิจ</div></div>
           <div id="exp-status-ruins" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
           <button id="exp-btn-ruins" class="btn btn-success" onclick="startExpedition('ruins')">ส่งกองทัพสำรวจ</button>
         </div>
         <div class="card">
-          <h3>🌋 ภูเขาไฟมังกร</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-volcano"></use></svg> ภูเขาไฟมังกร</h3>
           <div id="pixi-dragon" class="map-battle-canvas"></div>
-          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">อัศวินเกราะทอง 5 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">150 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">15,000 Gold + 30 ทอง</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">42,000 Gold + 70 ทอง + 35 Gems</span></div><div class="warn">⚠️ เสี่ยงทหารเสียชีวิต 70% ต่อภารกิจ</div></div>
+          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">อัศวินเกราะทอง 5 นาย</span></div><div class="r"><span class="k">เวลาสำรวจ</span><span class="v">150 วิ</span></div><div class="r"><span class="k">เสบียง</span><span class="v">15,000 Gold + 30 ทอง</span></div><div class="r"><span class="k">ผลตอบแทน</span><span class="v">42,000 Gold + 70 ทอง + 35 Gems</span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 70% ต่อภารกิจ</div></div>
           <div id="exp-status-dragon" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
           <button id="exp-btn-dragon" class="btn btn-success" onclick="startExpedition('dragon')">ส่งกองทัพสำรวจ</button>
         </div>
       </div>
     </div>
 
-    <div id="land" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🏞️ ที่ดิน &amp; รายได้ Passive</h2>
-
-      <div class="card" style="margin-bottom:18px">
-        <h3>📊 สรุปรายได้รวม</h3>
-        <div class="info"><div class="r"><span class="k">รายได้ Passive รวม</span><span class="v" id="land-total-income" style="color:var(--success);font-weight:bold">0 Gold / 5 วิ</span></div><div class="r"><span class="k">คิดเป็นต่อชั่วโมง</span><span class="v" id="land-total-hour" style="color:var(--gold)">0 Gold / ชม.</span></div></div>
-      </div>
-
-      <div class="grid-3">
-        <div class="card">
-          <h3>🏕️ ที่ดินแปลงเล็ก <span id="land-smallPlot-lvl" style="font-size:.9rem;color:var(--primary)">Lv.0</span></h3>
-          <div class="info">
-            <div class="r"><span class="k">รายได้</span><span class="v"><b id="land-smallPlot-income" style="color:var(--success)">0</b> Gold / 5 วิ</span></div>
-            <div class="r"><span class="k">ราคา</span><span class="v"><span id="land-smallPlot-cost" style="color:var(--accent)">10,000</span> Gold</span></div>
-            <div class="r"><span class="k">คืนทุนใน</span><span class="v" id="land-smallPlot-payback">-</span></div>
-          </div>
-          <button id="land-smallPlot-btn" class="btn btn-success" onclick="buyOrUpgradeLand('smallPlot')">ซื้อที่ดิน</button>
-        </div>
-        <div class="card">
-          <h3>🏭 เหมืองขนาดกลาง <span id="land-mediumMine-lvl" style="font-size:.9rem;color:var(--primary)">Lv.0</span></h3>
-          <div class="info">
-            <div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div>
-            <div class="r"><span class="k">รายได้</span><span class="v"><b id="land-mediumMine-income" style="color:var(--success)">0</b> Gold / 5 วิ</span></div>
-            <div class="r"><span class="k">ราคา</span><span class="v"><span id="land-mediumMine-cost" style="color:var(--accent)">75,000</span> Gold</span></div>
-            <div class="r"><span class="k">แร่ที่ใช้</span><span class="v"><span id="land-mediumMine-rescost" style="color:var(--primary)">50</span> แร่เหล็ก <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-mediumMine-reshave">0</span>)</span></span></div>
-            <div class="r"><span class="k">คืนทุนใน</span><span class="v" id="land-mediumMine-payback">-</span></div>
-          </div>
-          <button id="land-mediumMine-btn" class="btn btn-success" onclick="buyOrUpgradeLand('mediumMine')">ซื้อเหมือง</button>
-        </div>
-        <div class="card">
-          <h3>🏰 คฤหาสน์ทองคำ <span id="land-goldEstate-lvl" style="font-size:.9rem;color:var(--primary)">Lv.0</span></h3>
-          <div class="info">
-            <div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 12</span></div>
-            <div class="r"><span class="k">รายได้</span><span class="v"><b id="land-goldEstate-income" style="color:var(--success)">0</b> Gold / 5 วิ</span></div>
-            <div class="r"><span class="k">ราคา</span><span class="v"><span id="land-goldEstate-cost" style="color:var(--accent)">350,000</span> Gold</span></div>
-            <div class="r"><span class="k">แร่ที่ใช้</span><span class="v"><span id="land-goldEstate-rescost" style="color:var(--primary)">20</span> แร่ทองดิบ <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-goldEstate-reshave">0</span>)</span></span></div>
-            <div class="r"><span class="k">คืนทุนใน</span><span class="v" id="land-goldEstate-payback">-</span></div>
-          </div>
-          <button id="land-goldEstate-btn" class="btn btn-success" onclick="buyOrUpgradeLand('goldEstate')">ซื้อคฤหาสน์</button>
-        </div>
-      </div>
-    </div>
-
     <div id="market" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🛒 ตลาดกลางซื้อขายแร่</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-cart"></use></svg> ตลาดกลางซื้อขายแร่</h2>
       <div class="market-hero">
         <div class="market-hero-stat">
           <span class="market-hero-label">มูลค่าแร่ในคลังรวม</span>
@@ -593,7 +1837,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
       <div class="grid-3">
         <div class="card market-card">
           <div class="ticker-head">
-            <div class="ticker-icon">🔹</div>
+            <div class="ticker-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#8fa3c9"><use href="#pi-nugget"></use></svg></div>
             <div class="ticker-name-wrap">
               <h3>แร่เหล็ก</h3>
               <span id="trend-iron" class="badge-trend trend-up">0%</span>
@@ -607,7 +1851,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         </div>
         <div class="card market-card">
           <div class="ticker-head">
-            <div class="ticker-icon">🥈</div>
+            <div class="ticker-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#dde3f0"><use href="#pi-nugget"></use></svg></div>
             <div class="ticker-name-wrap">
               <h3>แร่เงิน</h3>
               <span id="trend-silver" class="badge-trend trend-up">0%</span>
@@ -621,7 +1865,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         </div>
         <div class="card market-card">
           <div class="ticker-head">
-            <div class="ticker-icon">🥇</div>
+            <div class="ticker-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#ffcf3d"><use href="#pi-nugget"></use></svg></div>
             <div class="ticker-name-wrap">
               <h3>แร่ทอง</h3>
               <span id="trend-goldOre" class="badge-trend trend-up">0%</span>
@@ -637,15 +1881,15 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     </div>
 
     <div id="shop" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)">🛍️ ร้านค้าพิเศษ</h2>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> ร้านค้าพิเศษ</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>⚡ ชุดซ่อมเครื่องมือฉุกเฉิน</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> ชุดซ่อมเครื่องมือฉุกเฉิน</h3>
           <p>ซ่อมความทนทานกลับมาเต็ม 100% ทันที</p>
           <button id="shop-repairkit-btn" class="btn btn-success" onclick="buyShopItem('repairKit')">ซื้อและใช้งาน (200 Gold)</button>
         </div>
         <div class="card">
-          <h3>🎁 กล่องสุ่มวัตถุดิบ</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-gift"></use></svg> กล่องสุ่มวัตถุดิบ</h3>
           <p>ลุ้นรับ Gold, แร่ หรือ Gems จำนวนมาก</p>
           <button id="shop-mysterybox-btn" class="btn btn-warning" onclick="buyShopItem('mysteryBox')">เปิดกล่องสุ่ม (30 Gems)</button>
         </div>
@@ -655,51 +1899,59 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     <div id="inventory" class="tab-content">
 
       <div class="grid-2">
-        <div class="card"><h3>💰 ทรัพยากรหลัก</h3>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ทรัพยากรหลัก</h3>
           <div class="item-list">
-            <div class="item-row"><span class="ic">💰</span><span class="nm">Gold</span><span id="inv2-gold" class="qt" style="color:var(--gold)">0</span></div>
-            <div class="item-row"><span class="ic">💎</span><span class="nm">Gems</span><span id="inv2-gems" class="qt" style="color:var(--primary)">0</span></div>
+            <div class="item-row"><span class="ic"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg></span><span class="nm">Gold</span><span id="inv2-gold" class="qt" style="color:var(--gold)">0</span></div>
+            <div class="item-row"><span class="ic"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-diamond"></use></svg></span><span class="nm">Gems</span><span id="inv2-gems" class="qt" style="color:var(--primary)">0</span></div>
           </div>
         </div>
-        <div class="card"><h3>🛠️ ความทนทานเครื่องมือ</h3>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg> ความทนทานเครื่องมือ</h3>
           <div class="item-list">
-            <div class="item-row"><span class="ic">⛏️</span><span class="nm">ความทนทานปัจจุบัน</span><span id="inv2-durability" class="qt" style="color:var(--success)">0%</span></div>
-            <div class="item-row"><span class="ic">🔧</span><span class="nm">ซ่อมแล้วสะสม</span><span id="inv2-repaircount" class="qt">0</span> ครั้ง</div>
+            <div class="item-row"><span class="ic"><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg></span><span class="nm">ความทนทานปัจจุบัน</span><span id="inv2-durability" class="qt" style="color:var(--success)">0%</span></div>
+            <div class="item-row"><span class="ic"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg></span><span class="nm">ซ่อมแล้วสะสม</span><span id="inv2-repaircount" class="qt">0</span> ครั้ง</div>
           </div>
         </div>
       </div>
 
-      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--accent)">⛏️ แร่ดิบ</h2>
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> แร่ดิบ</h2>
       <div class="grid-3">
-        <div class="card"><h3>🔹 แร่เหล็ก</h3><p><span id="inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
-        <div class="card"><h3>🥈 แร่เงิน</h3><p><span id="inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
-        <div class="card"><h3>🥇 แร่ทอง</h3><p><span id="inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 7" style="color:#8fa3c9"><use href="#pi-nugget"></use></svg> แร่เหล็ก</h3><p><span id="inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 7" style="color:#dde3f0"><use href="#pi-nugget"></use></svg> แร่เงิน</h3><p><span id="inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 7" style="color:#ffcf3d"><use href="#pi-nugget"></use></svg> แร่ทอง</h3><p><span id="inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
       </div>
 
-      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)">🔩 แท่งโลหะ</h2>
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> แท่งโลหะ</h2>
       <div class="grid-3">
-        <div class="card"><h3>🔩 แท่งเหล็กกล้า</h3><p><span id="inv-ingotIron" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
-        <div class="card"><h3>⚙️ แท่งเงิน</h3><p><span id="inv-ingotSilver" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
-        <div class="card"><h3>🟨 แท่งทองคำ</h3><p><span id="inv-ingotGold" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> แท่งเหล็กกล้า</h3><p><span id="inv-ingotIron" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> แท่งเงิน</h3><p><span id="inv-ingotSilver" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-goldbar"></use></svg> แท่งทองคำ</h3><p><span id="inv-ingotGold" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
       </div>
 
-      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--accent)">🎖️ กำลังพล</h2>
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-medal"></use></svg> กำลังพล</h2>
       <div class="grid-3">
-        <div class="card"><h3>🛡️ พลทหารยาม</h3><p><span id="inv-troop-guard" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
-        <div class="card"><h3>⚔️ นักรบดาบเหล็ก</h3><p><span id="inv-troop-swordsman" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
-        <div class="card"><h3>🐎 อัศวินเกราะทอง</h3><p><span id="inv-troop-knight" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> พลทหารยาม</h3><p><span id="inv-troop-guard" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-sword"></use></svg> นักรบดาบเหล็ก</h3><p><span id="inv-troop-swordsman" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
+        <div class="card"><h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-horse"></use></svg> อัศวินเกราะทอง</h3><p><span id="inv-troop-knight" style="color:var(--success);font-weight:bold">0</span> นาย</p></div>
       </div>
     </div>
 
     <div id="save-system" class="tab-content">
+      <div class="card" style="margin-bottom:16px">
+        <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> การตั้งค่า</h3>
+        <div class="info">
+          <div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-speaker"></use></svg> เสียงเอฟเฟกต์</span><span class="v"><button class="toggle-btn" id="sound-toggle-btn" onclick="toggleSound()" title="เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)"><svg class="picon" viewBox="0 0 8 8"><use id="sound-icon-use" href="#pi-speaker"></use></svg></button></span></div>
+          <div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note"></use></svg> เพลงพื้นหลัง</span><span class="v"><button class="toggle-btn" id="music-toggle-btn" onclick="toggleMusic()" title="เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)"><svg class="picon" viewBox="0 0 8 8"><use id="music-icon-use" href="#pi-note"></use></svg></button></span></div>
+          <div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bell"></use></svg> การแจ้งเตือน</span><span class="v"><button class="toggle-btn" id="notif-toggle-btn" onclick="toggleNotifications()" title="การแจ้งเตือน: เปิด (คลิกเพื่อปิด)"><svg class="picon" viewBox="0 0 8 8"><use id="notif-icon-use" href="#pi-bell"></use></svg></button></span></div>
+        </div>
+      </div>
       <div class="grid-2">
         <div class="card">
-          <h3>💾 บันทึกและสถานะเซฟ</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-floppy"></use></svg> บันทึกและสถานะเซฟ</h3>
           <div class="info"><div class="d">บันทึกอัตโนมัติทุก 15 วินาที</div><div class="r"><span class="k">บันทึกล่าสุด</span><span class="v"><span id="last-save-text" style="color:var(--success)">-</span></span></div></div>
           <button class="btn btn-success" onclick="manualSaveGame()">บันทึกเกมทันที</button>
         </div>
         <div class="card">
-          <h3>📁 สำรองไฟล์เซฟ (.json)</h3>
+          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-folder"></use></svg> สำรองไฟล์เซฟ (.json)</h3>
           <p>ดาวน์โหลดหรืออัปโหลดไฟล์เซฟ</p>
           <div class="btn-row">
             <button class="btn btn-warning" onclick="downloadSaveFile()">ดาวน์โหลด</button>
@@ -708,14 +1960,14 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         </div>
       </div>
       <div class="card" style="margin-bottom:16px">
-        <h3>☁️ โอนย้ายเซฟด้วยโค้ด</h3>
+        <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-cloud"></use></svg> โอนย้ายเซฟด้วยโค้ด</h3>
         <div class="grid-2" style="margin-top:12px;margin-bottom:0">
           <div><textarea id="export-code-box" class="text-input" rows="2" readonly placeholder="กดสร้างโค้ดเซฟ..."></textarea><button class="btn btn-success" style="margin-top:6px" onclick="exportSaveCode()">สร้าง/คัดลอกโค้ด</button></div>
           <div><textarea id="import-code-box" class="text-input" rows="2" placeholder="วางรหัสเซฟที่นี่..."></textarea><button class="btn btn-warning" style="margin-top:6px" onclick="importSaveCode()">โหลดจากโค้ด</button></div>
         </div>
       </div>
       <div class="card">
-        <h3>⚠️ โซนอันตราย</h3>
+        <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> โซนอันตราย</h3>
         <p>ล้างข้อมูลทั้งหมดและเริ่มใหม่</p>
         <button class="btn btn-danger" onclick="resetGame()">ล้างข้อมูลเซฟ (Reset)</button>
       </div>
@@ -728,6 +1980,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 "use strict";
 
 /* ===== Sound System (synthesised, no external audio files needed) ===== */
+// ===== เสียงเอฟเฟกต์ & เพลงประกอบ (SFX) =====
 const SFX = (function(){
   let ctx = null, master = null, musicTimer = 0, musicGain = null;
   function ensureCtx(){
@@ -795,16 +2048,19 @@ function toggleMusic(){
 }
 function updateSoundBtn(){
   const b = document.getElementById('sound-toggle-btn');
-  if(b){ b.innerText = gameData.soundEnabled === false ? '🔇' : '🔊'; b.style.opacity = gameData.soundEnabled === false ? '.5' : '1'; b.title = gameData.soundEnabled === false ? 'เสียงเอฟเฟกต์: ปิด (คลิกเพื่อเปิด)' : 'เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)'; }
+  if(b){ const u = document.getElementById('sound-icon-use'); if(u) u.setAttribute('href', gameData.soundEnabled === false ? '#pi-speaker-off' : '#pi-speaker'); b.style.opacity = gameData.soundEnabled === false ? '.5' : '1'; b.title = gameData.soundEnabled === false ? 'เสียงเอฟเฟกต์: ปิด (คลิกเพื่อเปิด)' : 'เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)'; }
   const m = document.getElementById('music-toggle-btn');
-  if(m){ m.innerText = gameData.musicEnabled ? '🎶' : '🎵'; m.style.opacity = gameData.musicEnabled ? '1' : '.5'; m.title = gameData.musicEnabled ? 'เพลงพื้นหลัง: เปิด (คลิกเพื่อปิด)' : 'เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)'; }
+  if(m){ m.style.opacity = gameData.musicEnabled ? '1' : '.5'; m.title = gameData.musicEnabled ? 'เพลงพื้นหลัง: เปิด (คลิกเพื่อปิด)' : 'เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)'; }
 }
 /* ===== Big reward modal + confetti (level up / rare loot) ===== */
+// ===== โมดัลรางวัลใหญ่ + คอนเฟตตี =====
+const REWARD_ICON_VB = { 'pi-star':'0 0 7 7', 'pi-confetti':'0 0 8 8', 'pi-diamond':'0 0 8 8', 'pi-trophy':'0 0 8 8' };
 function showBigReward(title, sub, icon){
   const m = document.getElementById('reward-modal'); if(!m) return;
   setTxt(document.getElementById('reward-modal-title'), title);
   setTxt(document.getElementById('reward-modal-sub'), sub);
-  const ic = document.getElementById('reward-modal-icon'); if(ic) ic.textContent = icon || '🎉';
+  const ic = document.getElementById('reward-modal-icon');
+  if(ic){ const id = icon || 'pi-confetti'; ic.innerHTML = '<svg class="picon" viewBox="'+(REWARD_ICON_VB[id]||'0 0 8 8')+'"><use href="#'+id+'"></use></svg>'; }
   spawnConfetti();
   m.style.display = 'flex';
   SFX.levelup();
@@ -826,24 +2082,13 @@ function spawnConfetti(){
   }
 }
 
+// ===== ตั้งค่าเกมหลักทั้งหมด (เหมือง / ตลาด / อุปกรณ์ / ฝึกทหาร / ด่านผจญภัย / สกิน) =====
 const MINE_CFG = {
   iron:    { baseTime:5, baseYield:20, baseXp:5,  upCost:500,  reqLv:1, label:'เหมืองเหล็ก' },
   silver:  { baseTime:6, baseYield:10, baseXp:12, upCost:1200, reqLv:3, label:'เหมืองเงิน' },
   goldOre: { baseTime:8, baseYield:5,  baseXp:25, upCost:3000, reqLv:5, label:'เหมืองทอง' }
 };
 const MARKET_CFG = { iron:{min:2,max:25,base:5}, silver:{min:8,max:80,base:15}, goldOre:{min:20,max:200,base:40} };
-const LAND_CFG = { smallPlot:{baseCost:10000,baseIncome:20,reqLv:1}, mediumMine:{baseCost:75000,baseIncome:150,reqLv:5}, goldEstate:{baseCost:350000,baseIncome:700,reqLv:12} };
-const LAND_RES_CFG = { smallPlot:null, mediumMine:{res:'iron',label:'แร่เหล็ก',base:50}, goldEstate:{res:'goldOre',label:'แร่ทองดิบ',base:20} };
-const LAND_MAX_LEVEL = 25;
-// --- ปรับสมดุลรายได้จากที่ดิน (แก้เฉพาะ "จังหวะเวลา" การจ่ายเงิน ไม่แตะสูตรรายได้ต่อระดับ) ---
-// ตอนออนไลน์ยังจ่ายทุก 5 วิ เหมือนเดิม (ไม่กระทบความรู้สึกตอนเล่นจริง)
-// แต่ตอนออฟไลน์/AFK ที่ดินจะ "จ่ายช้าลง" เหลือประสิทธิภาพ 25% (ทุก 20 วิ แทนที่จะเป็นทุก 5 วิ)
-// เพราะรายได้จากที่ดินไม่มีความเสี่ยง/ไม่ต้องกดอะไรเลย ต่างจากการขุดที่ต้องดูแลความทนทาน/เสี่ยงพลาด/ค่าธรรมเนียมตลาด
-// ถ้าออฟไลน์จ่ายเท่าออนไลน์ 100% เงินจากที่ดินจะโตไม่จำกัดตามจำนวน "วันตามปฏิทิน" ที่ผ่านไป โดยไม่ขึ้นกับเวลาที่ผู้เล่นเล่นจริงเลย
-// นี่คือสาเหตุหลักของเงินเฟ้อระยะยาว จึงลดทั้งอัตราจ่าย (25%) และเพดานเวลาที่นับให้สั้นลง (8 ชม. แทน 12 ชม.)
-const LAND_OFFLINE_TICK_SEC = 20;   // เดิมอิงจากรอบ 5 วิ (ออนไลน์) -> ออฟไลน์ยืดเป็น 20 วิ = ได้แค่ 25% ของอัตราออนไลน์
-const LAND_OFFLINE_CAP_HOURS = 8;   // เพดานเวลานับรายได้ที่ดินตอนออฟไลน์ (แยกจากเพดานจำลองการขุด 12 ชม. เดิม)
-function landResCost(type){ const rc = LAND_RES_CFG[type]; if(!rc) return 0; const l = gameData.lands[type]; const step = (l?l.level:0)+1; return Math.round(rc.base * step); }
 const EQUIP_CFG = { pickaxe:{baseCost:50,growth:1.5,currency:'gems',barType:'ingotGold',barLabel:'แท่งทองคำ',oreType:'goldOre',oreLabel:'แร่ทองดิบ',oreBase:5}, helmet:{baseCost:25000,growth:1.6,currency:'gold',barType:'ingotIron',barLabel:'แท่งเหล็กกล้า',oreType:'iron',oreLabel:'แร่เหล็ก',oreBase:40}, armor:{baseCost:40000,growth:1.6,currency:'gold',barType:'ingotSilver',barLabel:'แท่งเงิน',oreType:'silver',oreLabel:'แร่เงิน',oreBase:25} };
 const SMELT_CFG = {
   iron:   { bar:'ingotIron',  ratio:1000, goldCost:300, label:'แท่งเหล็กกล้า', icon:'🔩' },
@@ -855,9 +2100,7 @@ const MINE_TYPES = ['iron','silver','goldOre'];
 const MINE_UP_BAR = { iron:{bar:'ingotIron',label:'แท่งเหล็กกล้า'}, silver:{bar:'ingotSilver',label:'แท่งเงิน'}, goldOre:{bar:'ingotGold',label:'แท่งทองคำ'} };
 function mineBarCost(type){ return Math.max(1, gameData.mines[type].level); }
 const SMELT_TYPES = ['iron','silver','goldOre'];
-const LAND_TYPES = ['smallPlot','mediumMine','goldEstate'];
 const EQUIP_TYPES = ['pickaxe','helmet','armor'];
-const LAND_BUY_LABEL = { smallPlot:'ซื้อที่ดิน', mediumMine:'ซื้อเหมือง', goldEstate:'ซื้อคฤหาสน์' };
 const TRAIN_CFG = {
   guard:     { costGold:7000,  ore:'iron',    qty:100, bar:'ingotIron',   barQty:1, barLabel:'แท่งเหล็กกล้า', btnCls:'btn btn-success' },
   swordsman: { costGold:24000, ore:'silver',  qty:55,  bar:'ingotSilver', barQty:2, barLabel:'แท่งเงิน',      btnCls:'btn btn-warning' },
@@ -881,6 +2124,7 @@ const skinDatabase = {
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><polygon points="7,6 10,2 12,5 14,2 17,6" fill="#facc15"/><rect x="7" y="6" width="10" height="2" fill="#eab308"/><rect x="7" y="8" width="10" height="6" fill="#fef08a"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="13" y="10" width="1" height="1" fill="#000"/><rect x="9" y="14" width="6" height="7" fill="#b45309"/><rect x="6" y="14" width="3" height="5" fill="#78350f"/><rect x="15" y="14" width="3" height="5" fill="#78350f"/></svg>' }
 };
 
+// ===== สถานะเกม (Game State) + ค่าเริ่มต้นเมื่อไม่มีเซฟ =====
 function createDefaultData(){
   return {
     gold:50000, gems:120, level:1, xp:0, xpMax:100,
@@ -898,7 +2142,6 @@ function createDefaultData(){
     mines:{ iron:{level:1,cost:500,active:false}, silver:{level:1,cost:1200,active:false}, goldOre:{level:1,cost:3000,active:false} },
     totalMined:{ iron:0, silver:0, goldOre:0 },
     mineMilestone:{ iron:0, silver:0, goldOre:0 },
-    lands:{ smallPlot:{level:0,cost:10000}, mediumMine:{level:0,cost:75000}, goldEstate:{level:0,cost:350000} },
     equipment:{ pickaxe:{level:1,cost:50}, helmet:{level:0,cost:25000}, armor:{level:0,cost:40000} }
   };
 }
@@ -913,6 +2156,7 @@ let pixiScenes = {};
 
 /* ===== PIXEL MATRICES (redesigned troops & monsters) ===== */
 // ---- Heroes: one design per troop type, deployed to the matching expedition ----
+// ===== ข้อมูลลายพิกเซลตัวละคร/มอนสเตอร์ สำหรับวาดด้วย PixiJS =====
 const M_GUARD = [
   "......HHHH.....",
   ".....HHHHHH....",
@@ -1032,6 +2276,7 @@ const MONSTER_BY_KEY = {
   dragon: { m:M_DRAGON,    c:C_DRAGON,    weapon:'breath', flies:true,  hp:'มังกรภูเขาไฟ' }
 };
 
+// ===== ฟังก์ชันสร้างสไปรต์ & ฉากต่อสู้ด้วย PixiJS =====
 function buildPixelSprite(matrix, colors, px){
   const g = new PIXI.Graphics();
   const rows = matrix.length, cols = matrix[0].length;
@@ -1570,6 +2815,7 @@ function initPixiBattles(){
   });
 }
 
+// ===== สูตรคำนวณโบนัสจากอุปกรณ์ / สกินที่สวมอยู่ =====
 function getSkin(){ return skinDatabase[gameData.equippedSkin] || skinDatabase.default; }
 function getSpeedBonus(){ return Math.min(0.6, (gameData.equipment.pickaxe.level-1)*0.05 + getSkin().speedBonus); }
 function getYieldBonus(){ return (gameData.equipment.pickaxe.level-1)*0.10 + getSkin().yieldBonus; }
@@ -1580,6 +2826,7 @@ function getMineTime(type){ return Math.max(1, MINE_CFG[type].baseTime * (1 - ge
 function getMineYield(type){ return Math.max(1, Math.round(MINE_CFG[type].baseYield * gameData.mines[type].level * (1 + getYieldBonus()))); }
 function getDurabilityCost(){ return Math.max(0.5, 2 * (1 - getDurabilityReduce())); }
 
+// ===== ตรวจสอบ/ซ่อมข้อมูลเซฟที่อาจพังหรือไม่ครบ (กันเกม error ตอนโหลด) =====
 function sanitizeData(){
   const d = createDefaultData();
   if(!gameData || typeof gameData !== 'object') gameData = d;
@@ -1627,13 +2874,6 @@ function sanitizeData(){
     gameData.mines[t].active = !!gameData.mines[t].active;
   });
 
-  if(!gameData.lands || typeof gameData.lands!=='object') gameData.lands = d.lands;
-  LAND_TYPES.forEach(t=>{
-    if(!gameData.lands[t] || typeof gameData.lands[t]!=='object') gameData.lands[t] = d.lands[t];
-    gameData.lands[t].level = Math.max(0, Math.floor(num(gameData.lands[t].level,0)));
-    gameData.lands[t].cost = landCost(t);
-  });
-
   if(!gameData.equipment || typeof gameData.equipment!=='object') gameData.equipment = d.equipment;
   EQUIP_TYPES.forEach(t=>{
     if(!gameData.equipment[t] || typeof gameData.equipment[t]!=='object') gameData.equipment[t] = d.equipment[t];
@@ -1658,8 +2898,7 @@ function sanitizeData(){
   });
 }
 
-function landCost(type){ const l = gameData.lands[type]; return Math.round(LAND_CFG[type].baseCost * Math.pow(1.75, l ? l.level : 0)); }
-function landIncome(type){ const l = gameData.lands[type]; if(!l || l.level<=0) return 0; const dampLv = Math.min(l.level-1, 15); return Math.round(LAND_CFG[type].baseIncome * l.level * (1 + dampLv*0.04)); }
+// ===== สูตรคำนวณเศรษฐกิจ: อุปกรณ์ / การหลอมแร่ =====
 function equipCost(type){
   const e = gameData.equipment[type]; const cfg = EQUIP_CFG[type];
   const lv = e ? e.level : 0; const step = (type==='pickaxe') ? lv : lv+1;
@@ -1691,6 +2930,7 @@ function smeltOre(type, amount){
   updateUI(); autoSaveGame(true);
 }
 
+// ===== บันทึก/โหลดเกม (Save · Load · Export/Import โค้ดเซฟ) =====
 function safeBtoa(str){ try{ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,(m,p)=>String.fromCharCode('0x'+p))); }catch(e){ return ''; } }
 function safeAtob(b64){ try{ return decodeURIComponent(Array.prototype.map.call(atob(b64),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')); }catch(e){ return '{}'; } }
 
@@ -1756,6 +2996,7 @@ function resetGame(){ const m=document.getElementById('reset-modal'); if(m) m.st
 function closeResetModal(){ const m=document.getElementById('reset-modal'); if(m) m.style.display='none'; }
 function executeResetGame(){ localStorage.removeItem('mcPrimarySave'); localStorage.removeItem('mcBackupSave'); location.reload(); }
 
+// ===== ยูทิลิตี้ช่วยอัปเดต DOM (ตัวเลข/ข้อความ/คลาส) =====
 function setTxt(el, v){ if(!el) return; v = String(v); if(el.textContent !== v) el.textContent = v; }
 function setCls(el, c){ if(el && el.className !== c) el.className = c; }
 function setText(id, val){ setTxt(document.getElementById(id), val); }
@@ -1818,6 +3059,7 @@ function showFloatingReward(type, text, fail){
   el.innerText = text; card.appendChild(el);
   setTimeout(()=>{ if(el.parentNode) el.remove(); }, 900);
 }
+// ===== เมนูด้านข้าง / แท็บ / UI ทั่วไป =====
 function openSidebar(){
   const sb = document.getElementById('sidebar'); const ov = document.getElementById('sidebar-overlay');
   if(!sb || window.innerWidth >= 768) return;
@@ -1862,6 +3104,7 @@ function syncPixiTickers(){
   });
 }
 
+// ===== เลเวล / ความทนทานเครื่องมือ / การซ่อม =====
 function addXP(amount){
   const add = Math.max(0, Math.floor(amount));
   gameData.xp += add;
@@ -1872,7 +3115,7 @@ function addXP(amount){
     leveledUp = true;
     guard++;
   }
-  if(leveledUp) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, '⭐');
+  if(leveledUp) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, 'pi-star');
 }
 function getRepairCost(){ return Math.round(Math.max(0, 100 - gameData.durability) * 2); }
 function toggleAutoRepair(){
@@ -1888,7 +3131,7 @@ function toggleNotifications(){
 }
 function updateNotifBtn(){
   const b = document.getElementById('notif-toggle-btn'); if(!b) return;
-  b.innerText = gameData.notificationsEnabled ? '🔔' : '🔕';
+  const u = document.getElementById('notif-icon-use'); if(u) u.setAttribute('href', gameData.notificationsEnabled ? '#pi-bell' : '#pi-bell-off');
   b.title = gameData.notificationsEnabled ? 'การแจ้งเตือน: เปิด (คลิกเพื่อปิด)' : 'การแจ้งเตือน: ปิด (คลิกเพื่อเปิด)';
   b.style.opacity = gameData.notificationsEnabled ? '1' : '.5';
 }
@@ -1924,6 +3167,7 @@ function repairTools(){
   updateUI(); autoSaveGame(true);
 }
 
+// ===== ฝึกทหาร & ด่านผจญภัย (Expedition) =====
 function trainTroop(type){
   sanitizeData();
   const c = TRAIN_CFG[type]; if(!c) return;
@@ -1971,7 +3215,7 @@ function checkExpeditions(){
           txt.push(rKey === 'gold' ? val.toLocaleString()+' Gold' : (rKey === 'gems' ? val+' Gems' : val+' ชิ้น'));
         }
         if(cfg.reward.gems >= 15){
-          showBigReward('🗺️ พิชิตสำเร็จ!', '"'+cfg.name+'" ได้รับ: '+txt.join(', '), '🎉');
+          showBigReward('🗺️ พิชิตสำเร็จ!', '"'+cfg.name+'" ได้รับ: '+txt.join(', '), 'pi-confetti');
         }else{
           showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
           SFX.coin();
@@ -1988,6 +3232,7 @@ function checkExpeditions(){
   if(updated){ updateUI(); autoSaveGame(true); }
 }
 
+// ===== ระบบขุดแร่หลัก (เปิด/ปิดการขุดอัตโนมัติ + ขุดด้วยมือ) =====
 function toggleMining(type){
   sanitizeData();
   const cfg = MINE_CFG[type];
@@ -2048,7 +3293,7 @@ function upgradeMine(type){
     gameData.mineMilestone[type] = mine.level;
     const gemReward = Math.round(mine.level/5) * 5;
     gameData.gems += gemReward;
-    showBigReward('🏆 ไมล์สโตน!', MINE_CFG[type].label+' ถึง Lv.'+mine.level+' รับโบนัส '+gemReward+' Gems', '💎');
+    showBigReward('🏆 ไมล์สโตน!', MINE_CFG[type].label+' ถึง Lv.'+mine.level+' รับโบนัส '+gemReward+' Gems', 'pi-trophy');
   }
   updateUI(); autoSaveGame(true);
 }
@@ -2152,6 +3397,7 @@ function updateMiningProgress(dt){
   if(dirty) updateUI();
 }
 
+// ===== อัปเกรดอุปกรณ์ & ร้านสกิน =====
 function upgradeEquipment(type){
   sanitizeData();
   const eq = gameData.equipment[type]; const cfg = EQUIP_CFG[type]; const cost = eq.cost;
@@ -2225,27 +3471,7 @@ function renderSkinShop(){
   grid.innerHTML = html;
 }
 
-function buyOrUpgradeLand(type){
-  sanitizeData();
-  const land = gameData.lands[type]; const cfg = LAND_CFG[type]; const cost = landCost(type);
-  if(gameData.level < cfg.reqLv){ alert('ต้องมีเลเวล '+cfg.reqLv+' ขึ้นไปจึงจะปลดล็อกที่ดินนี้'); return; }
-  if(land.level >= LAND_MAX_LEVEL){ showToast('ที่ดินนี้ถึงระดับสูงสุด (Lv.'+LAND_MAX_LEVEL+') แล้ว'); return; }
-  const rc = LAND_RES_CFG[type];
-  const resAmt = rc ? landResCost(type) : 0;
-  if(gameData.gold < cost){ alert('Gold ไม่พอซื้อที่ดิน! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
-  if(rc && (gameData[rc.res]||0) < resAmt){ alert(rc.label+' ไม่พอ! ต้องใช้ '+resAmt.toLocaleString()+' ชิ้น (ตอนนี้มี '+(gameData[rc.res]||0).toLocaleString()+')'); return; }
-  gameData.gold -= cost; if(rc) gameData[rc.res] -= resAmt;
-  land.level += 1; land.cost = landCost(type);
-  addXP(Math.floor(cost/200));
-  showToast('🏞️ อัปเกรดที่ดินเป็น Lv.'+land.level+' แล้ว!'+(rc?' (-'+resAmt.toLocaleString()+' '+rc.label+')':''));
-  updateUI(); autoSaveGame(true);
-}
-function processPassiveLandIncome(){
-  let total = 0;
-  LAND_TYPES.forEach(t=>{ total += landIncome(t); });
-  if(total > 0){ gameData.gold += total; updateUI(); }
-}
-
+// ===== ตลาดซื้อขายแร่ (ราคาผันผวน + กราฟ) =====
 function updateMarketPricesRealtime(){
   MINE_TYPES.forEach(type=>{
     const cfg = MARKET_CFG[type];
@@ -2368,23 +3594,17 @@ function buyShopItem(item){
     if(roll < 0.45){ const g = 1500 + Math.floor(Math.random()*2500); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); SFX.coin(); }
     else if(roll < 0.8){ const o = 50 + Math.floor(Math.random()*100); gameData.iron += o; showToast('🎁 ได้รับแร่เหล็ก '+o.toLocaleString()+' ชิ้น!'); SFX.coin(); }
     else if(roll < 0.95){ const s = 20 + Math.floor(Math.random()*40); gameData.silver += s; showToast('🎁 ได้รับแร่เงิน '+s.toLocaleString()+' ชิ้น!'); SFX.coin(); }
-    else{ gameData.gems += 60; showBigReward('🎉 แจ็คพอต!', 'กล่องสุ่มมอบ 60 Gems ให้คุณ!', '💎'); }
+    else{ gameData.gems += 60; showBigReward('🎉 แจ็คพอต!', 'กล่องสุ่มมอบ 60 Gems ให้คุณ!', 'pi-diamond'); }
   }
   updateUI(); autoSaveGame(true);
 }
 
+// ===== คำนวณความคืบหน้าที่เกิดขึ้นระหว่างออฟไลน์ =====
 function calcOfflineProgress(){
   const elapsed = (Date.now() - gameData.lastSaveTime)/1000;
   if(!isFinite(elapsed) || elapsed < 10) return;
   const sec = Math.min(elapsed, 12*3600);
   const gains = { iron:0, silver:0, goldOre:0, gold:0 };
-  let per5 = 0;
-  LAND_TYPES.forEach(t=>{ per5 += landIncome(t); });
-  // รายได้จากที่ดินตอนออฟไลน์: ใช้จังหวะเวลาของตัวเอง (ช้ากว่าออนไลน์ + เพดานสั้นกว่า) เพื่อกันเงินเฟ้อระยะยาว
-  // ไม่ใช้ตัวแปร sec/ticks ร่วมกับการจำลองขุดแร่ด้านล่าง เพื่อไม่ให้กระทบการขุดแบบออฟไลน์ที่ยังทำงานเหมือนเดิม
-  const landElapsed = Math.min(elapsed, LAND_OFFLINE_CAP_HOURS*3600);
-  const landTicks = Math.floor(landElapsed/LAND_OFFLINE_TICK_SEC);
-  if(per5 > 0 && landTicks > 0){ gains.gold = per5*landTicks; gameData.gold += gains.gold; }
   const active = MINE_TYPES.filter(t=>gameData.mines[t].active);
   if(active.length > 0 && gameData.durability > 0){
     const sim = Math.min(sec, 6*3600);
@@ -2418,6 +3638,7 @@ function calcOfflineProgress(){
   if(msg.length) setTimeout(()=>showToast('🌙 รายได้ออฟไลน์: '+msg.join(', ')), 600);
 }
 
+// ===== อัปเดต UI หลักทั้งหมด (เรียกทุกครั้งที่ข้อมูลเกมเปลี่ยน) =====
 function updateUI(){
   updateNotifBtn();
   setNum('gold-val', gameData.gold, true);
@@ -2575,44 +3796,6 @@ function updateUI(){
     }
   }
 
-  let landTotal5s = 0;
-  LAND_TYPES.forEach(t=>{
-    const lv = gameData.lands[t].level, cfg = LAND_CFG[t], income = landIncome(t), cost = landCost(t);
-    landTotal5s += income;
-    setText('land-'+t+'-lvl', 'Lv.'+lv);
-    setText('land-'+t+'-income', income.toLocaleString());
-    setText('land-'+t+'-cost', cost.toLocaleString());
-    const rc = LAND_RES_CFG[t];
-    if(rc){
-      setText('land-'+t+'-rescost', landResCost(t).toLocaleString());
-      setText('land-'+t+'-reshave', (gameData[rc.res]||0).toLocaleString());
-    }
-    const pbEl = document.getElementById('land-'+t+'-payback');
-    if(pbEl){
-      if(income > 0){
-        const secs = Math.round((cost/income)*5);
-        const txt = secs < 60 ? secs+' วิ' : secs < 3600 ? Math.round(secs/60)+' นาที' : Math.round(secs/3600)+' ชม.';
-        setTxt(pbEl, '~'+txt+' (สู่เลเวลถัดไป)');
-      }else{ setTxt(pbEl, 'ยังไม่มีรายได้'); }
-    }
-    const b = document.getElementById('land-'+t+'-btn');
-    if(b){
-      const resOk = !rc || (gameData[rc.res]||0) >= landResCost(t);
-      if(gameData.level < cfg.reqLv){
-        setTxt(b, 'ต้องการ Lv.'+cfg.reqLv); setCls(b, 'btn btn-locked'); b.disabled = true;
-      }else if(lv >= LAND_MAX_LEVEL){
-        setTxt(b, 'เต็มระดับสูงสุด'); setCls(b, 'btn btn-locked'); b.disabled = true;
-      }else if(gameData.gold < cost || !resOk){
-        setTxt(b, 'Gold/วัตถุดิบไม่พอ'); setCls(b, 'btn btn-locked'); b.disabled = true;
-      }else{
-        setTxt(b, lv === 0 ? (LAND_BUY_LABEL[t] || 'ซื้อที่ดิน') : 'อัปเกรดที่ดิน'); setCls(b, 'btn btn-success'); b.disabled = false;
-      }
-    }
-  });
-  setText('land-total-income', landTotal5s.toLocaleString()+' Gold / 5 วิ');
-  setText('land-total-hour', Math.round(landTotal5s*720).toLocaleString()+' Gold / ชม.');
-  setText('dash-land-income', Math.round(landTotal5s*720).toLocaleString()+' Gold');
-
   const EQUIP_BTN_CLASS = { pickaxe:'btn btn-warning', helmet:'btn btn-success', armor:'btn btn-success' };
   EQUIP_TYPES.forEach(t=>{
     setText('eq-'+t+'-lvl', gameData.equipment[t].level);
@@ -2651,6 +3834,7 @@ function updateUI(){
 }
 function refreshAll(){ updateUI(); renderSkinShop(); }
 
+// ===== จุดเริ่มต้นเกม: ผูก Event Listener ทั้งหมด แล้วเริ่มลูปเกม =====
 window.addEventListener('load', function(){
   try{
     loadGame();
@@ -2678,7 +3862,6 @@ window.addEventListener('load', function(){
     }
 
     setInterval(updateMarketPricesRealtime, 4000);
-    setInterval(processPassiveLandIncome, 5000);
     setInterval(function(){ autoSaveGame(false); }, 15000);
 
     // Single shared "coming back from background" path, used by every resume signal below.
