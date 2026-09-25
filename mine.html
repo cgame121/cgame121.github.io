@@ -522,7 +522,7 @@ header {
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg,var(--gold),var(--accent) 55%,var(--primary));
+  background: var(--card-grad,linear-gradient(90deg,var(--gold),var(--accent) 55%,var(--primary)));
   transition: filter .2s ease;
 }
 .card h3 {
@@ -545,7 +545,7 @@ header {
   bottom: 0;
   height: 3px;
   width: 42px;
-  background: var(--gold);
+  background: var(--card-line,var(--gold));
 }
 .card p {
   color: var(--text-muted);
@@ -1554,6 +1554,11 @@ body {
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="gradBar" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="currentColor" stop-opacity="1"/>
+  <stop offset=".55" stop-color="currentColor" stop-opacity=".8"/>
+  <stop offset="1" stop-color="currentColor" stop-opacity=".5"/>
+</linearGradient>
 <symbol id="pi-circle" viewBox="0 0 8 8"><rect x="2" y="0" width="4" height="1" fill="currentColor"/><rect x="1" y="1" width="6" height="1" fill="currentColor"/><rect x="0" y="2" width="8" height="4" fill="currentColor"/><rect x="1" y="6" width="6" height="1" fill="currentColor"/><rect x="2" y="7" width="4" height="1" fill="currentColor"/></symbol>
 <symbol id="pi-diamond" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="2" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
 <symbol id="pi-star" viewBox="0 0 7 7"><rect x="3" y="0" width="1" height="2" fill="currentColor"/><rect x="1" y="2" width="5" height="1" fill="currentColor"/><rect x="0" y="3" width="7" height="1" fill="currentColor"/><rect x="1" y="4" width="5" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/></symbol>
@@ -1570,8 +1575,23 @@ body {
 <symbol id="pi-mountain" viewBox="0 0 10 8"><rect x="2" y="1" width="1" height="1" fill="currentColor"/><rect x="1" y="2" width="3" height="1" fill="currentColor"/><rect x="6" y="0" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="3" height="1" fill="currentColor"/><rect x="0" y="3" width="10" height="1" fill="currentColor"/><rect x="0" y="4" width="10" height="2" fill="currentColor"/></symbol>
 <symbol id="pi-book" viewBox="0 0 8 8"><rect x="1" y="1" width="6" height="6" fill="currentColor"/><rect x="5" y="0" width="1" height="2" fill="currentColor"/></symbol>
 <symbol id="pi-bolt" viewBox="0 0 8 8"><rect x="4" y="0" width="2" height="1" fill="currentColor"/><rect x="3" y="1" width="2" height="1" fill="currentColor"/><rect x="2" y="2" width="2" height="1" fill="currentColor"/><rect x="1" y="3" width="2" height="1" fill="currentColor"/><rect x="3" y="4" width="2" height="1" fill="currentColor"/><rect x="4" y="5" width="2" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="1" fill="currentColor"/><rect x="4" y="7" width="1" height="1" fill="currentColor"/></symbol>
-<symbol id="pi-ingot" viewBox="0 0 8 8"><rect x="1" y="2" width="6" height="4" fill="currentColor"/><rect x="2" y="3" width="4" height="1" fill="currentColor"/></symbol>
-<symbol id="pi-goldbar" viewBox="0 0 8 8"><rect x="1" y="1" width="6" height="2" fill="currentColor"/><rect x="1" y="5" width="6" height="2" fill="currentColor"/></symbol>
+<symbol id="pi-ingot" viewBox="0 0 10 7">
+  <rect x="2" y="0" width="6" height="1" fill="currentColor"/>
+  <rect x="1" y="1" width="8" height="1" fill="currentColor"/>
+  <rect x="0" y="2" width="10" height="3" fill="currentColor"/>
+  <rect x="1" y="5" width="8" height="1" fill="currentColor"/>
+  <rect x="2" y="6" width="6" height="1" fill="currentColor"/>
+  <rect x="2" y="1" width="2" height="1" fill="currentColor"/>
+</symbol>
+<symbol id="pi-goldbar" viewBox="0 0 10 7">
+  <rect x="2" y="0" width="6" height="1" fill="currentColor"/>
+  <rect x="1" y="1" width="8" height="1" fill="currentColor"/>
+  <rect x="0" y="2" width="10" height="3" fill="currentColor"/>
+  <rect x="1" y="5" width="8" height="1" fill="currentColor"/>
+  <rect x="2" y="6" width="6" height="1" fill="currentColor"/>
+  <rect x="2" y="1" width="2" height="1" fill="currentColor"/>
+  <rect x="7" y="2" width="1" height="1" fill="currentColor"/>
+</symbol>
 <symbol id="pi-shirt" viewBox="0 0 8 8"><rect x="1" y="0" width="2" height="1" fill="currentColor"/><rect x="5" y="0" width="2" height="1" fill="currentColor"/><rect x="0" y="1" width="2" height="2" fill="currentColor"/><rect x="6" y="1" width="2" height="2" fill="currentColor"/><rect x="2" y="1" width="4" height="6" fill="currentColor"/></symbol>
 <symbol id="pi-shield" viewBox="0 0 8 8"><rect x="1" y="0" width="6" height="1" fill="currentColor"/><rect x="0" y="1" width="8" height="4" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
 <symbol id="pi-sword" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="5" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="3" y="6" width="2" height="2" fill="currentColor"/></symbol>
@@ -1765,17 +1785,17 @@ body {
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-fire"></use></svg> เตาหลอมแร่ดิบเป็นแท่งโลหะ</h2>
       <div class="grid-3">
         <div class="card">
-          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> หลอมเหล็ก</h3>
+          <h3><svg class="picon" viewBox="0 0 10 7" style="color:#8fa3c9"><use href="#pi-ingot"></use></svg> หลอมเหล็ก</h3>
           <div class="info"><div class="r"><span class="k">แร่เหล็กดิบ</span><span class="v"><b id="smelt-iron-have">50</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">1,000 แร่ → 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">300</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-iron-out" style="color:var(--success)">2</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-iron-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button></div>
         </div>
         <div class="card">
-          <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> หลอมเงิน</h3>
+          <h3><svg class="picon" viewBox="0 0 10 7" style="color:#dde3f0"><use href="#pi-ingot"></use></svg> หลอมเงิน</h3>
           <div class="info"><div class="r"><span class="k">แร่เงินดิบ</span><span class="v"><b id="smelt-silver-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">750 แร่ → 1 แท่งเงิน</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">800</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-silver-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-silver-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button></div>
         </div>
         <div class="card">
-          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-goldbar"></use></svg> หลอมทอง</h3>
+          <h3><svg class="picon" viewBox="0 0 10 7" style="color:#ffcf3d"><use href="#pi-goldbar"></use></svg> หลอมทอง</h3>
           <div class="info"><div class="r"><span class="k">แร่ทองดิบ</span><span class="v"><b id="smelt-goldOre-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">500 แร่ → 1 แท่งทองคำ</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">2,000</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-goldOre-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-goldOre-bar" style="color:var(--gold)">0</b></span></div></div>
           <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button></div>
         </div>
@@ -1959,11 +1979,11 @@ body {
         <div class="card"><h3><svg class="picon" viewBox="0 0 8 7" style="color:#ffcf3d"><use href="#pi-nugget"></use></svg> แร่ทอง</h3><p><span id="inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</p></div>
       </div>
 
-      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> แท่งโลหะ</h2>
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 10 7"><use href="#pi-ingot"></use></svg> แท่งโลหะ</h2>
       <div class="grid-3">
-        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> แท่งเหล็กกล้า</h3><p><span id="inv-ingotIron" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
-        <div class="card"><h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> แท่งเงิน</h3><p><span id="inv-ingotSilver" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
-        <div class="card"><h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-goldbar"></use></svg> แท่งทองคำ</h3><p><span id="inv-ingotGold" style="color:var(--gold);font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card" style="--card-line:#8fa3c9;--card-grad:linear-gradient(90deg,#4d5b73,#8fa3c9 55%,#c9d6e8)"><h3><svg class="picon" viewBox="0 0 10 7" style="color:#8fa3c9"><use href="#pi-ingot"></use></svg> แท่งเหล็กกล้า</h3><p><span id="inv-ingotIron" style="color:#8fa3c9;font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card" style="--card-line:#dde3f0;--card-grad:linear-gradient(90deg,#8f96a8,#dde3f0 55%,#ffffff)"><h3><svg class="picon" viewBox="0 0 10 7" style="color:#dde3f0"><use href="#pi-ingot"></use></svg> แท่งเงิน</h3><p><span id="inv-ingotSilver" style="color:#dde3f0;font-weight:bold">0</span> แท่ง</p></div>
+        <div class="card" style="--card-line:#ffcf3d;--card-grad:linear-gradient(90deg,#a87a00,#ffcf3d 55%,#fff2ab)"><h3><svg class="picon" viewBox="0 0 10 7" style="color:#ffcf3d"><use href="#pi-goldbar"></use></svg> แท่งทองคำ</h3><p><span id="inv-ingotGold" style="color:#ffcf3d;font-weight:bold">0</span> แท่ง</p></div>
       </div>
 
       <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-medal"></use></svg> กำลังพล</h2>
@@ -4525,6 +4545,24 @@ window.addEventListener('load', function(){
       }
       document.addEventListener('pointerdown', unlock, {once:true, passive:true});
       document.addEventListener('keydown', unlock, {once:true});
+    })();
+    // ===== กันจอดับ/จอหรี่ระหว่างเล่น (Screen Wake Lock) =====
+    // มือถือจะหรี่/ดับจอเองตาม timeout ของเครื่องถ้าไม่มีเว็บไหนขอ wake lock ไว้
+    // - ต้องขอใหม่ทุกครั้งที่กลับมาที่แท็บ เพราะระบบจะปล่อย lock อัตโนมัติเมื่อแอปไป background
+    // - เบราว์เซอร์ที่ไม่รองรับ (เช่น iOS Safari รุ่นเก่ากว่า 16.4) จะข้ามไปเงียบๆ ไม่ error
+    (function(){
+      let wakeLock = null;
+      async function requestWakeLock(){
+        if(!('wakeLock' in navigator) || document.hidden) return;
+        try{
+          wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release', function(){ wakeLock = null; });
+        }catch(err){ /* เช่น แบตต่ำ หรือเบราว์เซอร์ปฏิเสธ - ปล่อยผ่าน ไม่ต้องแจ้งเตือนผู้เล่น */ }
+      }
+      requestWakeLock();
+      document.addEventListener('visibilitychange', function(){ if(!document.hidden) requestWakeLock(); });
+      // บางเบราว์เซอร์ (โดยเฉพาะมือถือ) ต้องมี user gesture ก่อนถึงจะขอ wake lock ผ่าน
+      document.addEventListener('pointerdown', requestWakeLock, {passive:true});
     })();
     // plays a short click sound for any button/menu tap across the whole UI
     document.addEventListener('click', function(e){
