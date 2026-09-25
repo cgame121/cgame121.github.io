@@ -1481,7 +1481,7 @@ body {
 }
 .btn-grid {
   display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
+  grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 8px;
   margin-top: 8px;
 }
@@ -1490,11 +1490,6 @@ body {
   padding-right: 2px;
   font-size: .82rem;
   white-space: nowrap;
-}
-@media(max-width:380px) {
-  .btn-grid {
-    grid-template-columns: repeat(2,minmax(0,1fr));
-  }
 }
 .item-list {
   display: flex;
@@ -1739,17 +1734,17 @@ body {
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-ingot"></use></svg> หลอมเหล็ก</h3>
           <div class="info"><div class="r"><span class="k">แร่เหล็กดิบ</span><span class="v"><b id="smelt-iron-have">50</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">1,000 แร่ → 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">300</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-iron-out" style="color:var(--success)">2</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-iron-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('iron',1000)">หลอม 1,000</button></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button></div>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> หลอมเงิน</h3>
           <div class="info"><div class="r"><span class="k">แร่เงินดิบ</span><span class="v"><b id="smelt-silver-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">750 แร่ → 1 แท่งเงิน</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">800</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-silver-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-silver-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('silver',1000)">หลอม 1,000</button></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button></div>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-goldbar"></use></svg> หลอมทอง</h3>
           <div class="info"><div class="r"><span class="k">แร่ทองดิบ</span><span class="v"><b id="smelt-goldOre-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">500 แร่ → 1 แท่งทองคำ</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">2,000</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-goldOre-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-goldOre-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('goldOre',1000)">หลอม 1,000</button></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button></div>
         </div>
       </div>
       <div class="card">
