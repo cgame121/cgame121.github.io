@@ -2036,18 +2036,35 @@ function setMineBar(type, pct){
 }
 // Adaptive game loop: 60fps only while a mine is running AND the mining tab is visible;
 // 5fps while mining in the background; 2fps when idle; fully paused when the page is hidden.
-let loopTimer = null, loopRaf = 0;
+//
+// Robustness notes (fix for "mining stops after switching tab/app and coming back"):
+// - loopRunning is an explicit flag (not just "is loopTimer/loopRaf truthy") so scheduling
+//   state can never get confused by a stray 0 id.
+// - loopTick uses try/finally so a thrown error can NEVER stop scheduleLoop() from being
+//   called again - the loop can't die from an unrelated bug elsewhere in the tick.
+// - lastTickAt is a wall-clock timestamp updated at the top of every real tick. The watchdog
+//   below is deliberately based on THIS, not on the loopRunning flag - because the worst-case
+//   failure mode is exactly a browser/webview silently dropping an already-scheduled
+//   rAF/setTimeout (never calling it back, never erroring) while backgrounded. In that case
+//   loopRunning is left stuck "true" forever even though nothing is actually scheduled - a
+//   flag-based watchdog would trust the lie and never fire. A staleness check ("has it really
+//   been too long since a tick happened?") cannot be fooled that way, since it only looks at
+//   real elapsed time, independent of what any internal flag claims.
+let loopTimer = null, loopRaf = 0, loopRunning = false, lastTickAt = performance.now();
 function anyMineActive(){ return MINE_TYPES.some(function(t){ return gameData.mines && gameData.mines[t] && gameData.mines[t].active; }); }
 function loopTick(){
-  loopTimer = null; loopRaf = 0;
+  loopTimer = null; loopRaf = 0; loopRunning = false;
   const now = performance.now();
+  lastTickAt = now;
   let dt = (now - lastFrameTime)/1000; lastFrameTime = now;
   if(!isFinite(dt) || dt < 0 || dt > 0.6) dt = 0.016;
-  try{ updateMiningProgress(dt); }catch(e){ console.error(e); }
-  scheduleLoop();
+  try{ updateMiningProgress(dt); }
+  catch(e){ console.error(e); }
+  finally{ scheduleLoop(); } // always reschedule, even if the tick above threw
 }
 function scheduleLoop(){
-  if(loopTimer || loopRaf || document.hidden) return;
+  if(loopRunning || document.hidden) return;
+  loopRunning = true;
   if(anyMineActive()){
     if(isTabActive('mining')) loopRaf = requestAnimationFrame(loopTick);
     else loopTimer = setTimeout(loopTick, 200);
@@ -2058,9 +2075,19 @@ function scheduleLoop(){
 function wakeLoop(keepClock){
   if(loopTimer){ clearTimeout(loopTimer); loopTimer = null; }
   if(loopRaf){ cancelAnimationFrame(loopRaf); loopRaf = 0; }
+  loopRunning = false;
+  lastTickAt = performance.now();
   if(!keepClock) lastFrameTime = performance.now();
   scheduleLoop();
 }
+// Watchdog heartbeat: every 2s, if the page is visible but no tick has actually happened in
+// the last 3s (well beyond the slowest normal cadence of 500ms), something is stuck - force a
+// hard restart regardless of what loopRunning/loopTimer/loopRaf currently claim. This is what
+// makes the loop truly self-healing even against a browser silently discarding a pending timer
+// without ever invoking or erroring it (a real failure mode in some in-app webviews).
+setInterval(function(){
+  if(!document.hidden && (performance.now() - lastTickAt) > 3000) wakeLoop();
+}, 2000);
 function updateMiningProgress(dt){
   checkAutoRepair(); checkExpeditions();
   let dirty = false;
@@ -2622,10 +2649,34 @@ window.addEventListener('load', function(){
     setInterval(processPassiveLandIncome, 5000);
     setInterval(function(){ autoSaveGame(false); }, 15000);
 
+    // Single shared "coming back from background" path, used by every resume signal below.
+    // Debounced so that if two resume events fire almost together (e.g. visibilitychange AND
+    // pageshow both firing when returning from another app on mobile), offline progress is
+    // only ever calculated/credited once instead of being double-counted.
+    let lastResumeCall = 0;
+    function resumeFromBackground(){
+      const now = Date.now();
+      if(now - lastResumeCall < 1000){ wakeLoop(); return; }
+      lastResumeCall = now;
+      calcOfflineProgress();
+      refreshAll();
+      wakeLoop();
+    }
     document.addEventListener('visibilitychange', function(){
       if(document.hidden){ autoSaveGame(true); }
-      else { calcOfflineProgress(); refreshAll(); wakeLoop(); }
+      else { resumeFromBackground(); }
       syncPixiTickers();
+    });
+    // Backstop #1: window focus can fire on desktop (alt-tab, clicking back into the window)
+    // even when document.hidden never toggled. Just re-arm the loop - cheap and idempotent.
+    window.addEventListener('focus', function(){ wakeLoop(); syncPixiTickers(); });
+    // Backstop #2: pageshow fires on normal load AND whenever the page is restored from the
+    // browser's back-forward cache - which is exactly what happens on many phones when you
+    // switch to another app and swipe back, and it can fire without a matching
+    // visibilitychange in some in-app browsers (LINE, Facebook, some iOS Safari versions).
+    window.addEventListener('pageshow', function(e){
+      if(e.persisted) resumeFromBackground();
+      else wakeLoop();
     });
     window.addEventListener('resize', function(){
       const sb = document.getElementById('sidebar');
