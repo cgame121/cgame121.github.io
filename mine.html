@@ -268,7 +268,6 @@ body {
   overflow: hidden;
   font-size: 100%;
   line-height: 1.4;
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -295,35 +294,13 @@ body::after {
   }
 }
 html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary) #000;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
 }
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #000;
-  border-left: 2px solid var(--border);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border: 2px solid #000;
-  border-radius: 3px;
-}
-@media(max-width:767px),
-(pointer:coarse) {
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-track {
-    border-left: 1px solid var(--border);
-  }
-  ::-webkit-scrollbar-thumb {
-    border: 1px solid #000;
-    border-radius: 2px;
-  }
+  display: none; /* Chrome, Safari, mobile webviews */
+  width: 0;
+  height: 0;
 }
 ::selection {
   background: var(--accent);
@@ -494,7 +471,6 @@ header {
   overflow-y: auto;
   background: var(--bg-body);
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 .tab-content {
   display: none;
@@ -2989,11 +2965,16 @@ function smeltOre(type, amount){
   sanitizeData();
   const cfg = SMELT_CFG[type]; if(!cfg) return;
   const have = gameData[type] || 0;
-  let qty = Math.floor(have / cfg.ratio);
+  const oreQty = Math.floor(have / cfg.ratio);
   const goldQty = Math.floor((gameData.gold||0) / cfg.goldCost);
-  if(qty > 0 && goldQty <= 0){ showToast('Gold ไม่พอหลอม 1 '+cfg.label+' (ต้องการ '+cfg.goldCost.toLocaleString()+' Gold)'); return; }
-  qty = Math.min(qty, goldQty);
-  if(amount !== 'all' && amount !== undefined) qty = Math.min(qty, Number(amount));
+  if(oreQty <= 0){ showToast('แร่ไม่พอสำหรับหลอม 1 '+cfg.label+' (ต้องการ '+cfg.ratio+' ชิ้น)'); return; }
+  if(goldQty <= 0){ showToast('Gold ไม่พอหลอม 1 '+cfg.label+' (ต้องการ '+cfg.goldCost.toLocaleString()+' Gold)'); return; }
+  let qty = Math.min(oreQty, goldQty);
+  if(amount !== 'all' && amount !== undefined){
+    const reqAmt = Math.floor(Number(amount));
+    if(!isFinite(reqAmt) || reqAmt <= 0){ showToast('กรุณาระบุจำนวนที่ถูกต้อง'); return; }
+    qty = Math.min(qty, reqAmt);
+  }
   if(qty <= 0){ showToast('แร่ไม่พอสำหรับหลอม 1 '+cfg.label+' (ต้องการ '+cfg.ratio+' ชิ้น)'); return; }
   gameData[type] -= qty * cfg.ratio; gameData.gold -= qty * cfg.goldCost;
   gameData[cfg.bar] = (gameData[cfg.bar] || 0) + qty;
@@ -3157,7 +3138,8 @@ function switchTab(ev, tabId){
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
   const target = document.getElementById(tabId); if(target) target.classList.add('active');
   if(ev && ev.currentTarget) ev.currentTarget.classList.add('active');
-  const vp = document.getElementById('main-viewport'); if(vp) vp.scrollTop = 0;
+  const vp = document.getElementById('main-viewport');
+  if(vp){ const prevSB = vp.style.scrollBehavior; vp.style.scrollBehavior = 'auto'; vp.scrollTop = 0; vp.style.scrollBehavior = prevSB; }
   if(tabId==='market') setTimeout(drawAllMarketCharts, 30);
   if(tabId==='character') renderSkinShop();
   closeSidebar();
@@ -4263,7 +4245,7 @@ function calcOfflineProgress(){
   const elapsed = (Date.now() - gameData.lastSaveTime)/1000;
   if(!isFinite(elapsed) || elapsed < 10) return;
   const sec = Math.min(elapsed, 12*3600);
-  const gains = { iron:0, silver:0, goldOre:0, gold:0 };
+  const gains = { iron:0, silver:0, goldOre:0 };
   const active = MINE_TYPES.filter(t=>gameData.mines[t].active);
   if(active.length > 0 && gameData.durability > 0){
     const sim = Math.min(sec, 6*3600);
@@ -4290,7 +4272,6 @@ function calcOfflineProgress(){
     if(gameData.durability <= 0) active.forEach(t=>{ gameData.mines[t].active = false; });
   }
   const msg = [];
-  if(gains.gold>0) msg.push('Gold '+gains.gold.toLocaleString());
   if(gains.iron>0) msg.push('เหล็ก '+gains.iron.toLocaleString());
   if(gains.silver>0) msg.push('เงิน '+gains.silver.toLocaleString());
   if(gains.goldOre>0) msg.push('ทอง '+gains.goldOre.toLocaleString());
