@@ -1415,6 +1415,17 @@ body {
     font-size: 1.05rem;
   }
 }
+/* When the number of dash-hero cards is odd, the last card would otherwise
+   be left stranded alone in the first column with empty space beside it.
+   Stretch it across the full row instead so it fills the space properly. */
+.dash-hero-stat:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+@media(min-width:700px) {
+  .dash-hero-stat:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
 .hint b {
   color: var(--gold);
 }
