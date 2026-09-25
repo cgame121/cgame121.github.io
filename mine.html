@@ -11,11 +11,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root{--ease-out:cubic-bezier(.22,1,.36,1);--bg-body:#0a0a14;--bg-sidebar:#0f0f1c;--bg-card:#161625;--bg-card-hover:#1f1f33;--border:#33334d;--border-light:#5555aa;--primary:#00f0ff;--primary-dark:#0088a3;--accent:#ffb300;--gold:#ffe135;--success:#00ff7f;--success-dark:#00a352;--danger:#ff2d55;--danger-dark:#b3001f;--text-main:#f2f2ff;--text-muted:#a9a9d0;--px:'Noto Sans Thai','Sarabun','Leelawadee UI','Thonburi',Tahoma,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--pxh:var(--px);--ts:transform .18s cubic-bezier(.25,.8,.35,1),background-color .18s cubic-bezier(.25,.8,.35,1),color .18s cubic-bezier(.25,.8,.35,1),box-shadow .18s cubic-bezier(.25,.8,.35,1),filter .18s cubic-bezier(.25,.8,.35,1),opacity .18s cubic-bezier(.25,.8,.35,1),width .18s cubic-bezier(.25,.8,.35,1),min-width .18s cubic-bezier(.25,.8,.35,1);--cut:10px}
+:root{--ease-out:cubic-bezier(.22,1,.36,1);--bg-body:#0a0a14;--bg-sidebar:#0f0f1c;--bg-card:#161625;--bg-card-hover:#1f1f33;--border:#33334d;--border-light:#5555aa;--primary:#00f0ff;--primary-dark:#0088a3;--accent:#ffb300;--gold:#ffe135;--success:#00ff7f;--success-dark:#00a352;--danger:#ff2d55;--danger-dark:#b3001f;--text-main:#f2f2ff;--text-muted:#a9a9d0;--px:'Noto Sans Thai','Sarabun','Leelawadee UI','Thonburi',Tahoma,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--pxh:var(--px);--pxnum:'Press Start 2P',var(--px);--ts:transform .18s cubic-bezier(.25,.8,.35,1),background-color .18s cubic-bezier(.25,.8,.35,1),color .18s cubic-bezier(.25,.8,.35,1),box-shadow .18s cubic-bezier(.25,.8,.35,1),filter .18s cubic-bezier(.25,.8,.35,1),opacity .18s cubic-bezier(.25,.8,.35,1),width .18s cubic-bezier(.25,.8,.35,1),min-width .18s cubic-bezier(.25,.8,.35,1);--cut:10px}
 *{box-sizing:border-box;margin:0;padding:0;font-family:var(--px);-webkit-tap-highlight-color:transparent}
-.avatar-box svg,.skin-avatar svg{shape-rendering:crispEdges}
+.avatar-box svg,.skin-avatar svg,.picon{shape-rendering:crispEdges}
+/* ===== Pixel/retro number font: falls back to Thai font per-glyph automatically ===== */
+[id$="-val"],[id$="-total"],[id$="-cost"],[id$="-have"],[id$="-out"],[id$="-lvl"],[id^="dash-"],[id$="-bonus"],[id$="-rate"],[id$="-fail-rate"],.stat-badge span,.market-hero-value,.ticker-price-value,.ticker-price-value b,.badge-trend{font-family:var(--pxnum),var(--px)!important;letter-spacing:.5px;font-size:.86em;line-height:1.6}
+.dash-hero-value{font-family:var(--pxnum),var(--px)!important;letter-spacing:.5px;font-size:.78em!important;line-height:1.7}
+/* ===== Pixel icon sprite instances ===== */
+.picon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;margin:0 1px;flex-shrink:0}
+/* ===== Diagonal "RPG HP bar" stripe animation while a mine/task is active ===== */
+.mining-progress{position:relative;overflow:hidden}
+.mining-progress::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 6px,transparent 6px 12px);background-size:34px 34px;opacity:0;transition:opacity .2s}
+.card.mining-active .mining-progress::after{opacity:1;animation:stripeMove .6s linear infinite}
+@keyframes stripeMove{from{background-position:0 0}to{background-position:34px 0}}
+/* ===== Mine "atmosphere": faint stone grain + drifting dust ===== */
+.content-viewport{position:relative;background-image:radial-gradient(circle at 15% 25%,rgba(255,255,255,.028) 0 2px,transparent 3px),radial-gradient(circle at 68% 62%,rgba(255,255,255,.022) 0 2px,transparent 3px),radial-gradient(circle at 85% 15%,rgba(255,255,255,.02) 0 1px,transparent 2px),radial-gradient(circle at 35% 85%,rgba(255,255,255,.02) 0 1px,transparent 2px),repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 2px,transparent 2px 28px),repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 2px,transparent 2px 36px);background-size:130px 130px,170px 170px,95px 95px,150px 150px,100% 100%,100% 100%}
+.dust-layer{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden;opacity:.55}
+.dust-layer span{position:absolute;bottom:-12px;width:3px;height:3px;background:rgba(230,230,255,.4);animation:dustRise linear infinite}
+@keyframes dustRise{0%{transform:translate(0,0);opacity:0}8%{opacity:.7}92%{opacity:.25}100%{transform:translate(18px,-640px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.dust-layer{display:none}.mining-progress::after{animation:none!important}}
+/* ===== Big reward modal + confetti ===== */
+.reward-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:10000;align-items:center;justify-content:center;overflow:hidden;animation:fade .2s ease-out}
+.reward-modal-content{background:var(--bg-card);border:4px solid #000;box-shadow:0 0 0 3px var(--gold),8px 8px 0 #000;padding:34px 26px 26px;width:90%;max-width:360px;text-align:center;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);animation:modalIn .35s var(--ease-out);position:relative;z-index:2}
+.reward-modal-icon{font-size:3.2rem;margin-bottom:10px;animation:rewardPop .5s var(--ease-out)}
+@keyframes rewardPop{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.3) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+#reward-modal-title{color:var(--gold);text-shadow:2px 2px 0 #000;margin-bottom:10px;font-size:1.25rem;font-family:var(--pxnum),var(--px);line-height:1.6}
+#reward-modal-sub{color:var(--text-muted);margin-bottom:20px;font-size:.95rem}
+.confetti-layer{position:absolute;inset:0;pointer-events:none;z-index:1}
+.confetti-piece{position:absolute;top:-14px;width:7px;height:13px;opacity:.95;animation-name:confettiFall;animation-timing-function:ease-in;animation-fill-mode:forwards}
+@keyframes confettiFall{to{transform:translateY(115vh) rotate(680deg);opacity:0}}
 html,body{width:100%;height:100%;background:var(--bg-body);color:var(--text-main);overflow:hidden;font-size:100%;line-height:1.4;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 body{display:flex;height:100vh;height:100dvh;background:var(--bg-body);position:relative}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.38) 100%)}
@@ -42,17 +68,18 @@ header{min-height:calc(64px + env(safe-area-inset-top));background:var(--bg-side
 .toggle-btn{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--border);color:var(--text-main);width:42px;height:42px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .toggle-btn:active{box-shadow:0 0 0 2px var(--border);transform:translate(2px,2px)}
 .user-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.stat-badge{background:var(--bg-card);padding:7px 12px;border:3px solid #000;box-shadow:0 0 0 2px var(--border),3px 3px 0 #000;font-size:.9rem;font-weight:600;white-space:nowrap;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.stat-badge{background:var(--bg-card);padding:7px 12px;border:3px solid #000;box-shadow:0 0 0 2px var(--border),3px 3px 0 #000;font-size:.9rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
 .stat-badge span{color:var(--gold);text-shadow:1px 1px 0 #000}
 .content-viewport{flex:1;padding:16px;overflow-y:auto;background:var(--bg-body);-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .tab-content{display:none;animation:fade .3s ease-out}
 .tab-content.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .grid-2,.grid-3{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px}
-.card{background:var(--bg-card);border:3px solid #000;box-shadow:0 0 0 2px var(--border),6px 6px 0 #000;padding:18px;position:relative;overflow:hidden;contain:layout;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:var(--ts)}
-@media(hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 0 0 2px var(--border-light),8px 10px 0 #000}}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold)}
-.card h3{font-size:.95rem;font-weight:700;margin-bottom:16px;padding-bottom:10px;padding-top:4px;display:flex;justify-content:space-between;align-items:center;color:var(--primary);line-height:1.4;border-bottom:3px solid var(--border)}
+.card{background:linear-gradient(160deg,var(--bg-card) 55%,var(--bg-card-hover) 160%);--cut:16px;border:3px solid #000;box-shadow:0 0 0 2px var(--border),7px 7px 0 #000;padding:20px;position:relative;overflow:hidden;contain:layout;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:var(--ts)}
+@media(hover:hover){.card:hover{transform:translateY(-4px);box-shadow:0 0 0 2px var(--border-light),9px 12px 0 #000}.card:hover::before{filter:brightness(1.35)}}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--gold),var(--accent) 55%,var(--primary));transition:filter .2s ease}
+.card h3{font-size:.95rem;font-weight:700;margin-bottom:18px;padding-bottom:12px;padding-top:4px;display:flex;justify-content:space-between;align-items:center;color:var(--primary);line-height:1.4;position:relative}
+.card h3::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:42px;background:var(--gold)}
 .card p{color:var(--text-muted);font-size:.95rem;margin-bottom:12px;line-height:1.5}
 @keyframes pulseGlow{0%,100%{opacity:.12}50%{opacity:.85}}
 .card.mining-active::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--primary);animation:pulseGlow 1.4s ease-in-out infinite}
@@ -157,7 +184,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   header{min-height:0;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))}
   .toggle-btn{width:44px;height:44px;flex-shrink:0}
   .user-stats{flex:1;min-width:0;flex-wrap:nowrap;gap:6px}
-  .stat-badge{flex:1 1 auto;min-width:0;padding:6px 8px;font-size:.85rem;text-align:center;overflow:hidden;text-overflow:ellipsis;box-shadow:0 0 0 2px var(--border),2px 2px 0 #000}
+  .stat-badge{flex:1 1 auto;min-width:0;padding:6px 6px;font-size:clamp(.68rem,3.2vw,.85rem);text-align:center;overflow:visible;white-space:normal;overflow-wrap:break-word;word-break:break-word;line-height:1.2;box-shadow:0 0 0 2px var(--border),2px 2px 0 #000}
   .content-viewport{padding-top:12px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(20px + env(safe-area-inset-bottom))}
   .grid-2,.grid-3{gap:14px;margin-bottom:14px}
   .card{padding:14px}
@@ -172,12 +199,11 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 }
 @media(max-width:480px){
   .stat-badge .lbl{display:none}
-  .stat-badge{font-size:.9rem}
   .card h3{font-size:.9rem}
   .avatar-box{width:76px;height:76px}
 }
 @media(max-width:340px){
-  .stat-badge{padding:5px 5px;font-size:.8rem}
+  .stat-badge{padding:5px 4px;font-size:clamp(.62rem,3.4vw,.78rem)}
   .content-viewport{padding-left:8px;padding-right:8px}
 }
 
@@ -224,7 +250,8 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .guide li b{color:var(--text-main);display:block}
 .tab-content>h2{padding-left:10px;border-left:5px solid currentColor}
 @media(max-width:480px){.info .r{flex-direction:column;gap:2px}.info .v{text-align:left}}
-.btn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.btn-grid .btn{padding-left:2px;padding-right:2px;font-size:.9rem;white-space:nowrap}
+.btn-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}.btn-grid .btn{padding-left:2px;padding-right:2px;font-size:.82rem;white-space:nowrap}
+@media(max-width:380px){.btn-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .item-list{display:flex;flex-direction:column}
 .item-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:2px dashed var(--border);font-size:.95rem}
@@ -235,8 +262,24 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="pi-circle" viewBox="0 0 8 8"><rect x="2" y="0" width="4" height="1" fill="currentColor"/><rect x="1" y="1" width="6" height="1" fill="currentColor"/><rect x="0" y="2" width="8" height="4" fill="currentColor"/><rect x="1" y="6" width="6" height="1" fill="currentColor"/><rect x="2" y="7" width="4" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-diamond" viewBox="0 0 8 8"><rect x="3" y="0" width="2" height="1" fill="currentColor"/><rect x="2" y="1" width="4" height="1" fill="currentColor"/><rect x="1" y="2" width="6" height="1" fill="currentColor"/><rect x="0" y="3" width="8" height="2" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/><rect x="3" y="7" width="2" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-star" viewBox="0 0 7 7"><rect x="3" y="0" width="1" height="2" fill="currentColor"/><rect x="1" y="2" width="5" height="1" fill="currentColor"/><rect x="0" y="3" width="7" height="1" fill="currentColor"/><rect x="1" y="4" width="5" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="5" y="5" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="1" height="1" fill="currentColor"/><rect x="6" y="6" width="1" height="1" fill="currentColor"/></symbol>
+<symbol id="pi-nugget" viewBox="0 0 8 7"><rect x="1" y="0" width="2" height="1" fill="currentColor"/><rect x="5" y="0" width="2" height="1" fill="currentColor"/><rect x="0" y="1" width="8" height="2" fill="currentColor"/><rect x="1" y="3" width="6" height="1" fill="currentColor"/><rect x="0" y="4" width="8" height="1" fill="currentColor"/><rect x="1" y="5" width="6" height="1" fill="currentColor"/><rect x="2" y="6" width="4" height="1" fill="currentColor"/></symbol>
+</defs></svg>
 <div id="toast-box"></div>
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div id="reward-modal" class="reward-modal">
+  <div class="confetti-layer" id="confetti-layer"></div>
+  <div class="reward-modal-content">
+    <div class="reward-modal-icon" id="reward-modal-icon">🎉</div>
+    <h2 id="reward-modal-title">เลเวลอัพ!</h2>
+    <p id="reward-modal-sub">ตอนนี้คุณคือเลเวล 2</p>
+    <button class="btn btn-success" onclick="closeRewardModal()">รับทราบ! 🎉</button>
+  </div>
+</div>
 
 <div id="reset-modal">
   <div class="modal-content">
@@ -268,24 +311,40 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <div class="main-container">
   <header>
     <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <button class="toggle-btn" id="sound-toggle-btn" onclick="toggleSound()" title="เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)">🔊</button>
+    <button class="toggle-btn" id="music-toggle-btn" onclick="toggleMusic()" title="เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)">🎵</button>
     <button class="toggle-btn" id="notif-toggle-btn" onclick="toggleNotifications()" title="การแจ้งเตือน: เปิด (คลิกเพื่อปิด)">🔔</button>
     <div class="user-stats">
-      <div class="stat-badge">⭐ <em class="lbl">เลเวล: </em><span id="lvl-val">1</span></div>
-      <div class="stat-badge">💰 <em class="lbl">Gold: </em><span id="gold-val">50,000</span></div>
-      <div class="stat-badge">💎 <em class="lbl">Gems: </em><span id="gems-val">120</span></div>
+      <div class="stat-badge"><svg class="picon" viewBox="0 0 7 7" style="color:#ffe135"><use href="#pi-star"></use></svg> <em class="lbl">เลเวล: </em><span id="lvl-val">1</span></div>
+      <div class="stat-badge"><svg class="picon" viewBox="0 0 8 8" style="color:#ffd23d"><use href="#pi-circle"></use></svg> <em class="lbl">Gold: </em><span id="gold-val">50,000</span></div>
+      <div class="stat-badge"><svg class="picon" viewBox="0 0 8 8" style="color:#00f0ff"><use href="#pi-diamond"></use></svg> <em class="lbl">Gems: </em><span id="gems-val">120</span></div>
     </div>
   </header>
 
   <div class="content-viewport" id="main-viewport">
+    <div class="dust-layer" aria-hidden="true">
+      <span style="left:4%;width:2px;height:2px;animation-duration:14s;animation-delay:0s"></span>
+      <span style="left:12%;width:3px;height:3px;animation-duration:19s;animation-delay:2s"></span>
+      <span style="left:21%;width:2px;height:2px;animation-duration:16s;animation-delay:5s"></span>
+      <span style="left:33%;width:3px;height:3px;animation-duration:22s;animation-delay:1s"></span>
+      <span style="left:44%;width:2px;height:2px;animation-duration:17s;animation-delay:7s"></span>
+      <span style="left:52%;width:3px;height:3px;animation-duration:20s;animation-delay:3s"></span>
+      <span style="left:61%;width:2px;height:2px;animation-duration:15s;animation-delay:9s"></span>
+      <span style="left:70%;width:3px;height:3px;animation-duration:23s;animation-delay:4s"></span>
+      <span style="left:78%;width:2px;height:2px;animation-duration:18s;animation-delay:0.5s"></span>
+      <span style="left:86%;width:3px;height:3px;animation-duration:21s;animation-delay:6s"></span>
+      <span style="left:93%;width:2px;height:2px;animation-duration:16s;animation-delay:8s"></span>
+      <span style="left:58%;width:2px;height:2px;animation-duration:19s;animation-delay:11s"></span>
+    </div>
 
     <div id="dashboard" class="tab-content active">
       <div class="dash-hero">
         <div class="dash-hero-stat">
-          <span class="dash-hero-label">💰 Gold</span>
+          <span class="dash-hero-label"><svg class="picon" viewBox="0 0 8 8" style="color:#ffd23d"><use href="#pi-circle"></use></svg> Gold</span>
           <span class="dash-hero-value" id="dash-gold">50,000</span>
         </div>
         <div class="dash-hero-stat">
-          <span class="dash-hero-label">💎 Gems</span>
+          <span class="dash-hero-label"><svg class="picon" viewBox="0 0 8 8" style="color:#00f0ff"><use href="#pi-diamond"></use></svg> Gems</span>
           <span class="dash-hero-value" id="dash-gems">120</span>
         </div>
         <div class="dash-hero-stat">
@@ -301,7 +360,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
       <div class="grid-2">
         <div class="card">
           <h3>⭐ ข้อมูลและเลเวลผู้เล่น</h3>
-          <div class="info"><div class="r"><span class="k">เลเวลปัจจุบัน</span><span class="v"><span id="dash-lvl" style="color:var(--primary);font-weight:bold">1</span></span></div><div class="r"><span class="k">ค่าประสบการณ์</span><span class="v"><span id="dash-xp">0</span> / <span id="dash-xp-max">100</span> XP</span></div></div>
+          <div class="info"><div class="r"><span class="k">เลเวลปัจจุบัน</span><span class="v"><span id="dash-lvl" style="color:var(--primary);font-weight:bold">1</span></span></div><div class="r"><span class="k">XP</span><span class="v"><span id="dash-xp">0</span> / <span id="dash-xp-max">100</span></span></div></div>
           <div class="progress-bar-container"><div id="xp-bar" class="progress-bar" style="width:0%"></div></div>
         </div>
         <div class="card">
@@ -318,9 +377,9 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
       <div class="card" style="margin-bottom:18px">
         <h3>⛏️ คลังแร่ปัจจุบัน</h3>
         <div class="dash-ore-row">
-          <div class="dash-ore-item"><span class="dash-ore-icon">🔹</span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
-          <div class="dash-ore-item"><span class="dash-ore-icon">🥈</span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
-          <div class="dash-ore-item"><span class="dash-ore-icon">🥇</span><span class="dash-ore-name">แร่ทอง</span><span class="dash-ore-qty" id="dash-ore-goldOre">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#8fa3c9"><use href="#pi-nugget"></use></svg></span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#dde3f0"><use href="#pi-nugget"></use></svg></span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" style="color:#ffcf3d"><use href="#pi-nugget"></use></svg></span><span class="dash-ore-name">แร่ทอง</span><span class="dash-ore-qty" id="dash-ore-goldOre">0</span></div>
         </div>
       </div>
 
@@ -328,19 +387,18 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         <h3>📖 วิธีเล่นเบื้องต้น</h3>
         <ol class="guide">
           <li><b>ขุดแร่</b>ไปที่ "ศูนย์ขุดเหมือง" แล้วกดเริ่มขุด</li>
-          <li><b>ขายหรือหลอมแร่</b>ขายที่ตลาดเพื่อรับ Gold หรือหลอมเป็นแท่งโลหะ (ใช้ Gold ด้วย) ไว้อัปเกรดเหมือง อุปกรณ์ และเกณฑ์ทหาร</li>
-          <li><b>ดูแลเครื่องมือ</b>ความทนทานหมด = ขุดไม่ได้ ซ่อมแซมหรือเปิด Auto ไว้</li>
-          <li><b>ขยายกิจการ</b>ซื้อที่ดินรับรายได้อัตโนมัติ · เกณฑ์ทหารส่งสำรวจเพื่อรับรางวัลก้อนใหญ่</li>
+          <li><b>ขายหรือหลอมแร่</b>ขายที่ตลาดรับ Gold หรือหลอมเป็นแท่งโลหะไว้อัปเกรด</li>
+          <li><b>ดูแลเครื่องมือ</b>ทนทานหมด = ขุดไม่ได้ ซ่อมหรือเปิด Auto ไว้</li>
+          <li><b>ขยายกิจการ</b>ซื้อที่ดินรับรายได้อัตโนมัติ · ส่งทหารสำรวจรับรางวัลก้อนใหญ่</li>
         </ol>
       </div>
     </div>
 
     <div id="mining" class="tab-content">
-      <div class="hint">💡 กดปุ่ม <b>เริ่มขุด</b> ให้ขุดอัตโนมัติต่อเนื่อง หรือกด <b>⚡ ขุดด้วยมือ</b> เพื่อรับแร่ทันที (มีคูลดาวน์ 4 วิ) · ขุดสำเร็จทุกครั้งเสีย<b>ความทนทาน</b>และมีโอกาสพลาด · ทุก 5 เลเวลที่อัปเกรดได้ <b>โบนัส Gems</b> ฟรี · เหมืองเงิน/ทองต้องรอเลเวลปลดล็อก</div>
       <div class="grid-3">
         <div id="card-iron" class="card">
-          <h3>⛏️ เหมืองเหล็ก <span id="iron-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div class="info"><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="iron-rate">20</span> ชิ้น / <span id="iron-time">5.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="iron-up-cost" style="color:var(--accent)">500</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="iron-up-bar">1</span> แท่งเหล็กกล้า <span style="color:var(--text-muted);font-weight:400">(มี <span id="iron-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="iron-total" style="color:var(--gold)">0</span></div></div>
+          <h3><svg class="picon" viewBox="0 0 8 7" style="color:#8fa3c9"><use href="#pi-nugget"></use></svg> เหมืองเหล็ก <span id="iron-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
+          <div class="info"><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="iron-rate">20</span> ชิ้น / <span id="iron-time">5.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="iron-up-cost" style="color:var(--accent)">500</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="iron-up-bar">1</span> แท่งเหล็กกล้า <span style="color:var(--text-muted);font-weight:400">(มี <span id="iron-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="iron-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="iron-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรด</button>
             <button id="iron-mine-btn" class="btn btn-success" onclick="toggleMining('iron')">เริ่มขุด</button>
@@ -351,8 +409,8 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <div class="progress-bar-container" style="margin-top:10px;margin-bottom:0"><div id="bar-iron" class="mining-progress"></div></div>
         </div>
         <div id="card-silver" class="card">
-          <h3>🥈 เหมืองเงิน <span id="silver-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 3</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="silver-rate">10</span> ชิ้น / <span id="silver-time">6.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="silver-up-cost" style="color:var(--accent)">1,200</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="silver-up-bar">1</span> แท่งเงิน <span style="color:var(--text-muted);font-weight:400">(มี <span id="silver-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="silver-total" style="color:var(--gold)">0</span></div></div>
+          <h3><svg class="picon" viewBox="0 0 8 7" style="color:#dde3f0"><use href="#pi-nugget"></use></svg> เหมืองเงิน <span id="silver-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
+          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 3</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="silver-rate">10</span> ชิ้น / <span id="silver-time">6.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="silver-up-cost" style="color:var(--accent)">1,200</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="silver-up-bar">1</span> แท่งเงิน <span style="color:var(--text-muted);font-weight:400">(มี <span id="silver-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="silver-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="silver-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรด</button>
             <button id="silver-mine-btn" class="btn btn-success" onclick="toggleMining('silver')">เริ่มขุด</button>
@@ -363,8 +421,8 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
           <div class="progress-bar-container" style="margin-top:10px;margin-bottom:0"><div id="bar-silver" class="mining-progress"></div></div>
         </div>
         <div id="card-goldOre" class="card">
-          <h3>🥇 เหมืองทอง <span id="goldOre-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="goldOre-rate">5</span> ชิ้น / <span id="goldOre-time">8.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="goldOre-up-cost" style="color:var(--accent)">3,000</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบอัปเกรด</span><span class="v"><span id="goldOre-up-bar">1</span> แท่งทองคำ <span style="color:var(--text-muted);font-weight:400">(มี <span id="goldOre-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสมตลอดกาล</span><span class="v" id="goldOre-total" style="color:var(--gold)">0</span></div></div>
+          <h3><svg class="picon" viewBox="0 0 8 7" style="color:#ffcf3d"><use href="#pi-nugget"></use></svg> เหมืองทอง <span id="goldOre-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
+          <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="goldOre-rate">5</span> ชิ้น / <span id="goldOre-time">8.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="goldOre-up-cost" style="color:var(--accent)">3,000</span> Gold</span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="goldOre-up-bar">1</span> แท่งทองคำ <span style="color:var(--text-muted);font-weight:400">(มี <span id="goldOre-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="goldOre-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="goldOre-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรด</button>
             <button id="goldOre-mine-btn" class="btn btn-success" onclick="toggleMining('goldOre')">เริ่มขุด</button>
@@ -379,33 +437,31 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
     <div id="smelting" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🔥 เตาหลอมแร่ดิบเป็นแท่งโลหะ</h2>
-      <div class="hint">💡 แร่ดิบ + <b>Gold</b> → <b>หลอมเป็นแท่งโลหะ</b> เพื่อใช้อัปเกรด<b>เหมือง อุปกรณ์</b> และ<b>เกณฑ์ทหาร</b> · ตัวเลข "หลอมได้ตอนนี้" คือจำนวนแท่งที่ได้ถ้ากดหลอมทั้งหมด</div>
       <div class="grid-3">
         <div class="card">
           <h3>🔩 หลอมเหล็ก</h3>
-          <div class="info"><div class="r"><span class="k">แร่เหล็กดิบ</span><span class="v"><b id="smelt-iron-have">50</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">1,000 แร่ → 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">300</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้ตอนนี้</span><span class="v"><b id="smelt-iron-out" style="color:var(--success)">2</b> แท่ง</span></div><div class="r"><span class="k">มีแท่งเหล็กกล้า</span><span class="v"><b id="smelt-iron-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',50)">หลอม 50</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('iron',500)">หลอม 500</button><button class="btn btn-warning" onclick="smeltOre('iron',1000)">หลอม 1,000</button><button class="btn btn-success" style="grid-column:1/-1" onclick="smeltOre('iron','all')">หลอมทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">แร่เหล็กดิบ</span><span class="v"><b id="smelt-iron-have">50</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">1,000 แร่ → 1 แท่งเหล็กกล้า</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">300</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-iron-out" style="color:var(--success)">2</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-iron-bar" style="color:var(--gold)">0</b></span></div></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('iron',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('iron',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('iron',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('iron',1000)">หลอม 1,000</button></div>
         </div>
         <div class="card">
           <h3>⚙️ หลอมเงิน</h3>
-          <div class="info"><div class="r"><span class="k">แร่เงินดิบ</span><span class="v"><b id="smelt-silver-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">750 แร่ → 1 แท่งเงิน</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">800</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้ตอนนี้</span><span class="v"><b id="smelt-silver-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มีแท่งเงิน</span><span class="v"><b id="smelt-silver-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',50)">หลอม 50</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('silver',500)">หลอม 500</button><button class="btn btn-warning" onclick="smeltOre('silver',1000)">หลอม 1,000</button><button class="btn btn-success" style="grid-column:1/-1" onclick="smeltOre('silver','all')">หลอมทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">แร่เงินดิบ</span><span class="v"><b id="smelt-silver-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">750 แร่ → 1 แท่งเงิน</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">800</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-silver-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-silver-bar" style="color:var(--gold)">0</b></span></div></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('silver',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('silver',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('silver',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('silver',1000)">หลอม 1,000</button></div>
         </div>
         <div class="card">
           <h3>🟨 หลอมทอง</h3>
-          <div class="info"><div class="r"><span class="k">แร่ทองดิบ</span><span class="v"><b id="smelt-goldOre-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">500 แร่ → 1 แท่งทองคำ</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">2,000</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้ตอนนี้</span><span class="v"><b id="smelt-goldOre-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มีแท่งทองคำ</span><span class="v"><b id="smelt-goldOre-bar" style="color:var(--gold)">0</b></span></div></div>
-          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',50)">หลอม 50</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('goldOre',500)">หลอม 500</button><button class="btn btn-warning" onclick="smeltOre('goldOre',1000)">หลอม 1,000</button><button class="btn btn-success" style="grid-column:1/-1" onclick="smeltOre('goldOre','all')">หลอมทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">แร่ทองดิบ</span><span class="v"><b id="smelt-goldOre-have">0</b> ชิ้น</span></div><div class="r"><span class="k">อัตรา</span><span class="v">500 แร่ → 1 แท่งทองคำ</span></div><div class="r"><span class="k">ค่าหลอม</span><span class="v"><span style="color:var(--accent)">2,000</span> Gold / แท่ง</span></div><div class="r"><span class="k">หลอมได้</span><span class="v"><b id="smelt-goldOre-out" style="color:var(--success)">0</b> แท่ง</span></div><div class="r"><span class="k">มี</span><span class="v"><b id="smelt-goldOre-bar" style="color:var(--gold)">0</b></span></div></div>
+          <div class="btn-grid"><button class="btn btn-warning" onclick="smeltOre('goldOre',1)">หลอม 1</button><button class="btn btn-warning" onclick="smeltOre('goldOre',10)">หลอม 10</button><button class="btn btn-warning" onclick="smeltOre('goldOre',100)">หลอม 100</button><button class="btn btn-warning" onclick="smeltOre('goldOre',1000)">หลอม 1,000</button></div>
         </div>
       </div>
       <div class="card">
         <h3>ℹ️ แท่งโลหะเอาไปทำอะไร</h3>
-        <p>แท่งโลหะที่หลอมได้ใช้เป็นวัตถุดิบสำหรับอัปเกรด <b>เหมือง</b>, <b>อุปกรณ์สวมใส่</b> (พลั่ว/หมวก/เกราะ) และ <b>เกณฑ์ทหาร</b> — ยิ่งเลเวลสูง ยิ่งต้องใช้แท่งโลหะมากขึ้น ดังนั้นแร่ที่ขุดได้ส่วนหนึ่งควรเก็บไว้หลอมแทนที่จะขายทิ้งทั้งหมด</p>
+        <p>ใช้แท่งโลหะอัปเกรด <b>เหมือง อุปกรณ์</b> และ<b>เกณฑ์ทหาร</b> — ยิ่งเลเวลสูงยิ่งต้องใช้เยอะขึ้น ควรเก็บแร่ไว้หลอมบ้าง ไม่ขายทิ้งหมด</p>
       </div>
     </div>
 
     <div id="character" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">👤 ตัวละคร &amp; อุปกรณ์</h2>
-      <div class="hint">💡 อุปกรณ์ทุกชิ้นอัปเกรดด้วย <b>เงิน + แท่งโลหะ + แร่ดิบ</b> · ตรวจ "มี" เทียบกับ "ราคา" ก่อนกดอัปเกรด · สกินให้โบนัสถาวร</div>
       <div class="grid-2">
         <div class="card profile-card">
           <div id="active-avatar-box" class="avatar-box"></div>
@@ -435,7 +491,6 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
     <div id="military" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🏰 โรงฝึกทหาร &amp; เกณฑ์กองกำลัง</h2>
-      <div class="hint">💡 ลำดับ: <b>1) เกณฑ์ทหาร</b> (ใช้ Gold + แร่ + แท่งโลหะ) → <b>2) ส่งสำรวจ</b> (เสียเสบียงล่วงหน้า) → <b>3) รอจนครบเวลา</b> รับรางวัล · ทหารอาจเสียชีวิตตามความเสี่ยงของแต่ละแผนที่</div>
       <div class="grid-3" style="margin-bottom:16px">
         <div class="card">
           <h3>🛡️ พลทหารยาม</h3>
@@ -482,7 +537,6 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
     <div id="land" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🏞️ ที่ดิน &amp; รายได้ Passive</h2>
-      <div class="hint">💡 ที่ดินสร้างรายได้ Gold <b>อัตโนมัติทุก 5 วินาที</b> แม้ไม่ได้ขุด (และออฟไลน์สูงสุด 12 ชม.) · แปลงที่ 2 และ 3 ต้อง<b>ปลดล็อกด้วยเลเวล</b>และใช้<b>แร่ดิบร่วมอัปเกรด</b> · แต่ละแปลงมีเพดานสูงสุด 25 เลเวล · <b>รายได้ต่อเลเวลถูกปรับลดและมีการหน่วงเมื่อเลเวลสูง</b> เพื่อคุมไม่ให้ Gold เฟ้อเร็วเกินไปในระยะยาว</div>
 
       <div class="card" style="margin-bottom:18px">
         <h3>📊 สรุปรายได้รวม</h3>
@@ -505,7 +559,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div>
             <div class="r"><span class="k">รายได้</span><span class="v"><b id="land-mediumMine-income" style="color:var(--success)">0</b> Gold / 5 วิ</span></div>
             <div class="r"><span class="k">ราคา</span><span class="v"><span id="land-mediumMine-cost" style="color:var(--accent)">75,000</span> Gold</span></div>
-            <div class="r"><span class="k">แร่ที่ใช้ร่วม</span><span class="v"><span id="land-mediumMine-rescost" style="color:var(--primary)">50</span> แร่เหล็ก <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-mediumMine-reshave">0</span>)</span></span></div>
+            <div class="r"><span class="k">แร่ที่ใช้</span><span class="v"><span id="land-mediumMine-rescost" style="color:var(--primary)">50</span> แร่เหล็ก <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-mediumMine-reshave">0</span>)</span></span></div>
             <div class="r"><span class="k">คืนทุนใน</span><span class="v" id="land-mediumMine-payback">-</span></div>
           </div>
           <button id="land-mediumMine-btn" class="btn btn-success" onclick="buyOrUpgradeLand('mediumMine')">ซื้อเหมือง</button>
@@ -516,7 +570,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
             <div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 12</span></div>
             <div class="r"><span class="k">รายได้</span><span class="v"><b id="land-goldEstate-income" style="color:var(--success)">0</b> Gold / 5 วิ</span></div>
             <div class="r"><span class="k">ราคา</span><span class="v"><span id="land-goldEstate-cost" style="color:var(--accent)">350,000</span> Gold</span></div>
-            <div class="r"><span class="k">แร่ที่ใช้ร่วม</span><span class="v"><span id="land-goldEstate-rescost" style="color:var(--primary)">20</span> แร่ทองดิบ <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-goldEstate-reshave">0</span>)</span></span></div>
+            <div class="r"><span class="k">แร่ที่ใช้</span><span class="v"><span id="land-goldEstate-rescost" style="color:var(--primary)">20</span> แร่ทองดิบ <span style="color:var(--text-muted);font-weight:400">(มี <span id="land-goldEstate-reshave">0</span>)</span></span></div>
             <div class="r"><span class="k">คืนทุนใน</span><span class="v" id="land-goldEstate-payback">-</span></div>
           </div>
           <button id="land-goldEstate-btn" class="btn btn-success" onclick="buyOrUpgradeLand('goldEstate')">ซื้อคฤหาสน์</button>
@@ -525,8 +579,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     </div>
 
     <div id="market" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🛒 ตลาดกลาง (VWAP Model)</h2>
-      <div class="hint">💡 ราคาเปลี่ยนแปลงทุก 4 วินาที · <b>ค่าธรรมเนียมตลาด 5%</b> หักจากยอดขายทุกครั้ง · ขายเยอะในครั้งเดียว <b>ราคาเฉลี่ยจะลดลง</b> และกดราคาตลาดลง แนะนำทยอยขายตอนราคาสูง</div>
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">🛒 ตลาดกลางซื้อขายแร่</h2>
       <div class="market-hero">
         <div class="market-hero-stat">
           <span class="market-hero-label">มูลค่าแร่ในคลังรวม</span>
@@ -600,7 +653,6 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     </div>
 
     <div id="inventory" class="tab-content">
-      <div class="hint">💡 คลังของทั้งหมดในบัญชี: ทรัพยากรหลัก, แร่ดิบ, แท่งโลหะ, และกำลังพล</div>
 
       <div class="grid-2">
         <div class="card"><h3>💰 ทรัพยากรหลัก</h3>
@@ -675,6 +727,105 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 <script>
 "use strict";
 
+/* ===== Sound System (synthesised, no external audio files needed) ===== */
+const SFX = (function(){
+  let ctx = null, master = null, musicTimer = 0, musicGain = null;
+  function ensureCtx(){
+    if(!ctx){
+      try{ const AC = window.AudioContext || window.webkitAudioContext; ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.5; master.connect(ctx.destination); }catch(e){ ctx = null; }
+    }
+    if(ctx && ctx.state === 'suspended') ctx.resume().catch(function(){});
+    return ctx;
+  }
+  function tone(freq, dur, type, gain, delay){
+    if(!gameData || gameData.soundEnabled === false) return;
+    const c = ensureCtx(); if(!c) return;
+    const t0 = c.currentTime + (delay||0);
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = type || 'square'; osc.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain||0.2), t0+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+(dur||0.12));
+    osc.connect(g); g.connect(master);
+    osc.start(t0); osc.stop(t0+(dur||0.12)+0.03);
+  }
+  return {
+    unlock(){ ensureCtx(); },
+    click(){ tone(560,0.05,'square',0.10); },
+    hit(){ tone(196,0.09,'square',0.16); tone(294,0.07,'square',0.11,0.02); },
+    fail(){ tone(160,0.2,'sawtooth',0.14); },
+    coin(){ tone(880,0.06,'square',0.13); tone(1318,0.09,'square',0.11,0.05); },
+    levelup(){ [523,659,784,1046].forEach(function(f,i){ tone(f,0.17,'square',0.15,i*0.09); }); },
+    upgrade(){ tone(440,0.08,'triangle',0.15); tone(660,0.12,'triangle',0.12,0.05); },
+    error(){ tone(180,0.13,'square',0.13); tone(110,0.16,'square',0.11,0.08); },
+    music:{
+      start(){
+        if(!gameData || gameData.musicEnabled === false) return;
+        const c = ensureCtx(); if(!c || musicTimer) return;
+        musicGain = c.createGain(); musicGain.gain.value = 0.045; musicGain.connect(master);
+        const notes = [130.81,164.81,196.00,164.81,146.83,164.81];
+        let step = 0;
+        (function playStep(){
+          if(!gameData || gameData.musicEnabled === false){ musicTimer = 0; return; }
+          const f = notes[step % notes.length]; step++;
+          const o = c.createOscillator(), g = c.createGain();
+          o.type = 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, c.currentTime);
+          g.gain.linearRampToValueAtTime(0.7, c.currentTime+1.4);
+          g.gain.linearRampToValueAtTime(0.0001, c.currentTime+3.8);
+          o.connect(g); g.connect(musicGain);
+          o.start(); o.stop(c.currentTime+4.0);
+          musicTimer = setTimeout(playStep, 3500);
+        })();
+      },
+      stop(){ if(musicTimer){ clearTimeout(musicTimer); musicTimer = 0; } }
+    }
+  };
+})();
+function toggleSound(){
+  gameData.soundEnabled = !gameData.soundEnabled;
+  SFX.unlock(); if(gameData.soundEnabled) SFX.click();
+  updateSoundBtn(); autoSaveGame(true);
+}
+function toggleMusic(){
+  gameData.musicEnabled = !gameData.musicEnabled;
+  SFX.unlock();
+  if(gameData.musicEnabled) SFX.music.start(); else SFX.music.stop();
+  updateSoundBtn(); autoSaveGame(true);
+}
+function updateSoundBtn(){
+  const b = document.getElementById('sound-toggle-btn');
+  if(b){ b.innerText = gameData.soundEnabled === false ? '🔇' : '🔊'; b.style.opacity = gameData.soundEnabled === false ? '.5' : '1'; b.title = gameData.soundEnabled === false ? 'เสียงเอฟเฟกต์: ปิด (คลิกเพื่อเปิด)' : 'เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)'; }
+  const m = document.getElementById('music-toggle-btn');
+  if(m){ m.innerText = gameData.musicEnabled ? '🎶' : '🎵'; m.style.opacity = gameData.musicEnabled ? '1' : '.5'; m.title = gameData.musicEnabled ? 'เพลงพื้นหลัง: เปิด (คลิกเพื่อปิด)' : 'เพลงพื้นหลัง: ปิด (คลิกเพื่อเปิด)'; }
+}
+/* ===== Big reward modal + confetti (level up / rare loot) ===== */
+function showBigReward(title, sub, icon){
+  const m = document.getElementById('reward-modal'); if(!m) return;
+  setTxt(document.getElementById('reward-modal-title'), title);
+  setTxt(document.getElementById('reward-modal-sub'), sub);
+  const ic = document.getElementById('reward-modal-icon'); if(ic) ic.textContent = icon || '🎉';
+  spawnConfetti();
+  m.style.display = 'flex';
+  SFX.levelup();
+}
+function closeRewardModal(){ const m = document.getElementById('reward-modal'); if(m) m.style.display = 'none'; }
+function spawnConfetti(){
+  const layer = document.getElementById('confetti-layer'); if(!layer) return;
+  layer.innerHTML = '';
+  const colors = ['#ffe135','#00f0ff','#ff2d55','#00ff7f','#ffb300'];
+  const n = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 0 : 30;
+  for(let i=0;i<n;i++){
+    const p = document.createElement('div'); p.className = 'confetti-piece';
+    p.style.left = Math.random()*100+'%';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random()*0.4)+'s';
+    p.style.animationDuration = (1.6+Math.random()*1.3)+'s';
+    p.style.transform = 'rotate('+Math.floor(Math.random()*360)+'deg)';
+    layer.appendChild(p);
+  }
+}
+
 const MINE_CFG = {
   iron:    { baseTime:5, baseYield:20, baseXp:5,  upCost:500,  reqLv:1, label:'เหมืองเหล็ก' },
   silver:  { baseTime:6, baseYield:10, baseXp:12, upCost:1200, reqLv:3, label:'เหมืองเงิน' },
@@ -725,7 +876,7 @@ const skinDatabase = {
 function createDefaultData(){
   return {
     gold:50000, gems:120, level:1, xp:0, xpMax:100,
-    notificationsEnabled:true,
+    notificationsEnabled:true, soundEnabled:true, musicEnabled:false,
     iron:50, silver:0, goldOre:0,
     ingotIron:0, ingotSilver:0, ingotGold:0,
     durability:100, autoRepair:false, repairCount:0,
@@ -1439,6 +1590,8 @@ function sanitizeData(){
   gameData.durability = Math.min(100, Math.max(0, num(gameData.durability,100)));
   gameData.autoRepair = !!gameData.autoRepair;
   gameData.notificationsEnabled = gameData.notificationsEnabled === undefined ? true : !!gameData.notificationsEnabled;
+  gameData.soundEnabled = gameData.soundEnabled === undefined ? true : !!gameData.soundEnabled;
+  gameData.musicEnabled = gameData.musicEnabled === undefined ? false : !!gameData.musicEnabled;
   gameData.repairCount = num(gameData.repairCount,0);
   gameData.lastSaveTime = num(gameData.lastSaveTime, Date.now());
 
@@ -1683,13 +1836,14 @@ function syncPixiTickers(){
 function addXP(amount){
   const add = Math.max(0, Math.floor(amount));
   gameData.xp += add;
-  let guard = 0;
+  let guard = 0, leveledUp = false;
   while(gameData.xp >= gameData.xpMax && guard < 500){
     gameData.xp -= gameData.xpMax; gameData.level += 1;
     gameData.xpMax = Math.floor(gameData.xpMax * 1.5);
-    showToast('🎉 เลเวลอัพ! ตอนนี้คุณคือเลเวล '+gameData.level);
+    leveledUp = true;
     guard++;
   }
+  if(leveledUp) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, '⭐');
 }
 function getRepairCost(){ return Math.round(Math.max(0, 100 - gameData.durability) * 2); }
 function toggleAutoRepair(){
@@ -1736,6 +1890,7 @@ function repairTools(){
   const cost = getRepairCost();
   if(gameData.gold < cost){ alert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
   gameData.gold -= cost; gameData.durability = 100; gameData.repairCount++;
+  SFX.upgrade();
   showToast('ซ่อมแซมสำเร็จ (-'+cost.toLocaleString()+' Gold)');
   updateUI(); autoSaveGame(true);
 }
@@ -1748,6 +1903,7 @@ function trainTroop(type){
   if(gameData[ore] < qty){ alert('วัตถุดิบแร่ไม่เพียงพอ!'); return; }
   if((gameData[bar]||0) < barQty){ alert(barLabel+' ไม่พอ! ต้องใช้ '+barQty+' แท่ง (ตอนนี้มี '+(gameData[bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
   gameData.gold -= costGold; gameData[ore] -= qty; gameData[bar] -= barQty; gameData.troops[type] += 1;
+  SFX.upgrade();
   showToast('🎖️ เกณฑ์ทหารสำเร็จ (+1 นาย)');
   updateUI(); autoSaveGame(true);
 }
@@ -1785,10 +1941,16 @@ function checkExpeditions(){
           gameData[rKey] = (gameData[rKey] || 0) + val;
           txt.push(rKey === 'gold' ? val.toLocaleString()+' Gold' : (rKey === 'gems' ? val+' Gems' : val+' ชิ้น'));
         }
-        showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
+        if(cfg.reward.gems >= 15){
+          showBigReward('🗺️ พิชิตสำเร็จ!', '"'+cfg.name+'" ได้รับ: '+txt.join(', '), '🎉');
+        }else{
+          showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
+          SFX.coin();
+        }
         if(cfg.deathChance && Math.random() < cfg.deathChance && gameData.troops[cfg.reqType] > 0){
           gameData.troops[cfg.reqType] -= 1;
           showToast('💀 ทหาร'+HERO_BY_TYPE[cfg.reqType].name+' เสียชีวิต 1 นายระหว่างภารกิจ! เหลือ '+gameData.troops[cfg.reqType]+' นาย');
+          SFX.fail();
         }
       }
       delete gameData.expeditions[key]; updated = true;
@@ -1827,15 +1989,18 @@ function manualMine(type){
   manualCooldownUntil[type] = now + MANUAL_MINE_COOLDOWN;
   if(!consumeDurability(getDurabilityCost()*0.5)){
     showToast('⚠️ ความทนทานหมด! หยุดขุดด้วยมือ');
+    SFX.error();
     updateUI(); autoSaveGame(true); return;
   }
   if(Math.random() < getFailChance()){
     showFloatingReward(type, '❌ พลาด!', true);
+    SFX.fail();
   }else{
     const y = Math.max(1, Math.round(getMineYield(type) * 0.4));
     gameData[type] += y;
     gameData.totalMined[type] = (gameData.totalMined[type]||0) + y;
     showFloatingReward(type, '+'+y.toLocaleString(), false);
+    SFX.hit();
     addXP(Math.round(MINE_CFG[type].baseXp * gameData.mines[type].level * 0.4));
   }
   updateUI(); autoSaveGame(true);
@@ -1848,12 +2013,13 @@ function upgradeMine(type){
   if((gameData[ub.bar]||0) < barCost){ alert(ub.label+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (ตอนนี้มี '+(gameData[ub.bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
   gameData.gold -= cost; gameData[ub.bar] -= barCost; mine.level += 1; mine.cost = Math.floor(cost * 1.7);
   addXP(Math.floor(cost/15));
+  SFX.upgrade();
   showToast('⬆️ อัปเกรด'+MINE_CFG[type].label+'เป็น Lv.'+mine.level+' (-'+barCost+' '+ub.label+')');
   if(mine.level % 5 === 0 && gameData.mineMilestone[type] < mine.level){
     gameData.mineMilestone[type] = mine.level;
     const gemReward = Math.round(mine.level/5) * 5;
     gameData.gems += gemReward;
-    showToast('🏆 ไมล์สโตน '+MINE_CFG[type].label+' Lv.'+mine.level+'! ได้รับโบนัส '+gemReward+' Gems');
+    showBigReward('🏆 ไมล์สโตน!', MINE_CFG[type].label+' ถึง Lv.'+mine.level+' รับโบนัส '+gemReward+' Gems', '💎');
   }
   updateUI(); autoSaveGame(true);
 }
@@ -1911,14 +2077,16 @@ function updateMiningProgress(dt){
       if(!consumeDurability(getDurabilityCost())){
         mine.active = false;
         showToast('⚠️ ความทนทานหมด! '+MINE_CFG[type].label+'หยุดทำงาน');
+        SFX.error();
         dirty = true; return;
       }
-      if(Math.random() < getFailChance()){ showFloatingReward(type, '❌ พลาด!', true); }
+      if(Math.random() < getFailChance()){ showFloatingReward(type, '❌ พลาด!', true); SFX.fail(); }
       else{
         const y = getMineYield(type);
         gameData[type] += y;
         gameData.totalMined[type] = (gameData.totalMined[type]||0) + y;
         showFloatingReward(type, '+'+y.toLocaleString(), false);
+        SFX.hit();
         addXP(MINE_CFG[type].baseXp * mine.level);
       }
       dirty = true;
@@ -1950,6 +2118,7 @@ function upgradeEquipment(type){
   gameData[cfg.oreType] -= oreCost;
   eq.level += 1; eq.cost = equipCost(type);
   const names = { pickaxe:'⛏️ พลั่ว', helmet:'🪖 หมวกนิรภัย', armor:'🛡️ ชุดเกราะ' };
+  SFX.upgrade();
   showToast(names[type]+' อัปเกรดเป็น Lv.'+eq.level+' แล้ว! (-'+barCost+' '+cfg.barLabel+', -'+oreCost.toLocaleString()+' '+cfg.oreLabel+')');
   refreshAll(); autoSaveGame(true);
 }
@@ -2119,6 +2288,7 @@ function sellOre(type, amount){
   gameData.priceHistory[type].push(np);
   if(gameData.priceHistory[type].length>20) gameData.priceHistory[type].shift();
   gameData[type] -= qty; gameData.gold += earned; addXP(Math.floor(qty/10));
+  SFX.coin();
   const bonusTxt = bonus>0 ? ' (โบนัสสกิน +'+Math.round(bonus*100)+'%)' : '';
   showToast('💰 ขาย '+qty.toLocaleString()+' ชิ้น เฉลี่ย '+res.avg+' Gold → หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'% (-'+fee.toLocaleString()+') รับสุทธิ '+earned.toLocaleString()+' Gold'+bonusTxt);
   updateUI();
@@ -2139,10 +2309,10 @@ function buyShopItem(item){
     if(gameData.gems < cost){ alert('Gems ไม่พอเปิดกล่องสุ่ม!'); return; }
     gameData.gems -= cost;
     const roll = Math.random();
-    if(roll < 0.45){ const g = 1500 + Math.floor(Math.random()*2500); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); }
-    else if(roll < 0.8){ const o = 50 + Math.floor(Math.random()*100); gameData.iron += o; showToast('🎁 ได้รับแร่เหล็ก '+o.toLocaleString()+' ชิ้น!'); }
-    else if(roll < 0.95){ const s = 20 + Math.floor(Math.random()*40); gameData.silver += s; showToast('🎁 ได้รับแร่เงิน '+s.toLocaleString()+' ชิ้น!'); }
-    else{ gameData.gems += 60; showToast('🎉 แจ็คพอต! ได้รับ 60 Gems'); }
+    if(roll < 0.45){ const g = 1500 + Math.floor(Math.random()*2500); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); SFX.coin(); }
+    else if(roll < 0.8){ const o = 50 + Math.floor(Math.random()*100); gameData.iron += o; showToast('🎁 ได้รับแร่เหล็ก '+o.toLocaleString()+' ชิ้น!'); SFX.coin(); }
+    else if(roll < 0.95){ const s = 20 + Math.floor(Math.random()*40); gameData.silver += s; showToast('🎁 ได้รับแร่เงิน '+s.toLocaleString()+' ชิ้น!'); SFX.coin(); }
+    else{ gameData.gems += 60; showBigReward('🎉 แจ็คพอต!', 'กล่องสุ่มมอบ 60 Gems ให้คุณ!', '💎'); }
   }
   updateUI(); autoSaveGame(true);
 }
@@ -2195,9 +2365,9 @@ function updateUI(){
   setNum('gems-val', gameData.gems);
   setNum('dash-gold', gameData.gold);
   setNum('dash-gems', gameData.gems);
-  setText('lvl-val', gameData.level);
-  setText('dash-lvl', gameData.level);
-  setText('dash-xp', Math.floor(gameData.xp).toLocaleString());
+  setNum('lvl-val', gameData.level);
+  setNum('dash-lvl', gameData.level);
+  setNum('dash-xp', Math.floor(gameData.xp));
   setText('dash-xp-max', gameData.xpMax.toLocaleString());
   const xpBar = document.getElementById('xp-bar');
   if(xpBar) xpBar.style.width = Math.min(100, (gameData.xp/gameData.xpMax)*100) + '%';
@@ -2252,9 +2422,9 @@ function updateUI(){
   }
   let marketPortfolioValue = 0, marketBestType = null, marketBestPct = -Infinity;
   MINE_TYPES.forEach(t=>{
-    setText('inv-'+t, gameData[t].toLocaleString());
-    setText('market-inv-'+t, gameData[t].toLocaleString());
-    setText('dash-ore-'+t, gameData[t].toLocaleString());
+    setNum('inv-'+t, gameData[t]);
+    setNum('market-inv-'+t, gameData[t]);
+    setNum('dash-ore-'+t, gameData[t]);
     setText('price-'+t, gameData.marketPrices[t].toLocaleString());
     const stockValue = (gameData[t]||0) * (gameData.marketPrices[t]||0);
     marketPortfolioValue += stockValue;
@@ -2272,7 +2442,7 @@ function updateUI(){
     setText(t+'-up-cost', gameData.mines[t].cost.toLocaleString());
     setText(t+'-up-bar', mineBarCost(t));
     setText(t+'-up-have', (gameData[MINE_UP_BAR[t].bar]||0).toLocaleString());
-    setText(t+'-total', (gameData.totalMined[t]||0).toLocaleString());
+    setNum(t+'-total', gameData.totalMined[t]||0);
     const upBtn = document.getElementById(t+'-upgrade-btn');
     if(upBtn){
       const canUp = gameData.gold >= gameData.mines[t].cost && (gameData[MINE_UP_BAR[t].bar]||0) >= mineBarCost(t);
@@ -2425,7 +2595,24 @@ function refreshAll(){ updateUI(); renderSkinShop(); }
 window.addEventListener('load', function(){
   try{
     loadGame();
+    updateSoundBtn();
     syncPixiTickers();
+    // any first tap/click unlocks the WebAudio context (autoplay policy) and starts music if it's enabled
+    (function(){
+      let unlocked = false;
+      function unlock(){
+        if(unlocked) return; unlocked = true;
+        SFX.unlock();
+        if(gameData.musicEnabled) SFX.music.start();
+      }
+      document.addEventListener('pointerdown', unlock, {once:true, passive:true});
+      document.addEventListener('keydown', unlock, {once:true});
+    })();
+    // plays a short click sound for any button/menu tap across the whole UI
+    document.addEventListener('click', function(e){
+      const t = e.target.closest('.btn, .menu-item, .toggle-btn');
+      if(t && !t.disabled) SFX.click();
+    }, true);
     // short landscape phones: start with the sidebar collapsed to leave room for content
     if(window.innerWidth >= 768 && window.matchMedia('(max-height:480px)').matches){
       const sb0 = document.getElementById('sidebar'); if(sb0) sb0.classList.add('collapsed');
