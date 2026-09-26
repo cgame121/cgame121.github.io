@@ -657,6 +657,7 @@ header {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
+  overflow-anchor: none; /* กัน "จอเลื่อนเอง": ไม่ให้เบราว์เซอร์ขยับ scrollTop ชดเชยเองตอนเนื้อหาเหนือจอถูกอัปเดตสด (เช่น ตัวเลข/อวตาร์) */
   background: var(--bg-body);
   /* หมายเหตุ: ตัด -webkit-overflow-scrolling:touch ออก - iOS Safari/WKWebView รุ่นใหม่ (13+)
      มี momentum scroll เป็นค่าเริ่มต้นอยู่แล้วไม่ต้องพึ่ง property นี้ และมันมีบั๊กที่รู้จักกันดีคือ
@@ -2414,7 +2415,7 @@ const MARKET_SELL_CONFIG = {
   sellPressureDecay: 0.60,    // decay ต่อ tick (ทุก 4 วิ) ของแรงกดดันขาย - หายเกือบหมดใน ~20-30 วิ
   priceBlendWeight: 0.08,     // น้ำหนักที่ราคาเฉลี่ยที่เพิ่งขายมีต่อราคาตลาดถัดไป (เดิม 0.25)
   maxSingleSaleDrop: 0.08,    // ราคาตลาดห้ามตกเกินกี่ % จากการขายครั้งเดียว (เดิมไม่มีเพดาน)
-  previewConfirmQty: 500      // ขายเกินจำนวนนี้ต้องมี preview ให้ผู้เล่นยืนยันก่อน (กันเทขายพลาดโดยไม่ตั้งใจ)
+  previewConfirmQty: 600      // ขายเกินจำนวนนี้ต้องมี preview ให้ผู้เล่นยืนยันก่อน (กันเทขายพลาดโดยไม่ตั้งใจ) - ตั้งสูงกว่าปุ่มลัด 500 เพื่อไม่ให้ปุ่มลัดต้องยืนยันทุกครั้ง
 };
 const EQUIP_CFG = { pickaxe:{baseCost:50,growth:1.5,currency:'gems',barType:'ingotGold',barLabel:'แท่งทองคำ',oreType:'goldOre',oreLabel:'แร่ทองดิบ',oreBase:5}, helmet:{baseCost:25000,growth:1.6,currency:'gold',barType:'ingotIron',barLabel:'แท่งเหล็กกล้า',oreType:'iron',oreLabel:'แร่เหล็ก',oreBase:40}, armor:{baseCost:40000,growth:1.6,currency:'gold',barType:'ingotSilver',barLabel:'แท่งเงิน',oreType:'silver',oreLabel:'แร่เงิน',oreBase:25} };
 const SMELT_CFG = {
@@ -2467,7 +2468,7 @@ const skinDatabase = {
 // ===== สถานะเกม (Game State) + ค่าเริ่มต้นเมื่อไม่มีเซฟ =====
 function createDefaultData(){
   return {
-    gold:50000, gems:120, level:1, xp:0, xpMax:100,
+    gold:1000, gems:20, level:1, xp:0, xpMax:100,
     notificationsEnabled:true, soundEnabled:true, musicEnabled:false, theme:'default',
     iron:50, silver:0, goldOre:0,
     ingotIron:0, ingotSilver:0, ingotGold:0,
@@ -4143,6 +4144,7 @@ function startExpedition(key){
     }
     for(let res in cfg.cost){ gameData[res] -= cfg.cost[res]; }
   }
+  gameData.troops[cfg.reqType] -= cfg.reqNum; // ล็อกกำลังพลไว้ระหว่างสำรวจ คืนให้เมื่อภารกิจจบ (ดู checkExpeditions)
   gameData.expeditions[key] = { endTime: Date.now() + (cfg.duration*1000), duration: cfg.duration };
   showToast('🗺️ ส่งกองทัพออกสำรวจ "'+cfg.name+'" แล้ว!');
   updateUI(); autoSaveGame(true);
@@ -4167,6 +4169,7 @@ function checkExpeditions(){
           showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
           SFX.coin();
         }
+        gameData.troops[cfg.reqType] = (gameData.troops[cfg.reqType]||0) + cfg.reqNum; // คืนกำลังพลที่ล็อกไว้ตอนเริ่มภารกิจ
         if(cfg.deathChance && Math.random() < cfg.deathChance && gameData.troops[cfg.reqType] > 0){
           gameData.troops[cfg.reqType] -= 1;
           showToast('💀 ทหาร'+HERO_BY_TYPE[cfg.reqType].name+' เสียชีวิต 1 นายระหว่างภารกิจ! เหลือ '+gameData.troops[cfg.reqType]+' นาย');
@@ -4465,9 +4468,9 @@ function updateMarketPricesRealtime(){
   if(isTabActive('market')) drawAllMarketCharts();
 }
 function drawAllMarketCharts(){
-  drawSingleChart('chart-iron', gameData.priceHistory.iron, '#94a3b8', 'rgba(148,163,184,.25)');
-  drawSingleChart('chart-silver', gameData.priceHistory.silver, '#3b82f6', 'rgba(59,130,246,.25)');
-  drawSingleChart('chart-goldOre', gameData.priceHistory.goldOre, '#f59e0b', 'rgba(245,158,11,.25)');
+  drawSingleChart('chart-iron', gameData.priceHistory.iron, '#94a3b8', 'rgba(148,163,184,.25)', 'iron');
+  drawSingleChart('chart-silver', gameData.priceHistory.silver, '#3b82f6', 'rgba(59,130,246,.25)', 'silver');
+  drawSingleChart('chart-goldOre', gameData.priceHistory.goldOre, '#f59e0b', 'rgba(245,158,11,.25)', 'goldOre');
 }
 // quadratic curve through segment midpoints -> smooth line without overshoot
 function tracePath(ctx, pts){
@@ -4477,7 +4480,7 @@ function tracePath(ctx, pts){
   }
   const l = pts[pts.length-1]; ctx.lineTo(l.x, l.y);
 }
-function drawSingleChart(canvasId, rawData, lineColor, fillColor){
+function drawSingleChart(canvasId, rawData, lineColor, fillColor, type){
   const cv = document.getElementById(canvasId); if(!cv) return;
   const w = cv.clientWidth || 280, h = cv.clientHeight || 90;
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
@@ -4491,6 +4494,17 @@ function drawSingleChart(canvasId, rawData, lineColor, fillColor){
   if(data.length === 1) data = [data[0], data[0]];
   let min = Math.min.apply(null,data), max = Math.max.apply(null,data);
   if(min === max){ min = Math.max(0,min-2); max += 2; }
+  // กันแกน Y ซูมแน่นเกินไปจนราคาขยับนิดเดียวดูเหมือนกราฟดิ่งหนัก: บังคับช่วงแกนขั้นต่ำ = 25% ของช่วงราคาเต็มที่แร่ชนิดนี้เป็นไปได้
+  const cfg = type && MARKET_CFG[type];
+  if(cfg){
+    const minSpan = (cfg.max - cfg.min) * 0.25;
+    if((max-min) < minSpan){
+      const mid = (max+min)/2;
+      min = Math.max(cfg.min, mid - minSpan/2);
+      max = Math.min(cfg.max, mid + minSpan/2);
+      if(max-min < minSpan){ min = Math.max(cfg.min, max-minSpan); }
+    }
+  }
   const range = (max-min) || 1;
   const pad = 15, cw = Math.max(10, w-pad*2), ch = Math.max(10, h-pad*2);
   const X = i => pad + (i/Math.max(1,data.length-1))*cw;
@@ -4517,13 +4531,16 @@ function drawSingleChart(canvasId, rawData, lineColor, fillColor){
   ctx.fillText('Max: '+max, pad, pad+8);
   ctx.fillText('Min: '+min, pad, pad+ch);
 }
-// ===== ขั้นบันไดราคาขายภายในออเดอร์เดียว (ปรับให้โควตากว้างขึ้น/ส่วนลดนุ่มขึ้นกว่าเดิมมาก) =====
+// ===== ขั้นบันไดราคาขายภายในออเดอร์เดียว (แบ่งตาม % ของจำนวนที่ขาย ไม่ใช่จำนวนคงที่) =====
+// เดิมแบ่งเป็นจำนวนหน่วยคงที่ (500/1500/5000 ชิ้นแรก) ทำให้ยิ่งขายเยอะ (สต๊อกหลักหมื่นตอนเล่นไปนานๆ)
+// ส่วนที่เกิน 7,000 ชิ้นทั้งหมดโดนตัดเหลือ 55% แบบไม่มีเพดาน กด "ขายทั้งหมด" ทีเดียวราคาเฉลี่ยเลยดิ่งหนักมาก
+// เปลี่ยนเป็นสัดส่วน % ของ qty เอง ทำให้ไม่ว่าจะขายเยอะแค่ไหน ค่าเฉลี่ยจะลู่เข้าเพดานประมาณ 83% เสมอ ไม่ดิ่งไม่จำกัด
 function calculateTieredSale(qty, price){
-  let left = qty, total = 0;
-  const t1 = Math.min(left,500); total += t1*price; left -= t1;
-  if(left>0){ const t2=Math.min(left,1500); total += t2*price*0.85; left-=t2; }
-  if(left>0){ const t3=Math.min(left,5000); total += t3*price*0.70; left-=t3; }
-  if(left>0){ total += left*price*0.55; }
+  const t1 = Math.min(qty, Math.max(500, Math.round(qty*0.05)));
+  let left = qty - t1, total = t1*price;
+  const t2 = Math.min(left, Math.round(qty*0.15)); total += t2*price*0.92; left -= t2;
+  const t3 = Math.min(left, Math.round(qty*0.30)); total += t3*price*0.85; left -= t3;
+  if(left>0) total += left*price*0.78;
   return { total: Math.round(total), avg: Math.max(1, Math.round(total/qty)) };
 }
 // คำนวณ preview ล่วงหน้าโดยไม่แก้ไข gameData ใดๆ - ใช้ทั้งแสดงผลก่อนขายและตอนขายจริง
@@ -4587,8 +4604,14 @@ function sellOre(type, amount){
   sanitizeData();
   const have = gameData[type];
   if(have <= 0){ showToast('ไม่มีแร่ให้ขาย'); return; }
-  const qty = (amount==='all') ? have : Math.min(have, Number(amount));
-  if(qty <= 0){ showToast('จำนวนแร่ไม่เพียงพอ'); return; }
+  let qty;
+  if(amount==='all'){ qty = have; }
+  else{
+    const reqQty = Math.floor(Number(amount));
+    if(!isFinite(reqQty) || reqQty <= 0){ showToast('กรุณาระบุจำนวนที่ถูกต้อง'); return; }
+    qty = Math.min(have, reqQty);
+  }
+  if(!isFinite(qty) || qty <= 0){ showToast('จำนวนแร่ไม่เพียงพอ'); return; }
 
   const preview = previewSale(type, qty);
   if(qty >= MARKET_SELL_CONFIG.previewConfirmQty){
@@ -5004,7 +5027,12 @@ function updateUI(){
   setText('char-market-bonus', '+'+Math.round(getMarketBonus()*100)+'%');
   setText('char-fail-rate', Math.round(getFailChance()*100)+'%');
   const av = document.getElementById('active-avatar-box');
-  if(av) av.innerHTML = skin.svg;
+  // เขียนทับ SVG เฉพาะตอนสกินเปลี่ยนจริงๆ - เดิมเขียนทับทุกครั้งที่ updateUI() ทำงาน (ทุก ~4 วิ/ทุกรอบขุด)
+  // ทำให้ DOM ในแท็บ "ตัวละคร" ถูกทำลาย/สร้างใหม่รัวๆ จน scroll anchoring ของเบราว์เซอร์คำนวณผิดแล้วเลื่อนจอเอง
+  if(av && av.dataset.skinId !== gameData.equippedSkin){
+    av.innerHTML = skin.svg;
+    av.dataset.skinId = gameData.equippedSkin;
+  }
   syncPixiMineTickers();
 }
 function refreshAll(){ updateUI(); renderSkinShop(); }
@@ -5069,6 +5097,7 @@ window.addEventListener('load', function(){
       if(now - lastResumeCall < 1000){ wakeLoop(); return; }
       lastResumeCall = now;
       calcOfflineProgress();
+      checkExpeditions(); // ให้ผลของภารกิจที่จบระหว่างออฟไลน์ขึ้นทันที ไม่ต้องรอ loop tick แรก
       refreshAll();
       wakeLoop();
     }
