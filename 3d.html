@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Open World - Mobile</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #000; touch-action: none; }
+  canvas { display: block; }
+  
+  #ui { position: fixed; inset: 0; pointer-events: none; color: #fff; text-shadow: 1px 1px 3px #000; }
+  
+  /* ===== HUD ===== */
+  #hud { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 12px; }
+  #hud h3 { margin-bottom: 6px; font-size: 12px; color: #ffd700; }
+  .stat { margin: 3px 0; font-size: 11px; }
+  .bar { width: 120px; height: 6px; background: #333; border-radius: 3px; margin-top: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; transition: width 0.3s; }
+  #health .bar-fill { background: #e74c3c; }
+  #stamina .bar-fill { background: #f39c12; }
+  
+  /* ===== MINIMAP ===== */
+  #minimap { position: absolute; top: 15px; right: 15px; width: 110px; height: 110px; background: rgba(0,0,0,0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); overflow: hidden; }
+  #minimapCanvas { width: 100%; height: 100%; }
+  
+  /* ===== CROSSHAIR ===== */
+  #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.5); transition: opacity 0.2s; }
+  
+  /* ===== VIEW MODE ===== */
+  #viewMode { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; font-size: 11px; color: #ffd700; font-weight: bold; border: 1px solid rgba(255,215,0,0.4); }
+  
+  /* ===== PC CONTROLS INFO ===== */
+  #controls { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 12px 18px; border-radius: 10px; font-size: 12px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.2); }
+  kbd { background: #444; padding: 2px 6px; border-radius: 3px; border-bottom: 2px solid #222; font-family: monospace; }
+  
+  #info { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 10px; font-size: 11px; color: #aaa; }
+  
+  /* ===== NOTIFICATION ===== */
+  .notification { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 8px 20px; border-radius: 25px; color: #ffd700; font-weight: bold; opacity: 0; transition: opacity 0.3s; border: 1px solid #ffd700; font-size: 13px; }
+  .notification.show { opacity: 1; }
+  
+  /* ===== START SCREEN ===== */
+  #startScreen { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: #fff; cursor: pointer; padding: 20px; text-align: center; }
+  #startScreen h1 { font-size: 2.5em; margin-bottom: 15px; color: #ffd700; text-shadow: 0 0 20px #ffd700; }
+  #startScreen p { font-size: 1em; color: #aaa; margin-bottom: 25px; }
+  #startBtn { padding: 14px 45px; font-size: 1.1em; background: #ffd700; color: #000; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+  #startBtn:hover { transform: scale(1.05); }
+  #startBtn:active { transform: scale(0.98); }
+  
+  /* ==================================================== */
+  /* ============== MOBILE TOUCH CONTROLS ============== */
+  /* ==================================================== */
+  
+  #touchControls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+    z-index: 50;
+  }
+  #touchControls.active { display: block; }
+  
+  /* --- Joystick พื้นฐาน --- */
+  .joystick {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.25);
+    pointer-events: auto;
+    touch-action: none;
+    backdrop-filter: blur(2px);
+  }
+  .joystick .stick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: 2px solid rgba(255,255,255,0.5);
+    transform: translate(-50%, -50%);
+    transition: background 0.15s;
+    pointer-events: none;
+  }
+  .joystick.active .stick { background: rgba(255,215,0,0.6); border-color: #ffd700; }
+  
+  /* --- ปุ่ม action ด้านขวา --- */
+  .actionBtn {
+    position: absolute;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .actionBtn:active, .actionBtn.active {
+    background: rgba(255,215,0,0.5);
+    border-color: #ffd700;
+    transform: scale(0.95);
+  }
+  .actionBtn small {
+    position: absolute;
+    bottom: -18px;
+    font-size: 9px;
+    color: #ccc;
+    white-space: nowrap;
+    font-weight: normal;
+  }
+  
+  /* --- ตำแหน่ง joystick --- */
+  #joyLeft  { left: 25px; bottom: 25px; }
+  #joyRight { right: 25px; bottom: 25px; }
+  
+  /* --- ปุ่ม action ด้านซ้าย (เหนือ joystick ขวา) --- */
+  #btnJump  { right: 160px; bottom: 100px; }
+  #btnRun   { right: 175px; bottom: 25px; }
+  #btnView  { right: 25px; top: 90px; width: 52px; height: 52px; font-size: 18px; }
+  #btnView  small { display: none; }
+  
+  /* --- Responsive --- */
+  @media (max-width: 400px) {
+    .joystick { width: 110px; height: 110px; }
+    .joystick .stick { width: 48px; height: 48px; }
+    .actionBtn { width: 58px; height: 58px; font-size: 18px; }
+    #btnJump { right: 140px; bottom: 90px; }
+    #btnRun  { right: 150px; bottom: 20px; }
+    #minimap { width: 90px; height: 90px; }
+    #hud { padding: 8px 12px; font-size: 10px; }
+    .bar { width: 100px; }
+  }
+  
+  /* ซ่อน controls PC เมื่อใช้มือถือ */
+  body.mobile #controls { display: none; }
+  body.mobile #info { display: none; }
+  body.mobile #hud h3 { display: none; }
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <h1>🌍 Open World</h1>
+  <p>โลกกว้างรอให้คุณสำรวจ</p>
+  <button id="startBtn">▶ เริ่มเล่น</button>
+  <p style="margin-top:25px; font-size:0.85em; color:#888;" id="startHint">
+    คลิกเพื่อล็อกเมาส์ • กด ESC เพื่อปลด • กด V สลับมุมมอง
+  </p>
+</div>
+
+<div id="ui" style="display:none;">
+  <div id="hud">
+    <h3>⚔️ Player</h3>
+    <div class="stat">❤️ Health</div>
+    <div class="bar" id="health"><div class="bar-fill" style="width:100%"></div></div>
+    <div class="stat" style="margin-top:6px;">⚡ Stamina</div>
+    <div class="bar" id="stamina"><div class="bar-fill" style="width:100%"></div></div>
+    <div class="stat" style="margin-top:6px;">📦 <span id="itemCount">0</span></div>
+  </div>
+  <div id="minimap"><canvas id="minimapCanvas" width="150" height="150"></canvas></div>
+  <div id="crosshair"></div>
+  <div id="viewMode">🎥 Third Person</div>
+  <div id="controls">
+    <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เดิน</div>
+    <div><kbd>Shift</kbd> วิ่ง | <kbd>Space</kbd> กระโดด</div>
+    <div><kbd>V</kbd> สลับมุมมอง | <kbd>Mouse</kbd> หมุนกล้อง</div>
+    <div><kbd>Wheel</kbd> ซูม | <kbd>ESC</kbd> ปลดเมาส์</div>
+  </div>
+  <div id="info">ตำแหน่ง: <span id="pos">0, 0</span></div>
+  <div class="notification" id="notif"></div>
+</div>
+
+<!-- ============ TOUCH CONTROLS (มือถือ) ============ -->
+<div id="touchControls">
+  <div class="joystick" id="joyLeft"><div class="stick"></div></div>
+  <div class="joystick" id="joyRight"><div class="stick"></div></div>
+  
+  <div class="actionBtn" id="btnJump">⤒<small>กระโดด</small></div>
+  <div class="actionBtn" id="btnRun">🏃<small>วิ่ง</small></div>
+  <div class="actionBtn" id="btnView">👁️</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ==================== DETECT MOBILE ====================
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+  || (navigator.maxTouchPoints > 0 && /Mobi|Tablet/i.test(navigator.userAgent))
+  || ('ontouchstart' in window && window.innerWidth < 1024);
+
+if (isMobile) {
+  document.body.classList.add('mobile');
+  document.getElementById('startHint').textContent = 'ใช้ joystick ซ้ายเดิน • joystick ขวาหมุนกล้อง';
+}
+
+// ==================== SETUP ====================
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x87ceeb, 60, isMobile ? 200 : 280);
+scene.background = new THREE.Color(0x87ceeb);
+
+const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, powerPreference: 'high-performance' });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
+renderer.shadowMap.enabled = !isMobile; // ปิด shadow บนมือถือเพื่อ performance
+if (!isMobile) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// ==================== LIGHTING ====================
+scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+
+const sun = new THREE.DirectionalLight(0xfff5e0, 1.2);
+sun.position.set(50, 100, 30);
+sun.castShadow = !isMobile;
+if (!isMobile) {
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -80;
+  sun.shadow.camera.right = 80;
+  sun.shadow.camera.top = 80;
+  sun.shadow.camera.bottom = -80;
+}
+scene.add(sun);
+scene.add(sun.target);
+
+scene.add(new THREE.HemisphereLight(0x87ceeb, 0x3a5f3a, 0.6));
+
+// ==================== WORLD ====================
+const WORLD_SIZE = isMobile ? 300 : 400;
+const GROUND_SEGMENTS = isMobile ? 60 : 100;
+
+function getHeight(x, z) {
+  let h = 0;
+  h += Math.sin(x * 0.02) * Math.cos(z * 0.02) * 8;
+  h += Math.sin(x * 0.05 + 1) * Math.cos(z * 0.05) * 3;
+  h += Math.sin(x * 0.1) * Math.cos(z * 0.1) * 1.5;
+  const dist = Math.sqrt(x*x + z*z);
+  if (dist < 20) h *= dist / 20;
+  return h;
+}
+
+// ==================== TERRAIN ====================
+const groundGeo = new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE, GROUND_SEGMENTS, GROUND_SEGMENTS);
+groundGeo.rotateX(-Math.PI / 2);
+
+const posAttr = groundGeo.attributes.position;
+const colors = [];
+for (let i = 0; i < posAttr.count; i++) {
+  const x = posAttr.getX(i);
+  const z = posAttr.getZ(i);
+  const y = getHeight(x, z);
+  posAttr.setY(i, y);
+  let color;
+  if (y < -3) color = new THREE.Color(0x2d5a2d);
+  else if (y < 2) color = new THREE.Color(0x4a8a3a);
+  else if (y < 6) color = new THREE.Color(0x6b9d4a);
+  else color = new THREE.Color(0x8a7a5a);
+  colors.push(color.r, color.g, color.b);
+}
+groundGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+groundGeo.computeVertexNormals();
+
+const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }));
+ground.receiveShadow = !isMobile;
+scene.add(ground);
+
+// ==================== TREES ====================
+const trees = [];
+const treeCount = isMobile ? 150 : 300;
+function createTree(x, z) {
+  const y = getHeight(x, z);
+  if (y > 8) return;
+  const g = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 4, 5), new THREE.MeshStandardMaterial({ color: 0x6b4423 }));
+  trunk.position.y = 2;
+  trunk.castShadow = !isMobile;
+  g.add(trunk);
+  const leafMat = new THREE.MeshStandardMaterial({ color: 0x2d6a2d });
+  for (let i = 0; i < 3; i++) {
+    const size = 3 - i * 0.6;
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(size, 2.5, 5), leafMat);
+    leaf.position.y = 4 + i * 1.5;
+    leaf.castShadow = !isMobile;
+    g.add(leaf);
+  }
+  g.position.set(x, y, z);
+  g.rotation.y = Math.random() * Math.PI * 2;
+  const s = 0.7 + Math.random() * 0.6;
+  g.scale.set(s, s, s);
+  scene.add(g);
+  trees.push({ x, z, radius: 1.2 });
+}
+
+for (let i = 0; i < treeCount; i++) {
+  const x = (Math.random() - 0.5) * WORLD_SIZE * 0.9;
+  const z = (Math.random() - 0.5) * WORLD_SIZE * 0.9;
+  if (Math.sqrt(x*x + z*z) < 8) continue;
+  createTree(x, z);
+}
+
+// ==================== ROCKS ====================
+const rockCount = isMobile ? 30 : 60;
+for (let i = 0; i < rockCount; i++) {
+  const x = (Math.random() - 0.5) * WORLD_SIZE * 0.8;
+  const z = (Math.random() - 0.5) * WORLD_SIZE * 0.8;
+  const y = getHeight(x, z);
+  const size = 0.8 + Math.random() * 1.5;
+  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(size, 0), new THREE.MeshStandardMaterial({ color: 0x777777, roughness: 0.9 }));
+  rock.position.set(x, y + size * 0.4, z);
+  rock.rotation.set(Math.random()*3, Math.random()*3, Math.random()*3);
+  rock.castShadow = !isMobile;
+  rock.receiveShadow = !isMobile;
+  scene.add(rock);
+}
+
+// ==================== ITEMS ====================
+const items = [];
+const itemCountTarget = isMobile ? 25 : 40;
+function spawnItem() {
+  const x = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
+  const z = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
+  const y = getHeight(x, z);
+  const mesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.6, 0),
+    new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffd700, emissiveIntensity: 0.7, metalness: 0.5, roughness: 0.3 })
+  );
+  mesh.position.set(x, y + 1.2, z);
+  mesh.castShadow = !isMobile;
+  scene.add(mesh);
+  items.push({ mesh, collected: false });
+}
+for (let i = 0; i < itemCountTarget; i++) spawnItem();
+
+// ==================== PLAYER CHARACTER ====================
+const playerRig = new THREE.Group();
+scene.add(playerRig);
+const bodyParts = {};
+
+function createCharacter() {
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0xffcc99, roughness: 0.7 });
+  const shirtMat = new THREE.MeshStandardMaterial({ color: 0x2e7dd1, roughness: 0.6 });
+  const pantsMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.8 });
+  const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9 });
+  const hairMat = new THREE.MeshStandardMaterial({ color: 0x3a2410, roughness: 0.9 });
+  
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.7, 0.3), shirtMat);
+  torso.position.y = 1.15;
+  torso.castShadow = !isMobile;
+  playerRig.add(torso);
+  bodyParts.torso = torso;
+  
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.42, 0.42), skinMat);
+  head.position.y = 1.75;
+  head.castShadow = !isMobile;
+  playerRig.add(head);
+  bodyParts.head = head;
+  
+  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.12, 0.44), hairMat);
+  hair.position.y = 1.95;
+  hair.castShadow = !isMobile;
+  playerRig.add(hair);
+  
+  const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMat);
+  eyeL.position.set(-0.1, 1.78, 0.22);
+  playerRig.add(eyeL);
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMat);
+  eyeR.position.set(0.1, 1.78, 0.22);
+  playerRig.add(eyeR);
+  
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.08), new THREE.MeshStandardMaterial({ color: 0xffbb88 }));
+  nose.position.set(0, 1.7, 0.24);
+  playerRig.add(nose);
+  
+  // แขนซ้าย
+  const armLGroup = new THREE.Group();
+  armLGroup.position.set(-0.38, 1.45, 0);
+  const upperArmL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.18), skinMat);
+  upperArmL.position.y = -0.25;
+  upperArmL.castShadow = !isMobile;
+  armLGroup.add(upperArmL);
+  const lowerArmL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.4, 0.16), skinMat);
+  lowerArmL.position.y = -0.7;
+  lowerArmL.castShadow = !isMobile;
+  armLGroup.add(lowerArmL);
+  const handL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), skinMat);
+  handL.position.y = -0.93;
+  handL.castShadow = !isMobile;
+  armLGroup.add(handL);
+  playerRig.add(armLGroup);
+  bodyParts.armL = armLGroup;
+  
+  // แขนขวา
+  const armRGroup = new THREE.Group();
+  armRGroup.position.set(0.38, 1.45, 0);
+  const upperArmR = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.18), skinMat);
+  upperArmR.position.y = -0.25;
+  upperArmR.castShadow = !isMobile;
+  armRGroup.add(upperArmR);
+  const lowerArmR = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.4, 0.16), skinMat);
+  lowerArmR.position.y = -0.7;
+  lowerArmR.castShadow = !isMobile;
+  armRGroup.add(lowerArmR);
+  const handR = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), skinMat);
+  handR.position.y = -0.93;
+  handR.castShadow = !isMobile;
+  armRGroup.add(handR);
+  playerRig.add(armRGroup);
+  bodyParts.armR = armRGroup;
+  
+  // ขาซ้าย
+  const legLGroup = new THREE.Group();
+  legLGroup.position.set(-0.15, 0.8, 0);
+  const upperLegL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.5, 0.2), pantsMat);
+  upperLegL.position.y = -0.25;
+  upperLegL.castShadow = !isMobile;
+  legLGroup.add(upperLegL);
+  const lowerLegL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.4, 0.18), pantsMat);
+  lowerLegL.position.y = -0.7;
+  lowerLegL.castShadow = !isMobile;
+  legLGroup.add(lowerLegL);
+  const footL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.3), shoeMat);
+  footL.position.set(0, -0.93, 0.05);
+  footL.castShadow = !isMobile;
+  legLGroup.add(footL);
+  playerRig.add(legLGroup);
+  bodyParts.legL = legLGroup;
+  
+  // ขาขวา
+  const legRGroup = new THREE.Group();
+  legRGroup.position.set(0.15, 0.8, 0);
+  const upperLegR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.5, 0.2), pantsMat);
+  upperLegR.position.y = -0.25;
+  upperLegR.castShadow = !isMobile;
+  legRGroup.add(upperLegR);
+  const lowerLegR = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.4, 0.18), pantsMat);
+  lowerLegR.position.y = -0.7;
+  lowerLegR.castShadow = !isMobile;
+  legRGroup.add(lowerLegR);
+  const footR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.3), shoeMat);
+  footR.position.set(0, -0.93, 0.05);
+  footR.castShadow = !isMobile;
+  legRGroup.add(footR);
+  playerRig.add(legRGroup);
+  bodyParts.legR = legRGroup;
+}
+createCharacter();
+
+// ==================== PLAYER STATE ====================
+const player = {
+  pos: new THREE.Vector3(0, 0, 0),
+  vel: new THREE.Vector3(0, 0, 0),
+  yaw: 0,
+  onGround: true,
+  radius: 0.5,
+  health: 100,
+  stamina: 100,
+  score: 0
+};
+player.pos.y = getHeight(0, 0);
+
+const camOrbit = {
+  yaw: 0,
+  pitch: 0,
+  distance: isMobile ? 7 : 6,
+  heightOffset: 1.4
+};
+
+// ==================== INPUT (Keyboard) ====================
+const keys = {};
+let pointerLocked = false;
+let viewMode = 'third';
+
+// Touch state
+const touch = {
+  move: { x: 0, y: 0 },        // จาก joystick ซ้าย (-1 ถึง 1)
+  look: { x: 0, y: 0 },        // จาก joystick ขวา (-1 ถึง 1)
+  running: false,
+  jumpPressed: false
+};
+
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'KeyV') toggleView();
+});
+document.addEventListener('keyup', e => keys[e.code] = false);
+
+const startScreen = document.getElementById('startScreen');
+const ui = document.getElementById('ui');
+const viewModeEl = document.getElementById('viewMode');
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  startScreen.style.display = 'none';
+  ui.style.display = 'block';
+  
+  if (isMobile) {
+    document.getElementById('touchControls').classList.add('active');
+    // ล็อกแนวตั้งฉากการหมุนจอ (ถ้าเบราว์เซอร์รองรับ)
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
+  } else {
+    renderer.domElement.requestPointerLock();
+  }
+});
+
+renderer.domElement.addEventListener('click', () => {
+  if (!pointerLocked && !isMobile && startScreen.style.display === 'none') {
+    renderer.domElement.requestPointerLock();
+  }
+});
+
+document.addEventListener('pointerlockchange', () => {
+  pointerLocked = document.pointerLockElement === renderer.domElement;
+});
+
+// Mouse look
+document.addEventListener('mousemove', e => {
+  if (!pointerLocked) return;
+  camOrbit.yaw -= e.movementX * 0.0025;
+  camOrbit.pitch -= e.movementY * 0.0025;
+  camOrbit.pitch = Math.max(-1.2, Math.min(1.2, camOrbit.pitch));
+});
+
+document.addEventListener('wheel', e => {
+  if (!pointerLocked) return;
+  camOrbit.distance = Math.max(2.5, Math.min(12, camOrbit.distance + e.deltaY * 0.005));
+}, { passive: true });
+
+function toggleView() {
+  viewMode = viewMode === 'third' ? 'first' : 'third';
+  viewModeEl.textContent = viewMode === 'third' ? '🎥 Third Person' : '👁️ First Person';
+  document.getElementById('crosshair').style.opacity = viewMode === 'first' ? '1' : '0.3';
+  playerRig.visible = viewMode === 'third';
+  if (viewMode === 'first') {
+    camOrbit.distance = 0;
+  } else {
+    camOrbit.distance = isMobile ? 7 : 6;
+  }
+}
+
+// ==================================================
+// ============== TOUCH CONTROLS SETUP ==============
+// ==================================================
+
+function setupJoystick(el, onChange) {
+  const stick = el.querySelector('.stick');
+  let activeId = null;
+  const maxDist = 45; // ระยะสูงสุดที่ stick ขยับได้
+  
+  function getCenter() {
+    const rect = el.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, r: rect.width / 2 };
+  }
+  
+  function updateFromTouch(touchX, touchY) {
+    const c = getCenter();
+    let dx = touchX - c.x;
+    let dy = touchY - c.y;
+    const dist = Math.hypot(dx, dy);
+    
+    if (dist > maxDist) {
+      dx = dx / dist * maxDist;
+      dy = dy / dist * maxDist;
+    }
+    
+    stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    
+    // normalize -1 ถึง 1
+    onChange(dx / maxDist, dy / maxDist);
+  }
+  
+  el.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    activeId = t.identifier;
+    el.classList.add('active');
+    updateFromTouch(t.clientX, t.clientY);
+  }, { passive: false });
+  
+  el.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      if (t.identifier === activeId) {
+        updateFromTouch(t.clientX, t.clientY);
+      }
+    }
+  }, { passive: false });
+  
+  function endTouch(e) {
+    for (const t of e.changedTouches) {
+      if (t.identifier === activeId) {
+        activeId = null;
+        el.classList.remove('active');
+        stick.style.transform = 'translate(-50%, -50%)';
+        onChange(0, 0);
+      }
+    }
+  }
+  el.addEventListener('touchend', endTouch);
+  el.addEventListener('touchcancel', endTouch);
+  
+  // เผื่อ Desktop ทดสอบ
+  let mouseDown = false;
+  el.addEventListener('mousedown', e => {
+    e.preventDefault();
+    mouseDown = true;
+    el.classList.add('active');
+    updateFromTouch(e.clientX, e.clientY);
+  });
+  window.addEventListener('mousemove', e => {
+    if (mouseDown) updateFromTouch(e.clientX, e.clientY);
+  });
+  window.addEventListener('mouseup', () => {
+    if (mouseDown) {
+      mouseDown = false;
+      el.classList.remove('active');
+      stick.style.transform = 'translate(-50%, -50%)';
+      onChange(0, 0);
+    }
+  });
+}
+
+// Joystick ซ้าย = เดิน
+setupJoystick(document.getElementById('joyLeft'), (x, y) => {
+  touch.move.x = x;
+  touch.move.y = y;
+});
+
+// Joystick ขวา = หมุนกล้อง
+setupJoystick(document.getElementById('joyRight'), (x, y) => {
+  touch.look.x = x;
+  touch.look.y = y;
+});
+
+// ปุ่มกระโดด
+const btnJump = document.getElementById('btnJump');
+btnJump.addEventListener('touchstart', e => {
+  e.preventDefault();
+  btnJump.classList.add('active');
+  if (player.onGround) {
+    player.vel.y = 12;
+    player.onGround = false;
+  }
+}, { passive: false });
+btnJump.addEventListener('touchend', e => {
+  e.preventDefault();
+  btnJump.classList.remove('active');
+}, { passive: false });
+// Mouse fallback
+btnJump.addEventListener('mousedown', () => {
+  if (player.onGround) { player.vel.y = 12; player.onGround = false; }
+});
+
+// ปุ่มวิ่ง (กดค้าง)
+const btnRun = document.getElementById('btnRun');
+btnRun.addEventListener('touchstart', e => {
+  e.preventDefault();
+  btnRun.classList.add('active');
+  touch.running = true;
+}, { passive: false });
+btnRun.addEventListener('touchend', e => {
+  e.preventDefault();
+  btnRun.classList.remove('active');
+  touch.running = false;
+}, { passive: false });
+btnRun.addEventListener('touchcancel', () => {
+  btnRun.classList.remove('active');
+  touch.running = false;
+});
+btnRun.addEventListener('mousedown', () => { touch.running = true; btnRun.classList.add('active'); });
+window.addEventListener('mouseup', () => { touch.running = false; btnRun.classList.remove('active'); });
+
+// ปุ่มสลับมุมมอง
+const btnView = document.getElementById('btnView');
+btnView.addEventListener('touchstart', e => {
+  e.preventDefault();
+  toggleView();
+}, { passive: false });
+btnView.addEventListener('click', e => {
+  e.preventDefault();
+  if (!isMobile) toggleView();
+});
+
+// ==================== UI ====================
+const notifEl = document.getElementById('notif');
+let notifTimer;
+function notify(msg) {
+  notifEl.textContent = msg;
+  notifEl.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => notifEl.classList.remove('show'), 1500);
+}
+
+const posEl = document.getElementById('pos');
+const itemCountEl = document.getElementById('itemCount');
+const healthBar = document.querySelector('#health .bar-fill');
+const staminaBar = document.querySelector('#stamina .bar-fill');
+
+// ==================== MINIMAP ====================
+const minimapCanvas = document.getElementById('minimapCanvas');
+const mmCtx = minimapCanvas.getContext('2d');
+const MM_SIZE = 150;
+const MM_RANGE = 80;
+
+function drawMinimap() {
+  mmCtx.clearRect(0, 0, MM_SIZE, MM_SIZE);
+  mmCtx.fillStyle = 'rgba(30,50,30,0.8)';
+  mmCtx.beginPath();
+  mmCtx.arc(MM_SIZE/2, MM_SIZE/2, MM_SIZE/2, 0, Math.PI*2);
+  mmCtx.fill();
+  
+  const cx = MM_SIZE / 2, cy = MM_SIZE / 2;
+  const scale = MM_SIZE / 2 / MM_RANGE;
+  
+  mmCtx.fillStyle = '#2d6a2d';
+  for (const t of trees) {
+    const dx = (t.x - player.pos.x) * scale;
+    const dz = (t.z - player.pos.z) * scale;
+    if (Math.sqrt(dx*dx + dz*dz) < MM_SIZE/2 - 3) {
+      mmCtx.fillRect(cx + dx - 1, cy + dz - 1, 2, 2);
+    }
+  }
+  
+  mmCtx.fillStyle = '#ffd700';
+  for (const it of items) {
+    if (it.collected) continue;
+    const dx = (it.mesh.position.x - player.pos.x) * scale;
+    const dz = (it.mesh.position.z - player.pos.z) * scale;
+    if (Math.sqrt(dx*dx + dz*dz) < MM_SIZE/2 - 3) {
+      mmCtx.beginPath();
+      mmCtx.arc(cx + dx, cy + dz, 2.5, 0, Math.PI*2);
+      mmCtx.fill();
+    }
+  }
+  
+  mmCtx.save();
+  mmCtx.translate(cx, cy);
+  mmCtx.rotate(Math.PI - camOrbit.yaw);
+  mmCtx.fillStyle = '#ff4444';
+  mmCtx.beginPath();
+  mmCtx.moveTo(0, -6);
+  mmCtx.lineTo(-4, 4);
+  mmCtx.lineTo(4, 4);
+  mmCtx.closePath();
+  mmCtx.fill();
+  mmCtx.restore();
+  
+  mmCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+  mmCtx.lineWidth = 2;
+  mmCtx.beginPath();
+  mmCtx.arc(cx, cy, MM_SIZE/2 - 1, 0, Math.PI*2);
+  mmCtx.stroke();
+}
+
+// ==================== COLLISION ====================
+function checkTreeCollision(newPos) {
+  for (const t of trees) {
+    const dx = newPos.x - t.x;
+    const dz = newPos.z - t.z;
+    const dist = Math.sqrt(dx*dx + dz*dz);
+    const minDist = player.radius + t.radius;
+    if (dist < minDist && dist > 0.001) {
+      const push = (minDist - dist) / dist;
+      newPos.x += dx * push;
+      newPos.z += dz * push;
+    }
+  }
+}
+
+// ==================== ANIMATION ====================
+let walkCycle = 0;
+function animateCharacter(dt, isMoving, isRunning) {
+  if (isMoving) {
+    const speed = isRunning ? 12 : 7;
+    walkCycle += dt * speed;
+    const swing = Math.sin(walkCycle) * 0.6;
+    bodyParts.legL.rotation.x = swing;
+    bodyParts.legR.rotation.x = -swing;
+    bodyParts.armL.rotation.x = -swing * 0.8;
+    bodyParts.armR.rotation.x = swing * 0.8;
+    const bob = Math.abs(Math.sin(walkCycle * 2)) * 0.05;
+    bodyParts.torso.position.y = 1.15 + bob;
+    bodyParts.head.position.y = 1.75 + bob;
+  } else {
+    walkCycle = 0;
+    bodyParts.legL.rotation.x *= 0.85;
+    bodyParts.legR.rotation.x *= 0.85;
+    bodyParts.armL.rotation.x *= 0.85;
+    bodyParts.armR.rotation.x *= 0.85;
+    bodyParts.torso.position.y += (1.15 - bodyParts.torso.position.y) * 0.15;
+    bodyParts.head.position.y += (1.75 - bodyParts.head.position.y) * 0.15;
+  }
+  if (!player.onGround) {
+    bodyParts.armL.rotation.x = -1.2;
+    bodyParts.armR.rotation.x = -1.2;
+    bodyParts.legL.rotation.x = 0.3;
+    bodyParts.legR.rotation.x = -0.3;
+  }
+}
+
+// ==================== GAME LOOP ====================
+const clock = new THREE.Clock();
+const SPEED = 8;
+const RUN_SPEED = 14;
+const JUMP_FORCE = 12;
+const GRAVITY = 30;
+let lastItemCheck = 0;
+
+function update(dt) {
+  // === ตรวจสอบว่าเล่นอยู่ไหม ===
+  const isPlaying = isMobile 
+    ? startScreen.style.display === 'none' 
+    : pointerLocked;
+  if (!isPlaying) return;
+  
+  // ==================== รับ Input ====================
+  let moveX = 0, moveY = 0; // -1 ถึง 1 (จาก joystick หรือ keyboard)
+  
+  if (isMobile) {
+    // จาก joystick ซ้าย: y ติดลบ = ขึ้น (เดินหน้า)
+    moveX = touch.move.x;
+    moveY = -touch.move.y; // แปลงเป็นแกน forward
+    
+    // หมุนกล้องจาก joystick ขวา
+    camOrbit.yaw -= touch.look.x * 2.5 * dt;
+    camOrbit.pitch -= touch.look.y * 2.5 * dt;
+    camOrbit.pitch = Math.max(-1.2, Math.min(1.2, camOrbit.pitch));
+  } else {
+    // Keyboard
+    if (keys['KeyW']) moveY += 1;
+    if (keys['KeyS']) moveY -= 1;
+    if (keys['KeyD']) moveX += 1;
+    if (keys['KeyA']) moveX -= 1;
+    // Space jump
+    if (keys['Space'] && player.onGround) {
+      player.vel.y = JUMP_FORCE;
+      player.onGround = false;
+    }
+  }
+  
+  // ทิศทางอ้างอิงจากกล้อง
+  const camForward = new THREE.Vector3(Math.sin(camOrbit.yaw), 0, Math.cos(camOrbit.yaw));
+  const camRight = new THREE.Vector3(-Math.cos(camOrbit.yaw), 0, Math.sin(camOrbit.yaw));
+  
+  const move = new THREE.Vector3();
+  move.addScaledVector(camForward, moveY);
+  move.addScaledVector(camRight, moveX);
+  
+  // วิ่ง?
+  const isRunning = (isMobile ? touch.running : (keys['ShiftLeft'] || keys['ShiftRight'])) && player.stamina > 0;
+  const speed = isRunning ? RUN_SPEED : SPEED;
+  const isMoving = move.lengthSq() > 0.01;
+  
+  if (isMoving) {
+    move.normalize().multiplyScalar(speed);
+    if (isRunning) {
+      player.stamina = Math.max(0, player.stamina - 20 * dt);
+    }
+    const targetYaw = Math.atan2(move.x, move.z);
+    let diff = targetYaw - player.yaw;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    player.yaw += diff * Math.min(1, dt * 12);
+  } else {
+    player.stamina = Math.min(100, player.stamina + 15 * dt);
+  }
+  
+  player.vel.y -= GRAVITY * dt;
+  
+  const newPos = player.pos.clone();
+  newPos.x += move.x * dt;
+  newPos.z += move.z * dt;
+  newPos.y += player.vel.y * dt;
+  
+  const bound = WORLD_SIZE / 2 - 5;
+  newPos.x = Math.max(-bound, Math.min(bound, newPos.x));
+  newPos.z = Math.max(-bound, Math.min(bound, newPos.z));
+  
+  checkTreeCollision(newPos);
+  
+  const groundY = getHeight(newPos.x, newPos.z);
+  if (newPos.y <= groundY) {
+    newPos.y = groundY;
+    player.vel.y = 0;
+    player.onGround = true;
+  }
+  
+  player.pos.copy(newPos);
+  
+  // เก็บ Items
+  lastItemCheck += dt;
+  if (lastItemCheck > 0.1) {
+    lastItemCheck = 0;
+    for (const it of items) {
+      if (it.collected) continue;
+      const d = player.pos.distanceTo(it.mesh.position);
+      if (d < 2.2) {
+        it.collected = true;
+        it.mesh.visible = false;
+        player.score++;
+        itemCountEl.textContent = player.score;
+        notify('✨ เก็บของได้! (' + player.score + ')');
+        setTimeout(() => {
+          const x = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
+          const z = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
+          it.mesh.position.set(x, getHeight(x, z) + 1.2, z);
+          it.mesh.visible = true;
+          it.collected = false;
+        }, 3000);
+      }
+    }
+  }
+  
+  for (const it of items) {
+    if (!it.collected) {
+      it.mesh.rotation.y += dt * 2;
+      it.mesh.position.y = getHeight(it.mesh.position.x, it.mesh.position.z) + 1.2 + Math.sin(performance.now() * 0.002) * 0.2;
+    }
+  }
+  
+  // ตัวละคร
+  playerRig.position.copy(player.pos);
+  playerRig.rotation.y = player.yaw;
+  animateCharacter(dt, isMoving, isRunning);
+  
+  // ==================== กล้อง ====================
+  if (viewMode === 'first') {
+    const headPos = player.pos.clone().add(new THREE.Vector3(0, 1.75, 0));
+    camera.position.copy(headPos);
+    camera.rotation.order = 'YXZ';
+    camera.rotation.y = camOrbit.yaw;
+    camera.rotation.x = camOrbit.pitch;
+  } else {
+    const target = player.pos.clone().add(new THREE.Vector3(0, camOrbit.heightOffset, 0));
+    
+    const offsetX = -Math.sin(camOrbit.yaw) * Math.cos(camOrbit.pitch) * camOrbit.distance;
+    const offsetY = -Math.sin(camOrbit.pitch) * camOrbit.distance;
+    const offsetZ = -Math.cos(camOrbit.yaw) * Math.cos(camOrbit.pitch) * camOrbit.distance;
+    
+    const desiredPos = target.clone().add(new THREE.Vector3(offsetX, offsetY, offsetZ));
+    
+    const minCamY = getHeight(desiredPos.x, desiredPos.z) + 0.8;
+    if (desiredPos.y < minCamY) desiredPos.y = minCamY;
+    
+    camera.position.lerp(desiredPos, 0.25);
+    camera.lookAt(target);
+  }
+  
+  sun.position.set(player.pos.x + 40, player.pos.y + 80, player.pos.z + 30);
+  sun.target.position.copy(player.pos);
+  
+  posEl.textContent = `${player.pos.x.toFixed(1)}, ${player.pos.z.toFixed(1)}`;
+  healthBar.style.width = player.health + '%';
+  staminaBar.style.width = player.stamina + '%';
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.1);
+  update(dt);
+  drawMinimap();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ป้องกัน pinch zoom และ scroll บนมือถือ
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+</script>
+</body>
+</html>
