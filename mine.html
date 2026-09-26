@@ -37,6 +37,79 @@
   --ts: transform .18s cubic-bezier(.25,.8,.35,1),background-color .18s cubic-bezier(.25,.8,.35,1),color .18s cubic-bezier(.25,.8,.35,1),box-shadow .18s cubic-bezier(.25,.8,.35,1),filter .18s cubic-bezier(.25,.8,.35,1),opacity .18s cubic-bezier(.25,.8,.35,1),width .18s cubic-bezier(.25,.8,.35,1),min-width .18s cubic-bezier(.25,.8,.35,1);
   --cut: 10px;
 }
+/* ===== ธีมสี (Theme presets) - เปลี่ยนได้จากเมนูตั้งค่า ===== */
+:root[data-theme="emerald"] {
+  --bg-body: #0a140f;
+  --bg-sidebar: #0f1c16;
+  --bg-card: #16251d;
+  --bg-card-hover: #1f3327;
+  --border: #2a4d3a;
+  --border-light: #4a9a70;
+  --primary: #00ff9d;
+  --primary-dark: #00a366;
+  --accent: #ffb300;
+  --gold: #ffe135;
+  --success: #4dff9e;
+  --success-dark: #00a352;
+  --danger: #ff2d55;
+  --danger-dark: #b3001f;
+  --text-main: #f0fff5;
+  --text-muted: #a0d0b8;
+}
+:root[data-theme="crimson"] {
+  --bg-body: #140a0a;
+  --bg-sidebar: #1c0f0f;
+  --bg-card: #251616;
+  --bg-card-hover: #331f1f;
+  --border: #4d3333;
+  --border-light: #aa5555;
+  --primary: #ff2d6b;
+  --primary-dark: #a3001f;
+  --accent: #ff8c00;
+  --gold: #ffe135;
+  --success: #00ff7f;
+  --success-dark: #00a352;
+  --danger: #ff6a00;
+  --danger-dark: #b34700;
+  --text-main: #fff2f2;
+  --text-muted: #d0a9a9;
+}
+:root[data-theme="violet"] {
+  --bg-body: #0f0a14;
+  --bg-sidebar: #150f1c;
+  --bg-card: #201625;
+  --bg-card-hover: #2b1f33;
+  --border: #4d3355;
+  --border-light: #9a55aa;
+  --primary: #b967ff;
+  --primary-dark: #7a1fa3;
+  --accent: #ffd700;
+  --gold: #ffe135;
+  --success: #00ff7f;
+  --success-dark: #00a352;
+  --danger: #ff2d55;
+  --danger-dark: #b3001f;
+  --text-main: #f5f0ff;
+  --text-muted: #c0a9d0;
+}
+:root[data-theme="amber"] {
+  --bg-body: #140f0a;
+  --bg-sidebar: #1c150f;
+  --bg-card: #251d16;
+  --bg-card-hover: #332a1f;
+  --border: #554533;
+  --border-light: #aa8855;
+  --primary: #ffb300;
+  --primary-dark: #a36f00;
+  --accent: #00cfff;
+  --gold: #ffe135;
+  --success: #00ff7f;
+  --success-dark: #00a352;
+  --danger: #ff2d55;
+  --danger-dark: #b3001f;
+  --text-main: #fff8f0;
+  --text-muted: #d0b9a0;
+}
 * {
   box-sizing: border-box;
   margin: 0;
@@ -243,6 +316,84 @@
   pointer-events: none;
   z-index: 1;
 }
+/* ===== Offline welcome-back summary modal ===== */
+.offline-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  animation: fade .2s ease-out;
+  padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+}
+.offline-modal-content {
+  background: var(--bg-card);
+  border: 4px solid #000;
+  box-shadow: 0 0 0 3px var(--primary),8px 8px 0 #000;
+  padding: 26px 22px 22px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 88vh;
+  max-height: 88dvh;
+  overflow-y: auto;
+  text-align: center;
+  clip-path: polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  animation: modalIn .35s var(--ease-out);
+}
+.offline-modal-icon {
+  font-size: 2.6rem;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+#offline-modal-title {
+  color: var(--primary);
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 6px;
+  font-size: 1.15rem;
+  font-family: var(--pxnum),var(--px);
+  line-height: 1.6;
+}
+#offline-modal-away {
+  color: var(--text-muted);
+  font-size: .82rem;
+  margin-bottom: 16px;
+}
+.offline-stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+.offline-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--bg-sidebar);
+  border: 2px solid var(--border);
+  padding: 8px 10px;
+  font-size: .82rem;
+}
+.offline-stat-row .k {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+.offline-stat-row .v {
+  font-family: var(--pxnum),var(--px);
+  font-size: .78em;
+  color: var(--success);
+  font-weight: bold;
+  white-space: nowrap;
+}
+.offline-stat-row.spend .v,
+.offline-stat-row.warn .v {
+  color: var(--danger);
+}
 .confetti-piece {
   position: absolute;
   top: -14px;
@@ -444,6 +595,43 @@ header {
   box-shadow: 0 0 0 2px var(--border);
   transform: translate(2px,2px);
 }
+/* ===== ตัวเลือกธีมสี ===== */
+.theme-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(84px,1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.theme-swatch-btn {
+  background: var(--bg-card);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px var(--border);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  transition: var(--ts);
+}
+.theme-swatch-btn:active { transform: translate(2px,2px); }
+.theme-swatch-btn.active {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.theme-swatch-preview {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #000;
+  box-shadow: 0 0 0 1px var(--border-light);
+  flex-shrink: 0;
+}
+.theme-swatch-label {
+  font-size: .62rem;
+  line-height: 1.3;
+  color: var(--text-muted);
+  text-align: center;
+}
+.theme-swatch-btn.active .theme-swatch-label { color: var(--primary); font-weight: 700; }
 .user-stats {
   display: flex;
   gap: 8px;
@@ -743,7 +931,8 @@ header {
   opacity: 1;
   pointer-events: auto;
 }
-#reset-modal {
+#reset-modal,
+#sell-confirm-modal {
   display: none;
   position: fixed;
   inset: 0;
@@ -997,7 +1186,8 @@ body {
   max-height: 90dvh;
   overflow-y: auto;
 }
-#reset-modal {
+#reset-modal,
+#sell-confirm-modal {
   padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
 }
 /* ===== Smoothness ===== */
@@ -1079,7 +1269,8 @@ body {
     transform: none;
   }
 }
-#reset-modal {
+#reset-modal,
+#sell-confirm-modal {
   animation: fade .2s ease-out;
 }
 .modal-content {
@@ -1551,6 +1742,18 @@ body {
   color: var(--text-main);
 }
 </style>
+<script>
+(function(){
+  try{
+    var raw = localStorage.getItem('mcPrimarySave');
+    var d = raw ? JSON.parse(raw) : null;
+    var t = d && d.theme;
+    if(t && t !== 'default' && ['emerald','crimson','violet','amber'].indexOf(t) !== -1){
+      document.documentElement.setAttribute('data-theme', t);
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -1632,6 +1835,16 @@ body {
   </div>
 </div>
 
+<div id="offline-modal" class="offline-modal">
+  <div class="offline-modal-content">
+    <div class="offline-modal-icon"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-cloud"></use></svg></div>
+    <h2 id="offline-modal-title">🌙 ยินดีต้อนรับกลับมา!</h2>
+    <p id="offline-modal-away">คุณออฟไลน์ไป 0 นาที</p>
+    <div class="offline-stat-list" id="offline-stat-list"></div>
+    <button class="btn btn-success" onclick="closeOfflineModal()">รับทราบ! <svg class="picon" viewBox="0 0 8 8"><use href="#pi-confetti"></use></svg></button>
+  </div>
+</div>
+
 <div id="reset-modal">
   <div class="modal-content">
     <h3 style="color:var(--danger);margin-bottom:12px"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> ยืนยันการล้างข้อมูล</h3>
@@ -1639,6 +1852,17 @@ body {
     <div style="display:flex;gap:10px">
       <button class="btn" style="background:var(--border)" onclick="closeResetModal()">ยกเลิก</button>
       <button class="btn" style="background:var(--danger)" onclick="executeResetGame()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<div id="sell-confirm-modal">
+  <div class="modal-content" style="max-width:380px">
+    <h3 style="color:var(--gold);margin-bottom:12px" id="sell-confirm-title"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ยืนยันการขาย</h3>
+    <div class="offline-stat-list" id="sell-confirm-body" style="margin-bottom:18px"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="background:var(--border)" onclick="cancelSellConfirm()">ยกเลิก</button>
+      <button class="btn btn-success" onclick="confirmSellExecute()">ยืนยันขาย</button>
     </div>
   </div>
 </div>
@@ -1996,6 +2220,11 @@ body {
 
     <div id="save-system" class="tab-content">
       <div class="card" style="margin-bottom:16px">
+        <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-gear"></use></svg> ธีมสี</h3>
+        <p>เลือกโทนสีของหน้าจอเกม</p>
+        <div class="theme-swatch-grid" id="theme-options"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
         <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-gear"></use></svg> การตั้งค่า</h3>
         <div class="info">
           <div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-speaker"></use></svg> เสียงเอฟเฟกต์</span><span class="v"><button class="toggle-btn" id="sound-toggle-btn" onclick="toggleSound()" title="เสียงเอฟเฟกต์: เปิด (คลิกเพื่อปิด)"><svg class="picon" viewBox="0 0 8 8"><use id="sound-icon-use" href="#pi-speaker"></use></svg></button></span></div>
@@ -2094,6 +2323,37 @@ const SFX = (function(){
     }
   };
 })();
+/* ===== ระบบธีมสี ===== */
+const THEMES = [
+  { id:'default', name:'นีออนฟ้า',   c0:'#0a0a14', c1:'#00f0ff', c2:'#ffb300' },
+  { id:'emerald', name:'มรกตเขียว',  c0:'#0a140f', c1:'#00ff9d', c2:'#ffb300' },
+  { id:'crimson', name:'คริมสันแดง', c0:'#140a0a', c1:'#ff2d6b', c2:'#ff8c00' },
+  { id:'violet',  name:'ม่วงราชวงศ์', c0:'#0f0a14', c1:'#b967ff', c2:'#ffd700' },
+  { id:'amber',   name:'อำพันทอง',   c0:'#140f0a', c1:'#ffb300', c2:'#00cfff' }
+];
+function applyTheme(themeId){
+  if(themeId && themeId !== 'default') document.documentElement.setAttribute('data-theme', themeId);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function setTheme(themeId){
+  if(!THEMES.some(t=>t.id===themeId)) themeId = 'default';
+  gameData.theme = themeId;
+  applyTheme(themeId);
+  renderThemeOptions();
+  SFX.click();
+  autoSaveGame(true);
+}
+function renderThemeOptions(){
+  const wrap = document.getElementById('theme-options');
+  if(!wrap) return;
+  const current = gameData.theme || 'default';
+  wrap.innerHTML = THEMES.map(function(t){
+    const active = current === t.id;
+    return '<button class="theme-swatch-btn'+(active?' active':'')+'" onclick="setTheme(\''+t.id+'\')" title="'+t.name+'">'
+      + '<span class="theme-swatch-preview" style="background:linear-gradient(135deg,'+t.c0+' 40%,'+t.c1+' 70%,'+t.c2+')"></span>'
+      + '<span class="theme-swatch-label">'+t.name+'</span></button>';
+  }).join('');
+}
 function toggleSound(){
   gameData.soundEnabled = !gameData.soundEnabled;
   SFX.unlock(); if(gameData.soundEnabled) SFX.click();
@@ -2148,6 +2408,14 @@ const MINE_CFG = {
   goldOre: { baseTime:8, baseYield:5,  baseXp:25, upCost:3000, reqLv:5, label:'เหมืองทอง' }
 };
 const MARKET_CFG = { iron:{min:1,max:10,base:3}, silver:{min:5,max:20,base:10}, goldOre:{min:10,max:50,base:20} };
+// ===== ปรับจูนระบบตลาด: ลดผลกระทบตอน "เทขาย" ก้อนใหญ่ + ให้กราฟฟื้นตัวเร็วขึ้น =====
+const MARKET_SELL_CONFIG = {
+  sellPressureCap: 0.18,      // เพดานแรงกดดันขายต่อครั้ง (เดิม 0.4) - ขายทั้งหมดแล้วกราฟไม่ดิ่งค้างนาน
+  sellPressureDecay: 0.60,    // decay ต่อ tick (ทุก 4 วิ) ของแรงกดดันขาย - หายเกือบหมดใน ~20-30 วิ
+  priceBlendWeight: 0.08,     // น้ำหนักที่ราคาเฉลี่ยที่เพิ่งขายมีต่อราคาตลาดถัดไป (เดิม 0.25)
+  maxSingleSaleDrop: 0.08,    // ราคาตลาดห้ามตกเกินกี่ % จากการขายครั้งเดียว (เดิมไม่มีเพดาน)
+  previewConfirmQty: 500      // ขายเกินจำนวนนี้ต้องมี preview ให้ผู้เล่นยืนยันก่อน (กันเทขายพลาดโดยไม่ตั้งใจ)
+};
 const EQUIP_CFG = { pickaxe:{baseCost:50,growth:1.5,currency:'gems',barType:'ingotGold',barLabel:'แท่งทองคำ',oreType:'goldOre',oreLabel:'แร่ทองดิบ',oreBase:5}, helmet:{baseCost:25000,growth:1.6,currency:'gold',barType:'ingotIron',barLabel:'แท่งเหล็กกล้า',oreType:'iron',oreLabel:'แร่เหล็ก',oreBase:40}, armor:{baseCost:40000,growth:1.6,currency:'gold',barType:'ingotSilver',barLabel:'แท่งเงิน',oreType:'silver',oreLabel:'แร่เงิน',oreBase:25} };
 const SMELT_CFG = {
   iron:   { bar:'ingotIron',  ratio:1000, goldCost:300, label:'แท่งเหล็กกล้า', icon:'🔩' },
@@ -2172,6 +2440,11 @@ const EXP_CFG = {
   dragon: { name:'ภูเขาไฟมังกร', reqType:'knight', reqNum:5, duration:150, cost:{gold:15000,goldOre:30}, reward:{goldOre:70,gems:35,gold:42000}, deathChance:0.70, label:'dragon', bg:0x4a1212 }
 };
 
+// ===== ระบบคำนวณความคืบหน้าออฟไลน์ (Offline Progress) =====
+// capSeconds  : ระยะเวลาออฟไลน์สูงสุดที่จะคำนวณผลตอบแทนให้ (คิดเต็มอัตราตลอดช่วงนี้ ไม่มีการลดอัตราครึ่งทาง)
+// minSeconds  : ต่ำกว่านี้ถือว่าเพิ่งออกไปแป๊บเดียว ไม่ต้องคำนวณ/แจ้งเตือน
+const OFFLINE_CONFIG = { capSeconds: 12*3600, minSeconds: 10 };
+
 const skinDatabase = {
   default:{ name:"นักขุดฝึกหัด", priceType:"free", price:0, desc:"ชุดมาตรฐานของนักขุดมือใหม่", bonus:"ไม่มีโบนัสพิเศษ", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="1" fill="#fbbf24"/><rect x="8" y="3" width="8" height="3" fill="#f59e0b"/><rect x="11" y="4" width="2" height="2" fill="#fef9c3"/><rect x="6" y="6" width="12" height="2" fill="#d97706"/><rect x="7" y="8" width="10" height="6" fill="#fde047"/><rect x="7" y="8" width="10" height="1" fill="#fef9c3"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="13" y="10" width="1" height="1" fill="#000"/><rect x="10" y="12" width="4" height="1" fill="#b45309"/><rect x="9" y="14" width="6" height="7" fill="#3b82f6"/><rect x="9" y="14" width="6" height="1" fill="#60a5fa"/><rect x="10" y="14" width="1" height="3" fill="#1e40af"/><rect x="13" y="14" width="1" height="3" fill="#1e40af"/><rect x="10" y="18" width="4" height="2" fill="#1e40af"/><rect x="6" y="14" width="3" height="5" fill="#1e293b"/><rect x="15" y="14" width="3" height="5" fill="#1e293b"/><rect x="6" y="18" width="3" height="1" fill="#475569"/><rect x="15" y="18" width="3" height="1" fill="#475569"/><rect x="17" y="15" width="1" height="6" fill="#78350f"/><rect x="16" y="14" width="3" height="1" fill="#9ca3af"/><rect x="9" y="21" width="3" height="2" fill="#292524"/><rect x="13" y="21" width="3" height="2" fill="#292524"/></svg>' },
@@ -2195,7 +2468,7 @@ const skinDatabase = {
 function createDefaultData(){
   return {
     gold:50000, gems:120, level:1, xp:0, xpMax:100,
-    notificationsEnabled:true, soundEnabled:true, musicEnabled:false,
+    notificationsEnabled:true, soundEnabled:true, musicEnabled:false, theme:'default',
     iron:50, silver:0, goldOre:0,
     ingotIron:0, ingotSilver:0, ingotGold:0,
     durability:100, autoRepair:false, repairCount:0,
@@ -2206,6 +2479,7 @@ function createDefaultData(){
     marketPrices:{ iron:3, silver:10, goldOre:20 },
     marketMultipliers:{ iron:1, silver:1, goldOre:1 },
     marketTrend:{ iron:0, silver:0, goldOre:0 },
+    sellPressure:{ iron:0, silver:0, goldOre:0 },
     priceHistory:{ iron:[3], silver:[10], goldOre:[20] },
     mines:{ iron:{level:1,cost:500,active:false}, silver:{level:1,cost:1200,active:false}, goldOre:{level:1,cost:3000,active:false} },
     totalMined:{ iron:0, silver:0, goldOre:0 },
@@ -2916,6 +3190,8 @@ function sanitizeData(){
   gameData.notificationsEnabled = gameData.notificationsEnabled === undefined ? true : !!gameData.notificationsEnabled;
   gameData.soundEnabled = gameData.soundEnabled === undefined ? true : !!gameData.soundEnabled;
   gameData.musicEnabled = gameData.musicEnabled === undefined ? false : !!gameData.musicEnabled;
+  gameData.theme = ['default','emerald','crimson','violet','amber'].includes(gameData.theme) ? gameData.theme : 'default';
+  applyTheme(gameData.theme);
   gameData.repairCount = num(gameData.repairCount,0);
   gameData.lastSaveTime = num(gameData.lastSaveTime, Date.now());
 
@@ -2955,6 +3231,9 @@ function sanitizeData(){
   if(!gameData.marketMultipliers) gameData.marketMultipliers = d.marketMultipliers;
   if(!gameData.priceHistory) gameData.priceHistory = d.priceHistory;
   if(!gameData.marketTrend || typeof gameData.marketTrend!=='object') gameData.marketTrend = { iron:0, silver:0, goldOre:0 };
+  // sellPressure: แรงกดดันราคาจากการ "เทขาย" ก้อนใหญ่ แยกออกจาก marketTrend (ข่าว/แกว่งตามธรรมชาติ)
+  // เพื่อให้สลายตัวเร็วกว่ามาก ไม่ทำให้กราฟดิ่งค้างเป็นนาทีหลังผู้เล่นขายทั้งหมด
+  if(!gameData.sellPressure || typeof gameData.sellPressure!=='object') gameData.sellPressure = { iron:0, silver:0, goldOre:0 };
 
   MINE_TYPES.forEach(t=>{
     const cfg = MARKET_CFG[t];
@@ -2962,6 +3241,7 @@ function sanitizeData(){
     gameData.marketPrices[t] = Math.min(cfg.max, Math.max(cfg.min, Math.round(p)));
     gameData.marketMultipliers[t] = parseFloat((gameData.marketPrices[t]/cfg.base).toFixed(2));
     gameData.marketTrend[t] = Math.max(-1, Math.min(1, num(gameData.marketTrend[t], 0)));
+    gameData.sellPressure[t] = Math.max(0, Math.min(1, num(gameData.sellPressure[t], 0)));
     let hist = Array.isArray(gameData.priceHistory[t]) ? gameData.priceHistory[t].map(Number).filter(v=>!isNaN(v)) : [];
     if(hist.length===0) hist = [gameData.marketPrices[t]];
     if(hist.length>20) hist = hist.slice(-20);
@@ -3769,7 +4049,9 @@ function syncPixiMineTickers(){
 }
 
 // ===== เลเวล / ความทนทานเครื่องมือ / การซ่อม =====
-function addXP(amount){
+// silent=true: ใช้ตอนคำนวณย้อนหลัง (เช่นความคืบหน้าออฟไลน์) เพื่อกันโมดัล "เลเวลอัพ" เด้งซ้อนๆ ระหว่างคำนวณ
+// คืนค่าจำนวนเลเวลที่ได้เพิ่ม เผื่อผู้เรียกอยากสรุปรวมเอง
+function addXP(amount, silent){
   const add = Math.max(0, Math.floor(amount));
   gameData.xp += add;
   let guard = 0, leveledUp = false;
@@ -3779,7 +4061,8 @@ function addXP(amount){
     leveledUp = true;
     guard++;
   }
-  if(leveledUp) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, 'pi-star');
+  if(leveledUp && !silent) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, 'pi-star');
+  return guard;
 }
 function getRepairCost(){ return Math.round(Math.max(0, 100 - gameData.durability) * 2); }
 function toggleAutoRepair(){
@@ -4139,6 +4422,7 @@ function renderSkinShop(){
 // ===== ตลาดซื้อขายแร่ (ราคาผันผวนแบบมีเทรนด์ + แรงดึงกลับค่าเฉลี่ย + ข่าวช็อกตลาด) =====
 function updateMarketPricesRealtime(){
   if(!gameData.marketTrend || typeof gameData.marketTrend!=='object') gameData.marketTrend = { iron:0, silver:0, goldOre:0 };
+  if(!gameData.sellPressure || typeof gameData.sellPressure!=='object') gameData.sellPressure = { iron:0, silver:0, goldOre:0 };
   MINE_TYPES.forEach(type=>{
     const cfg = MARKET_CFG[type];
     let cur = gameData.marketPrices[type];
@@ -4155,6 +4439,12 @@ function updateMarketPricesRealtime(){
     trend = Math.max(-1, Math.min(1, trend));
     gameData.marketTrend[type] = trend;
 
+    // แรงกดดันจากการ "เทขาย" ก้อนใหญ่ (ตั้งต้นตอน sellOre) สลายตัวเร็วกว่า trend ทั่วไปมาก
+    // เพื่อไม่ให้กราฟดิ่งค้างเป็นนาทีหลังผู้เล่นขายทั้งหมดในครั้งเดียว
+    let sellPressure = Math.max(0, numOr(gameData.sellPressure[type], 0)) * MARKET_SELL_CONFIG.sellPressureDecay;
+    if(sellPressure < 0.001) sellPressure = 0;
+    gameData.sellPressure[type] = sellPressure;
+
     // แรงดึงกลับหาราคาฐาน ยิ่งเบี่ยงเบนมากยิ่งดึงแรง (mean reversion)
     const dev = (cur - cfg.base) / cfg.base;
     const reversion = -dev * 0.07;
@@ -4162,7 +4452,7 @@ function updateMarketPricesRealtime(){
     // สัญญาณรบกวนเล็กน้อยต่อรอบ ให้เส้นกราฟไม่นิ่งเป็นบันได
     const noise = Math.random()*0.03 - 0.015;
 
-    const change = trend*0.05 + reversion + noise;
+    const change = trend*0.05 + reversion + noise - sellPressure*0.05;
     let np = Math.round(cur * (1+change));
     if(np === cur) np = cur + (change>=0?1:-1);
     np = Math.min(cfg.max, Math.max(cfg.min, np));
@@ -4227,33 +4517,88 @@ function drawSingleChart(canvasId, rawData, lineColor, fillColor){
   ctx.fillText('Max: '+max, pad, pad+8);
   ctx.fillText('Min: '+min, pad, pad+ch);
 }
+// ===== ขั้นบันไดราคาขายภายในออเดอร์เดียว (ปรับให้โควตากว้างขึ้น/ส่วนลดนุ่มขึ้นกว่าเดิมมาก) =====
 function calculateTieredSale(qty, price){
   let left = qty, total = 0;
-  const t1 = Math.min(left,100); total += t1*price; left -= t1;
-  if(left>0){ const t2=Math.min(left,400); total += t2*price*0.8; left-=t2; }
-  if(left>0){ const t3=Math.min(left,1500); total += t3*price*0.6; left-=t3; }
-  if(left>0){ total += left*price*0.4; }
+  const t1 = Math.min(left,500); total += t1*price; left -= t1;
+  if(left>0){ const t2=Math.min(left,1500); total += t2*price*0.85; left-=t2; }
+  if(left>0){ const t3=Math.min(left,5000); total += t3*price*0.70; left-=t3; }
+  if(left>0){ total += left*price*0.55; }
   return { total: Math.round(total), avg: Math.max(1, Math.round(total/qty)) };
 }
+// คำนวณ preview ล่วงหน้าโดยไม่แก้ไข gameData ใดๆ - ใช้ทั้งแสดงผลก่อนขายและตอนขายจริง
+function previewSale(type, qty){
+  const price = gameData.marketPrices[type];
+  const res = calculateTieredSale(qty, price);
+  const bonus = getMarketBonus();
+  const gross = Math.round(res.total * (1+bonus));
+  const fee = Math.round(gross * MARKET_FEE);
+  const earned = Math.max(0, gross - fee);
+  return { price, res, bonus, gross, fee, earned };
+}
+
+// ===== ยืนยันก่อนขายก้อนใหญ่ ด้วยโมดัลในเกมเอง (ไม่ใช้ window.confirm) =====
+// เหตุผล: WebView/in-app browser หลายตัว (LINE, Facebook, บาง Android WebView ที่ไม่ได้ override onJsConfirm)
+// ไม่รองรับ confirm() แล้วคืนค่า false เงียบๆ ทำให้ปุ่มขาย "กดแล้วไม่ทำงาน" ทั้งที่โค้ดถูกต้อง
+let pendingSale = null;
 function sellOre(type, amount){
   sanitizeData();
   const have = gameData[type];
   if(have <= 0){ showToast('ไม่มีแร่ให้ขาย'); return; }
   const qty = (amount==='all') ? have : Math.min(have, Number(amount));
   if(qty <= 0){ showToast('จำนวนแร่ไม่เพียงพอ'); return; }
-  const cfg = MARKET_CFG[type]; const price = gameData.marketPrices[type];
-  const res = calculateTieredSale(qty, price);
-  const bonus = getMarketBonus();
-  const gross = Math.round(res.total * (1+bonus));
-  const fee = Math.round(gross * MARKET_FEE);
-  const earned = Math.max(0, gross - fee);
-  let np = Math.round(price*0.75 + res.avg*0.25);
+
+  const preview = previewSale(type, qty);
+  if(qty >= MARKET_SELL_CONFIG.previewConfirmQty){
+    showSellConfirmModal(type, qty, preview);
+    return;
+  }
+  executeSale(type, qty, preview);
+}
+function showSellConfirmModal(type, qty, preview){
+  pendingSale = { type, qty, preview };
+  const m = document.getElementById('sell-confirm-modal');
+  if(!m){ executeSale(type, qty, preview); pendingSale = null; return; } // เผื่อ DOM ยังไม่พร้อม กันขายไม่ออกเลย
+  setTxt(document.getElementById('sell-confirm-title'), 'ยืนยันการขาย'+MINE_CFG[type].label.replace('เหมือง','')+' '+qty.toLocaleString()+' ชิ้น');
+  const rows = [
+    '<div class="offline-stat-row"><span class="k">ราคาตลาดตอนนี้</span><span class="v" style="color:var(--text-main)">'+preview.price.toLocaleString()+' Gold/ชิ้น</span></div>',
+    '<div class="offline-stat-row"><span class="k">ราคาเฉลี่ยที่จะได้จริง</span><span class="v" style="color:var(--text-main)">'+preview.res.avg.toLocaleString()+' Gold/ชิ้น</span></div>',
+    '<div class="offline-stat-row"><span class="k">รับสุทธิ (หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'%)</span><span class="v">'+preview.earned.toLocaleString()+' Gold</span></div>'
+  ];
+  const body = document.getElementById('sell-confirm-body');
+  if(body) body.innerHTML = rows.join('');
+  m.style.display = 'flex';
+}
+function cancelSellConfirm(){
+  pendingSale = null;
+  const m = document.getElementById('sell-confirm-modal'); if(m) m.style.display = 'none';
+}
+function confirmSellExecute(){
+  if(!pendingSale) return;
+  const { type, qty, preview } = pendingSale;
+  pendingSale = null;
+  const m = document.getElementById('sell-confirm-modal'); if(m) m.style.display = 'none';
+  executeSale(type, qty, preview);
+}
+function executeSale(type, qty, preview){
+  const cfg = MARKET_CFG[type];
+  const { res, bonus, fee, earned } = preview;
+
+  // ราคาตลาดถัดไป: ผสมราคาเฉลี่ยที่เพิ่งขายเข้าไปเพียงเล็กน้อย (เดิมผสม 25% ทำให้ราคาพังซ้ำหลังโดนสไลด์ในออเดอร์ไปแล้ว)
+  // และมีเพดานกันราคาตกเกิน maxSingleSaleDrop ต่อการขายครั้งเดียว ไม่ว่าจะขายเยอะแค่ไหนก็ตาม
+  let np = Math.round(gameData.marketPrices[type]*(1-MARKET_SELL_CONFIG.priceBlendWeight) + res.avg*MARKET_SELL_CONFIG.priceBlendWeight);
+  const floorPrice = Math.round(gameData.marketPrices[type] * (1-MARKET_SELL_CONFIG.maxSingleSaleDrop));
+  np = Math.max(np, floorPrice);
   np = Math.min(cfg.max, Math.max(cfg.min, np));
   gameData.marketPrices[type] = np;
   gameData.marketMultipliers[type] = parseFloat((np/cfg.base).toFixed(2));
-  if(!gameData.marketTrend || typeof gameData.marketTrend!=='object') gameData.marketTrend = { iron:0, silver:0, goldOre:0 };
-  const sellPressure = Math.min(0.4, (qty/Math.max(1,have))*0.4);
-  gameData.marketTrend[type] = Math.max(-1, Math.min(1, numOr(gameData.marketTrend[type],0) - sellPressure));
+
+  if(!gameData.sellPressure || typeof gameData.sellPressure!=='object') gameData.sellPressure = { iron:0, silver:0, goldOre:0 };
+  // แรงกดดันขาย: แยกจาก marketTrend และสลายตัวเร็วกว่ามาก (ดู updateMarketPricesRealtime) - เพดานต่ำกว่าเดิมมาก (0.4 -> 0.18)
+  const have = gameData[type] + qty; // จำนวนก่อนขาย ใช้คำนวณสัดส่วนแรงกดดัน
+  const sellPressure = Math.min(MARKET_SELL_CONFIG.sellPressureCap, (qty/Math.max(1,have)) * MARKET_SELL_CONFIG.sellPressureCap);
+  gameData.sellPressure[type] = Math.min(1, Math.max(0, numOr(gameData.sellPressure[type],0)) + sellPressure);
+
   gameData.priceHistory[type].push(np);
   if(gameData.priceHistory[type].length>20) gameData.priceHistory[type].shift();
   gameData[type] -= qty; gameData.gold += earned; addXP(Math.floor(qty/10));
@@ -4286,43 +4631,157 @@ function buyShopItem(item){
   updateUI(); autoSaveGame(true);
 }
 
-// ===== คำนวณความคืบหน้าที่เกิดขึ้นระหว่างออฟไลน์ =====
-function calcOfflineProgress(){
-  const elapsed = (Date.now() - gameData.lastSaveTime)/1000;
-  if(!isFinite(elapsed) || elapsed < 10) return;
-  const sec = Math.min(elapsed, 12*3600);
-  const gains = { iron:0, silver:0, goldOre:0 };
+// ===== จำลองการขุดที่เกิดขึ้นระหว่างออฟไลน์ (event-driven: กระโดดตรงไปยังรอบขุดถัดไปที่ใกล้ที่สุด =====
+// ===== แทนการวนลูปทีละวินาที จึงคำนวณได้แม่นยำและเร็วแม้ห่างหายไปนานหลายชั่วโมง) =====
+// คืนค่าสรุปผลทั้งหมด (ผลผลิตแต่ละแร่ / XP ที่ได้ / จำนวนเลเวลที่ขึ้น / ค่าซ่อมอัตโนมัติที่เสียไป ฯลฯ)
+function simulateOfflineMining(seconds){
+  const result = {
+    gains: { iron:0, silver:0, goldOre:0 },
+    xpGained: 0,
+    levelsGained: 0,
+    repairsUsed: 0,
+    goldSpentOnRepairs: 0,
+    ranOutOfDurability: false,
+    secondsSimulated: 0
+  };
+  if(!(seconds > 0)) return result;
+
   const active = MINE_TYPES.filter(t=>gameData.mines[t].active);
-  if(active.length > 0 && gameData.durability > 0){
-    const sim = Math.min(sec, 6*3600);
-    const state = {};
-    active.forEach(t=>{ state[t] = { acc:0, need:getMineTime(t), y:getMineYield(t), xp:MINE_CFG[t].baseXp*gameData.mines[t].level }; });
-    const durCost = getDurabilityCost(); const fail = getFailChance();
-    for(let s=0; s<sim; s++){
-      if(gameData.durability <= 0){
-        const cost = getRepairCost();
-        if(gameData.autoRepair && gameData.gold >= cost){ gameData.gold -= cost; gameData.durability = 100; gameData.repairCount++; }
-        else break;
-      }
-      let mined = false;
-      active.forEach(t=>{
-        const st = state[t]; st.acc += 1;
-        if(st.acc >= st.need){
-          st.acc = 0;
-          if(Math.random() >= fail){ gameData[t] += st.y; gains[t] += st.y; gameData.totalMined[t] = (gameData.totalMined[t]||0) + st.y; addXP(st.xp); }
-          mined = true;
-        }
-      });
-      if(mined) gameData.durability = Math.max(0, gameData.durability - durCost);
+  if(active.length === 0) return result;
+  if(gameData.durability <= 0){
+    // ทนทานหมดอยู่แล้วตั้งแต่ก่อนออฟไลน์ และไม่สามารถซ่อมอัตโนมัติได้ทันที -> ไม่มีอะไรเกิดขึ้นเพิ่ม
+    const cost = getRepairCost();
+    if(!(gameData.autoRepair && gameData.gold >= cost)){
+      MINE_TYPES.forEach(t=>{ gameData.mines[t].active = false; });
+      result.ranOutOfDurability = true;
+      return result;
     }
-    if(gameData.durability <= 0) active.forEach(t=>{ gameData.mines[t].active = false; });
   }
-  const msg = [];
-  if(gains.iron>0) msg.push('เหล็ก '+gains.iron.toLocaleString());
-  if(gains.silver>0) msg.push('เงิน '+gains.silver.toLocaleString());
-  if(gains.goldOre>0) msg.push('ทอง '+gains.goldOre.toLocaleString());
-  if(msg.length) setTimeout(()=>showToast('🌙 รายได้ออฟไลน์: '+msg.join(', ')), 600);
+
+  const fail = getFailChance();
+  const durCost = getDurabilityCost();
+  // เวลาที่ต้องใช้ต่อรอบ/ผลผลิตต่อรอบ/XP ต่อรอบ คงที่ตลอดช่วงจำลอง เพราะอุปกรณ์ไม่เปลี่ยนระหว่างออฟไลน์
+  const state = {};
+  active.forEach(t=>{
+    const need = getMineTime(t);
+    state[t] = { need, remain: need, yield: getMineYield(t), xp: MINE_CFG[t].baseXp * gameData.mines[t].level };
+  });
+
+  let timeLeft = seconds;
+  let guardIters = 0;
+  const MAX_ITERS = 300000; // กันลูปค้าง (เกินพอสำหรับ capSeconds สูงสุดที่ตั้งไว้หลายเท่าตัว)
+
+  offlineLoop:
+  while(timeLeft > 1e-6 && guardIters++ < MAX_ITERS){
+    const activeNow = active.filter(t=>gameData.mines[t].active);
+    if(activeNow.length === 0) break;
+
+    let dt = timeLeft;
+    activeNow.forEach(t=>{ dt = Math.min(dt, state[t].remain); });
+    timeLeft -= dt;
+    result.secondsSimulated += dt;
+    activeNow.forEach(t=>{ state[t].remain -= dt; });
+
+    const completed = activeNow.filter(t=>state[t].remain <= 1e-6);
+    for(const t of completed){
+      state[t].remain = state[t].need;
+
+      if(gameData.durability < durCost){
+        const cost = getRepairCost();
+        if(gameData.autoRepair && gameData.gold >= cost){
+          gameData.gold -= cost;
+          gameData.durability = Math.max(0, 100 - durCost);
+          gameData.repairCount++;
+          result.repairsUsed++;
+          result.goldSpentOnRepairs += cost;
+        }else{
+          // ทนทานหมด และซ่อมอัตโนมัติไม่ได้ (ปิดอยู่ หรือ Gold ไม่พอ) -> การขุดทั้งหมดหยุดทันที เหมือนตอนออนไลน์
+          gameData.durability = 0;
+          result.ranOutOfDurability = true;
+          MINE_TYPES.forEach(tt=>{ gameData.mines[tt].active = false; });
+          break offlineLoop;
+        }
+      }else{
+        gameData.durability -= durCost;
+      }
+
+      if(Math.random() >= fail){
+        const y = state[t].yield;
+        gameData[t] += y;
+        gameData.totalMined[t] = (gameData.totalMined[t]||0) + y;
+        result.gains[t] += y;
+        result.xpGained += state[t].xp;
+        result.levelsGained += addXP(state[t].xp, true); // silent: กันโมดัลเลเวลอัพเด้งระหว่างจำลอง
+      }
+    }
+  }
+  return result;
 }
+
+function formatOfflineDuration(seconds){
+  const s = Math.max(0, Math.round(seconds));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60);
+  if(h > 0) return h+' ชม. '+m+' นาที';
+  if(m > 0) return m+' นาที';
+  return s+' วินาที';
+}
+
+// ===== คำนวณความคืบหน้าที่เกิดขึ้นระหว่างออฟไลน์ แล้วสรุปผลให้ผู้เล่นเห็นในโมดัลเดียว =====
+function calcOfflineProgress(){
+  const rawElapsedSec = (Date.now() - gameData.lastSaveTime)/1000;
+  if(!isFinite(rawElapsedSec) || rawElapsedSec < OFFLINE_CONFIG.minSeconds) return;
+
+  const cappedSec = Math.min(rawElapsedSec, OFFLINE_CONFIG.capSeconds);
+  const sim = simulateOfflineMining(cappedSec);
+
+  const hasGains = sim.gains.iron>0 || sim.gains.silver>0 || sim.gains.goldOre>0;
+  if(!hasGains && sim.repairsUsed===0 && sim.levelsGained===0) return; // ไม่มีอะไรเกิดขึ้นเลย ไม่ต้องรบกวนผู้เล่น
+
+  showOfflineSummaryModal({
+    awaySeconds: rawElapsedSec,
+    wasCapped: rawElapsedSec > OFFLINE_CONFIG.capSeconds,
+    sim
+  });
+}
+
+// ===== แสดงโมดัลสรุปผลตอบแทนออฟไลน์ ("ยินดีต้อนรับกลับมา") =====
+function showOfflineSummaryModal(data){
+  const m = document.getElementById('offline-modal'); if(!m) return;
+  const { awaySeconds, wasCapped, sim } = data;
+
+  setTxt(document.getElementById('offline-modal-away'),
+    'คุณออฟไลน์ไป ' + formatOfflineDuration(awaySeconds) + (wasCapped ? ' (คำนวณให้สูงสุด 12 ชม.)' : ''));
+
+  const ORE_META = {
+    iron:    { label:'แร่เหล็ก', color:'#8fa3c9' },
+    silver:  { label:'แร่เงิน',  color:'#dde3f0' },
+    goldOre: { label:'แร่ทอง',   color:'#ffcf3d' }
+  };
+  const rows = [];
+  MINE_TYPES.forEach(t=>{
+    if(sim.gains[t] > 0){
+      rows.push('<div class="offline-stat-row"><span class="k"><svg class="picon" viewBox="0 0 8 7" style="color:'+ORE_META[t].color+'"><use href="#pi-nugget"></use></svg> '+ORE_META[t].label+'</span><span class="v">+'+sim.gains[t].toLocaleString()+'</span></div>');
+    }
+  });
+  if(sim.xpGained > 0){
+    rows.push('<div class="offline-stat-row"><span class="k"><svg class="picon" viewBox="0 0 7 7" style="color:'+"#ffe135"+'"><use href="#pi-star"></use></svg> ประสบการณ์</span><span class="v">+'+Math.floor(sim.xpGained).toLocaleString()+' XP</span></div>');
+  }
+  if(sim.levelsGained > 0){
+    rows.push('<div class="offline-stat-row"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-trophy"></use></svg> เลเวลอัพ</span><span class="v">+'+sim.levelsGained+' (ตอนนี้ Lv.'+gameData.level+')</span></div>');
+  }
+  if(sim.repairsUsed > 0){
+    rows.push('<div class="offline-stat-row spend"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--danger)"><use href="#pi-wrench"></use></svg> ซ่อมอัตโนมัติ x'+sim.repairsUsed+'</span><span class="v">-'+sim.goldSpentOnRepairs.toLocaleString()+' Gold</span></div>');
+  }
+  if(sim.ranOutOfDurability){
+    rows.push('<div class="offline-stat-row warn"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--danger)"><use href="#pi-warning"></use></svg> ความทนทานหมด</span><span class="v">การขุดหยุดก่อนกำหนด</span></div>');
+  }
+  const listEl = document.getElementById('offline-stat-list');
+  if(listEl) listEl.innerHTML = rows.join('');
+
+  m.style.display = 'flex';
+  SFX.coin();
+}
+function closeOfflineModal(){ const m = document.getElementById('offline-modal'); if(m) m.style.display = 'none'; }
 
 // ===== อัปเดต UI หลักทั้งหมด (เรียกทุกครั้งที่ข้อมูลเกมเปลี่ยน) =====
 function updateUI(){
@@ -4533,6 +4992,7 @@ window.addEventListener('load', function(){
   try{
     loadGame();
     updateSoundBtn();
+    renderThemeOptions();
     syncPixiTickers();
     syncPixiMineTickers();
     // any first tap/click unlocks the WebAudio context (autoplay policy) and starts music if it's enabled
