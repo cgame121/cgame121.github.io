@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Open World - Mobile</title>
+<title>Open World RPG</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #000; touch-action: none; }
@@ -12,13 +12,18 @@
   #ui { position: fixed; inset: 0; pointer-events: none; color: #fff; text-shadow: 1px 1px 3px #000; }
   
   /* ===== HUD ===== */
-  #hud { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 12px; }
+  #hud { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.55); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 12px; min-width: 170px; }
   #hud h3 { margin-bottom: 6px; font-size: 12px; color: #ffd700; }
   .stat { margin: 3px 0; font-size: 11px; }
-  .bar { width: 120px; height: 6px; background: #333; border-radius: 3px; margin-top: 3px; overflow: hidden; }
+  .bar { width: 140px; height: 6px; background: #333; border-radius: 3px; margin-top: 3px; overflow: hidden; }
   .bar-fill { height: 100%; transition: width 0.3s; }
   #health .bar-fill { background: #e74c3c; }
   #stamina .bar-fill { background: #f39c12; }
+  #mana .bar-fill { background: #3498db; }
+  #exp .bar-fill { background: #9b59b6; }
+  
+  #levelInfo { display: flex; justify-content: space-between; font-size: 11px; margin-top: 4px; }
+  #levelInfo span { color: #ffd700; font-weight: bold; }
   
   /* ===== MINIMAP ===== */
   #minimap { position: absolute; top: 15px; right: 15px; width: 110px; height: 110px; background: rgba(0,0,0,0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); overflow: hidden; }
@@ -27,45 +32,216 @@
   /* ===== CROSSHAIR ===== */
   #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.5); transition: opacity 0.2s; }
   
-  /* ===== VIEW MODE ===== */
+  /* ===== TOP INFO ===== */
   #viewMode { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; font-size: 11px; color: #ffd700; font-weight: bold; border: 1px solid rgba(255,215,0,0.4); }
   
-  /* ===== PC CONTROLS INFO ===== */
+  #timeInfo {
+    position: absolute;
+    top: 15px; left: 50%;
+    transform: translateX(-50%) translateY(38px);
+    background: rgba(0,0,0,0.55);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  
+  #coinInfo {
+    position: absolute;
+    top: 15px; left: 50%;
+    transform: translateX(-50%) translateY(-32px);
+    background: rgba(0,0,0,0.55);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    color: #ffd700;
+    border: 1px solid rgba(255,215,0,0.4);
+    font-weight: bold;
+  }
+  
+  /* ===== CONTROLS ===== */
   #controls { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 12px 18px; border-radius: 10px; font-size: 12px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.2); }
   kbd { background: #444; padding: 2px 6px; border-radius: 3px; border-bottom: 2px solid #222; font-family: monospace; }
   
   #info { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 10px; font-size: 11px; color: #aaa; }
   
   /* ===== NOTIFICATION ===== */
-  .notification { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 8px 20px; border-radius: 25px; color: #ffd700; font-weight: bold; opacity: 0; transition: opacity 0.3s; border: 1px solid #ffd700; font-size: 13px; }
+  .notification { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 20px; border-radius: 25px; color: #ffd700; font-weight: bold; opacity: 0; transition: opacity 0.3s; border: 1px solid #ffd700; font-size: 13px; pointer-events: none; max-width: 80vw; text-align: center; }
   .notification.show { opacity: 1; }
+  
+  /* ===== DAMAGE POPUP ===== */
+  #damagePopup {
+    position: absolute; top: 45%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ff3333;
+    font-size: 32px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #damagePopup.show { animation: damagePop 0.6s ease-out; }
+  @keyframes damagePop {
+    0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1.4); }
+  }
+  
+  /* ===== QUEST PANEL ===== */
+  #questPanel {
+    position: absolute;
+    top: 90px; left: 15px;
+    background: rgba(0,0,0,0.55);
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,215,0,0.3);
+    font-size: 11px;
+    max-width: 220px;
+    display: none;
+  }
+  #questPanel.show { display: block; }
+  #questPanel .qtitle { color: #ffd700; font-weight: bold; margin-bottom: 4px; }
+  #questPanel .qdesc { color: #ccc; margin-bottom: 3px; }
+  #questPanel .qprog { color: #4caf50; }
+  
+  /* ===== INVENTORY ===== */
+  #inventory {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 480px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 200;
+    pointer-events: auto;
+    display: none;
+    box-shadow: 0 0 40px rgba(255,215,0,0.3);
+  }
+  #inventory.show { display: block; }
+  #inventory h2 { color: #ffd700; margin-bottom: 15px; text-align: center; font-size: 1.3em; }
+  .invGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .invSlot {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .invSlot:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
+  .invSlot .count {
+    position: absolute;
+    bottom: 2px; right: 4px;
+    font-size: 11px;
+    background: rgba(0,0,0,0.7);
+    padding: 1px 5px;
+    border-radius: 8px;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .invClose {
+    position: absolute; top: 8px; right: 12px;
+    font-size: 20px; cursor: pointer; color: #aaa;
+    background: none; border: none;
+  }
+  .invClose:hover { color: #fff; }
+  
+  /* ===== LEVEL UP EFFECT ===== */
+  #levelUpEffect {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffd700;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 0 0 30px #ffd700, 0 0 60px #ffd700;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 150;
+  }
+  #levelUpEffect.show { animation: levelUpAnim 2s ease-out; }
+  @keyframes levelUpAnim {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    30%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    70%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+  }
+  
+  /* ===== SHOP ===== */
+  #shop {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #4caf50;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 0 40px rgba(76,175,80,0.3);
+    pointer-events: auto;
+  }
+  #shop.show { display: block; }
+  #shop h2 { color: #4caf50; margin-bottom: 15px; text-align: center; font-size: 1.3em; }
+  .shopItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  .shopItem .info { flex: 1; }
+  .shopItem .name { font-weight: bold; margin-bottom: 2px; }
+  .shopItem .desc { font-size: 11px; color: #aaa; }
+  .shopItem .price { color: #ffd700; font-weight: bold; margin-right: 10px; }
+  .shopBuy {
+    padding: 6px 14px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    pointer-events: auto;
+  }
+  .shopBuy:hover { background: #45a049; }
+  .shopBuy:disabled { background: #555; cursor: not-allowed; }
   
   /* ===== START SCREEN ===== */
   #startScreen { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: #fff; cursor: pointer; padding: 20px; text-align: center; }
   #startScreen h1 { font-size: 2.5em; margin-bottom: 15px; color: #ffd700; text-shadow: 0 0 20px #ffd700; }
   #startScreen p { font-size: 1em; color: #aaa; margin-bottom: 25px; }
-  #startBtn { padding: 14px 45px; font-size: 1.1em; background: #ffd700; color: #000; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+  #startBtn { padding: 14px 45px; font-size: 1.1em; background: #ffd700; color: #000; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: transform 0.2s; pointer-events: auto; }
   #startBtn:hover { transform: scale(1.05); }
   #startBtn:active { transform: scale(0.98); }
   
-  /* ==================================================== */
-  /* ============== MOBILE TOUCH CONTROLS ============== */
-  /* ==================================================== */
-  
-  #touchControls {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    display: none;
-    z-index: 50;
-  }
+  /* ===== TOUCH CONTROLS ===== */
+  #touchControls { position: fixed; inset: 0; pointer-events: none; display: none; z-index: 50; }
   #touchControls.active { display: block; }
   
-  /* --- Joystick พื้นฐาน --- */
   .joystick {
     position: absolute;
-    width: 130px;
-    height: 130px;
+    width: 130px; height: 130px;
     border-radius: 50%;
     background: rgba(255,255,255,0.08);
     border: 2px solid rgba(255,255,255,0.25);
@@ -74,25 +250,19 @@
     backdrop-filter: blur(2px);
   }
   .joystick .stick {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 56px;
-    height: 56px;
+    position: absolute; top: 50%; left: 50%;
+    width: 56px; height: 56px;
     border-radius: 50%;
     background: rgba(255,255,255,0.35);
     border: 2px solid rgba(255,255,255,0.5);
     transform: translate(-50%, -50%);
-    transition: background 0.15s;
     pointer-events: none;
   }
   .joystick.active .stick { background: rgba(255,215,0,0.6); border-color: #ffd700; }
   
-  /* --- ปุ่ม action ด้านขวา --- */
   .actionBtn {
     position: absolute;
-    width: 68px;
-    height: 68px;
+    width: 68px; height: 68px;
     border-radius: 50%;
     background: rgba(255,255,255,0.15);
     border: 2px solid rgba(255,255,255,0.3);
@@ -113,84 +283,116 @@
     transform: scale(0.95);
   }
   .actionBtn small {
-    position: absolute;
-    bottom: -18px;
-    font-size: 9px;
-    color: #ccc;
-    white-space: nowrap;
-    font-weight: normal;
+    position: absolute; bottom: -16px;
+    font-size: 9px; color: #ccc; white-space: nowrap; font-weight: normal;
   }
   
-  /* --- ตำแหน่ง joystick --- */
   #joyLeft  { left: 25px; bottom: 25px; }
   #joyRight { right: 25px; bottom: 25px; }
-  
-  /* --- ปุ่ม action ด้านซ้าย (เหนือ joystick ขวา) --- */
-  #btnJump  { right: 160px; bottom: 100px; }
-  #btnRun   { right: 175px; bottom: 25px; }
+  #btnAttack { right: 160px; bottom: 100px; background: rgba(231,76,60,0.3); border-color: rgba(231,76,60,0.6); }
+  #btnAttack:active { background: rgba(231,76,60,0.7); }
+  #btnJump  { right: 175px; bottom: 25px; }
   #btnView  { right: 25px; top: 90px; width: 52px; height: 52px; font-size: 18px; }
-  #btnView  small { display: none; }
+  #btnInventory { left: 25px; top: 90px; width: 52px; height: 52px; font-size: 18px; }
+  #btnInventory small, #btnView small { display: none; }
   
-  /* --- Responsive --- */
   @media (max-width: 400px) {
     .joystick { width: 110px; height: 110px; }
     .joystick .stick { width: 48px; height: 48px; }
     .actionBtn { width: 58px; height: 58px; font-size: 18px; }
-    #btnJump { right: 140px; bottom: 90px; }
-    #btnRun  { right: 150px; bottom: 20px; }
+    #btnAttack { right: 130px; bottom: 85px; }
+    #btnJump  { right: 145px; bottom: 20px; }
     #minimap { width: 90px; height: 90px; }
-    #hud { padding: 8px 12px; font-size: 10px; }
-    .bar { width: 100px; }
+    #hud { padding: 8px 12px; font-size: 10px; min-width: 140px; }
+    .bar { width: 110px; }
+    #viewMode { font-size: 10px; padding: 4px 10px; }
+    #timeInfo { font-size: 10px; }
   }
   
-  /* ซ่อน controls PC เมื่อใช้มือถือ */
-  body.mobile #controls { display: none; }
-  body.mobile #info { display: none; }
+  body.mobile #controls, body.mobile #info { display: none; }
   body.mobile #hud h3 { display: none; }
 </style>
 </head>
 <body>
 
 <div id="startScreen">
-  <h1>🌍 Open World</h1>
-  <p>โลกกว้างรอให้คุณสำรวจ</p>
+  <h1>🌍 Open World RPG</h1>
+  <p>ผจญภัย • ต่อสู้ • พัฒนาตัวละคร</p>
   <button id="startBtn">▶ เริ่มเล่น</button>
   <p style="margin-top:25px; font-size:0.85em; color:#888;" id="startHint">
-    คลิกเพื่อล็อกเมาส์ • กด ESC เพื่อปลด • กด V สลับมุมมอง
+    WASD เดิน • คลิกซ้ายโจมตี • E เก็บของ • I กระเป๋า • B ร้านค้า
   </p>
 </div>
 
 <div id="ui" style="display:none;">
   <div id="hud">
     <h3>⚔️ Player</h3>
-    <div class="stat">❤️ Health</div>
+    <div class="stat">❤️ Health <span id="hpText" style="float:right;">100/100</span></div>
     <div class="bar" id="health"><div class="bar-fill" style="width:100%"></div></div>
-    <div class="stat" style="margin-top:6px;">⚡ Stamina</div>
+    <div class="stat" style="margin-top:6px;">⚡ Stamina <span id="spText" style="float:right;">100/100</span></div>
     <div class="bar" id="stamina"><div class="bar-fill" style="width:100%"></div></div>
-    <div class="stat" style="margin-top:6px;">📦 <span id="itemCount">0</span></div>
+    <div class="stat" style="margin-top:6px;">💧 Mana <span id="mpText" style="float:right;">50/50</span></div>
+    <div class="bar" id="mana"><div class="bar-fill" style="width:100%"></div></div>
+    <div class="stat" style="margin-top:6px;">✨ EXP <span id="xpText" style="float:right;">0/100</span></div>
+    <div class="bar" id="exp"><div class="bar-fill" style="width:0%"></div></div>
+    <div id="levelInfo">
+      <span>Lv. <b id="levelText">1</b></span>
+      <span>💰 <b id="coinText">0</b></span>
+      <span>📦 <b id="itemCount">0</b></span>
+    </div>
   </div>
+  
   <div id="minimap"><canvas id="minimapCanvas" width="150" height="150"></canvas></div>
   <div id="crosshair"></div>
   <div id="viewMode">🎥 Third Person</div>
+  <div id="timeInfo">🌞 06:00</div>
+  <div id="coinInfo">💰 0</div>
+  
+  <div id="questPanel">
+    <div class="qtitle">📜 <span id="qTitle">นักล่ามือใหม่</span></div>
+    <div class="qdesc" id="qDesc">สังหารสไลม์ 5 ตัว</div>
+    <div class="qprog" id="qProg">0/5</div>
+  </div>
+  
   <div id="controls">
-    <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เดิน</div>
-    <div><kbd>Shift</kbd> วิ่ง | <kbd>Space</kbd> กระโดด</div>
-    <div><kbd>V</kbd> สลับมุมมอง | <kbd>Mouse</kbd> หมุนกล้อง</div>
-    <div><kbd>Wheel</kbd> ซูม | <kbd>ESC</kbd> ปลดเมาส์</div>
+    <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> เดิน | <kbd>Shift</kbd> วิ่ง</div>
+    <div><kbd>Space</kbd> กระโดด | <kbd>คลิกซ้าย</kbd> โจมตี</div>
+    <div><kbd>I</kbd> กระเป๋า | <kbd>B</kbd> ร้านค้า | <kbd>Q</kbd> ดื่มยา</div>
+    <div><kbd>V</kbd> มุมมอง | <kbd>E</kbd> เก็บของ | <kbd>ESC</kbd> ปลดเมาส์</div>
   </div>
   <div id="info">ตำแหน่ง: <span id="pos">0, 0</span></div>
   <div class="notification" id="notif"></div>
+  <div id="damagePopup"></div>
 </div>
 
-<!-- ============ TOUCH CONTROLS (มือถือ) ============ -->
 <div id="touchControls">
   <div class="joystick" id="joyLeft"><div class="stick"></div></div>
   <div class="joystick" id="joyRight"><div class="stick"></div></div>
-  
+  <div class="actionBtn" id="btnAttack">⚔️<small>โจมตี</small></div>
   <div class="actionBtn" id="btnJump">⤒<small>กระโดด</small></div>
-  <div class="actionBtn" id="btnRun">🏃<small>วิ่ง</small></div>
   <div class="actionBtn" id="btnView">👁️</div>
+  <div class="actionBtn" id="btnInventory">🎒</div>
 </div>
+
+<!-- Inventory Modal -->
+<div id="inventory">
+  <button class="invClose" onclick="toggleInventory()">✕</button>
+  <h2>🎒 กระเป๋า</h2>
+  <div class="invGrid" id="invGrid"></div>
+  <div style="margin-top:15px; color:#aaa; font-size:12px; text-align:center;">
+    คลิกไอเทมเพื่อใช้งาน
+  </div>
+</div>
+
+<!-- Shop Modal -->
+<div id="shop">
+  <button class="invClose" onclick="toggleShop()">✕</button>
+  <h2>🏪 ร้านค้า</h2>
+  <div id="shopList"></div>
+</div>
+
+<!-- Level Up Effect -->
+<div id="levelUpEffect">⭐ LEVEL UP!</div>
 
 <script type="importmap">
 {
@@ -210,7 +412,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 
 if (isMobile) {
   document.body.classList.add('mobile');
-  document.getElementById('startHint').textContent = 'ใช้ joystick ซ้ายเดิน • joystick ขวาหมุนกล้อง';
+  document.getElementById('startHint').textContent = 'ใช้ joystick • ปุ่ม ⚔️ โจมตี • 🎒 กระเป๋า';
 }
 
 // ==================== SETUP ====================
@@ -222,12 +424,13 @@ const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 1000
 const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, powerPreference: 'high-performance' });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
-renderer.shadowMap.enabled = !isMobile; // ปิด shadow บนมือถือเพื่อ performance
+renderer.shadowMap.enabled = !isMobile;
 if (!isMobile) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // ==================== LIGHTING ====================
-scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+scene.add(ambientLight);
 
 const sun = new THREE.DirectionalLight(0xfff5e0, 1.2);
 sun.position.set(50, 100, 30);
@@ -242,7 +445,8 @@ if (!isMobile) {
 scene.add(sun);
 scene.add(sun.target);
 
-scene.add(new THREE.HemisphereLight(0x87ceeb, 0x3a5f3a, 0.6));
+const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x3a5f3a, 0.6);
+scene.add(hemiLight);
 
 // ==================== WORLD ====================
 const WORLD_SIZE = isMobile ? 300 : 400;
@@ -309,7 +513,6 @@ function createTree(x, z) {
   scene.add(g);
   trees.push({ x, z, radius: 1.2 });
 }
-
 for (let i = 0; i < treeCount; i++) {
   const x = (Math.random() - 0.5) * WORLD_SIZE * 0.9;
   const z = (Math.random() - 0.5) * WORLD_SIZE * 0.9;
@@ -328,27 +531,41 @@ for (let i = 0; i < rockCount; i++) {
   rock.position.set(x, y + size * 0.4, z);
   rock.rotation.set(Math.random()*3, Math.random()*3, Math.random()*3);
   rock.castShadow = !isMobile;
-  rock.receiveShadow = !isMobile;
   scene.add(rock);
 }
 
-// ==================== ITEMS ====================
+// ==================== ITEMS (Loot) ====================
 const items = [];
-const itemCountTarget = isMobile ? 25 : 40;
+const ITEM_TYPES = {
+  coin: { name: '🪙 เหรียญ', color: 0xffd700, emissive: 0xffd700, value: 5, type: 'coin' },
+  health_potion: { name: '❤️ ยา HP', color: 0xff3333, emissive: 0xff3333, value: 1, type: 'health_potion' },
+  mana_potion: { name: '💧 ยา MP', color: 0x3366ff, emissive: 0x3366ff, value: 1, type: 'mana_potion' },
+  sword_upgrade: { name: '⚔️ ดาบอัป', color: 0xccccdd, emissive: 0xaaaaff, value: 1, type: 'sword_upgrade' }
+};
+
 function spawnItem() {
   const x = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
   const z = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
   const y = getHeight(x, z);
+  
+  // สุ่มประเภท
+  const roll = Math.random();
+  let typeKey = 'coin';
+  if (roll > 0.9) typeKey = 'sword_upgrade';
+  else if (roll > 0.75) typeKey = 'mana_potion';
+  else if (roll > 0.55) typeKey = 'health_potion';
+  
+  const cfg = ITEM_TYPES[typeKey];
   const mesh = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.6, 0),
-    new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffd700, emissiveIntensity: 0.7, metalness: 0.5, roughness: 0.3 })
+    new THREE.OctahedronGeometry(0.5, 0),
+    new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.emissive, emissiveIntensity: 0.7, metalness: 0.5, roughness: 0.3 })
   );
   mesh.position.set(x, y + 1.2, z);
   mesh.castShadow = !isMobile;
   scene.add(mesh);
-  items.push({ mesh, collected: false });
+  items.push({ mesh, collected: false, itemType: typeKey, name: cfg.name });
 }
-for (let i = 0; i < itemCountTarget; i++) spawnItem();
+for (let i = 0; i < (isMobile ? 25 : 40); i++) spawnItem();
 
 // ==================== PLAYER CHARACTER ====================
 const playerRig = new THREE.Group();
@@ -409,7 +626,7 @@ function createCharacter() {
   playerRig.add(armLGroup);
   bodyParts.armL = armLGroup;
   
-  // แขนขวา
+  // แขนขวา + ดาบ
   const armRGroup = new THREE.Group();
   armRGroup.position.set(0.38, 1.45, 0);
   const upperArmR = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.18), skinMat);
@@ -424,6 +641,45 @@ function createCharacter() {
   handR.position.y = -0.93;
   handR.castShadow = !isMobile;
   armRGroup.add(handR);
+  
+  // ดาบ
+  const swordGroup = new THREE.Group();
+  swordGroup.position.set(0, -0.93, 0);
+  
+  const swordHandle = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.045, 0.3, 6),
+    new THREE.MeshStandardMaterial({ color: 0x4a2c1a, roughness: 0.8 })
+  );
+  swordHandle.position.y = -0.15;
+  swordGroup.add(swordHandle);
+  
+  const swordGuard = new THREE.Mesh(
+    new THREE.BoxGeometry(0.34, 0.06, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.3 })
+  );
+  swordGuard.position.y = -0.32;
+  swordGroup.add(swordGuard);
+  
+  const blade = new THREE.Mesh(
+    new THREE.BoxGeometry(0.09, 1.0, 0.04),
+    new THREE.MeshStandardMaterial({ color: 0xd0d0e0, metalness: 0.9, roughness: 0.2 })
+  );
+  blade.position.y = -0.88;
+  blade.castShadow = !isMobile;
+  swordGroup.add(blade);
+  bodyParts.blade = blade;
+  
+  const bladeTip = new THREE.Mesh(
+    new THREE.ConeGeometry(0.05, 0.25, 4),
+    new THREE.MeshStandardMaterial({ color: 0xd0d0e0, metalness: 0.9, roughness: 0.2 })
+  );
+  bladeTip.position.y = -1.5;
+  bladeTip.rotation.z = Math.PI;
+  swordGroup.add(bladeTip);
+  
+  armRGroup.add(swordGroup);
+  bodyParts.sword = swordGroup;
+  
   playerRig.add(armRGroup);
   bodyParts.armR = armRGroup;
   
@@ -472,9 +728,31 @@ const player = {
   yaw: 0,
   onGround: true,
   radius: 0.5,
+  
+  // Stats
+  level: 1,
+  exp: 0,
+  expNext: 100,
   health: 100,
+  maxHealth: 100,
   stamina: 100,
-  score: 0
+  maxStamina: 100,
+  mana: 50,
+  maxMana: 50,
+  
+  // Currency
+  coins: 0,
+  
+  // Combat
+  attackCooldown: 0,
+  attackAnim: 0,
+  invulnTimer: 0,
+  attackPower: 18,  // ดาเมจพื้นฐาน (เพิ่มเมื่อ level up)
+  
+  // Progress
+  kills: 0,
+  score: 0,
+  killsByType: { slime: 0, wolf: 0, demon: 0, boss: 0 }
 };
 player.pos.y = getHeight(0, 0);
 
@@ -485,22 +763,332 @@ const camOrbit = {
   heightOffset: 1.4
 };
 
-// ==================== INPUT (Keyboard) ====================
+// ==================== INVENTORY ====================
+const inventory = {
+  health_potion: 0,
+  mana_potion: 0,
+  sword_upgrade: 0
+};
+
+// ==================== MONSTERS ====================
+const monsters = [];
+const monsterGroup = new THREE.Group();
+scene.add(monsterGroup);
+
+const MONSTER_TYPES = {
+  slime: { name: 'สไลม์', health: 30, damage: 8, speed: 3.5, color: 0x66dd66, size: 0.7, xp: 15, coin: 3 },
+  wolf: { name: 'หมาป่า', health: 50, damage: 15, speed: 5.5, color: 0x555566, size: 0.9, xp: 25, coin: 6 },
+  demon: { name: 'ปีศาจ', health: 100, damage: 25, speed: 4, color: 0xaa2222, size: 1.2, xp: 50, coin: 15 },
+  boss: { name: '🐉 มังกร', health: 500, damage: 40, speed: 3.5, color: 0x660066, size: 2.2, xp: 300, coin: 100 }
+};
+
+function createMonster(type, x, z) {
+  const cfg = MONSTER_TYPES[type];
+  const y = getHeight(x, z);
+  
+  const group = new THREE.Group();
+  group.position.set(x, y, z);
+  monsterGroup.add(group);
+  
+  const parts = {};
+  
+  if (type === 'slime') {
+    const body = new THREE.Mesh(
+      new THREE.SphereGeometry(cfg.size, 12, 10),
+      new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.4, transparent: true, opacity: 0.85 })
+    );
+    body.position.y = cfg.size * 0.8;
+    body.scale.y = 0.8;
+    body.castShadow = !isMobile;
+    group.add(body);
+    parts.body = body;
+    
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const pupilMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+    for (const sx of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), eyeMat);
+      eye.position.set(sx * 0.25, cfg.size * 0.9, cfg.size * 0.75);
+      group.add(eye);
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 6), pupilMat);
+      pupil.position.set(sx * 0.25, cfg.size * 0.9, cfg.size * 0.88);
+      group.add(pupil);
+    }
+  } 
+  else if (type === 'wolf') {
+    const bodyMat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.8 });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.7, 1.6), bodyMat);
+    body.position.y = 0.9;
+    body.castShadow = !isMobile;
+    group.add(body);
+    parts.body = body;
+    
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.8), bodyMat);
+    head.position.set(0, 1.1, 0.9);
+    head.castShadow = !isMobile;
+    group.add(head);
+    parts.head = head;
+    
+    for (const sx of [-1, 1]) {
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.35, 4), bodyMat);
+      ear.position.set(sx * 0.22, 1.45, 0.9);
+      group.add(ear);
+    }
+    
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.8 });
+    for (const sx of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 6), eyeMat);
+      eye.position.set(sx * 0.15, 1.2, 1.28);
+      group.add(eye);
+    }
+    
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x333344 });
+    const legs = [];
+    for (const [lx, lz] of [[-0.35, 0.5], [0.35, 0.5], [-0.35, -0.5], [0.35, -0.5]]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.6, 0.2), legMat);
+      leg.position.set(lx, 0.3, lz);
+      leg.castShadow = !isMobile;
+      group.add(leg);
+      legs.push(leg);
+    }
+    parts.legs = legs;
+  }
+  else if (type === 'demon') {
+    const bodyMat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.7, emissive: 0x440000, emissiveIntensity: 0.3 });
+    
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.0, 0.6), bodyMat);
+    body.position.y = 1.3;
+    body.castShadow = !isMobile;
+    group.add(body);
+    parts.body = body;
+    
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), bodyMat);
+    head.position.y = 2.15;
+    head.castShadow = !isMobile;
+    group.add(head);
+    parts.head = head;
+    
+    for (const sx of [-1, 1]) {
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.5, 4), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+      horn.position.set(sx * 0.25, 2.55, 0);
+      horn.rotation.z = sx * 0.3;
+      group.add(horn);
+    }
+    
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xff8800, emissiveIntensity: 1 });
+    for (const sx of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), eyeMat);
+      eye.position.set(sx * 0.18, 2.2, 0.36);
+      group.add(eye);
+    }
+    
+    const armMat = new THREE.MeshStandardMaterial({ color: 0x881111 });
+    for (const sx of [-1, 1]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), armMat);
+      arm.position.set(sx * 0.6, 1.3, 0);
+      arm.castShadow = !isMobile;
+      group.add(arm);
+    }
+    
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x661111 });
+    for (const sx of [-1, 1]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.25), legMat);
+      leg.position.set(sx * 0.22, 0.45, 0);
+      leg.castShadow = !isMobile;
+      group.add(leg);
+    }
+  }
+  else if (type === 'boss') {
+    // มังกร - ตัวใหญ่สีม่วง
+    const bodyMat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.6, emissive: 0x330033, emissiveIntensity: 0.5 });
+    
+    // ลำตัว
+    const body = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.0, 3.5), bodyMat);
+    body.position.y = 2.5;
+    body.castShadow = !isMobile;
+    group.add(body);
+    parts.body = body;
+    
+    // หัว
+    const head = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.4, 1.6), bodyMat);
+    head.position.set(0, 3.2, 2.5);
+    head.castShadow = !isMobile;
+    group.add(head);
+    parts.head = head;
+    
+    // เขา
+    for (const sx of [-1, 1]) {
+      const horn = new THREE.Mesh(
+        new THREE.ConeGeometry(0.2, 1.0, 6),
+        new THREE.MeshStandardMaterial({ color: 0xdddddd, metalness: 0.7 })
+      );
+      horn.position.set(sx * 0.5, 4.1, 2.5);
+      horn.rotation.z = sx * 0.4;
+      horn.rotation.x = -0.3;
+      group.add(horn);
+    }
+    
+    // ตาแดงเพลิง
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 2 });
+    for (const sx of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), eyeMat);
+      eye.position.set(sx * 0.4, 3.4, 3.25);
+      group.add(eye);
+    }
+    
+    // ปีก
+    const wingMat = new THREE.MeshStandardMaterial({ color: 0x440044, roughness: 0.5, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+    for (const sx of [-1, 1]) {
+      const wing = new THREE.Mesh(new THREE.BoxGeometry(3, 2.5, 0.15), wingMat);
+      wing.position.set(sx * 2.2, 3.5, 0);
+      wing.rotation.z = sx * 0.3;
+      group.add(wing);
+    }
+    
+    // ขา 4 ข้าง
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x330033 });
+    for (const [lx, lz] of [[-0.9, 1.2], [0.9, 1.2], [-0.9, -1.2], [0.9, -1.2]]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.5, 0.6), legMat);
+      leg.position.set(lx, 0.75, lz);
+      leg.castShadow = !isMobile;
+      group.add(leg);
+    }
+    
+    // หาง
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 2.5), bodyMat);
+    tail.position.set(0, 2.5, -3);
+    group.add(tail);
+  }
+  
+  // HP bar
+  const hpBarCanvas = document.createElement('canvas');
+  hpBarCanvas.width = 128;
+  hpBarCanvas.height = 20;
+  const hpBarTexture = new THREE.CanvasTexture(hpBarCanvas);
+  const hpBarSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+    map: hpBarTexture, depthTest: false, transparent: true
+  }));
+  const hpBarY = type === 'boss' ? 5.5 : type === 'demon' ? 3 : type === 'wolf' ? 2 : 1.8;
+  hpBarSprite.scale.set(type === 'boss' ? 3 : 1.6, type === 'boss' ? 0.4 : 0.25, 1);
+  hpBarSprite.position.y = hpBarY;
+  group.add(hpBarSprite);
+  
+  const monster = {
+    type, group, parts, hpBarCanvas, hpBarTexture, hpBarSprite,
+    health: cfg.health, maxHealth: cfg.health,
+    damage: cfg.damage, speed: cfg.speed, xp: cfg.xp, coin: cfg.coin,
+    name: cfg.name, size: cfg.size, radius: cfg.size * 0.8,
+    attackTimer: 0, hitFlash: 0,
+    walkCycle: Math.random() * Math.PI * 2,
+    aggro: false,
+    aggroRange: type === 'boss' ? 40 : 25,
+    attackRange: type === 'boss' ? 4 : 2.0,
+    attackCooldown: type === 'boss' ? 2.5 : 1.5,
+    yaw: 0, alive: true
+  };
+  
+  monsters.push(monster);
+  updateMonsterHPBar(monster);
+  return monster;
+}
+
+function updateMonsterHPBar(m) {
+  const ctx = m.hpBarCanvas.getContext('2d');
+  ctx.clearRect(0, 0, 128, 20);
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(0, 0, 128, 20);
+  
+  const ratio = Math.max(0, m.health / m.maxHealth);
+  let color = '#e74c3c';
+  if (ratio > 0.6) color = '#2ecc71';
+  else if (ratio > 0.3) color = '#f39c12';
+  
+  ctx.fillStyle = color;
+  ctx.fillRect(2, 2, 124 * ratio, 16);
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, 126, 18);
+  m.hpBarTexture.needsUpdate = true;
+}
+
+function spawnRandomMonster() {
+  const roll = Math.random();
+  let type = 'slime';
+  if (roll > 0.85) type = 'demon';
+  else if (roll > 0.55) type = 'wolf';
+  
+  let x, z, tries = 0;
+  do {
+    x = (Math.random() - 0.5) * WORLD_SIZE * 0.8;
+    z = (Math.random() - 0.5) * WORLD_SIZE * 0.8;
+    tries++;
+  } while (Math.hypot(x - player.pos.x, z - player.pos.z) < 25 && tries < 20);
+  
+  createMonster(type, x, z);
+}
+
+// Boss spawn
+let bossAlive = false;
+function spawnBoss() {
+  if (bossAlive) return;
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 60;
+  const x = player.pos.x + Math.cos(angle) * dist;
+  const z = player.pos.z + Math.sin(angle) * dist;
+  createMonster('boss', x, z);
+  bossAlive = true;
+  notify('🐉 มังกรปรากฏตัว!');
+}
+
+const initialMonsterCount = isMobile ? 12 : 20;
+for (let i = 0; i < initialMonsterCount; i++) spawnRandomMonster();
+
+setInterval(() => {
+  if (monsters.filter(m => m.alive && m.type !== 'boss').length < initialMonsterCount) {
+    spawnRandomMonster();
+  }
+}, 5000);
+
+// Boss spawn ทุก 3 นาที
+setInterval(() => {
+  if (!bossAlive && player.level >= 3) spawnBoss();
+}, 180000);
+
+// ==================== SWORD TRAILS ====================
+const swordTrails = [];
+function createSwordTrail() {
+  const forward = new THREE.Vector3(Math.sin(player.yaw), 0, Math.cos(player.yaw));
+  const geo = new THREE.RingGeometry(0.8, 2.2, 12, 1, 0, Math.PI * 0.9);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xaaddff, transparent: true, opacity: 0.7,
+    side: THREE.DoubleSide, depthWrite: false
+  });
+  const trail = new THREE.Mesh(geo, mat);
+  trail.position.copy(player.pos).add(new THREE.Vector3(0, 1.0, 0));
+  trail.position.add(forward.clone().multiplyScalar(0.8));
+  trail.rotation.x = -Math.PI / 2;
+  trail.rotation.z = -player.yaw + Math.PI / 2;
+  scene.add(trail);
+  swordTrails.push({ mesh: trail, life: 0.25, maxLife: 0.25 });
+}
+
+// ==================== INPUT ====================
 const keys = {};
 let pointerLocked = false;
 let viewMode = 'third';
+let isPaused = false;
 
-// Touch state
 const touch = {
-  move: { x: 0, y: 0 },        // จาก joystick ซ้าย (-1 ถึง 1)
-  look: { x: 0, y: 0 },        // จาก joystick ขวา (-1 ถึง 1)
-  running: false,
-  jumpPressed: false
+  move: { x: 0, y: 0 },
+  look: { x: 0, y: 0 },
+  running: false
 };
 
 document.addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'KeyV') toggleView();
+  if (e.code === 'KeyI') toggleInventory();
+  if (e.code === 'KeyB') toggleShop();
+  if (e.code === 'KeyQ') useQuickPotion();
 });
 document.addEventListener('keyup', e => keys[e.code] = false);
 
@@ -514,7 +1102,6 @@ document.getElementById('startBtn').addEventListener('click', () => {
   
   if (isMobile) {
     document.getElementById('touchControls').classList.add('active');
-    // ล็อกแนวตั้งฉากการหมุนจอ (ถ้าเบราว์เซอร์รองรับ)
     if (screen.orientation && screen.orientation.lock) {
       screen.orientation.lock('landscape').catch(() => {});
     }
@@ -524,8 +1111,14 @@ document.getElementById('startBtn').addEventListener('click', () => {
 });
 
 renderer.domElement.addEventListener('click', () => {
-  if (!pointerLocked && !isMobile && startScreen.style.display === 'none') {
+  if (!pointerLocked && !isMobile && startScreen.style.display === 'none' && !isPaused) {
     renderer.domElement.requestPointerLock();
+  }
+});
+
+renderer.domElement.addEventListener('mousedown', e => {
+  if (e.button === 0 && pointerLocked && !isPaused) {
+    playerAttack();
   }
 });
 
@@ -533,9 +1126,8 @@ document.addEventListener('pointerlockchange', () => {
   pointerLocked = document.pointerLockElement === renderer.domElement;
 });
 
-// Mouse look
 document.addEventListener('mousemove', e => {
-  if (!pointerLocked) return;
+  if (!pointerLocked || isPaused) return;
   camOrbit.yaw -= e.movementX * 0.0025;
   camOrbit.pitch -= e.movementY * 0.0025;
   camOrbit.pitch = Math.max(-1.2, Math.min(1.2, camOrbit.pitch));
@@ -551,25 +1143,18 @@ function toggleView() {
   viewModeEl.textContent = viewMode === 'third' ? '🎥 Third Person' : '👁️ First Person';
   document.getElementById('crosshair').style.opacity = viewMode === 'first' ? '1' : '0.3';
   playerRig.visible = viewMode === 'third';
-  if (viewMode === 'first') {
-    camOrbit.distance = 0;
-  } else {
-    camOrbit.distance = isMobile ? 7 : 6;
-  }
+  camOrbit.distance = viewMode === 'first' ? 0 : (isMobile ? 7 : 6);
 }
 
-// ==================================================
-// ============== TOUCH CONTROLS SETUP ==============
-// ==================================================
-
+// ==================== TOUCH CONTROLS ====================
 function setupJoystick(el, onChange) {
   const stick = el.querySelector('.stick');
   let activeId = null;
-  const maxDist = 45; // ระยะสูงสุดที่ stick ขยับได้
+  const maxDist = 45;
   
   function getCenter() {
     const rect = el.getBoundingClientRect();
-    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, r: rect.width / 2 };
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   }
   
   function updateFromTouch(touchX, touchY) {
@@ -577,15 +1162,11 @@ function setupJoystick(el, onChange) {
     let dx = touchX - c.x;
     let dy = touchY - c.y;
     const dist = Math.hypot(dx, dy);
-    
     if (dist > maxDist) {
       dx = dx / dist * maxDist;
       dy = dy / dist * maxDist;
     }
-    
     stick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-    
-    // normalize -1 ถึง 1
     onChange(dx / maxDist, dy / maxDist);
   }
   
@@ -600,9 +1181,7 @@ function setupJoystick(el, onChange) {
   el.addEventListener('touchmove', e => {
     e.preventDefault();
     for (const t of e.changedTouches) {
-      if (t.identifier === activeId) {
-        updateFromTouch(t.clientX, t.clientY);
-      }
+      if (t.identifier === activeId) updateFromTouch(t.clientX, t.clientY);
     }
   }, { passive: false });
   
@@ -618,41 +1197,28 @@ function setupJoystick(el, onChange) {
   }
   el.addEventListener('touchend', endTouch);
   el.addEventListener('touchcancel', endTouch);
-  
-  // เผื่อ Desktop ทดสอบ
-  let mouseDown = false;
-  el.addEventListener('mousedown', e => {
-    e.preventDefault();
-    mouseDown = true;
-    el.classList.add('active');
-    updateFromTouch(e.clientX, e.clientY);
-  });
-  window.addEventListener('mousemove', e => {
-    if (mouseDown) updateFromTouch(e.clientX, e.clientY);
-  });
-  window.addEventListener('mouseup', () => {
-    if (mouseDown) {
-      mouseDown = false;
-      el.classList.remove('active');
-      stick.style.transform = 'translate(-50%, -50%)';
-      onChange(0, 0);
-    }
-  });
 }
 
-// Joystick ซ้าย = เดิน
 setupJoystick(document.getElementById('joyLeft'), (x, y) => {
   touch.move.x = x;
   touch.move.y = y;
 });
-
-// Joystick ขวา = หมุนกล้อง
 setupJoystick(document.getElementById('joyRight'), (x, y) => {
   touch.look.x = x;
   touch.look.y = y;
 });
 
-// ปุ่มกระโดด
+const btnAttack = document.getElementById('btnAttack');
+btnAttack.addEventListener('touchstart', e => {
+  e.preventDefault();
+  btnAttack.classList.add('active');
+  playerAttack();
+}, { passive: false });
+btnAttack.addEventListener('touchend', e => {
+  e.preventDefault();
+  btnAttack.classList.remove('active');
+}, { passive: false });
+
 const btnJump = document.getElementById('btnJump');
 btnJump.addEventListener('touchstart', e => {
   e.preventDefault();
@@ -666,40 +1232,12 @@ btnJump.addEventListener('touchend', e => {
   e.preventDefault();
   btnJump.classList.remove('active');
 }, { passive: false });
-// Mouse fallback
-btnJump.addEventListener('mousedown', () => {
-  if (player.onGround) { player.vel.y = 12; player.onGround = false; }
-});
 
-// ปุ่มวิ่ง (กดค้าง)
-const btnRun = document.getElementById('btnRun');
-btnRun.addEventListener('touchstart', e => {
-  e.preventDefault();
-  btnRun.classList.add('active');
-  touch.running = true;
-}, { passive: false });
-btnRun.addEventListener('touchend', e => {
-  e.preventDefault();
-  btnRun.classList.remove('active');
-  touch.running = false;
-}, { passive: false });
-btnRun.addEventListener('touchcancel', () => {
-  btnRun.classList.remove('active');
-  touch.running = false;
-});
-btnRun.addEventListener('mousedown', () => { touch.running = true; btnRun.classList.add('active'); });
-window.addEventListener('mouseup', () => { touch.running = false; btnRun.classList.remove('active'); });
-
-// ปุ่มสลับมุมมอง
 const btnView = document.getElementById('btnView');
-btnView.addEventListener('touchstart', e => {
-  e.preventDefault();
-  toggleView();
-}, { passive: false });
-btnView.addEventListener('click', e => {
-  e.preventDefault();
-  if (!isMobile) toggleView();
-});
+btnView.addEventListener('touchstart', e => { e.preventDefault(); toggleView(); }, { passive: false });
+
+const btnInventory = document.getElementById('btnInventory');
+btnInventory.addEventListener('touchstart', e => { e.preventDefault(); toggleInventory(); }, { passive: false });
 
 // ==================== UI ====================
 const notifEl = document.getElementById('notif');
@@ -708,13 +1246,434 @@ function notify(msg) {
   notifEl.textContent = msg;
   notifEl.classList.add('show');
   clearTimeout(notifTimer);
-  notifTimer = setTimeout(() => notifEl.classList.remove('show'), 1500);
+  notifTimer = setTimeout(() => notifEl.classList.remove('show'), 1800);
 }
 
 const posEl = document.getElementById('pos');
 const itemCountEl = document.getElementById('itemCount');
 const healthBar = document.querySelector('#health .bar-fill');
 const staminaBar = document.querySelector('#stamina .bar-fill');
+const manaBar = document.querySelector('#mana .bar-fill');
+const expBar = document.querySelector('#exp .bar-fill');
+const levelText = document.getElementById('levelText');
+const coinText = document.getElementById('coinText');
+const hpText = document.getElementById('hpText');
+const spText = document.getElementById('spText');
+const mpText = document.getElementById('mpText');
+const xpText = document.getElementById('xpText');
+const timeInfo = document.getElementById('timeInfo');
+const coinInfo = document.getElementById('coinInfo');
+
+function updateHUD() {
+  healthBar.style.width = (player.health / player.maxHealth * 100) + '%';
+  staminaBar.style.width = (player.stamina / player.maxStamina * 100) + '%';
+  manaBar.style.width = (player.mana / player.maxMana * 100) + '%';
+  expBar.style.width = (player.exp / player.expNext * 100) + '%';
+  
+  hpText.textContent = `${Math.round(player.health)}/${player.maxHealth}`;
+  spText.textContent = `${Math.round(player.stamina)}/${player.maxStamina}`;
+  mpText.textContent = `${Math.round(player.mana)}/${player.maxMana}`;
+  xpText.textContent = `${player.exp}/${player.expNext}`;
+  
+  levelText.textContent = player.level;
+  coinText.textContent = player.coins;
+  coinInfo.textContent = `💰 ${player.coins}`;
+}
+
+// ==================== LEVELING ====================
+function addExp(amount) {
+  player.exp += amount;
+  while (player.exp >= player.expNext) {
+    player.exp -= player.expNext;
+    levelUp();
+  }
+  updateHUD();
+}
+
+function levelUp() {
+  player.level++;
+  player.expNext = Math.floor(player.expNext * 1.5);
+  player.maxHealth += 20;
+  player.health = player.maxHealth;
+  player.maxMana += 10;
+  player.mana = player.maxMana;
+  player.maxStamina += 10;
+  player.stamina = player.maxStamina;
+  player.attackPower += 5;
+  
+  showLevelUpEffect();
+  notify(`⭐ Level Up! Lv.${player.level}`);
+}
+
+const levelUpEffect = document.getElementById('levelUpEffect');
+function showLevelUpEffect() {
+  levelUpEffect.classList.remove('show');
+  void levelUpEffect.offsetWidth;
+  levelUpEffect.classList.add('show');
+}
+
+// ==================== INVENTORY ====================
+function updateInventoryUI() {
+  const grid = document.getElementById('invGrid');
+  grid.innerHTML = '';
+  
+  const items = [
+    { key: 'health_potion', icon: '❤️', name: 'ยา HP' },
+    { key: 'mana_potion', icon: '💧', name: 'ยา MP' },
+    { key: 'sword_upgrade', icon: '⚔️', name: 'หินอัปเกรด' }
+  ];
+  
+  for (const it of items) {
+    const count = inventory[it.key] || 0;
+    const slot = document.createElement('div');
+    slot.className = 'invSlot';
+    slot.innerHTML = `${it.icon}${count > 0 ? `<span class="count">${count}</span>` : ''}`;
+    slot.title = it.name;
+    if (count > 0) {
+      slot.onclick = () => useItem(it.key);
+    } else {
+      slot.style.opacity = 0.3;
+      slot.style.cursor = 'not-allowed';
+    }
+    grid.appendChild(slot);
+  }
+  
+  // ช่องว่าง
+  for (let i = items.length; i < 12; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'invSlot';
+    slot.style.opacity = 0.2;
+    grid.appendChild(slot);
+  }
+}
+
+function useItem(key) {
+  if (!inventory[key] || inventory[key] <= 0) return;
+  
+  if (key === 'health_potion') {
+    player.health = Math.min(player.maxHealth, player.health + 50);
+    inventory.health_potion--;
+    notify('❤️ ฟื้น HP +50');
+  } else if (key === 'mana_potion') {
+    player.mana = Math.min(player.maxMana, player.mana + 30);
+    inventory.mana_potion--;
+    notify('💧 ฟื้น MP +30');
+  } else if (key === 'sword_upgrade') {
+    player.attackPower += 10;
+    inventory.sword_upgrade--;
+    notify('⚔️ ดาบแข็งแกร่งขึ้น! +10 ATK');
+  }
+  
+  updateInventoryUI();
+  updateHUD();
+}
+
+function useQuickPotion() {
+  if (inventory.health_potion > 0 && player.health < player.maxHealth) {
+    useItem('health_potion');
+  } else if (inventory.mana_potion > 0 && player.mana < player.maxMana) {
+    useItem('mana_potion');
+  } else {
+    notify('❌ ไม่มียา');
+  }
+}
+
+function toggleInventory() {
+  const inv = document.getElementById('inventory');
+  inv.classList.toggle('show');
+  isPaused = inv.classList.contains('show') || document.getElementById('shop').classList.contains('show');
+  
+  if (isPaused && !isMobile) {
+    document.exitPointerLock();
+  } else if (!isPaused && !isMobile) {
+    renderer.domElement.requestPointerLock();
+  }
+  
+  if (inv.classList.contains('show')) updateInventoryUI();
+}
+
+// ==================== SHOP ====================
+const SHOP_ITEMS = [
+  { key: 'health_potion', icon: '❤️', name: 'ยา HP', desc: 'ฟื้น HP +50', price: 10 },
+  { key: 'mana_potion', icon: '💧', name: 'ยา MP', desc: 'ฟื้น MP +30', price: 15 },
+  { key: 'sword_upgrade', icon: '⚔️', name: 'หินอัปเกรด', desc: 'ATK +10', price: 50 }
+];
+
+function updateShopUI() {
+  const list = document.getElementById('shopList');
+  list.innerHTML = '';
+  
+  for (const it of SHOP_ITEMS) {
+    const canAfford = player.coins >= it.price;
+    const div = document.createElement('div');
+    div.className = 'shopItem';
+    div.innerHTML = `
+      <div class="info">
+        <div class="name">${it.icon} ${it.name}</div>
+        <div class="desc">${it.desc}</div>
+      </div>
+      <div class="price">💰 ${it.price}</div>
+      <button class="shopBuy" ${canAfford ? '' : 'disabled'}>ซื้อ</button>
+    `;
+    div.querySelector('.shopBuy').onclick = () => buyItem(it);
+    list.appendChild(div);
+  }
+}
+
+function buyItem(it) {
+  if (player.coins < it.price) {
+    notify('❌ เงินไม่พอ');
+    return;
+  }
+  player.coins -= it.price;
+  inventory[it.key] = (inventory[it.key] || 0) + 1;
+  notify(`✅ ซื้อ ${it.name}`);
+  updateShopUI();
+  updateHUD();
+}
+
+function toggleShop() {
+  const shop = document.getElementById('shop');
+  shop.classList.toggle('show');
+  isPaused = shop.classList.contains('show') || document.getElementById('inventory').classList.contains('show');
+  
+  if (isPaused && !isMobile) {
+    document.exitPointerLock();
+  } else if (!isPaused && !isMobile) {
+    renderer.domElement.requestPointerLock();
+  }
+  
+  if (shop.classList.contains('show')) updateShopUI();
+}
+
+// ==================== QUEST SYSTEM ====================
+const quests = [
+  { id: 'slime5', title: 'นักล่ามือใหม่', desc: 'สังหารสไลม์ 5 ตัว', target: 5, type: 'slime', reward: { exp: 50, coin: 20 }, done: false },
+  { id: 'wolf10', title: 'พรานหมาป่า', desc: 'สังหารหมาป่า 10 ตัว', target: 10, type: 'wolf', reward: { exp: 100, coin: 50 }, done: false },
+  { id: 'demon3', title: 'ปราบปีศาจ', desc: 'สังหารปีศาจ 3 ตัว', target: 3, type: 'demon', reward: { exp: 200, coin: 100 }, done: false },
+  { id: 'boss1', title: 'นักล่ามังกร', desc: 'สังหารมังกร 1 ตัว', target: 1, type: 'boss', reward: { exp: 500, coin: 300 }, done: false }
+];
+
+let currentQuestIdx = 0;
+
+function updateQuestUI() {
+  const quest = quests[currentQuestIdx];
+  if (!quest) {
+    document.getElementById('questPanel').classList.remove('show');
+    return;
+  }
+  
+  document.getElementById('questPanel').classList.add('show');
+  document.getElementById('qTitle').textContent = quest.title;
+  document.getElementById('qDesc').textContent = quest.desc;
+  const progress = Math.min(quest.target, player.killsByType[quest.type] || 0);
+  document.getElementById('qProg').textContent = `${progress}/${quest.target}`;
+}
+
+function checkQuestProgress(type) {
+  const quest = quests[currentQuestIdx];
+  if (!quest || quest.type !== type) return;
+  
+  const progress = player.killsByType[type] || 0;
+  if (progress >= quest.target && !quest.done) {
+    quest.done = true;
+    player.coins += quest.reward.coin;
+    addExp(quest.reward.exp);
+    notify(`🎉 ภารกิจสำเร็จ: ${quest.title}! +${quest.reward.exp} EXP, +${quest.reward.coin}💰`);
+    
+    // ไปเควสถัดไป
+    currentQuestIdx++;
+    setTimeout(updateQuestUI, 2000);
+  } else {
+    updateQuestUI();
+  }
+}
+
+// ==================== DAY/NIGHT ====================
+let gameTime = 6 * 60; // 6:00 AM in minutes
+const DAY_LENGTH = 5 * 60; // 5 นาทีจริง = 1 วันในเกม (ในวินาที)
+
+function updateDayNight(dt) {
+  gameTime += (dt / DAY_LENGTH) * 24 * 60; // เพิ่มเวลาเป็นนาทีในเกม
+  if (gameTime >= 24 * 60) gameTime -= 24 * 60;
+  
+  const hours = Math.floor(gameTime / 60);
+  const mins = Math.floor(gameTime % 60);
+  
+  // อัปเดต UI
+  let icon = '🌞';
+  if (hours < 6 || hours >= 19) icon = '🌙';
+  else if (hours < 8 || hours >= 17) icon = '🌅';
+  else if (hours >= 11 && hours < 14) icon = '☀️';
+  timeInfo.textContent = `${icon} ${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+  
+  // คำนวณแสงตามเวลา (sun position)
+  const dayAngle = ((gameTime - 6 * 60) / (12 * 60)) * Math.PI; // 6:00 ถึง 18:00
+  const sunHeight = Math.sin(dayAngle) * 100;
+  const sunX = player.pos.x + Math.cos(dayAngle) * 100;
+  const sunZ = player.pos.z + 30;
+  
+  if (gameTime >= 6 * 60 && gameTime <= 18 * 60) {
+    // กลางวัน
+    sun.position.set(sunX, Math.max(10, sunHeight), sunZ);
+    sun.intensity = Math.max(0.2, Math.sin(dayAngle));
+    
+    // สีท้องฟ้าตามเวลา
+    const noonFactor = Math.max(0, Math.sin(dayAngle));
+    const skyColor = new THREE.Color().lerpColors(
+      new THREE.Color(0xff7744), // เช้า/เย็น
+      new THREE.Color(0x87ceeb), // กลางวัน
+      noonFactor
+    );
+    scene.background = skyColor;
+    scene.fog.color = skyColor;
+  } else {
+    // กลางคืน
+    sun.position.set(sunX, -50, sunZ);
+    sun.intensity = 0.05;
+    scene.background = new THREE.Color(0x0a0a1e);
+    scene.fog.color = new THREE.Color(0x0a0a1e);
+  }
+  
+  // Ambient
+  const isNight = hours < 6 || hours >= 19;
+  ambientLight.intensity = isNight ? 0.15 : 0.45;
+  hemiLight.intensity = isNight ? 0.2 : 0.6;
+}
+
+// ==================== COMBAT ====================
+function playerAttack() {
+  if (player.attackCooldown > 0) return;
+  player.attackCooldown = 0.45;
+  player.attackAnim = 0.4;
+  
+  createSwordTrail();
+  
+  const playerForward = new THREE.Vector3(Math.sin(player.yaw), 0, Math.cos(player.yaw));
+  const ATTACK_RANGE = 3.0;
+  const ATTACK_ARC = 0.6;
+  
+  let hitAny = false;
+  
+  for (const m of monsters) {
+    if (!m.alive) continue;
+    const toMonster = new THREE.Vector3().subVectors(m.group.position, player.pos);
+    toMonster.y = 0;
+    const dist = toMonster.length();
+    if (dist > ATTACK_RANGE + m.radius) continue;
+    
+    toMonster.normalize();
+    const dot = toMonster.dot(playerForward);
+    if (dot < ATTACK_ARC) continue;
+    
+    // คำนวณดาเมจ
+    const isCrit = Math.random() < 0.15;
+    let damage = player.attackPower + Math.floor(Math.random() * 10);
+    if (isCrit) damage = Math.floor(damage * 1.8);
+    
+    m.health -= damage;
+    m.hitFlash = 0.3;
+    m.aggro = true;
+    updateMonsterHPBar(m);
+    showDamagePopup(damage, isCrit);
+    hitAny = true;
+    
+    if (m.health <= 0) {
+      killMonster(m);
+    }
+  }
+  
+  if (!hitAny) {
+    // miss - ไม่มีอะไร
+  }
+}
+
+function killMonster(m) {
+  m.alive = false;
+  m.group.visible = false;
+  
+  player.kills++;
+  player.killsByType[m.type] = (player.killsByType[m.type] || 0) + 1;
+  player.coins += m.coin;
+  
+  // ดรอปไอเทม
+  const dropRoll = Math.random();
+  if (dropRoll < 0.3) inventory.health_potion = (inventory.health_potion || 0) + 1;
+  else if (dropRoll < 0.5) inventory.mana_potion = (inventory.mana_potion || 0) + 1;
+  else if (dropRoll < 0.55 && m.type === 'boss') inventory.sword_upgrade = (inventory.sword_upgrade || 0) + 1;
+  
+  addExp(m.xp);
+  notify(`💀 สังหาร ${m.name}! +${m.xp} EXP, +${m.coin}💰`);
+  
+  if (m.type === 'boss') {
+    bossAlive = false;
+    notify('🏆 ปราบมังกรสำเร็จ!');
+  }
+  
+  checkQuestProgress(m.type);
+  updateHUD();
+  
+  setTimeout(() => {
+    if (m.group.parent) m.group.parent.remove(m.group);
+    const idx = monsters.indexOf(m);
+    if (idx > -1) monsters.splice(idx, 1);
+  }, 3000);
+}
+
+const damagePopupEl = document.getElementById('damagePopup');
+function showDamagePopup(damage, isCrit) {
+  damagePopupEl.textContent = (isCrit ? '💥' : '') + '-' + damage;
+  damagePopupEl.style.color = isCrit ? '#ffcc00' : '#ff3333';
+  damagePopupEl.style.fontSize = isCrit ? '40px' : '32px';
+  damagePopupEl.classList.remove('show');
+  void damagePopupEl.offsetWidth;
+  damagePopupEl.classList.add('show');
+}
+
+function damagePlayer(amount) {
+  if (player.invulnTimer > 0) return;
+  player.health = Math.max(0, player.health - amount);
+  player.invulnTimer = 0.8;
+  
+  document.body.style.boxShadow = 'inset 0 0 200px rgba(255,0,0,0.6)';
+  setTimeout(() => {
+    document.body.style.boxShadow = '';
+  }, 200);
+  
+  if (player.health <= 0) {
+    respawnPlayer();
+  }
+  updateHUD();
+}
+
+function respawnPlayer() {
+  notify('💀 คุณตาย! เสียเงิน 20%');
+  const lostCoins = Math.floor(player.coins * 0.2);
+  player.coins -= lostCoins;
+  
+  player.health = player.maxHealth;
+  player.mana = player.maxMana;
+  player.stamina = player.maxStamina;
+  player.pos.set(0, getHeight(0, 0), 0);
+  player.vel.set(0, 0, 0);
+  player.yaw = 0;
+  camOrbit.yaw = 0;
+  camOrbit.pitch = 0;
+  
+  for (const m of monsters) {
+    const d = m.group.position.distanceTo(player.pos);
+    if (d < 30 && m.alive) {
+      m.alive = false;
+      m.group.visible = false;
+      setTimeout(() => {
+        if (m.group.parent) m.group.parent.remove(m.group);
+        const idx = monsters.indexOf(m);
+        if (idx > -1) monsters.splice(idx, 1);
+      }, 100);
+    }
+  }
+  updateHUD();
+}
 
 // ==================== MINIMAP ====================
 const minimapCanvas = document.getElementById('minimapCanvas');
@@ -732,6 +1691,7 @@ function drawMinimap() {
   const cx = MM_SIZE / 2, cy = MM_SIZE / 2;
   const scale = MM_SIZE / 2 / MM_RANGE;
   
+  // ต้นไม้
   mmCtx.fillStyle = '#2d6a2d';
   for (const t of trees) {
     const dx = (t.x - player.pos.x) * scale;
@@ -741,18 +1701,41 @@ function drawMinimap() {
     }
   }
   
-  mmCtx.fillStyle = '#ffd700';
+  // Items
   for (const it of items) {
     if (it.collected) continue;
     const dx = (it.mesh.position.x - player.pos.x) * scale;
     const dz = (it.mesh.position.z - player.pos.z) * scale;
     if (Math.sqrt(dx*dx + dz*dz) < MM_SIZE/2 - 3) {
+      const c = ITEM_TYPES[it.itemType];
+      mmCtx.fillStyle = '#' + c.color.toString(16).padStart(6, '0');
       mmCtx.beginPath();
       mmCtx.arc(cx + dx, cy + dz, 2.5, 0, Math.PI*2);
       mmCtx.fill();
     }
   }
   
+  // Monsters
+  for (const m of monsters) {
+    if (!m.alive) continue;
+    const dx = (m.group.position.x - player.pos.x) * scale;
+    const dz = (m.group.position.z - player.pos.z) * scale;
+    if (Math.sqrt(dx*dx + dz*dz) < MM_SIZE/2 - 3) {
+      if (m.type === 'boss') {
+        mmCtx.fillStyle = '#ff00ff';
+        mmCtx.beginPath();
+        mmCtx.arc(cx + dx, cy + dz, 5, 0, Math.PI*2);
+        mmCtx.fill();
+      } else {
+        mmCtx.fillStyle = m.aggro ? '#ff0000' : '#cc3333';
+        mmCtx.beginPath();
+        mmCtx.arc(cx + dx, cy + dz, 3, 0, Math.PI*2);
+        mmCtx.fill();
+      }
+    }
+  }
+  
+  // Player arrow
   mmCtx.save();
   mmCtx.translate(cx, cy);
   mmCtx.rotate(Math.PI - camOrbit.yaw);
@@ -787,6 +1770,21 @@ function checkTreeCollision(newPos) {
   }
 }
 
+function checkMonsterCollision(newPos) {
+  for (const m of monsters) {
+    if (!m.alive) continue;
+    const dx = newPos.x - m.group.position.x;
+    const dz = newPos.z - m.group.position.z;
+    const dist = Math.sqrt(dx*dx + dz*dz);
+    const minDist = player.radius + m.radius;
+    if (dist < minDist && dist > 0.001) {
+      const push = (minDist - dist) / dist;
+      newPos.x += dx * push;
+      newPos.z += dz * push;
+    }
+  }
+}
+
 // ==================== ANIMATION ====================
 let walkCycle = 0;
 function animateCharacter(dt, isMoving, isRunning) {
@@ -797,7 +1795,9 @@ function animateCharacter(dt, isMoving, isRunning) {
     bodyParts.legL.rotation.x = swing;
     bodyParts.legR.rotation.x = -swing;
     bodyParts.armL.rotation.x = -swing * 0.8;
-    bodyParts.armR.rotation.x = swing * 0.8;
+    if (player.attackAnim <= 0) {
+      bodyParts.armR.rotation.x = swing * 0.8;
+    }
     const bob = Math.abs(Math.sin(walkCycle * 2)) * 0.05;
     bodyParts.torso.position.y = 1.15 + bob;
     bodyParts.head.position.y = 1.75 + bob;
@@ -806,15 +1806,125 @@ function animateCharacter(dt, isMoving, isRunning) {
     bodyParts.legL.rotation.x *= 0.85;
     bodyParts.legR.rotation.x *= 0.85;
     bodyParts.armL.rotation.x *= 0.85;
-    bodyParts.armR.rotation.x *= 0.85;
+    if (player.attackAnim <= 0) {
+      bodyParts.armR.rotation.x *= 0.85;
+    }
     bodyParts.torso.position.y += (1.15 - bodyParts.torso.position.y) * 0.15;
     bodyParts.head.position.y += (1.75 - bodyParts.head.position.y) * 0.15;
   }
+  
+  if (player.attackAnim > 0) {
+    const t = 1 - (player.attackAnim / 0.4);
+    let swingAngle;
+    if (t < 0.35) {
+      const k = t / 0.35;
+      swingAngle = -k * 1.8;
+    } else {
+      const k = (t - 0.35) / 0.65;
+      swingAngle = -1.8 + k * 3.5;
+    }
+    bodyParts.armR.rotation.x = swingAngle;
+    bodyParts.torso.rotation.y = Math.sin(t * Math.PI) * 0.35;
+    bodyParts.armL.rotation.x = -Math.sin(t * Math.PI) * 0.6;
+  } else {
+    bodyParts.torso.rotation.y *= 0.85;
+  }
+  
   if (!player.onGround) {
     bodyParts.armL.rotation.x = -1.2;
-    bodyParts.armR.rotation.x = -1.2;
+    if (player.attackAnim <= 0) bodyParts.armR.rotation.x = -1.2;
     bodyParts.legL.rotation.x = 0.3;
     bodyParts.legR.rotation.x = -0.3;
+  }
+}
+
+function animateMonster(m, dt) {
+  if (!m.alive) return;
+  
+  const dx = player.pos.x - m.group.position.x;
+  const dz = player.pos.z - m.group.position.z;
+  const distToPlayer = Math.hypot(dx, dz);
+  
+  if (distToPlayer < m.aggroRange) m.aggro = true;
+  if (distToPlayer > m.aggroRange * 1.5) m.aggro = false;
+  
+  if (m.aggro && distToPlayer > m.attackRange) {
+    const dirX = dx / distToPlayer;
+    const dirZ = dz / distToPlayer;
+    
+    m.group.position.x += dirX * m.speed * dt;
+    m.group.position.z += dirZ * m.speed * dt;
+    
+    for (const t of trees) {
+      const tdx = m.group.position.x - t.x;
+      const tdz = m.group.position.z - t.z;
+      const td = Math.hypot(tdx, tdz);
+      if (td < m.radius + t.radius && td > 0.001) {
+        const push = (m.radius + t.radius - td) / td;
+        m.group.position.x += tdx * push;
+        m.group.position.z += tdz * push;
+      }
+    }
+    
+    m.group.position.y = getHeight(m.group.position.x, m.group.position.z);
+    m.yaw = Math.atan2(dx, dz);
+    m.walkCycle += dt * 8;
+  } else {
+    m.walkCycle += dt * 2;
+  }
+  
+  let yawDiff = m.yaw - m.group.rotation.y;
+  while (yawDiff > Math.PI) yawDiff -= Math.PI * 2;
+  while (yawDiff < -Math.PI) yawDiff += Math.PI * 2;
+  m.group.rotation.y += yawDiff * Math.min(1, dt * 8);
+  
+  if (m.type === 'slime') {
+    const bounce = Math.abs(Math.sin(m.walkCycle * 0.8)) * 0.25;
+    m.parts.body.position.y = m.size * 0.8 + bounce;
+    m.parts.body.scale.y = 0.8 - bounce * 0.5;
+  } 
+  else if (m.type === 'wolf') {
+    const s = Math.sin(m.walkCycle) * 0.5;
+    m.parts.legs[0].rotation.x = s;
+    m.parts.legs[1].rotation.x = -s;
+    m.parts.legs[2].rotation.x = -s;
+    m.parts.legs[3].rotation.x = s;
+  }
+  else if (m.type === 'demon') {
+    const bob = Math.abs(Math.sin(m.walkCycle * 0.5)) * 0.1;
+    m.parts.body.position.y = 1.3 + bob;
+    m.parts.head.position.y = 2.15 + bob;
+  }
+  else if (m.type === 'boss') {
+    const bob = Math.abs(Math.sin(m.walkCycle * 0.3)) * 0.15;
+    m.parts.body.position.y = 2.5 + bob;
+    m.parts.head.position.y = 3.2 + bob;
+  }
+  
+  if (m.hitFlash > 0) {
+    m.hitFlash -= dt;
+    const intensity = m.hitFlash / 0.3;
+    m.group.traverse(obj => {
+      if (obj.isMesh && obj.material && obj.material.emissive) {
+        if (!obj._origEmissive) obj._origEmissive = obj.material.emissive.clone();
+        obj.material.emissive.setRGB(intensity, 0, 0);
+      }
+    });
+    if (m.hitFlash <= 0) {
+      m.group.traverse(obj => {
+        if (obj.isMesh && obj.material && obj._origEmissive) {
+          obj.material.emissive.copy(obj._origEmissive);
+        }
+      });
+    }
+  }
+  
+  if (m.alive && m.aggro && distToPlayer < m.attackRange + 0.5) {
+    m.attackTimer -= dt;
+    if (m.attackTimer <= 0) {
+      m.attackTimer = m.attackCooldown;
+      damagePlayer(m.damage);
+    }
   }
 }
 
@@ -827,38 +1937,35 @@ const GRAVITY = 30;
 let lastItemCheck = 0;
 
 function update(dt) {
-  // === ตรวจสอบว่าเล่นอยู่ไหม ===
   const isPlaying = isMobile 
     ? startScreen.style.display === 'none' 
     : pointerLocked;
-  if (!isPlaying) return;
   
-  // ==================== รับ Input ====================
-  let moveX = 0, moveY = 0; // -1 ถึง 1 (จาก joystick หรือ keyboard)
+  // อัปเดต Day/Night เสมอ
+  updateDayNight(dt);
+  
+  if (!isPlaying || isPaused) return;
+  
+  // === Input ===
+  let moveX = 0, moveY = 0;
   
   if (isMobile) {
-    // จาก joystick ซ้าย: y ติดลบ = ขึ้น (เดินหน้า)
     moveX = touch.move.x;
-    moveY = -touch.move.y; // แปลงเป็นแกน forward
-    
-    // หมุนกล้องจาก joystick ขวา
+    moveY = -touch.move.y;
     camOrbit.yaw -= touch.look.x * 2.5 * dt;
     camOrbit.pitch -= touch.look.y * 2.5 * dt;
     camOrbit.pitch = Math.max(-1.2, Math.min(1.2, camOrbit.pitch));
   } else {
-    // Keyboard
     if (keys['KeyW']) moveY += 1;
     if (keys['KeyS']) moveY -= 1;
     if (keys['KeyD']) moveX += 1;
     if (keys['KeyA']) moveX -= 1;
-    // Space jump
     if (keys['Space'] && player.onGround) {
       player.vel.y = JUMP_FORCE;
       player.onGround = false;
     }
   }
   
-  // ทิศทางอ้างอิงจากกล้อง
   const camForward = new THREE.Vector3(Math.sin(camOrbit.yaw), 0, Math.cos(camOrbit.yaw));
   const camRight = new THREE.Vector3(-Math.cos(camOrbit.yaw), 0, Math.sin(camOrbit.yaw));
   
@@ -866,7 +1973,6 @@ function update(dt) {
   move.addScaledVector(camForward, moveY);
   move.addScaledVector(camRight, moveX);
   
-  // วิ่ง?
   const isRunning = (isMobile ? touch.running : (keys['ShiftLeft'] || keys['ShiftRight'])) && player.stamina > 0;
   const speed = isRunning ? RUN_SPEED : SPEED;
   const isMoving = move.lengthSq() > 0.01;
@@ -882,8 +1988,11 @@ function update(dt) {
     while (diff < -Math.PI) diff += Math.PI * 2;
     player.yaw += diff * Math.min(1, dt * 12);
   } else {
-    player.stamina = Math.min(100, player.stamina + 15 * dt);
+    player.stamina = Math.min(player.maxStamina, player.stamina + 15 * dt);
   }
+  
+  // Mana regen ช้าๆ
+  player.mana = Math.min(player.maxMana, player.mana + 2 * dt);
   
   player.vel.y -= GRAVITY * dt;
   
@@ -897,6 +2006,7 @@ function update(dt) {
   newPos.z = Math.max(-bound, Math.min(bound, newPos.z));
   
   checkTreeCollision(newPos);
+  checkMonsterCollision(newPos);
   
   const groundY = getHeight(newPos.x, newPos.z);
   if (newPos.y <= groundY) {
@@ -907,7 +2017,25 @@ function update(dt) {
   
   player.pos.copy(newPos);
   
-  // เก็บ Items
+  if (player.attackCooldown > 0) player.attackCooldown -= dt;
+  if (player.attackAnim > 0) player.attackAnim -= dt;
+  if (player.invulnTimer > 0) player.invulnTimer -= dt;
+  
+  // Sword trails
+  for (let i = swordTrails.length - 1; i >= 0; i--) {
+    const tr = swordTrails[i];
+    tr.life -= dt;
+    tr.mesh.material.opacity = (tr.life / tr.maxLife) * 0.7;
+    tr.mesh.scale.setScalar(1 + (1 - tr.life / tr.maxLife) * 0.5);
+    if (tr.life <= 0) {
+      scene.remove(tr.mesh);
+      tr.mesh.geometry.dispose();
+      tr.mesh.material.dispose();
+      swordTrails.splice(i, 1);
+    }
+  }
+  
+  // Items
   lastItemCheck += dt;
   if (lastItemCheck > 0.1) {
     lastItemCheck = 0;
@@ -917,16 +2045,40 @@ function update(dt) {
       if (d < 2.2) {
         it.collected = true;
         it.mesh.visible = false;
+        
+        // เก็บไอเทมตามชนิด
+        if (it.itemType === 'coin') {
+          player.coins += ITEM_TYPES.coin.value;
+          notify(`🪙 +${ITEM_TYPES.coin.value}`);
+        } else {
+          inventory[it.itemType] = (inventory[it.itemType] || 0) + 1;
+          notify(`✨ ได้ ${it.name}`);
+        }
+        
         player.score++;
         itemCountEl.textContent = player.score;
-        notify('✨ เก็บของได้! (' + player.score + ')');
+        
         setTimeout(() => {
           const x = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
           const z = (Math.random() - 0.5) * WORLD_SIZE * 0.7;
+          // สุ่มชนิดใหม่
+          const roll = Math.random();
+          let newType = 'coin';
+          if (roll > 0.9) newType = 'sword_upgrade';
+          else if (roll > 0.75) newType = 'mana_potion';
+          else if (roll > 0.55) newType = 'health_potion';
+          
+          it.itemType = newType;
+          it.name = ITEM_TYPES[newType].name;
+          it.mesh.material.color.setHex(ITEM_TYPES[newType].color);
+          it.mesh.material.emissive.setHex(ITEM_TYPES[newType].emissive);
+          
           it.mesh.position.set(x, getHeight(x, z) + 1.2, z);
           it.mesh.visible = true;
           it.collected = false;
         }, 3000);
+        
+        updateHUD();
       }
     }
   }
@@ -938,12 +2090,23 @@ function update(dt) {
     }
   }
   
-  // ตัวละคร
+  // Monsters
+  for (const m of monsters) {
+    if (m.alive) animateMonster(m, dt);
+  }
+  
+  // Player
   playerRig.position.copy(player.pos);
   playerRig.rotation.y = player.yaw;
   animateCharacter(dt, isMoving, isRunning);
   
-  // ==================== กล้อง ====================
+  if (player.invulnTimer > 0) {
+    playerRig.visible = viewMode === 'third' && Math.floor(player.invulnTimer * 20) % 2 === 0;
+  } else {
+    playerRig.visible = viewMode === 'third';
+  }
+  
+  // Camera
   if (viewMode === 'first') {
     const headPos = player.pos.clone().add(new THREE.Vector3(0, 1.75, 0));
     camera.position.copy(headPos);
@@ -952,13 +2115,11 @@ function update(dt) {
     camera.rotation.x = camOrbit.pitch;
   } else {
     const target = player.pos.clone().add(new THREE.Vector3(0, camOrbit.heightOffset, 0));
-    
     const offsetX = -Math.sin(camOrbit.yaw) * Math.cos(camOrbit.pitch) * camOrbit.distance;
     const offsetY = -Math.sin(camOrbit.pitch) * camOrbit.distance;
     const offsetZ = -Math.cos(camOrbit.yaw) * Math.cos(camOrbit.pitch) * camOrbit.distance;
     
     const desiredPos = target.clone().add(new THREE.Vector3(offsetX, offsetY, offsetZ));
-    
     const minCamY = getHeight(desiredPos.x, desiredPos.z) + 0.8;
     if (desiredPos.y < minCamY) desiredPos.y = minCamY;
     
@@ -966,12 +2127,10 @@ function update(dt) {
     camera.lookAt(target);
   }
   
-  sun.position.set(player.pos.x + 40, player.pos.y + 80, player.pos.z + 30);
   sun.target.position.copy(player.pos);
   
   posEl.textContent = `${player.pos.x.toFixed(1)}, ${player.pos.z.toFixed(1)}`;
-  healthBar.style.width = player.health + '%';
-  staminaBar.style.width = player.stamina + '%';
+  updateHUD();
 }
 
 function animate() {
@@ -983,17 +2142,25 @@ function animate() {
 }
 animate();
 
+// ==================== INIT ====================
+updateHUD();
+updateQuestUI();
+updateInventoryUI();
+
 window.addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
 
-// ป้องกัน pinch zoom และ scroll บนมือถือ
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('touchmove', e => {
   if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
+
+// Expose globals for HTML onclick
+window.toggleInventory = toggleInventory;
+window.toggleShop = toggleShop;
 </script>
 </body>
 </html>
