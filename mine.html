@@ -658,7 +658,10 @@ header {
   padding: 16px;
   overflow-y: auto;
   background: var(--bg-body);
-  -webkit-overflow-scrolling: touch;
+  /* หมายเหตุ: ตัด -webkit-overflow-scrolling:touch ออก - iOS Safari/WKWebView รุ่นใหม่ (13+)
+     มี momentum scroll เป็นค่าเริ่มต้นอยู่แล้วไม่ต้องพึ่ง property นี้ และมันมีบั๊กที่รู้จักกันดีคือ
+     ถ้าเนื้อหาในกล่อง scroll เปลี่ยนขนาด/อัปเดตขณะกำลังเลื่อนจอ (momentum scrolling) อยู่ ตำแหน่ง scroll
+     จะกระโดด/รีเซ็ตเองแบบสุ่มได้ ซึ่งตรงกับอาการที่เจอ เพราะตัวเลข Gold/แร่/หลอดขุดอัปเดตสดตลอดเวลา */
 }
 .tab-content {
   display: none;
@@ -932,7 +935,7 @@ header {
   pointer-events: auto;
 }
 #reset-modal,
-#sell-confirm-modal {
+#app-modal {
   display: none;
   position: fixed;
   inset: 0;
@@ -1187,7 +1190,7 @@ body {
   overflow-y: auto;
 }
 #reset-modal,
-#sell-confirm-modal {
+#app-modal {
   padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
 }
 /* ===== Smoothness ===== */
@@ -1270,7 +1273,7 @@ body {
   }
 }
 #reset-modal,
-#sell-confirm-modal {
+#app-modal {
   animation: fade .2s ease-out;
 }
 .modal-content {
@@ -1856,14 +1859,11 @@ body {
   </div>
 </div>
 
-<div id="sell-confirm-modal">
+<div id="app-modal">
   <div class="modal-content" style="max-width:380px">
-    <h3 style="color:var(--gold);margin-bottom:12px" id="sell-confirm-title"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ยืนยันการขาย</h3>
-    <div class="offline-stat-list" id="sell-confirm-body" style="margin-bottom:18px"></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn" style="background:var(--border)" onclick="cancelSellConfirm()">ยกเลิก</button>
-      <button class="btn btn-success" onclick="confirmSellExecute()">ยืนยันขาย</button>
-    </div>
+    <h3 id="app-modal-title" style="color:var(--gold);margin-bottom:12px"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note" id="app-modal-icon-use"></use></svg> <span id="app-modal-title-text"></span></h3>
+    <div id="app-modal-body" style="color:var(--text-muted);font-size:.85rem;margin-bottom:20px"></div>
+    <div id="app-modal-buttons" style="display:flex;gap:10px"></div>
   </div>
 </div>
 
@@ -3325,9 +3325,9 @@ function importSaveFile(ev){
   const r = new FileReader();
   r.onload = e=>{
     try{ const obj = JSON.parse(e.target.result);
-      if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); alert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
-      else alert('ไฟล์เซฟไม่ถูกต้อง');
-    }catch(err){ alert('อ่านไฟล์เซฟไม่สำเร็จ'); }
+      if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); showAppAlert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
+      else showAppAlert('ไฟล์เซฟไม่ถูกต้อง');
+    }catch(err){ showAppAlert('อ่านไฟล์เซฟไม่สำเร็จ'); }
     ev.target.value = '';
   };
   r.readAsText(f);
@@ -3342,11 +3342,11 @@ function exportSaveCode(){
 }
 function importSaveCode(){
   const box = document.getElementById('import-code-box'); if(!box) return;
-  const code = box.value.trim(); if(!code){ alert('กรุณาวางโค้ดเซฟ'); return; }
+  const code = box.value.trim(); if(!code){ showAppAlert('กรุณาวางโค้ดเซฟ'); return; }
   try{ const obj = JSON.parse(safeAtob(code));
-    if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); alert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
-    else alert('โค้ดไม่ถูกต้อง');
-  }catch(e){ alert('รูปแบบโค้ดผิดพลาด'); }
+    if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); showAppAlert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
+    else showAppAlert('โค้ดไม่ถูกต้อง');
+  }catch(e){ showAppAlert('รูปแบบโค้ดผิดพลาด'); }
 }
 function resetGame(){ const m=document.getElementById('reset-modal'); if(m) m.style.display='flex'; }
 function closeResetModal(){ const m=document.getElementById('reset-modal'); if(m) m.style.display='none'; }
@@ -4107,7 +4107,7 @@ function repairTools(){
   sanitizeData();
   if(gameData.durability >= 100){ showToast('ความทนทานเต็มอยู่แล้ว'); return; }
   const cost = getRepairCost();
-  if(gameData.gold < cost){ alert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
+  if(gameData.gold < cost){ showAppAlert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
   gameData.gold -= cost; gameData.durability = 100; gameData.repairCount++;
   SFX.upgrade();
   showToast('ซ่อมแซมสำเร็จ (-'+cost.toLocaleString()+' Gold)');
@@ -4119,9 +4119,9 @@ function trainTroop(type){
   sanitizeData();
   const c = TRAIN_CFG[type]; if(!c) return;
   const costGold = c.costGold, ore = c.ore, qty = c.qty, bar = c.bar, barQty = c.barQty, barLabel = c.barLabel;
-  if(gameData.gold < costGold){ alert('Gold ไม่พอฝึกทหาร!'); return; }
-  if(gameData[ore] < qty){ alert('วัตถุดิบแร่ไม่เพียงพอ!'); return; }
-  if((gameData[bar]||0) < barQty){ alert(barLabel+' ไม่พอ! ต้องใช้ '+barQty+' แท่ง (ตอนนี้มี '+(gameData[bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
+  if(gameData.gold < costGold){ showAppAlert('Gold ไม่พอฝึกทหาร!'); return; }
+  if(gameData[ore] < qty){ showAppAlert('วัตถุดิบแร่ไม่เพียงพอ!'); return; }
+  if((gameData[bar]||0) < barQty){ showAppAlert(barLabel+' ไม่พอ! ต้องใช้ '+barQty+' แท่ง (ตอนนี้มี '+(gameData[bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
   gameData.gold -= costGold; gameData[ore] -= qty; gameData[bar] -= barQty; gameData.troops[type] += 1;
   SFX.upgrade();
   showToast('🎖️ เกณฑ์ทหารสำเร็จ (+1 นาย)');
@@ -4131,13 +4131,13 @@ function trainTroop(type){
 function startExpedition(key){
   sanitizeData();
   const cfg = EXP_CFG[key]; if(!cfg) return;
-  if(gameData.expeditions[key] && gameData.expeditions[key].endTime > Date.now()){ alert('กองทัพกำลังปฏิบัติภารกิจนี้อยู่!'); return; }
+  if(gameData.expeditions[key] && gameData.expeditions[key].endTime > Date.now()){ showAppAlert('กองทัพกำลังปฏิบัติภารกิจนี้อยู่!'); return; }
   const cur = gameData.troops[cfg.reqType] || 0;
-  if(cur < cfg.reqNum){ alert('กำลังพลไม่พอ! ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' อย่างน้อย '+cfg.reqNum+' นาย (ตอนนี้มี '+cur+')'); return; }
+  if(cur < cfg.reqNum){ showAppAlert('กำลังพลไม่พอ! ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' อย่างน้อย '+cfg.reqNum+' นาย (ตอนนี้มี '+cur+')'); return; }
   if(cfg.cost){
     for(let res in cfg.cost){
       if((gameData[res]||0) < cfg.cost[res]){
-        alert('เสบียงไม่พอสำหรับภารกิจนี้! ต้องการ '+cfg.cost[res].toLocaleString()+' '+res);
+        showAppAlert('เสบียงไม่พอสำหรับภารกิจนี้! ต้องการ '+cfg.cost[res].toLocaleString()+' '+res);
         return;
       }
     }
@@ -4183,11 +4183,11 @@ function checkExpeditions(){
 function toggleMining(type){
   sanitizeData();
   const cfg = MINE_CFG[type];
-  if(gameData.level < cfg.reqLv){ alert('ต้องมีเลเวล '+cfg.reqLv+' ขึ้นไปจึงจะปลดล็อก'+cfg.label); return; }
+  if(gameData.level < cfg.reqLv){ showAppAlert('ต้องมีเลเวล '+cfg.reqLv+' ขึ้นไปจึงจะปลดล็อก'+cfg.label); return; }
   const mine = gameData.mines[type];
   if(!mine.active && gameData.durability <= 0){
     checkAutoRepair();
-    if(gameData.durability <= 0){ alert('ความทนทานหมด! กรุณาซ่อมแซมก่อนเริ่มขุด'); updateUI(); return; }
+    if(gameData.durability <= 0){ showAppAlert('ความทนทานหมด! กรุณาซ่อมแซมก่อนเริ่มขุด'); updateUI(); return; }
   }
   mine.active = !mine.active;
   if(!mine.active){
@@ -4200,12 +4200,12 @@ function toggleMining(type){
 function manualMine(type){
   sanitizeData();
   const cfg = MINE_CFG[type];
-  if(gameData.level < cfg.reqLv){ alert('ต้องมีเลเวล '+cfg.reqLv+' ขึ้นไปจึงจะปลดล็อก'+cfg.label); return; }
+  if(gameData.level < cfg.reqLv){ showAppAlert('ต้องมีเลเวล '+cfg.reqLv+' ขึ้นไปจึงจะปลดล็อก'+cfg.label); return; }
   const now = Date.now();
   if(manualCooldownUntil[type] > now){ showToast('⏳ รอ '+Math.ceil((manualCooldownUntil[type]-now)/1000)+' วิ ก่อนขุดด้วยมืออีกครั้ง'); return; }
   if(gameData.durability <= 0){
     checkAutoRepair();
-    if(gameData.durability <= 0){ alert('ความทนทานหมด! กรุณาซ่อมแซมก่อนขุดด้วยมือ'); return; }
+    if(gameData.durability <= 0){ showAppAlert('ความทนทานหมด! กรุณาซ่อมแซมก่อนขุดด้วยมือ'); return; }
   }
   manualCooldownUntil[type] = now + MANUAL_MINE_COOLDOWN;
   if(!consumeDurability(getDurabilityCost()*0.5)){
@@ -4231,8 +4231,8 @@ function upgradeMine(type){
   sanitizeData();
   const mine = gameData.mines[type]; const cost = mine.cost;
   const ub = MINE_UP_BAR[type], barCost = mineBarCost(type);
-  if(gameData.gold < cost){ alert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
-  if((gameData[ub.bar]||0) < barCost){ alert(ub.label+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (ตอนนี้มี '+(gameData[ub.bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
+  if(gameData.gold < cost){ showAppAlert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
+  if((gameData[ub.bar]||0) < barCost){ showAppAlert(ub.label+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (ตอนนี้มี '+(gameData[ub.bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
   gameData.gold -= cost; gameData[ub.bar] -= barCost; mine.level += 1; mine.cost = Math.floor(cost * 1.7);
   addXP(Math.floor(cost/15));
   SFX.upgrade();
@@ -4352,16 +4352,16 @@ function upgradeEquipment(type){
   const barCost = equipBarCost(type);
   const oreCost = equipOreCost(type);
   if((gameData[cfg.barType] || 0) < barCost){
-    alert(cfg.barLabel+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (หลอมได้ในแท็บ "เตาหลอมแร่")'); return;
+    showAppAlert(cfg.barLabel+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (หลอมได้ในแท็บ "เตาหลอมแร่")'); return;
   }
   if((gameData[cfg.oreType] || 0) < oreCost){
-    alert(cfg.oreLabel+' ไม่พอ! ต้องใช้ '+oreCost.toLocaleString()+' ชิ้น'); return;
+    showAppAlert(cfg.oreLabel+' ไม่พอ! ต้องใช้ '+oreCost.toLocaleString()+' ชิ้น'); return;
   }
   if(cfg.currency === 'gems'){
-    if(gameData.gems < cost){ alert('Gems ไม่พออัปเกรด!'); return; }
+    if(gameData.gems < cost){ showAppAlert('Gems ไม่พออัปเกรด!'); return; }
     gameData.gems -= cost;
   }else{
-    if(gameData.gold < cost){ alert('Gold ไม่พออัปเกรด!'); return; }
+    if(gameData.gold < cost){ showAppAlert('Gold ไม่พออัปเกรด!'); return; }
     gameData.gold -= cost;
   }
   gameData[cfg.barType] -= barCost;
@@ -4381,10 +4381,10 @@ function buyOrEquipSkin(skinId){
     showToast('✅ สวมใส่สกิน "'+skin.name+'" แล้ว');
   }else{
     if(skin.priceType === 'gold'){
-      if(gameData.gold < skin.price){ alert('Gold ไม่พอซื้อสกินนี้!'); return; }
+      if(gameData.gold < skin.price){ showAppAlert('Gold ไม่พอซื้อสกินนี้!'); return; }
       gameData.gold -= skin.price;
     }else if(skin.priceType === 'gems'){
-      if(gameData.gems < skin.price){ alert('Gems ไม่พอซื้อสกินนี้!'); return; }
+      if(gameData.gems < skin.price){ showAppAlert('Gems ไม่พอซื้อสกินนี้!'); return; }
       gameData.gems -= skin.price;
     }
     gameData.ownedSkins.push(skinId); gameData.equippedSkin = skinId;
@@ -4537,10 +4537,52 @@ function previewSale(type, qty){
   return { price, res, bonus, gross, fee, earned };
 }
 
-// ===== ยืนยันก่อนขายก้อนใหญ่ ด้วยโมดัลในเกมเอง (ไม่ใช้ window.confirm) =====
-// เหตุผล: WebView/in-app browser หลายตัว (LINE, Facebook, บาง Android WebView ที่ไม่ได้ override onJsConfirm)
-// ไม่รองรับ confirm() แล้วคืนค่า false เงียบๆ ทำให้ปุ่มขาย "กดแล้วไม่ทำงาน" ทั้งที่โค้ดถูกต้อง
-let pendingSale = null;
+// ===== โมดัลกลางสำหรับแจ้งเตือน/ยืนยัน แทน alert()/confirm() ของเบราว์เซอร์ทั้งหมด =====
+// เหตุผล: WebView/in-app browser หลายตัว (LINE, Facebook, บาง Android WebView ที่ไม่ได้ override
+// onJsAlert/onJsConfirm) ไม่รองรับ dialog ของเบราว์เซอร์ ทำให้ปุ่มกดแล้ว "ไม่ทำงาน" เงียบๆ โดยไม่มี error
+// ให้เห็นเลย ระบบนี้แทนที่ native alert()/confirm() ทั้งหมดด้วยโมดัลที่สร้างเอง ควบคุมได้ 100%
+let appModalConfirmCb = null;
+function renderAppModal(opt){
+  const m = document.getElementById('app-modal');
+  if(!m){
+    // กันเหนียวสุดๆ ถ้า DOM ยังไม่พร้อมจริงๆ: ไม่ย้อนกลับไปพึ่ง native alert/confirm อีก (จะวนกลับไปเจอบั๊กเดิม)
+    // แค่ log ไว้ และถ้าเป็นโหมดยืนยัน ให้ปล่อยผ่านไปเลยดีกว่าปล่อยให้ผู้เล่นกดอะไรไม่ได้ค้างอยู่
+    console.warn('[app-modal] ไม่พบ #app-modal ใน DOM:', opt.title);
+    if(opt.kind==='confirm'){ const cb=appModalConfirmCb; appModalConfirmCb=null; if(cb) cb(); }
+    return;
+  }
+  setTxt(document.getElementById('app-modal-title-text'), opt.title);
+  const iconUse = document.getElementById('app-modal-icon-use');
+  if(iconUse) iconUse.setAttribute('href', '#'+(opt.icon||'pi-note'));
+  const body = document.getElementById('app-modal-body');
+  if(body) body.innerHTML = opt.bodyHtml;
+  const box = document.getElementById('app-modal-buttons');
+  if(box){
+    box.innerHTML = (opt.kind==='confirm')
+      ? '<button class="btn" style="background:var(--border)" onclick="appModalCancel()">ยกเลิก</button><button class="btn btn-success" onclick="appModalConfirm()">ยืนยัน</button>'
+      : '<button class="btn btn-success" style="width:100%" onclick="closeAppModal()">ตกลง</button>';
+  }
+  m.style.display = 'flex';
+}
+// ใช้แทน showAppAlert(message) เดิมทุกจุด - message เป็นข้อความล้วน (ไม่ต้องมี HTML)
+function showAppAlert(message, title){
+  appModalConfirmCb = null;
+  renderAppModal({ title: title || 'แจ้งเตือน', bodyHtml: '<p style="margin:0">'+String(message).replace(/\n/g,'<br>')+'</p>', icon:'pi-note', kind:'alert' });
+}
+// ใช้แทน confirm(message) เดิม - bodyHtml รับได้ทั้งข้อความล้วนหรือ HTML ที่สร้างไว้แล้ว (เช่น รายการราคาตอนขายแร่)
+// onConfirm จะถูกเรียกก็ต่อเมื่อผู้เล่นกด "ยืนยัน" เท่านั้น (กด "ยกเลิก"/ปิดโมดัล จะไม่มีอะไรเกิดขึ้น)
+function showAppConfirm(bodyHtml, onConfirm, title){
+  appModalConfirmCb = (typeof onConfirm==='function') ? onConfirm : null;
+  renderAppModal({ title: title || 'ยืนยันการทำรายการ', bodyHtml, icon:'pi-warning', kind:'confirm' });
+}
+function appModalCancel(){ appModalConfirmCb = null; closeAppModal(); }
+function appModalConfirm(){
+  const cb = appModalConfirmCb; appModalConfirmCb = null;
+  closeAppModal();
+  if(cb) cb();
+}
+function closeAppModal(){ const m = document.getElementById('app-modal'); if(m) m.style.display = 'none'; }
+
 function sellOre(type, amount){
   sanitizeData();
   const have = gameData[type];
@@ -4550,34 +4592,14 @@ function sellOre(type, amount){
 
   const preview = previewSale(type, qty);
   if(qty >= MARKET_SELL_CONFIG.previewConfirmQty){
-    showSellConfirmModal(type, qty, preview);
+    const rows = [
+      '<div class="offline-stat-row"><span class="k">ราคาตลาดตอนนี้</span><span class="v" style="color:var(--text-main)">'+preview.price.toLocaleString()+' Gold/ชิ้น</span></div>',
+      '<div class="offline-stat-row"><span class="k">ราคาเฉลี่ยที่จะได้จริง</span><span class="v" style="color:var(--text-main)">'+preview.res.avg.toLocaleString()+' Gold/ชิ้น</span></div>',
+      '<div class="offline-stat-row"><span class="k">รับสุทธิ (หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'%)</span><span class="v">'+preview.earned.toLocaleString()+' Gold</span></div>'
+    ].join('');
+    showAppConfirm(rows, function(){ executeSale(type, qty, preview); }, 'ยืนยันการขาย'+MINE_CFG[type].label.replace('เหมือง','')+' '+qty.toLocaleString()+' ชิ้น');
     return;
   }
-  executeSale(type, qty, preview);
-}
-function showSellConfirmModal(type, qty, preview){
-  pendingSale = { type, qty, preview };
-  const m = document.getElementById('sell-confirm-modal');
-  if(!m){ executeSale(type, qty, preview); pendingSale = null; return; } // เผื่อ DOM ยังไม่พร้อม กันขายไม่ออกเลย
-  setTxt(document.getElementById('sell-confirm-title'), 'ยืนยันการขาย'+MINE_CFG[type].label.replace('เหมือง','')+' '+qty.toLocaleString()+' ชิ้น');
-  const rows = [
-    '<div class="offline-stat-row"><span class="k">ราคาตลาดตอนนี้</span><span class="v" style="color:var(--text-main)">'+preview.price.toLocaleString()+' Gold/ชิ้น</span></div>',
-    '<div class="offline-stat-row"><span class="k">ราคาเฉลี่ยที่จะได้จริง</span><span class="v" style="color:var(--text-main)">'+preview.res.avg.toLocaleString()+' Gold/ชิ้น</span></div>',
-    '<div class="offline-stat-row"><span class="k">รับสุทธิ (หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'%)</span><span class="v">'+preview.earned.toLocaleString()+' Gold</span></div>'
-  ];
-  const body = document.getElementById('sell-confirm-body');
-  if(body) body.innerHTML = rows.join('');
-  m.style.display = 'flex';
-}
-function cancelSellConfirm(){
-  pendingSale = null;
-  const m = document.getElementById('sell-confirm-modal'); if(m) m.style.display = 'none';
-}
-function confirmSellExecute(){
-  if(!pendingSale) return;
-  const { type, qty, preview } = pendingSale;
-  pendingSale = null;
-  const m = document.getElementById('sell-confirm-modal'); if(m) m.style.display = 'none';
   executeSale(type, qty, preview);
 }
 function executeSale(type, qty, preview){
@@ -4615,12 +4637,12 @@ function buyShopItem(item){
   if(item === 'repairKit'){
     const cost = 200;
     if(gameData.durability >= 100){ showToast('ความทนทานเต็มอยู่แล้ว'); return; }
-    if(gameData.gold < cost){ alert('Gold ไม่พอซื้อชุดซ่อม!'); return; }
+    if(gameData.gold < cost){ showAppAlert('Gold ไม่พอซื้อชุดซ่อม!'); return; }
     gameData.gold -= cost; gameData.durability = 100;
     showToast('⚡ ซ่อมเครื่องมือเต็ม 100% แล้ว!');
   }else if(item === 'mysteryBox'){
     const cost = 30;
-    if(gameData.gems < cost){ alert('Gems ไม่พอเปิดกล่องสุ่ม!'); return; }
+    if(gameData.gems < cost){ showAppAlert('Gems ไม่พอเปิดกล่องสุ่ม!'); return; }
     gameData.gems -= cost;
     const roll = Math.random();
     if(roll < 0.45){ const g = 1500 + Math.floor(Math.random()*2500); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); SFX.coin(); }
@@ -5067,12 +5089,21 @@ window.addEventListener('load', function(){
       if(e.persisted) resumeFromBackground();
       else wakeLoop();
     });
+    let __lastResizeWidth = window.innerWidth;
     window.addEventListener('resize', function(){
+      // มือถือหลายรุ่นยิง resize event ตอนแถบที่อยู่ (address bar) ย่อ/ขยายเองระหว่างเลื่อนจอ
+      // ทั้งที่ความกว้างหน้าจอไม่ได้เปลี่ยนเลย ถ้าปล่อยให้รีไซส์กราฟ/ฉาก Pixi ทุกครั้งที่ยิง event
+      // จะมีงานหนักแทรกกลางการเลื่อนจอ ทำให้จอกระตุก/รู้สึกเหมือน "เลื่อนเอง" ระหว่างดูกราฟหรือขุดอยู่
+      // จึงเช็คว่าความกว้างเปลี่ยนจริงก่อน ค่อยทำงานหนักส่วนนี้ (สูงเปลี่ยนอย่างเดียวข้ามไปเลย)
+      const widthChanged = window.innerWidth !== __lastResizeWidth;
+      __lastResizeWidth = window.innerWidth;
+
       const sb = document.getElementById('sidebar');
       if(sb){
         if(window.innerWidth >= 768){ closeSidebar(); }
         else { sb.classList.remove('collapsed'); }
       }
+      if(!widthChanged) return;
       if(isTabActive('market')) drawAllMarketCharts();
       clearTimeout(window.__pxT); window.__pxT = setTimeout(function(){ checkPixiRes(); checkPixiMineRes(); }, 300);
     });
