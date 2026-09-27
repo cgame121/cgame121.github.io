@@ -2643,7 +2643,16 @@ let miningProgress = { iron:0, silver:0, goldOre:0 };
 let manualCooldownUntil = { iron:0, silver:0, goldOre:0 };
 const MANUAL_MINE_COOLDOWN = 4000;
 let lastFrameTime = performance.now();
-let saveTick = 0;
+// ===== เซฟสำรอง (Backup save) =====
+// เดิม backup ถูกเขียนทับทุกครั้งที่ force=true (ซึ่งคือแทบทุกแอ็กชันในเกม) ทำให้ backup
+// แทบไม่เคยต่างจากเซฟหลักเลย ถ้าเซฟหลักพัง/มีข้อมูลผิดปกติ backup ก็จะโดนเขียนทับด้วยข้อมูลเดียวกัน
+// ในการเรียกเดียวกัน ไม่มีประโยชน์ในการกู้คืนจริง เปลี่ยนเป็นยึดตามเวลาจริงที่ผ่านไปแทน (ห่างกันอย่างน้อย
+// BACKUP_INTERVAL_MS) ให้ backup "ล้าหลัง" เซฟหลักจริงๆ ยกเว้นจุดที่ตั้งใจ sync ทันที (ดู syncBackupNow)
+const BACKUP_INTERVAL_MS = 5*60*1000; // 5 นาที
+let lastBackupTime = 0;
+// กำลังอยู่ระหว่างรีเซ็ตเกม (ดู executeResetGame) - ต้องกัน autoSaveGame ทุกทางที่เป็นไปได้ไม่ให้ทำงาน
+// รวมถึงจาก beforeunload/pagehide ที่ location.reload() จะไปกระตุ้นให้ยิง ก่อนหน้าเว็บจะโหลดใหม่จริงๆ
+let isResetting = false;
 let pixiScenes = {};
 
 /* ===== PIXEL MATRICES (redesigned troops & monsters) ===== */
@@ -3440,21 +3449,46 @@ function smeltOre(type, amount){
 
 // ===== บันทึก/โหลดเกม (Save · Load · Export/Import โค้ดเซฟ) =====
 function safeBtoa(str){ try{ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,(m,p)=>String.fromCharCode('0x'+p))); }catch(e){ return ''; } }
-function safeAtob(b64){ try{ return decodeURIComponent(Array.prototype.map.call(atob(b64),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')); }catch(e){ return '{}'; } }
+// เดิม safeAtob ดักทุก error แล้วคืน '{}' เงียบๆ ทำให้โค้ดเซฟที่พัง/ไม่ครบ (atob ถอดไม่ได้) กลาย
+// เป็น JSON.parse('{}') ที่ "สำเร็จ" แบบผิดๆ แทนที่จะโยน error ให้ import ปฏิเสธตามที่ควรจะเป็น
+// (ดูจุดใช้งานใน importSaveCode()) แก้โดยปล่อยให้ error หลุดออกไปให้ผู้เรียกจัดการเอง
+function safeAtob(b64){ return decodeURIComponent(Array.prototype.map.call(atob(b64),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
+// ตรวจว่า object ที่ได้มา (จากไฟล์/โค้ดเซฟ) "หน้าตาเหมือน" เซฟของเกมนี้จริงๆ ก่อนจะยอมรับ
+// กันไว้อีกชั้นสำหรับกรณี JSON.parse สำเร็จแต่เนื้อหาไม่ใช่เซฟจริง (เช่น {} ว่างเปล่า หรือไฟล์ JSON อื่น)
+// ซึ่งถ้าปล่อยผ่านไปจะโดน sanitizeData() เติมค่า default ทั้งหมดให้ กลายเป็นการรีเซ็ตเกมโดยไม่ตั้งใจ
+function looksLikeValidSave(obj){
+  return !!obj && typeof obj==='object'
+    && typeof obj.mines==='object' && obj.mines
+    && typeof obj.equipment==='object' && obj.equipment
+    && typeof obj.troops==='object' && obj.troops;
+}
 
-function autoSaveGame(force){
+function autoSaveGame(force, syncBackupNow){
+  // กำลังรีเซ็ตเกมอยู่ - ห้ามเขียนอะไรลง localStorage อีกเด็ดขาด แม้แต่จาก beforeunload/pagehide
+  // ที่ location.reload() ของ executeResetGame() จะไปกระตุ้นให้ยิงขึ้นมา (ดูคอมเมนต์ที่ isResetting)
+  if(isResetting) return;
   try{
     sanitizeData();
     gameData.lastSaveTime = Date.now();
     const s = JSON.stringify(gameData);
     localStorage.setItem('mcPrimarySave', s);
-    saveTick++;
-    if(force || saveTick>=20){ localStorage.setItem('mcBackupSave', s); saveTick = 0; }
+    const now = Date.now();
+    // เซฟสำรอง: sync ทันทีเฉพาะจุดที่ตั้งใจ (syncBackupNow เช่น กดเซฟเอง/โหลดเกม/import สำเร็จ)
+    // นอกนั้นยึดตามเวลาจริงที่ผ่านไป (BACKUP_INTERVAL_MS) ไม่ผูกกับ force ที่ถูกเรียกแทบทุกแอ็กชัน
+    if(syncBackupNow || (now - lastBackupTime) >= BACKUP_INTERVAL_MS){
+      localStorage.setItem('mcBackupSave', s);
+      lastBackupTime = now;
+    }
     const el = document.getElementById('last-save-text');
     if(el) el.innerText = new Date().toLocaleTimeString();
-  }catch(e){ console.error('save failed', e); }
+  }catch(e){
+    console.error('save failed', e);
+    // เดิมเงียบสนิทถ้าเซฟพัง (เช่น พื้นที่จัดเก็บเต็ม/ถูกบล็อกใน private mode) ผู้เล่นจะไม่รู้เลยว่า
+    // เกมหยุดบันทึกไปแล้ว จนกว่าจะปิด/รีเฟรชแล้วข้อมูลหาย จึงเพิ่มการแจ้งเตือนให้เห็นทันที
+    showToast('⚠️ บันทึกเกมไม่สำเร็จ! พื้นที่จัดเก็บอาจเต็มหรือถูกเบราว์เซอร์บล็อก');
+  }
 }
-function manualSaveGame(){ autoSaveGame(true); showToast('💾 บันทึกเกมเรียบร้อยแล้ว!'); }
+function manualSaveGame(){ autoSaveGame(true, true); showToast('💾 บันทึกเกมเรียบร้อยแล้ว!'); }
 function loadGame(){
   let loaded = null;
   try{ const raw = localStorage.getItem('mcPrimarySave'); if(raw) loaded = JSON.parse(raw); }catch(e){ loaded = null; }
@@ -3462,7 +3496,7 @@ function loadGame(){
   if(loaded && typeof loaded==='object') gameData = loaded;
   sanitizeData(); calcOfflineProgress();
   gameData.lastSaveTime = Date.now();
-  autoSaveGame(true); refreshAll();
+  autoSaveGame(true, true); refreshAll(); // จุดนี้คือฐานข้อมูลที่ผ่านการตรวจสอบแล้ว sync backup ทันทีไปด้วย
 }
 function downloadSaveFile(){
   autoSaveGame(true);
@@ -3476,10 +3510,17 @@ function importSaveFile(ev){
   const f = ev.target.files && ev.target.files[0]; if(!f) return;
   const r = new FileReader();
   r.onload = e=>{
-    try{ const obj = JSON.parse(e.target.result);
-      if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); showAppAlert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
-      else showAppAlert('ไฟล์เซฟไม่ถูกต้อง');
-    }catch(err){ showAppAlert('อ่านไฟล์เซฟไม่สำเร็จ'); }
+    try{
+      const obj = JSON.parse(e.target.result);
+      if(looksLikeValidSave(obj)){
+        gameData = obj; sanitizeData(); autoSaveGame(true, true);
+        // เดิม location.reload() ถูกเรียกทันทีในบรรทัดถัดจาก showAppAlert() ทำให้แทบไม่มีโอกาส
+        // เห็นข้อความยืนยันเลยก่อนหน้าเว็บจะรีโหลด จึงย้าย reload ไปเป็น callback ที่ทำงานหลังผู้เล่น
+        // กดปิดโมดัลเอง (ข้อมูลถูกบันทึกเรียบร้อยไปแล้วตั้งแต่บรรทัดก่อนหน้า ไม่ต้องรีบรีโหลด)
+        showAppAlert('กู้คืนข้อมูลสำเร็จ!', undefined, function(){ location.reload(); });
+      }
+      else showAppAlert('ไฟล์นี้ไม่ใช่ไฟล์เซฟของเกมนี้ หรือข้อมูลไม่ครบถ้วน');
+    }catch(err){ showAppAlert('อ่านไฟล์เซฟไม่สำเร็จ (ไฟล์เสียหายหรือไม่ใช่ไฟล์ JSON)'); }
     ev.target.value = '';
   };
   r.readAsText(f);
@@ -3495,14 +3536,26 @@ function exportSaveCode(){
 function importSaveCode(){
   const box = document.getElementById('import-code-box'); if(!box) return;
   const code = box.value.trim(); if(!code){ showAppAlert('กรุณาวางโค้ดเซฟ'); return; }
-  try{ const obj = JSON.parse(safeAtob(code));
-    if(obj && typeof obj==='object'){ gameData = obj; sanitizeData(); autoSaveGame(true); showAppAlert('กู้คืนข้อมูลสำเร็จ!'); location.reload(); }
-    else showAppAlert('โค้ดไม่ถูกต้อง');
-  }catch(e){ showAppAlert('รูปแบบโค้ดผิดพลาด'); }
+  try{
+    const obj = JSON.parse(safeAtob(code)); // safeAtob โยน error ต่อได้แล้วถ้าโค้ดถอดไม่ได้ (ดักด้านล่าง)
+    if(looksLikeValidSave(obj)){
+      gameData = obj; sanitizeData(); autoSaveGame(true, true);
+      // เช่นเดียวกับ importSaveFile: เลื่อน reload ไปหลังผู้เล่นกดปิดโมดัลยืนยัน แทนที่จะรีโหลดทันที
+      showAppAlert('กู้คืนข้อมูลสำเร็จ!', undefined, function(){ location.reload(); });
+    }
+    else showAppAlert('โค้ดเซฟไม่ถูกต้อง หรือไม่ใช่โค้ดเซฟของเกมนี้');
+  }catch(e){ showAppAlert('รูปแบบโค้ดผิดพลาด อ่านไม่ได้'); }
 }
 function resetGame(){ const m=document.getElementById('reset-modal'); if(m) m.style.display='flex'; }
 function closeResetModal(){ const m=document.getElementById('reset-modal'); if(m) m.style.display='none'; }
 function executeResetGame(){
+  // บั๊กเดิม: location.reload() ด้านล่างทำให้ beforeunload/pagehide ยิง แล้วไปเรียก autoSaveGame(true)
+  // ซึ่งยังอ้างถึง gameData ตัวเดิมที่ยังไม่ถูกล้างในหน่วยความจำอยู่ -> เขียนเซฟเก่ากลับลง localStorage
+  // ทับการล้างข้อมูลด้านล่างทันที ทำให้กด Reset แล้วเหมือนไม่มีอะไรเกิดขึ้น กันสองชั้น:
+  // 1) ตั้งธง isResetting ก่อน เพื่อบล็อก autoSaveGame() ทุกทางที่อาจถูกเรียกในจังหวะนี้
+  // 2) ล้าง gameData ในหน่วยความจำกลับเป็นค่าเริ่มต้นทันที เผื่อมีจุดอื่นที่ยังอ่าน gameData อยู่ก่อน reload จริง
+  isResetting = true;
+  gameData = createDefaultData();
   try{ localStorage.removeItem('mcPrimarySave'); }catch(e){ console.error('reset: ลบ mcPrimarySave ไม่สำเร็จ', e); }
   try{ localStorage.removeItem('mcBackupSave'); }catch(e){ console.error('reset: ลบ mcBackupSave ไม่สำเร็จ', e); }
   location.reload();
@@ -4147,13 +4200,20 @@ function previewSale(type, qty){
 // onJsAlert/onJsConfirm) ไม่รองรับ dialog ของเบราว์เซอร์ ทำให้ปุ่มกดแล้ว "ไม่ทำงาน" เงียบๆ โดยไม่มี error
 // ให้เห็นเลย ระบบนี้แทนที่ native alert()/confirm() ทั้งหมดด้วยโมดัลที่สร้างเอง ควบคุมได้ 100%
 let appModalConfirmCb = null;
+// callback ที่จะทำงาน "หลัง" ผู้เล่นกดปิดโมดัลแจ้งเตือน (alert) เอง - เพิ่มเข้ามาเพื่อแก้บั๊กเดิมที่จุด
+// เรียก showAppAlert(...) แล้วตามด้วย location.reload() ทันทีในบรรทัดถัดไป ทำให้แทบไม่มีโอกาสเห็น
+// ข้อความเลยก่อนหน้าเว็บจะรีโหลด (ดู importSaveFile/importSaveCode) ตอนนี้งานแบบนั้นจะถูกส่งมาเป็น
+// callback นี้แทน แล้วค่อยทำงานตอนปิดโมดัลจริงๆ
+let appModalAlertCb = null;
 function renderAppModal(opt){
   const m = document.getElementById('app-modal');
   if(!m){
     // กันเหนียวสุดๆ ถ้า DOM ยังไม่พร้อมจริงๆ: ไม่ย้อนกลับไปพึ่ง native alert/confirm อีก (จะวนกลับไปเจอบั๊กเดิม)
-    // แค่ log ไว้ และถ้าเป็นโหมดยืนยัน ให้ปล่อยผ่านไปเลยดีกว่าปล่อยให้ผู้เล่นกดอะไรไม่ได้ค้างอยู่
+    // แค่ log ไว้ และปล่อยผ่าน callback ที่ค้างอยู่ไปเลย (ทั้งโหมดยืนยันและโหมดแจ้งเตือน) ดีกว่าปล่อยให้
+    // ผู้เล่นกดอะไรไม่ได้ค้างอยู่ หรือ callback ที่ผูกไว้ (เช่น reload หลัง import) ไม่มีวันได้ทำงาน
     console.warn('[app-modal] ไม่พบ #app-modal ใน DOM:', opt.title);
     if(opt.kind==='confirm'){ const cb=appModalConfirmCb; appModalConfirmCb=null; if(cb) cb(); }
+    else if(opt.kind==='alert'){ const cb=appModalAlertCb; appModalAlertCb=null; if(cb) cb(); }
     return;
   }
   setTxt(document.getElementById('app-modal-title-text'), opt.title);
@@ -4170,14 +4230,18 @@ function renderAppModal(opt){
   m.style.display = 'flex';
 }
 // ใช้แทน showAppAlert(message) เดิมทุกจุด - message เป็นข้อความล้วน (ไม่ต้องมี HTML)
-function showAppAlert(message, title){
+// onClose (ถ้าใส่มา) จะถูกเรียก "หลัง" ผู้เล่นกดตกลง/ปิดโมดัลนี้เท่านั้น ใช้สำหรับงานที่ต้องรอให้
+// ผู้เล่นเห็นข้อความก่อนแน่ๆ ค่อยทำต่อ (เช่น reload หน้าเว็บหลัง import เซฟสำเร็จ)
+function showAppAlert(message, title, onClose){
   appModalConfirmCb = null;
+  appModalAlertCb = (typeof onClose==='function') ? onClose : null;
   renderAppModal({ title: title || 'แจ้งเตือน', bodyHtml: '<p style="margin:0">'+String(message).replace(/\n/g,'<br>')+'</p>', icon:'pi-note', kind:'alert' });
 }
 // ใช้แทน confirm(message) เดิม - bodyHtml รับได้ทั้งข้อความล้วนหรือ HTML ที่สร้างไว้แล้ว (เช่น รายการราคาตอนขายแร่)
 // onConfirm จะถูกเรียกก็ต่อเมื่อผู้เล่นกด "ยืนยัน" เท่านั้น (กด "ยกเลิก"/ปิดโมดัล จะไม่มีอะไรเกิดขึ้น)
 function showAppConfirm(bodyHtml, onConfirm, title){
   appModalConfirmCb = (typeof onConfirm==='function') ? onConfirm : null;
+  appModalAlertCb = null; // กัน callback ของ alert ก่อนหน้าที่อาจค้างอยู่ ไม่ให้มาทำงานผิดจังหวะตอนปิดโมดัล confirm นี้
   renderAppModal({ title: title || 'ยืนยันการทำรายการ', bodyHtml, icon:'pi-warning', kind:'confirm' });
 }
 function appModalCancel(){ appModalConfirmCb = null; closeAppModal(); }
@@ -4186,7 +4250,11 @@ function appModalConfirm(){
   closeAppModal();
   if(cb) cb();
 }
-function closeAppModal(){ const m = document.getElementById('app-modal'); if(m) m.style.display = 'none'; }
+function closeAppModal(){
+  const m = document.getElementById('app-modal'); if(m) m.style.display = 'none';
+  const cb = appModalAlertCb; appModalAlertCb = null;
+  if(cb) cb();
+}
 
 function sellOre(type, amount){
   sanitizeData();
