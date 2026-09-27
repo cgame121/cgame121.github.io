@@ -222,28 +222,6 @@
     background-position: 34px 0;
   }
 }
-/* ===== Pixel-art mining animation: miner swings a pickaxe into the ore wall ===== */
-.mine-scene {
-  width: 100%;
-  aspect-ratio: 48/28;
-  background: #05050a;
-  border: 3px solid #000;
-  box-shadow: 0 0 0 2px var(--border);
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.mine-scene svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  shape-rendering: crispEdges;
-}
-.mine-scene canvas {
-  display: block;
-  width: 100%!important;
-  height: 100%!important;
-  touch-action: pan-y!important;
-}
 /* ===== Mine "atmosphere": faint stone grain + drifting dust ===== */
 .content-viewport {
   position: relative;
@@ -909,6 +887,68 @@ header {
 }
 .btn-row .btn {
   flex: 1;
+}
+/* ===== แก้ปัญหาการ์ด "แผนที่สำรวจ" เด้ง/ขยับ เมื่อเปิด-ปิดออโต้สำรวจ =====
+   ข้อความสถานะ (exp-status) และปุ่มส่งกองทัพ/ออโต้ (exp-btn-row) ยาวไม่เท่ากันในแต่ละสถานะ
+   เช่น "พร้อมออกเดินทาง" (สั้น) เทียบกับ "กำลังพลไม่พอ (รอออโต้ส่งเมื่อครบ)" หรือข้อความปุ่มล็อก
+   ที่ยาวจนตัดขึ้นบรรทัดสอง - พอความสูงของกล่องเปลี่ยน การ์ดในแถวเดียวกันของ grid-3 ก็โดนดันสูงตาม
+   ทำให้เนื้อหาทั้งหน้าเลื่อน/เด้งไปมาเวลาออโต้เปลี่ยนสถานะบ่อยๆ (เช่น ส่งสำเร็จ -> พลไม่พอ -> พร้อมอีกครั้ง)
+   จึงจองพื้นที่ความสูงไว้ล่วงหน้าสำหรับ 2 บรรทัดเสมอ ไม่ว่าข้อความจะยาวแค่ไหน ความสูงกล่องจะไม่เปลี่ยน */
+.exp-status {
+  min-height: 2.6em;
+  line-height: 1.3;
+}
+.exp-btn-row .btn {
+  min-height: 58px;
+}
+/* ===== การ์ด "สถานะออโต้ทั้งหมด" ในหน้าแดชบอร์ด ===== */
+.dash-auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 10px;
+}
+.dash-auto-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(0,0,0,.18);
+  border: 2px solid var(--border);
+  padding: 10px 12px;
+  min-height: 3em; /* จองความสูงไว้เผื่อบรรทัดย่อย (dash-auto-sub) โผล่มา จะได้ไม่ดันเลย์เอาต์เด้ง */
+}
+.dash-auto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.dash-auto-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .92rem;
+}
+.dash-auto-sub {
+  font-size: .78rem;
+  color: var(--text-muted);
+  min-height: 1.1em; /* ว่างไว้เท่ากับตอนมีข้อความ กันความสูงกล่องเปลี่ยนตอนข้อความปรากฏ/หาย */
+}
+.dash-auto-badge {
+  font-weight: 700;
+  font-size: .85rem;
+  padding: 4px 10px;
+  border: 2px solid #000;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dash-auto-badge.on {
+  background: var(--success);
+  color: #00230f;
+}
+.dash-auto-badge.off {
+  background: var(--danger);
+  color: #fff;
 }
 .progress-bar-container {
   background: #000;
@@ -1616,16 +1656,6 @@ body {
   color: #ff8fa5;
   font-size: .9rem;
 }
-.hint {
-  background: #000;
-  border: 3px solid var(--border);
-  border-left: 5px solid var(--primary);
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  font-size: .95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
 .dash-hero {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(min(100%,150px),1fr));
@@ -1712,9 +1742,6 @@ body {
   .dash-hero-stat:last-child:nth-child(odd) {
     grid-column: auto;
   }
-}
-.hint b {
-  color: var(--gold);
 }
 .guide {
   list-style: none;
@@ -1926,7 +1953,7 @@ body {
   </div>
 </div>
 
-<div id="app-modal">
+<div id="app-modal" onclick="if(event.target===this) closeAppModal()">
   <div class="modal-content" style="max-width:380px">
     <h3 id="app-modal-title" style="color:var(--gold);margin-bottom:12px"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note" id="app-modal-icon-use"></use></svg> <span id="app-modal-title-text"></span></h3>
     <div id="app-modal-body" style="color:var(--text-muted);font-size:.85rem;margin-bottom:20px"></div>
@@ -1991,6 +2018,70 @@ body {
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:18px">
+        <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> คลังแร่ปัจจุบัน</h3>
+        <div class="dash-ore-row">
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg></span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg></span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
+          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg></span><span class="dash-ore-name">แร่ทอง</span><span class="dash-ore-qty" id="dash-ore-goldOre">0</span></div>
+        </div>
+      </div>
+
+      <div class="card" id="dash-auto-card" style="margin-bottom:18px">
+        <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> สถานะออโต้ทั้งหมด</h3>
+        <div class="dash-auto-grid">
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg> ซ่อมแซมอัตโนมัติ</span>
+              <span class="dash-auto-sub" id="dash-auto-repair-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-auto-repair-badge">ปิด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-tent"></use></svg> สำรวจถ้ำก๊อบลิน</span>
+              <span class="dash-auto-sub" id="dash-auto-goblin-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-auto-goblin-badge">ปิด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-ruins"></use></svg> สำรวจซากโบราณสถาน</span>
+              <span class="dash-auto-sub" id="dash-auto-ruins-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-auto-ruins-badge">ปิด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-volcano"></use></svg> สำรวจภูเขาไฟมังกร</span>
+              <span class="dash-auto-sub" id="dash-auto-dragon-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-auto-dragon-badge">ปิด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 7"><use href="#pi-ironore-img"></use></svg> เหมืองเหล็ก</span>
+              <span class="dash-auto-sub" id="dash-mine-iron-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-mine-iron-badge">หยุด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 7"><use href="#pi-silverore-img"></use></svg> เหมืองเงิน</span>
+              <span class="dash-auto-sub" id="dash-mine-silver-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-mine-silver-badge">หยุด</span>
+          </div>
+          <div class="dash-auto-item">
+            <div class="dash-auto-info">
+              <span class="dash-auto-name"><svg class="picon" viewBox="0 0 8 7"><use href="#pi-goldore-img"></use></svg> เหมืองทอง</span>
+              <span class="dash-auto-sub" id="dash-mine-goldOre-sub"></span>
+            </div>
+            <span class="dash-auto-badge off" id="dash-mine-goldOre-badge">หยุด</span>
+          </div>
+        </div>
+      </div>
+
       <div class="grid-2">
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 7 7"><use href="#pi-star"></use></svg> ข้อมูลและเลเวลผู้เล่น</h3>
@@ -2009,15 +2100,6 @@ body {
       </div>
 
       <div class="card" style="margin-bottom:18px">
-        <h3><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> คลังแร่ปัจจุบัน</h3>
-        <div class="dash-ore-row">
-          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg></span><span class="dash-ore-name">แร่เหล็ก</span><span class="dash-ore-qty" id="dash-ore-iron">0</span></div>
-          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg></span><span class="dash-ore-name">แร่เงิน</span><span class="dash-ore-qty" id="dash-ore-silver">0</span></div>
-          <div class="dash-ore-item"><span class="dash-ore-icon"><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg></span><span class="dash-ore-name">แร่ทอง</span><span class="dash-ore-qty" id="dash-ore-goldOre">0</span></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:18px">
         <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-book"></use></svg> วิธีเล่นเบื้องต้น</h3>
         <ol class="guide">
           <li><b>ขุดแร่</b>ไปที่ "ศูนย์ขุดเหมือง" แล้วกดเริ่มขุด</li>
@@ -2032,7 +2114,6 @@ body {
       <div class="grid-3">
         <div id="card-iron" class="card">
           <h3><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg> เหมืองเหล็ก <span id="iron-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div id="pixi-mine-iron" class="mine-scene"></div>
           <div class="info"><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="iron-rate">20</span> ชิ้น / <span id="iron-time">5.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="iron-up-cost" style="color:var(--accent)">500</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="iron-up-bar">1</span> แท่งเหล็กกล้า <span style="color:var(--text-muted);font-weight:400">(มี <span id="iron-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="iron-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="iron-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('iron')">อัปเกรด</button>
@@ -2045,7 +2126,6 @@ body {
         </div>
         <div id="card-silver" class="card">
           <h3><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg> เหมืองเงิน <span id="silver-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div id="pixi-mine-silver" class="mine-scene"></div>
           <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 3</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="silver-rate">10</span> ชิ้น / <span id="silver-time">6.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="silver-up-cost" style="color:var(--accent)">1,200</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="silver-up-bar">1</span> แท่งเงิน <span style="color:var(--text-muted);font-weight:400">(มี <span id="silver-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="silver-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="silver-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('silver')">อัปเกรด</button>
@@ -2058,7 +2138,6 @@ body {
         </div>
         <div id="card-goldOre" class="card">
           <h3><svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg> เหมืองทอง <span id="goldOre-lvl" style="font-size:.9rem;color:var(--primary)">Lv.1</span></h3>
-          <div id="pixi-mine-goldOre" class="mine-scene"></div>
           <div class="info"><div class="r"><span class="k">ต้องการ</span><span class="v">เลเวล 5</span></div><div class="r"><span class="k">ผลผลิต</span><span class="v"><span id="goldOre-rate">5</span> ชิ้น / <span id="goldOre-time">8.0</span> วิ</span></div><div class="r"><span class="k">อัปเกรด</span><span class="v"><span id="goldOre-up-cost" style="color:var(--accent)">3,000</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div><div class="r"><span class="k">วัตถุดิบ</span><span class="v"><span id="goldOre-up-bar">1</span> แท่งทองคำ <span style="color:var(--text-muted);font-weight:400">(มี <span id="goldOre-up-have">0</span>)</span></span></div><div class="r"><span class="k">ขุดสะสม</span><span class="v" id="goldOre-total" style="color:var(--gold)">0</span></div></div>
           <div class="btn-row">
             <button id="goldOre-upgrade-btn" class="btn btn-warning" onclick="upgradeMine('goldOre')">อัปเกรด</button>
@@ -2152,22 +2231,22 @@ body {
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-tent"></use></svg> ถ้ำก๊อบลินรกร้าง</h3>
           <div id="pixi-goblin" class="map-battle-canvas"></div>
           <div class="info"><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note"></use></svg> ต้องการ</span><span class="v"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> พลทหารยาม 3 นาย</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-clock"></use></svg> เวลาสำรวจ</span><span class="v">45 วิ</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> เสบียง</span><span class="v">1,000 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 20 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-trophy"></use></svg> ผลตอบแทน</span><span class="v">3,200 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 30 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg> + 4 <svg class="picon" viewBox="0 0 8 8" style="color:var(--primary)"><use href="#pi-diamond"></use></svg></span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 40% ต่อภารกิจ</div></div>
-          <div id="exp-status-goblin" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
-          <button id="exp-btn-goblin" class="btn btn-success" onclick="startExpedition('goblin')">ส่งกองทัพสำรวจ</button>
+          <div id="exp-status-goblin" class="exp-status" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
+          <div class="btn-row exp-btn-row"><button id="exp-btn-goblin" class="btn btn-success" onclick="startExpedition('goblin')">ส่งกองทัพสำรวจ</button><button id="exp-auto-goblin" class="btn btn-danger" onclick="toggleAutoExplore('goblin')" title="เปิดไว้จะส่งกองทัพชุดใหม่ซ้ำอัตโนมัติทันทีที่ภารกิจจบและกำลังพล/เสบียงพร้อม">🔁 ออโต้: ปิด</button></div>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-ruins"></use></svg> ซากโบราณสถาน</h3>
           <div id="pixi-ruins" class="map-battle-canvas"></div>
           <div class="info"><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note"></use></svg> ต้องการ</span><span class="v"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-sword"></use></svg> นักรบดาบเหล็ก 5 นาย</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-clock"></use></svg> เวลาสำรวจ</span><span class="v">90 วิ</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> เสบียง</span><span class="v">4,000 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 30 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-trophy"></use></svg> ผลตอบแทน</span><span class="v">11,000 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 60 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg> + 15 <svg class="picon" viewBox="0 0 8 8" style="color:var(--primary)"><use href="#pi-diamond"></use></svg></span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 55% ต่อภารกิจ</div></div>
-          <div id="exp-status-ruins" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
-          <button id="exp-btn-ruins" class="btn btn-success" onclick="startExpedition('ruins')">ส่งกองทัพสำรวจ</button>
+          <div id="exp-status-ruins" class="exp-status" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
+          <div class="btn-row exp-btn-row"><button id="exp-btn-ruins" class="btn btn-success" onclick="startExpedition('ruins')">ส่งกองทัพสำรวจ</button><button id="exp-auto-ruins" class="btn btn-danger" onclick="toggleAutoExplore('ruins')" title="เปิดไว้จะส่งกองทัพชุดใหม่ซ้ำอัตโนมัติทันทีที่ภารกิจจบและกำลังพล/เสบียงพร้อม">🔁 ออโต้: ปิด</button></div>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-volcano"></use></svg> ภูเขาไฟมังกร</h3>
           <div id="pixi-dragon" class="map-battle-canvas"></div>
           <div class="info"><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-note"></use></svg> ต้องการ</span><span class="v"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-horse"></use></svg> อัศวินเกราะทอง 5 นาย</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-clock"></use></svg> เวลาสำรวจ</span><span class="v">150 วิ</span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> เสบียง</span><span class="v">15,000 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 30 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-trophy"></use></svg> ผลตอบแทน</span><span class="v">42,000 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + 70 <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg> + 35 <svg class="picon" viewBox="0 0 8 8" style="color:var(--primary)"><use href="#pi-diamond"></use></svg></span></div><div class="warn"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-warning"></use></svg> เสี่ยงทหารเสียชีวิต 70% ต่อภารกิจ</div></div>
-          <div id="exp-status-dragon" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
-          <button id="exp-btn-dragon" class="btn btn-success" onclick="startExpedition('dragon')">ส่งกองทัพสำรวจ</button>
+          <div id="exp-status-dragon" class="exp-status" style="font-size:.9rem;color:var(--accent);margin-bottom:8px">สถานะ: พร้อมออกเดินทาง</div>
+          <div class="btn-row exp-btn-row"><button id="exp-btn-dragon" class="btn btn-success" onclick="startExpedition('dragon')">ส่งกองทัพสำรวจ</button><button id="exp-auto-dragon" class="btn btn-danger" onclick="toggleAutoExplore('dragon')" title="เปิดไว้จะส่งกองทัพชุดใหม่ซ้ำอัตโนมัติทันทีที่ภารกิจจบและกำลังพล/เสบียงพร้อม">🔁 ออโต้: ปิด</button></div>
         </div>
       </div>
     </div>
@@ -2546,6 +2625,7 @@ function createDefaultData(){
     equippedSkin:'default', ownedSkins:['default'],
     troops:{ guard:0, swordsman:0, knight:0 },
     expeditions:{},
+    autoExplore:{ goblin:false, ruins:false, dragon:false },
     marketPrices:{ iron:3, silver:10, goldOre:20 },
     marketMultipliers:{ iron:1, silver:1, goldOre:1 },
     marketTrend:{ iron:0, silver:0, goldOre:0 },
@@ -3268,6 +3348,8 @@ function sanitizeData(){
   if(!gameData.troops || typeof gameData.troops !== 'object') gameData.troops = { guard:0, swordsman:0, knight:0 };
   ['guard','swordsman','knight'].forEach(t=>{ gameData.troops[t] = Math.max(0, Math.floor(num(gameData.troops[t],0))); });
   if(!gameData.expeditions || typeof gameData.expeditions !== 'object') gameData.expeditions = {};
+  if(!gameData.autoExplore || typeof gameData.autoExplore !== 'object') gameData.autoExplore = {};
+  for(let key in EXP_CFG){ gameData.autoExplore[key] = !!gameData.autoExplore[key]; }
 
   if(!skinDatabase[gameData.equippedSkin]) gameData.equippedSkin = 'default';
   if(!Array.isArray(gameData.ownedSkins)) gameData.ownedSkins = ['default'];
@@ -3503,7 +3585,7 @@ function toggleSidebar(){
     if(ov) ov.classList.toggle('show', sb.classList.contains('mobile-show'));
   }else{
     sb.classList.toggle('collapsed');
-    setTimeout(()=>{ if(isTabActive('market')) drawAllMarketCharts(); checkPixiRes(); checkPixiMineRes(); }, 340);
+    setTimeout(()=>{ if(isTabActive('market')) drawAllMarketCharts(); checkPixiRes(); }, 340);
   }
 }
 function closeSidebar(){
@@ -3522,9 +3604,7 @@ function switchTab(ev, tabId){
   if(tabId==='character') renderSkinShop();
   closeSidebar();
   if(tabId==='military'){ if(pixiStale) destroyPixiScenes(); initPixiBattles(); }
-  if(tabId==='mining'){ if(pixiMineStale) destroyPixiMineScenes(); initPixiMines(); }
   syncPixiTickers();
-  syncPixiMineTickers();
   wakeLoop(true);
 }
 // Pixi scenes only animate while the military tab is visible (saves battery on phones)
@@ -3532,591 +3612,6 @@ function syncPixiTickers(){
   const run = !document.hidden && isTabActive('military');
   Object.keys(pixiScenes).forEach(function(k){
     const sc = pixiScenes[k]; const t = sc && sc.app && sc.app.ticker; if(!t) return;
-    const on = run && sc.inView !== false;
-    if(on && !t.started) t.start(); else if(!on && t.started) t.stop();
-  });
-}
-
-// =====================================================================
-// ===== ฉากขุดเหมืองพิกเซลอาร์ตด้วย PixiJS (rebuilt v2) =====
-// คนขุด + สายแร่ที่แตกลายเป็นขั้นแล้ว "แตกละเอียด/งอกใหม่" เป็นรอบ + อนุภาค
-// รองรับ prefers-reduced-motion และปรับจูนสปริงให้ตอบสนองไวกว่าเดิม
-// =====================================================================
-let mineScenes = {};
-let pixiMineStale = false;
-const MINE_ORE_COLOR = { iron:0x8fa3c9, silver:0xdde3f0, goldOre:0xffcf3d };
-const MINE_SCENE_BG  = { iron:0x0c1119, silver:0x11121d, goldOre:0x191207 };
-const MINE_REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-const MINE_HITS_PER_SHATTER = 4; // จำนวนครั้งที่ต้องฟันโดนก่อนสายแร่ "แตกละเอียด" แล้วงอกก้อนใหม่
-
-// ===== ค่าฟิสิกของฉากขุดเหมือง: ทุกการเคลื่อนไหวขับเคลื่อนด้วยสปริง (mass-spring-damper) =====
-const MINE_PHYS = {
-  armWindupK: 130,  armWindupC: 13,
-  armStrikeK: 420,  armStrikeC: 17,   // ฟันลงไวและหนักขึ้นกว่าเดิม
-  armHoldK:   170,  armHoldC:   18,
-  armRestK:    85,  armRestC:   13,
-  leanK: 80, leanC: 11,
-  squashK: 150, squashC: 11,
-  rockShakeK: 100, rockShakeC: 9,
-  camShakeK: 90,  camShakeC: 8.5,
-  popK: 120, popC: 12,              // สปริงคุมการ "ผุดโผล่" ของก้อนแร่ก้อนใหม่หลังแตกละเอียด
-  gravity: 360, airDrag: 1.4,
-  chipRestitution: 0.36, chipFriction: 0.55,
-  impactAngle: 34
-};
-function springStep(S, key, target, k, c, dt){
-  const vKey = key+'V';
-  const acc = -k*(S[key]-target) - c*S[vKey];
-  S[vKey] += acc*dt;
-  S[key] += S[vKey]*dt;
-}
-function shadeColor(hex, amt){
-  const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
-  const t = amt>0 ? 255 : 0, f = Math.abs(amt);
-  const mix=(c)=>Math.round(c+(t-c)*f);
-  return (mix(r)<<16)|(mix(g)<<8)|mix(b);
-}
-
-// ---- Pixel matrix ของตัวละครนักขุด (แขนแยกชิ้นต่างหากเพื่อสวิงจอบได้อิสระ) ----
-const M_MINER = [
-  "......YYYYY......",
-  ".....YYYYYYY.....",
-  "....YYYYYYYYYLL..",
-  "...DDDDDDDDDDLL..",
-  "......FFFFFF.....",
-  "......FVFFVF.....",
-  "......FFKKFF.....",
-  ".......NNNN......",
-  "....OSOOOOOOSO...",
-  "....OSOOOOOOSO...",
-  "....OOOPPPPOOO...",
-  "....OOOPPPPOOO...",
-  ".....OOO..OOO....",
-  ".....OOO..OOO....",
-  ".....TTT..TTT....",
-  "....RRRR..RRRR..."
-];
-const C_MINER = { Y:0xfbbf24, D:0xb45309, L:0xfef9c3, F:0xffd7a8, V:0x1e293b, K:0x78350f, N:0xffd7a8, O:0x1d4ed8, S:0x1e3a8a, P:0x2563eb, T:0x1c1917, R:0x44403c };
-const MINER_REACH = 34;
-
-function buildPickaxeGraphic(){
-  const g = new PIXI.Graphics();
-  g.lineStyle(1, 0x2b1608, 1);
-  g.beginFill(0x92400e); g.drawRoundedRect(0,-2,16,4,1.5); g.endFill();
-  g.lineStyle(0);
-  g.beginFill(0xb45309,0.7); g.drawRect(2,-2,12,1); g.endFill();
-  g.lineStyle(1, 0x1e293b, 1);
-  g.beginFill(0x475569); g.drawRect(10,-3.5,4,7); g.endFill();
-  g.beginFill(0x64748b,0.6); g.drawRect(10,-3.5,4,1.5); g.endFill();
-  const hx = 13, hy = 0;
-  g.lineStyle(0);
-  g.beginFill(0x94a3b8);
-  g.moveTo(hx-1,hy-2.5); g.lineTo(hx+8,hy-10); g.lineTo(hx+11,hy-7.5); g.lineTo(hx+3,hy+1.5); g.closePath();
-  g.moveTo(hx-1,hy+2.5); g.lineTo(hx+6,hy+11); g.lineTo(hx+3,hy+13); g.lineTo(hx-4,hy+4); g.closePath();
-  g.endFill();
-  g.beginFill(0x1e293b,0.35);
-  g.moveTo(hx-1,hy-2.5); g.lineTo(hx+3,hy+1.5); g.lineTo(hx-1,hy+2.5); g.lineTo(hx-4,hy+4); g.closePath();
-  g.endFill();
-  g.beginFill(0xf8fafc,0.8);
-  g.moveTo(hx+1,hy-4); g.lineTo(hx+6,hy-8.5); g.lineTo(hx+7.5,hy-7.5); g.lineTo(hx+2,hy-3); g.closePath();
-  g.moveTo(hx+0.5,hy+3.5); g.lineTo(hx+4.5,hy+9.5); g.lineTo(hx+3.3,hy+10.3); g.lineTo(hx-0.3,hy+4.5); g.closePath();
-  g.endFill();
-  return g;
-}
-
-// ===== ก้อนแร่พิกเซลแบบผลึก: ฐานหินเข้ม + ผลึกหลายก้อน มีด้านสว่าง/มืดให้ดูมีมิติ =====
-function drawCrystal(g, cx, baseY, w, h, rot, oreColor){
-  const light = shadeColor(oreColor, 0.55), dark = shadeColor(oreColor, -0.45);
-  const local = [[-w,0],[w,0],[w*0.55,-h*0.52],[0,-h],[-w*0.55,-h*0.52]];
-  const cos = Math.cos(rot), sin = Math.sin(rot);
-  const p = local.map(function(pt){ return [cx+pt[0]*cos-pt[1]*sin, baseY+pt[0]*sin+pt[1]*cos]; });
-  g.lineStyle(1, shadeColor(oreColor,-0.6), 0.5);
-  g.beginFill(oreColor);
-  g.moveTo(p[0][0],p[0][1]); for(let i=1;i<p.length;i++) g.lineTo(p[i][0],p[i][1]); g.closePath();
-  g.endFill();
-  g.lineStyle(0);
-  g.beginFill(light,0.55);
-  g.moveTo(p[3][0],p[3][1]); g.lineTo(p[2][0],p[2][1]); g.lineTo(p[1][0],p[1][1]); g.closePath();
-  g.endFill();
-  g.beginFill(dark,0.45);
-  g.moveTo(p[3][0],p[3][1]); g.lineTo(p[4][0],p[4][1]); g.lineTo(p[0][0],p[0][1]); g.closePath();
-  g.endFill();
-  g.beginFill(0xffffff,0.65); g.drawRect(p[3][0]-0.5, p[3][1]+h*0.12, 1.4, 1.4); g.endFill();
-  return [p[3][0], p[3][1]];
-}
-// สุ่มตำแหน่งผลึกใหม่ทุกครั้งที่สายแร่งอกใหม่ (ไม่ตายตัวเหมือนเดิม เพิ่มความหลากหลาย)
-function randomCrystalLayout(){
-  const out = [];
-  for(let i=0;i<5;i++){
-    out.push([8+Math.random()*44, 40+Math.random()*8, 6+Math.random()*8, 24+Math.random()*44, (Math.random()*0.36-0.18)]);
-  }
-  return out;
-}
-function buildRockClusterGraphic(oreColor, layout){
-  const g = new PIXI.Graphics();
-  g.beginFill(0x1c1712); g.drawRoundedRect(-6,8,66,40,7); g.endFill();
-  g.beginFill(0x120e0a,0.6); g.drawRoundedRect(-6,30,66,18,6); g.endFill();
-  g.lineStyle(1,0x0a0806,0.7);
-  g.moveTo(4,14); g.lineTo(12,24); g.lineTo(8,34);
-  g.moveTo(38,10); g.lineTo(30,22); g.lineTo(40,30);
-  g.lineStyle(0);
-  const tips = [];
-  layout.forEach(function(c){ tips.push(drawCrystal(g, c[0],c[1],c[2],c[3],c[4], oreColor)); });
-  return { g: g, tips: tips };
-}
-// รอยแตกที่ค่อยๆ ปรากฏบนก้อนแร่ตามจำนวนครั้งที่โดนฟัน (ภาพสะท้อนว่าใกล้จะ "แตกละเอียด" แค่ไหน)
-function drawCrackOverlay(g, stage){
-  g.clear();
-  if(stage <= 0) return;
-  const seedSets = [
-    [[6,20,20,34],[20,34,14,44]],
-    [[6,20,20,34],[20,34,14,44],[40,16,30,30],[30,30,38,42]],
-    [[6,20,20,34],[20,34,14,44],[40,16,30,30],[30,30,38,42],[24,12,18,22],[36,38,44,46]]
-  ];
-  const set = seedSets[Math.min(seedSets.length,stage)-1] || [];
-  g.lineStyle(1, 0x000000, 0.55 + stage*0.1);
-  set.forEach(function(l){ g.moveTo(l[0],l[1]); g.lineTo(l[2],l[3]); });
-  g.lineStyle(1, 0xffffff, 0.12);
-  set.forEach(function(l){ g.moveTo(l[0]-0.5,l[1]-0.5); g.lineTo(l[2]-0.5,l[3]-0.5); });
-}
-
-function destroyPixiMineScenes(){
-  Object.keys(mineScenes).forEach(function(k){
-    const sc = mineScenes[k];
-    try{ if(sc.io) sc.io.disconnect(); sc.app.destroy(true, { children:true, texture:true, baseTexture:true }); }catch(e){ console.warn('pixi mine destroy', e); }
-    delete mineScenes[k];
-    const host = document.getElementById('pixi-mine-'+k); if(host) host.innerHTML = '';
-  });
-  pixiMineStale = false;
-}
-function checkPixiMineRes(){
-  const keys = Object.keys(mineScenes); if(!keys.length) return;
-  const host = document.getElementById('pixi-mine-'+keys[0]);
-  if(isTabActive('mining') && host && host.clientWidth){
-    if(Math.abs(pixiTargetRes(host)/mineScenes[keys[0]].res - 1) > 0.25){ destroyPixiMineScenes(); initPixiMines(); syncPixiMineTickers(); }
-  }else{ pixiMineStale = true; }
-}
-
-function spawnMineSpark(S,x,y,boost){
-  if(S.sparkLayer.children.length > 44) return;
-  const sp = S.sparkPool.pop() || makeSquare(2);
-  sp.tint = Math.random()<0.5 ? 0xfff3b0 : 0xffffff;
-  sp.visible = true; sp.alpha = 1;
-  sp.x = x + (Math.random()*4-2); sp.y = y + (Math.random()*4-2);
-  const a = -Math.PI*0.85 - Math.random()*Math.PI*0.7;
-  const spd = (1.6 + Math.random()*3.2)*60*(boost||1);
-  sp.life = sp.maxLife = 0.3 + Math.random()*0.14; sp.vx = Math.cos(a)*spd; sp.vy = Math.sin(a)*spd;
-  S.sparkLayer.addChild(sp);
-}
-function spawnOreChip(S,x,y,boost){
-  if(S.chipLayer.children.length > 34) return;
-  const c = S.chipPool.pop() || makeSquare(2);
-  c.tint = Math.random()<0.55 ? S.oreColor : 0xf1f5f9;
-  c.visible = true; c.alpha = 1; c.rotation = 0;
-  c.x = x; c.y = y;
-  const b = boost||1;
-  c.life = 0.85; c.vx = (Math.random()*3.4-1.5)*60*b; c.vy = -(1.4+Math.random()*2.4)*60*b; c.spin = (Math.random()*5-2.5);
-  c.groundY = S.H - 21; c.bounced = false;
-  S.chipLayer.addChild(c);
-}
-function spawnDust(S,x,y){
-  if(S.dustLayer.children.length > 8) return;
-  let d = S.dustPool.pop();
-  if(!d) d = new PIXI.Graphics();
-  d.clear(); d.beginFill(0x9aa3b5,0.4); d.drawCircle(0,0,3); d.endFill();
-  d.visible = true; d.alpha = 0.45; d.scale.set(1);
-  d.x = x; d.y = y + 5; d.life = 0.55;
-  S.dustLayer.addChild(d);
-}
-function spawnEmber(S,x,y){
-  if(S.emberLayer.children.length > 6) return;
-  let e = S.emberPool.pop();
-  if(!e) e = new PIXI.Graphics();
-  e.clear(); e.beginFill(Math.random()<0.5?0xffb020:0xff7a1a); e.drawRect(0,0,1,1); e.endFill();
-  e.visible = true; e.x = x + (Math.random()*4-2); e.y = y;
-  e.life = e.maxLife = 0.6 + Math.random()*0.5; e.vy = -(12+Math.random()*14); e.seed = Math.random()*10;
-  S.emberLayer.addChild(e);
-}
-function spawnSwingTrail(S,x,y){
-  if(S.trailLayer.children.length > 10) return;
-  let t = S.trailPool.pop();
-  if(!t) t = new PIXI.Graphics();
-  t.clear(); t.beginFill(0xf1f5f9,0.55); t.drawCircle(0,0,2.2); t.endFill();
-  t.visible = true; t.alpha = 0.55; t.x = x; t.y = y; t.life = 0.16;
-  S.trailLayer.addChild(t);
-}
-function updateMineParticles(S,dt){
-  const drag = Math.exp(-MINE_PHYS.airDrag*dt);
-  for(let i=S.sparkLayer.children.length-1;i>=0;i--){
-    const sp = S.sparkLayer.children[i];
-    sp.vy = (sp.vy + MINE_PHYS.gravity*0.5*dt)*drag; sp.vx *= drag;
-    sp.x += sp.vx*dt; sp.y += sp.vy*dt; sp.life -= dt; sp.alpha = Math.max(0, sp.life/sp.maxLife);
-    if(sp.life <= 0) poolPut(S,'sparkPool',S.sparkLayer,sp);
-  }
-  for(let i=S.chipLayer.children.length-1;i>=0;i--){
-    const c = S.chipLayer.children[i];
-    c.vy = (c.vy + MINE_PHYS.gravity*dt)*drag; c.vx *= drag;
-    c.x += c.vx*dt; c.y += c.vy*dt; c.rotation += c.spin*dt; c.life -= dt; c.alpha = Math.max(0, c.life/0.85);
-    if(!c.bounced && c.groundY!=null && c.y >= c.groundY){
-      c.y = c.groundY; c.vy *= -MINE_PHYS.chipRestitution; c.vx *= MINE_PHYS.chipFriction;
-      if(Math.abs(c.vy) < 20) c.bounced = true;
-    }
-    if(c.life <= 0) poolPut(S,'chipPool',S.chipLayer,c);
-  }
-  for(let i=S.dustLayer.children.length-1;i>=0;i--){
-    const d = S.dustLayer.children[i];
-    d.y -= 3*dt; d.life -= dt; d.scale.set(1+(0.55-d.life)*2.2); d.alpha = Math.max(0, (d.life/0.55)*0.4);
-    if(d.life <= 0) poolPut(S,'dustPool',S.dustLayer,d);
-  }
-  for(let i=S.trailLayer.children.length-1;i>=0;i--){
-    const t = S.trailLayer.children[i];
-    t.life -= dt; t.alpha = Math.max(0, (t.life/0.16)*0.55); t.scale.set(1+(0.16-t.life)*3);
-    if(t.life <= 0) poolPut(S,'trailPool',S.trailLayer,t);
-  }
-  for(let i=S.emberLayer.children.length-1;i>=0;i--){
-    const e = S.emberLayer.children[i];
-    e.x += Math.sin(S.t*4+e.seed)*0.08; e.y += e.vy*dt; e.life -= dt; e.alpha = Math.max(0, (e.life/e.maxLife)*0.8);
-    if(e.life <= 0) poolPut(S,'emberPool',S.emberLayer,e);
-  }
-}
-// สร้างสายแร่ก้อนใหม่ทั้งหมด (สุ่มผลึกใหม่) แล้วผุดโผล่ขึ้นด้วยสปริง ใช้ตอนเริ่มฉากและตอนงอกใหม่หลังแตกละเอียด
-function regrowRock(S){
-  S.rockCluster.removeChildren();
-  const built = buildRockClusterGraphic(S.oreColor, randomCrystalLayout());
-  S.rockCluster.addChild(built.g);
-  S.crackOverlay = new PIXI.Graphics();
-  S.rockCluster.addChild(S.crackOverlay);
-  S.glints.length = 0;
-  built.tips.forEach(function(tip){
-    const gl = new PIXI.Graphics(); gl.beginFill(0xffffff); gl.drawRect(0,0,2,2); gl.endFill();
-    gl.x = tip[0]; gl.y = tip[1]+2;
-    gl.baseAlpha = 0.2 + Math.random()*0.3; gl.speed = 1+Math.random()*2; gl.seed = Math.random()*10;
-    S.rockCluster.addChild(gl); S.glints.push(gl);
-  });
-  S.hits = 0;
-  S.pop = 0; S.popV = 0; // สปริงเริ่มจากยุบสุด (0) แล้วผุดขึ้นไปสู่ 1
-}
-// จอบฟันโดนหิน 1 ครั้ง: อนุภาคปกติ + นับครบตามกำหนดแล้วสั่ง "แตกละเอียด"
-function mineImpact(S){
-  const boost = MINE_REDUCED_MOTION ? 0.5 : 1;
-  for(let i=0;i<6;i++) spawnMineSpark(S,S.impactX,S.impactY,boost);
-  for(let i=0;i<5;i++) spawnOreChip(S,S.impactX,S.impactY,boost);
-  spawnDust(S,S.impactX-4,S.impactY+8);
-  spawnDust(S,S.impactX+3,S.impactY+6);
-  S.flashT = 1; S.impactFlash.scale.set(0.4);
-  S.ringT = 1; S.impactRing.scale.set(0.3); S.impactRing.rotation = Math.random()*Math.PI;
-  S.glints.forEach(function(g){
-    const dx = g.x - (S.impactX - S.rockBaseX), dy = g.y - (S.impactY - S.rockBaseY);
-    if(dx*dx+dy*dy < 34*34) g.hitBoost = 0.6 + Math.random()*0.3;
-  });
-  const shakeMul = MINE_REDUCED_MOTION ? 0.2 : 1;
-  S.rockShakeXV += (Math.random()*2-1)*70;
-  S.rockSquashV -= 5.5;
-  S.camShakeXV += (Math.random()*2-1)*46*shakeMul;
-  S.camShakeYV += (Math.random()*2-1)*28*shakeMul;
-  S.camShakeRV += (Math.random()*2-1)*0.55*shakeMul;
-  S.squashV -= 6;
-
-  S.hits = (S.hits||0) + 1;
-  drawCrackOverlay(S.crackOverlay, S.hits);
-  if(S.hits >= MINE_HITS_PER_SHATTER) shatterRock(S);
-}
-// สายแร่ "แตกละเอียด" หมด: ก้อนหินเดิมระเบิดเป็นเศษจำนวนมาก แล้วงอกก้อนใหม่ขึ้นมาแทนที่
-function shatterRock(S){
-  const boost = MINE_REDUCED_MOTION ? 1 : 2.2;
-  const n = MINE_REDUCED_MOTION ? 8 : 16;
-  for(let i=0;i<n;i++) spawnOreChip(S, S.impactX, S.impactY, boost);
-  for(let i=0;i<10;i++) spawnMineSpark(S, S.impactX, S.impactY, boost);
-  spawnDust(S,S.rockBaseX+10,S.impactY+10); spawnDust(S,S.rockBaseX+28,S.impactY+6);
-  S.flashT = 1.4; S.impactFlash.scale.set(0.5);
-  S.ringT = 1.6; S.impactRing.scale.set(0.3);
-  S.camShakeXV += (Math.random()*2-1)*(MINE_REDUCED_MOTION?20:90);
-  S.camShakeYV += (Math.random()*2-1)*(MINE_REDUCED_MOTION?12:60);
-  regrowRock(S);
-}
-// การฟันแบบกดปุ่ม "ขุดด้วยมือ" — เร่งให้แขนฟันทันทีนอกรอบอัตโนมัติ แล้วนับเป็นฮิตจริงเหมือนกัน
-function mineScenePunch(type){
-  const S = mineScenes[type]; if(!S) return;
-  mineImpact(S);
-  S.hitArmed = false;
-  S.punchHold = 0.16;
-}
-
-function tickMineScene(S, type, dt){
-  const flick = 0.75 + Math.sin(S.t*9)*0.15 + Math.sin(S.t*23)*0.08;
-  S.torchFlame.clear();
-  S.torchFlame.beginFill(0xb91c1c,0.9); S.torchFlame.drawRect(-2,-13*flick,4,6*flick); S.torchFlame.endFill();
-  S.torchFlame.beginFill(0xf59e0b,0.95); S.torchFlame.drawRect(-1.5,-11*flick,3,7*flick); S.torchFlame.endFill();
-  S.torchFlame.beginFill(0xfde047,0.9); S.torchFlame.drawRect(-1,-8*flick,2,5*flick); S.torchFlame.endFill();
-  S.torchGlow.alpha = 0.14 + Math.sin(S.t*6)*0.04;
-  if(S.beam) S.beam.alpha = 0.05 + Math.sin(S.t*7+1.5)*0.015;
-
-  S.glints.forEach(function(g){
-    if(g.hitBoost) g.hitBoost = Math.max(0, g.hitBoost - dt*2.6);
-    g.alpha = g.baseAlpha + Math.sin(S.t*g.speed+g.seed)*0.18 + (g.hitBoost||0);
-  });
-  S.motes.forEach(function(m){
-    m.y += m.vy; m.x += m.vx;
-    if(m.y < -2) m.y = S.H+2;
-    if(m.x < -2) m.x = S.W+2; else if(m.x > S.W+2) m.x = -2;
-  });
-
-  const mineState = gameData.mines && gameData.mines[type];
-  const active = !!(mineState && mineState.active);
-
-  let armTarget = -12, armK = MINE_PHYS.armRestK, armC = MINE_PHYS.armRestC, swinging = false;
-  if(S.punchHold > 0){
-    S.punchHold -= dt;
-    armTarget = 54; armK = MINE_PHYS.armStrikeK; armC = MINE_PHYS.armStrikeC; swinging = true;
-  }else if(active){
-    const phase = (S.t % S.cycle)/S.cycle;
-    if(phase < 0.18){ armTarget = -12; armK = MINE_PHYS.armRestK; armC = MINE_PHYS.armRestC; }
-    else if(phase < 0.32){ armTarget = -40; armK = MINE_PHYS.armWindupK; armC = MINE_PHYS.armWindupC; swinging = true; }
-    else if(phase < 0.48){ armTarget = 56; armK = MINE_PHYS.armStrikeK; armC = MINE_PHYS.armStrikeC; swinging = true; }
-    else if(phase < 0.62){ armTarget = 44; armK = MINE_PHYS.armHoldK; armC = MINE_PHYS.armHoldC; }
-    else{ armTarget = -12; armK = MINE_PHYS.armRestK; armC = MINE_PHYS.armRestC; swinging = true; }
-  }else{
-    // ---- ท่าพัก: หายใจเบาๆ + เหลือบมองสายแร่เป็นระยะ (glance) ----
-    armTarget = -12 + Math.sin(S.t*1.4)*3;
-    const glance = Math.sin(S.t*0.6);
-    if(glance > 0.9) S.minerRig.rotation = Math.sin(S.t*0.6)*0.03; else S.minerRig.rotation *= 0.9;
-  }
-  const prevArmAngle = S.armAngle;
-  springStep(S, 'armAngle', armTarget, armK, armC, dt);
-  S.armRig.rotation = S.armAngle*Math.PI/180;
-
-  if(S.hitArmed && prevArmAngle < MINE_PHYS.impactAngle && S.armAngle >= MINE_PHYS.impactAngle){
-    mineImpact(S); S.hitArmed = false;
-  }
-  if(S.armAngle < 6) S.hitArmed = true;
-
-  const leanTarget = Math.max(0, Math.min(1, (S.armAngle+12)/66)) * 1.8;
-  springStep(S, 'lean', leanTarget, MINE_PHYS.leanK, MINE_PHYS.leanC, dt);
-  S.minerRig.x = S.minerBaseX + S.lean;
-  S.minerRig.y = S.minerBaseY - Math.max(0,S.lean)*0.7 + Math.sin(S.t*1.7)*(active?0:0.6);
-
-  springStep(S, 'squash', 1, MINE_PHYS.squashK, MINE_PHYS.squashC, dt);
-  S.minerRig.scale.set(1+(1-S.squash)*0.5, S.squash);
-
-  if(swinging && Math.abs(S.armAngleV) > 60 && Math.random() < 0.7){
-    const rad = S.armAngle*Math.PI/180;
-    spawnSwingTrail(S, S.shoulderX + MINER_REACH*Math.cos(rad), S.shoulderY + MINER_REACH*Math.sin(rad));
-  }
-
-  springStep(S, 'rockShakeX', 0, MINE_PHYS.rockShakeK, MINE_PHYS.rockShakeC, dt);
-  springStep(S, 'rockSquash', 1, MINE_PHYS.squashK, MINE_PHYS.squashC, dt);
-  springStep(S, 'pop', 1, MINE_PHYS.popK, MINE_PHYS.popC, dt);
-  const popScale = Math.max(0, S.pop);
-  S.rockCluster.x = S.rockBaseX + S.rockShakeX;
-  S.rockCluster.scale.set(popScale*(1+(1-S.rockSquash)*0.4), popScale*S.rockSquash);
-
-  const shakeScale = MINE_REDUCED_MOTION ? 0 : 1;
-  springStep(S, 'camShakeX', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
-  springStep(S, 'camShakeY', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
-  springStep(S, 'camShakeR', 0, MINE_PHYS.camShakeK, MINE_PHYS.camShakeC, dt);
-  S.world.x = S.camShakeX*shakeScale; S.world.y = S.camShakeY*shakeScale; S.world.rotation = S.camShakeR*shakeScale;
-
-  if(S.flashT > 0){
-    S.flashT -= dt*8;
-    S.impactFlash.alpha = Math.max(0, S.flashT)*0.85;
-    S.impactFlash.scale.set(0.4 + (1-Math.max(0,S.flashT))*1.3);
-  }else{ S.impactFlash.alpha = 0; }
-  if(S.ringT > 0){
-    S.ringT -= dt*3.4;
-    S.impactRing.alpha = Math.max(0, S.ringT)*0.75;
-    S.impactRing.scale.set(0.3 + (1-Math.max(0,S.ringT))*2.8);
-  }else{ S.impactRing.alpha = 0; }
-
-  if(Math.random() < dt*3.5) spawnEmber(S, S.torchTipX, S.torchTipY);
-  updateMineParticles(S, dt);
-}
-
-function initPixiMines(){
-  if(typeof PIXI === 'undefined'){ console.error('PixiJS not loaded'); return; }
-  const PX = 3;
-  MINE_TYPES.forEach(function(type){
-    try{
-      const host = document.getElementById('pixi-mine-'+type);
-      if(!host || mineScenes[type]) return;
-      host.innerHTML = '';
-
-      const W = 240, H = 140;
-      const dpr = window.devicePixelRatio || 1;
-      const RES = pixiTargetRes(host);
-      const oreColor = MINE_ORE_COLOR[type];
-      const app = new PIXI.Application({ width:W, height:H, backgroundColor:MINE_SCENE_BG[type], antialias:dpr < 2, resolution:RES, roundPixels:true, autoDensity:false, powerPreference:'low-power' });
-      app.ticker.maxFPS = 60;
-      host.appendChild(app.view);
-      const stage = app.stage;
-      const world = new PIXI.Container(); stage.addChild(world);
-
-      // ---- ผนังถ้ำ (อบเป็นเท็กซ์เจอร์ครั้งเดียว) ----
-      const wallG = new PIXI.Graphics();
-      for(let r=0; r<Math.ceil(H/10)+1; r++){
-        for(let c=0; c<Math.ceil(W/16)+1; c++){
-          const dark = (r+c)%2===0;
-          const jx = (r*7+c*3)%3-1, jy = (r*5+c*2)%3-1;
-          wallG.beginFill(dark ? 0x0a0e17 : 0x0d121c);
-          wallG.drawRect(c*16 + (r%2?8:0) + jx, r*10 + jy, 15, 9);
-          wallG.endFill();
-        }
-      }
-      const veinColor = MINE_ORE_COLOR[type];
-      for(let i=0;i<5;i++){
-        wallG.lineStyle(1, veinColor, 0.16);
-        let vx = Math.random()*W, vy = Math.random()*H*0.7;
-        wallG.moveTo(vx,vy);
-        for(let s=0;s<3;s++){ vx += (Math.random()*18-4); vy += Math.random()*10-2; wallG.lineTo(vx,vy); }
-      }
-      wallG.lineStyle(0);
-      const wallTex = app.renderer.generateTexture(wallG, { resolution:RES });
-      const wall = new PIXI.Sprite(wallTex); world.addChild(wall);
-      wallG.destroy();
-
-      const depthShade = new PIXI.Graphics();
-      for(let i=0;i<5;i++){ depthShade.beginFill(0x000000, 0.05); depthShade.drawRect(0, i*(H/5), W, H/5+2); depthShade.endFill(); }
-      depthShade.beginFill(0x000000,0.22); depthShade.drawRect(0,0,W,H*0.28); depthShade.endFill();
-      world.addChild(depthShade);
-
-      const vig = new PIXI.Graphics();
-      vig.beginFill(0x000000,0.5); vig.drawRect(0,0,W,12); vig.drawRect(0,H-8,W,8); vig.endFill();
-      world.addChild(vig);
-
-      const floor = new PIXI.Graphics();
-      floor.beginFill(0x05070c); floor.drawRect(0,H-20,W,20); floor.endFill();
-      floor.beginFill(0x1c1917); floor.drawRect(0,H-22,W,3); floor.endFill();
-      for(let i=0;i<W;i+=8){
-        const rubbleH = 2+((i*7)%3);
-        floor.beginFill(((i/8)%2===0) ? 0x100d0a : 0x171310, 0.65);
-        floor.drawRect(i+((i*3)%4), H-11-rubbleH, 4+((i*5)%3), rubbleH);
-      }
-      floor.endFill();
-      world.addChild(floor);
-
-      // ---- คบเพลิงที่ผนัง ----
-      const torch = new PIXI.Container(); torch.x = 16; torch.y = 34; world.addChild(torch);
-      const torchStick = new PIXI.Graphics(); torchStick.beginFill(0x3f2a12); torchStick.drawRect(-1.5,0,3,16); torchStick.endFill(); torch.addChild(torchStick);
-      const torchGlow = new PIXI.Graphics(); torchGlow.beginFill(0xffb020,0.18); torchGlow.drawCircle(0,-4,26); torchGlow.endFill(); torch.addChild(torchGlow);
-      const torchFlame = new PIXI.Graphics(); torch.addChild(torchFlame);
-
-      // ---- สายแร่ / ก้อนหินสำหรับขุด ----
-      const rockBaseX = 116, rockBaseY = H-62;
-      const rockLayer = new PIXI.Container(); world.addChild(rockLayer);
-      const rockShadow = new PIXI.Graphics();
-      rockShadow.beginFill(0x000000,0.35); rockShadow.drawRoundedRect(-6,10,68,42,8); rockShadow.endFill();
-      rockShadow.x = rockBaseX; rockShadow.y = rockBaseY+2;
-      rockLayer.addChild(rockShadow);
-
-      // เรืองแสงสีแร่จางๆ อยู่หลังก้อนหิน เพิ่มมิติแสง (ของใหม่ที่ไม่มีในเวอร์ชั่นก่อน)
-      const rockGlow = new PIXI.Graphics();
-      rockGlow.beginFill(oreColor, 0.14); rockGlow.drawCircle(30,20,34); rockGlow.endFill();
-      rockGlow.x = rockBaseX; rockGlow.y = rockBaseY;
-      rockLayer.addChild(rockGlow);
-
-      const rockCluster = new PIXI.Container(); rockCluster.x = rockBaseX; rockCluster.y = rockBaseY;
-      rockLayer.addChild(rockCluster);
-
-      // ---- ตัวละครนักขุด ----
-      const minerRig = new PIXI.Container();
-      const minerX = 56;
-      const minerBody = bakeSprite(buildPixelSprite(M_MINER, C_MINER, PX), app.renderer);
-      const minerRows = M_MINER.length;
-      const minerShadow = new PIXI.Graphics(); minerShadow.beginFill(0x000000,0.35); minerShadow.drawEllipse(minerBody.logicW/2, minerRows*PX, minerBody.logicW*0.55, 3); minerShadow.endFill();
-
-      const backArm = new PIXI.Graphics();
-      backArm.lineStyle(1,0x0f172a,0.5); backArm.beginFill(0x1e3a8a); backArm.drawRoundedRect(-2,0,6,16,2); backArm.endFill();
-      backArm.x = 15; backArm.y = 26;
-
-      minerRig.addChild(minerShadow, backArm, minerBody);
-
-      const armPivotX = 39, armPivotY = 22;
-      const armRig = new PIXI.Container(); armRig.x = armPivotX; armRig.y = armPivotY;
-      const sleeve = new PIXI.Graphics(); sleeve.lineStyle(1,0x0f172a,0.5); sleeve.beginFill(0x1d4ed8); sleeve.drawRoundedRect(0,-3,9,6,2); sleeve.endFill();
-      const glove = new PIXI.Graphics(); glove.lineStyle(1,0x1c1917,0.5); glove.beginFill(0x78350f); glove.drawRoundedRect(7,-3,5,6,1.5); glove.endFill();
-      const pick = buildPickaxeGraphic(); pick.x = 10; pick.y = 0;
-      armRig.addChild(sleeve, glove, pick);
-      armRig.rotation = -12*Math.PI/180;
-      minerRig.addChild(armRig);
-
-      minerRig.pivot.set(0, minerRows*PX);
-      minerRig.x = minerX; minerRig.y = H - 20;
-      world.addChild(minerRig);
-
-      const beam = new PIXI.Graphics();
-      beam.beginFill(0xfff7d6,0.08);
-      beam.moveTo(0,0); beam.lineTo(96,-20); beam.lineTo(96,26); beam.closePath(); beam.endFill();
-      beam.x = minerRig.x + 34; beam.y = (H - 20 - minerRows*PX) + 10;
-      world.addChildAt(beam, world.getChildIndex(minerRig));
-
-      const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
-      const chipLayer = new PIXI.Container(); world.addChild(chipLayer);
-      const dustLayer = new PIXI.Container(); world.addChild(dustLayer);
-      const trailLayer = new PIXI.Container(); world.addChild(trailLayer);
-      const emberLayer = new PIXI.Container(); world.addChild(emberLayer);
-
-      const motes = [];
-      for(let i=0;i<7;i++){
-        const m = new PIXI.Graphics(); m.beginFill(0xaeb6c8,0.22); m.drawRect(0,0,1,1); m.endFill();
-        m.x = Math.random()*W; m.y = Math.random()*H; m.vy = -(0.08+Math.random()*0.22); m.vx = (Math.random()*0.2-0.1);
-        world.addChild(m); motes.push(m);
-      }
-
-      const impactX = rockBaseX+18, impactY = rockBaseY+26;
-      const impactFlash = new PIXI.Graphics();
-      impactFlash.beginFill(0xfff8e1); impactFlash.drawCircle(0,0,7); impactFlash.endFill();
-      impactFlash.blendMode = PIXI.BLEND_MODES.ADD;
-      impactFlash.x = impactX; impactFlash.y = impactY; impactFlash.alpha = 0;
-      world.addChild(impactFlash);
-      const impactRing = new PIXI.Graphics();
-      impactRing.lineStyle(2, 0xfff3b0, 1); impactRing.drawCircle(0,0,6);
-      for(let i=0;i<6;i++){ const a = i/6*Math.PI*2; impactRing.moveTo(Math.cos(a)*4,Math.sin(a)*4); impactRing.lineTo(Math.cos(a)*9,Math.sin(a)*9); }
-      impactRing.x = impactX; impactRing.y = impactY; impactRing.alpha = 0;
-      world.addChild(impactRing);
-
-      mineScenes[type] = {
-        app, world, minerRig, armRig, beam, rockCluster, rockBaseX, glints:[], crackOverlay:null, torchFlame, torchGlow, motes,
-        sparkLayer, chipLayer, dustLayer, trailLayer, emberLayer, sparkPool:[], chipPool:[], dustPool:[], trailPool:[], emberPool:[],
-        impactFlash, impactRing, flashT:0, ringT:0,
-        oreColor, impactX, impactY, W, H, t: Math.random()*2,
-        torchTipX: torch.x, torchTipY: torch.y-15,
-        cycle: 1.05, punchHold: 0, hitArmed: true, hits: 0,
-        armAngle: -12, armAngleV: 0,
-        lean: 0, leanV: 0,
-        squash: 1, squashV: 0,
-        rockShakeX: 0, rockShakeXV: 0,
-        rockSquash: 1, rockSquashV: 0,
-        pop: 1, popV: 0,
-        camShakeX: 0, camShakeXV: 0, camShakeY: 0, camShakeYV: 0, camShakeR: 0, camShakeRV: 0,
-        minerBaseX: minerRig.x, minerBaseY: minerRig.y, shoulderX: minerX + armPivotX, shoulderY: (H - 20 - minerRows*PX) + armPivotY,
-        res: RES, inView: undefined, io: null
-      };
-      regrowRock(mineScenes[type]);
-      mineScenes[type].pop = 1; mineScenes[type].popV = 0; // ก้อนแรกโผล่มาเต็มขนาดทันที ไม่ต้องผุดตอนเปิดฉาก
-
-      if('IntersectionObserver' in window){
-        const io = new IntersectionObserver(function(entries){
-          const sc = mineScenes[type]; if(!sc) return;
-          entries.forEach(function(en){ sc.inView = en.isIntersecting; });
-          syncPixiMineTickers();
-        }, { threshold:0.01 });
-        io.observe(host); mineScenes[type].io = io;
-      }
-
-      app.ticker.add(function(){
-        const S = mineScenes[type]; if(!S) return;
-        const dt = Math.min(0.05, app.ticker.deltaMS/1000);
-        S.t += dt;
-        tickMineScene(S, type, dt);
-      });
-    }catch(err){ console.error('Pixi mine init failed for '+type, err); }
-  });
-}
-
-// ฉากเหมืองพิกเซลเคลื่อนไหวเฉพาะตอนอยู่แท็บ "ศูนย์ขุดเหมือง" เท่านั้น (ประหยัดแบตบนมือถือ)
-function syncPixiMineTickers(){
-  const run = !document.hidden && isTabActive('mining');
-  MINE_TYPES.forEach(function(type){
-    const sc = mineScenes[type]; const t = sc && sc.app && sc.app.ticker; if(!t) return;
     const on = run && sc.inView !== false;
     if(on && !t.started) t.start(); else if(!on && t.started) t.stop();
   });
@@ -4202,25 +3697,47 @@ function trainTroop(type){
   updateUI(); autoSaveGame(true);
 }
 
-function startExpedition(key){
+function startExpedition(key, auto){
   sanitizeData();
-  const cfg = EXP_CFG[key]; if(!cfg) return;
-  if(gameData.expeditions[key] && gameData.expeditions[key].endTime > Date.now()){ showAppAlert('กองทัพกำลังปฏิบัติภารกิจนี้อยู่!'); return; }
+  const cfg = EXP_CFG[key]; if(!cfg) return false;
+  // auto=true มาจาก checkAutoExplore(): ห้าม popup แจ้งเตือน (showAppAlert) เพราะจะเด้งซ้ำๆ ทุกครั้งที่เงื่อนไขยังไม่พร้อม
+  // แค่คืนค่า false เงียบๆ แล้วรอให้ checkAutoExplore() ลองใหม่ในติ๊กถัดไป
+  if(gameData.expeditions[key] && gameData.expeditions[key].endTime > Date.now()){ if(!auto) showAppAlert('กองทัพกำลังปฏิบัติภารกิจนี้อยู่!'); return false; }
   const cur = gameData.troops[cfg.reqType] || 0;
-  if(cur < cfg.reqNum){ showAppAlert('กำลังพลไม่พอ! ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' อย่างน้อย '+cfg.reqNum+' นาย (ตอนนี้มี '+cur+')'); return; }
+  if(cur < cfg.reqNum){ if(!auto) showAppAlert('กำลังพลไม่พอ! ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' อย่างน้อย '+cfg.reqNum+' นาย (ตอนนี้มี '+cur+')'); return false; }
   if(cfg.cost){
     for(let res in cfg.cost){
       if((gameData[res]||0) < cfg.cost[res]){
-        showAppAlert('เสบียงไม่พอสำหรับภารกิจนี้! ต้องการ '+cfg.cost[res].toLocaleString()+' '+res);
-        return;
+        if(!auto) showAppAlert('เสบียงไม่พอสำหรับภารกิจนี้! ต้องการ '+cfg.cost[res].toLocaleString()+' '+res);
+        return false;
       }
     }
     for(let res in cfg.cost){ gameData[res] -= cfg.cost[res]; }
   }
   gameData.troops[cfg.reqType] -= cfg.reqNum; // ล็อกกำลังพลไว้ระหว่างสำรวจ คืนให้เมื่อภารกิจจบ (ดู checkExpeditions)
   gameData.expeditions[key] = { endTime: Date.now() + (cfg.duration*1000), duration: cfg.duration };
-  showToast('🗺️ ส่งกองทัพออกสำรวจ "'+cfg.name+'" แล้ว!');
+  showToast(auto ? '🔁 ออโต้ส่งกองทัพสำรวจ "'+cfg.name+'" แล้ว!' : '🗺️ ส่งกองทัพออกสำรวจ "'+cfg.name+'" แล้ว!');
   updateUI(); autoSaveGame(true);
+  return true;
+}
+
+// ===== สำรวจอัตโนมัติ: เมื่อเปิดไว้ให้ส่งกองทัพซ้ำทันทีที่ภารกิจก่อนหน้าจบและกำลังพล/เสบียงพร้อม =====
+function toggleAutoExplore(key){
+  sanitizeData();
+  const cfg = EXP_CFG[key]; if(!cfg) return;
+  gameData.autoExplore[key] = !gameData.autoExplore[key];
+  showToast(gameData.autoExplore[key] ? '🔁 เปิดสำรวจอัตโนมัติ: '+cfg.name : '⏹️ ปิดสำรวจอัตโนมัติ: '+cfg.name);
+  if(gameData.autoExplore[key]) checkAutoExplore(); // ลองส่งทันทีถ้าพร้อมอยู่แล้ว ไม่ต้องรอติ๊กถัดไป
+  updateUI(); autoSaveGame(true);
+}
+function checkAutoExplore(){
+  if(!gameData.autoExplore) return;
+  for(let key in EXP_CFG){
+    if(!gameData.autoExplore[key]) continue;
+    const exp = gameData.expeditions[key];
+    if(exp && exp.endTime > Date.now()) continue; // ภารกิจนี้กำลังดำเนินอยู่ รอให้จบก่อน
+    startExpedition(key, true); // เงียบ: ถ้ากำลังพล/เสบียงยังไม่พอ จะไม่ทำอะไรและลองใหม่ในติ๊กถัดไปเอง
+  }
 }
 
 function checkExpeditions(){
@@ -4236,12 +3753,11 @@ function checkExpeditions(){
           gameData[rKey] = (gameData[rKey] || 0) + val;
           txt.push(rKey === 'gold' ? val.toLocaleString()+' Gold' : (rKey === 'gems' ? val+' Gems' : val+' ชิ้น'));
         }
-        if(cfg.reward.gems >= 15){
-          showBigReward('🗺️ พิชิตสำเร็จ!', '"'+cfg.name+'" ได้รับ: '+txt.join(', '), 'pi-confetti');
-        }else{
-          showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
-          SFX.coin();
-        }
+        // ปิดการแจ้งเตือนแบบโมดัล (popup เต็มจอ) สำหรับผลของ "การสำรวจ" โดยเฉพาะ - เพราะเมื่อเปิดออโต้สำรวจไว้
+        // ภารกิจจะจบซ้ำๆ ทุกไม่กี่สิบวินาที ถ้าเด้งโมดัลทุกครั้งที่ได้ Gems เยอะ (เช่นด่านซากโบราณสถาน/มังกร)
+        // จะน่ารำคาญมาก จึงใช้ toast แจ้งเตือนแบบเบาๆ แทนเสมอ ไม่ว่าจะได้รางวัลเท่าไหร่ก็ตาม
+        showToast('🎉 กองทัพพิชิต "'+cfg.name+'" สำเร็จ! ได้รับ: '+txt.join(', '));
+        SFX.coin();
         gameData.troops[cfg.reqType] = (gameData.troops[cfg.reqType]||0) + cfg.reqNum; // คืนกำลังพลที่ล็อกไว้ตอนเริ่มภารกิจ
         if(cfg.deathChance && Math.random() < cfg.deathChance && gameData.troops[cfg.reqType] > 0){
           gameData.troops[cfg.reqType] -= 1;
@@ -4271,7 +3787,7 @@ function toggleMining(type){
     setMineBar(type, 0);
     showToast('⏸️ หยุด'+cfg.label+'แล้ว');
   }else{ showToast('▶️ เริ่ม'+cfg.label+'แล้ว'); }
-  updateUI(); autoSaveGame(true); wakeLoop(); syncPixiMineTickers();
+  updateUI(); autoSaveGame(true); wakeLoop();
 }
 function manualMine(type){
   sanitizeData();
@@ -4298,7 +3814,6 @@ function manualMine(type){
     gameData.totalMined[type] = (gameData.totalMined[type]||0) + y;
     showFloatingReward(type, '+'+y.toLocaleString(), false);
     SFX.hit();
-    mineScenePunch(type);
     addXP(Math.round(MINE_CFG[type].baseXp * gameData.mines[type].level * 0.4));
   }
   updateUI(); autoSaveGame(true);
@@ -4387,7 +3902,7 @@ setInterval(function(){
   if(!document.hidden && (performance.now() - lastTickAt) > 3000) wakeLoop();
 }, 2000);
 function updateMiningProgress(dt){
-  checkAutoRepair(); checkExpeditions();
+  checkAutoRepair(); checkExpeditions(); checkAutoExplore();
   let dirty = false;
   MINE_TYPES.forEach(type=>{
     const mine = gameData.mines[type];
@@ -4844,6 +4359,87 @@ function formatOfflineDuration(seconds){
   return s+' วินาที';
 }
 
+// ===== มอบรางวัลภารกิจสำรวจ 1 รอบระหว่างจำลองออฟไลน์ (ใช้ตรรกะเดียวกับ checkExpeditions() ตอนออนไลน์) =====
+function grantExpeditionReward(cfg, sKey){
+  for(let rKey in cfg.reward){
+    const val = cfg.reward[rKey];
+    gameData[rKey] = (gameData[rKey] || 0) + val;
+    if(rKey === 'gold') sKey.gold += val;
+    else if(rKey === 'gems') sKey.gems += val;
+    else sKey.ore[rKey] = (sKey.ore[rKey] || 0) + val;
+  }
+  gameData.troops[cfg.reqType] = (gameData.troops[cfg.reqType] || 0) + cfg.reqNum; // คืนกำลังพลที่ล็อกไว้ตอนเริ่ม
+  if(cfg.deathChance && Math.random() < cfg.deathChance && gameData.troops[cfg.reqType] > 0){
+    gameData.troops[cfg.reqType] -= 1;
+    sKey.deaths++;
+  }
+  sKey.completions++;
+}
+
+// ===== จำลองระบบสำรวจ (รวมออโต้สำรวจ) ที่ควรจะเกิดขึ้นระหว่างออฟไลน์ =====
+// - ภารกิจที่ "กำลังทำอยู่แล้ว" ตอนออฟไลน์: ต้องได้รับรางวัลเสมอถ้าครบกำหนดจริง ไม่ว่าจะออฟไลน์ไปนานแค่ไหน
+//   (เป็นคำมั่นที่ให้ไว้ตั้งแต่ก่อนออฟไลน์แล้ว จึงไม่ใช้เพดานเวลาตัดรางวัลตรงนี้ - ต่างจากรอบใหม่ที่จะเริ่มเพิ่ม)
+// - รอบใหม่ที่ออโต้จะส่งซ้ำต่อเนื่อง: จำกัดด้วยเพดานเวลาเดียวกับระบบขุด (OFFLINE_CONFIG.capSeconds)
+//   กันไม่ให้ปล่อยเครื่องค้างไว้นานเกินไปแล้วได้กำไรจากออฟไลน์แบบไม่มีที่สิ้นสุด
+// rawSeconds    = เวลาที่ออฟไลน์จริง (ไม่ตัดเพดาน) ใช้เช็คว่าภารกิจที่ค้างอยู่ครบกำหนดจริงหรือยัง
+// cappedSeconds = เวลาที่ใช้จำกัดจำนวนรอบใหม่ที่จะไล่ส่งต่อเนื่องให้อัตโนมัติ
+function simulateOfflineExpeditions(rawSeconds, cappedSeconds){
+  const now = Date.now();
+  const summary = {};
+  for(let key in EXP_CFG){
+    const cfg = EXP_CFG[key];
+    const autoOn = !!(gameData.autoExplore && gameData.autoExplore[key]);
+    const sKey = { completions:0, gold:0, gems:0, ore:{}, deaths:0 };
+    let budget = cappedSeconds; // เวลาที่เหลือไว้ให้ไล่ส่งรอบใหม่ต่อจากนี้
+
+    const exp = gameData.expeditions[key];
+    if(exp && exp.endTime){
+      const remainAtSave = (exp.endTime - gameData.lastSaveTime)/1000; // เวลาที่ควรเหลืออีกเท่าไหร่ ณ ตอนบันทึกล่าสุด
+      if(remainAtSave <= rawSeconds){
+        // ภารกิจที่ทำค้างไว้ครบกำหนดแล้วจริงๆ ระหว่างที่ออฟไลน์ - รับรางวัลให้ครบตามคำมั่นเดิม
+        grantExpeditionReward(cfg, sKey);
+        delete gameData.expeditions[key];
+        budget = Math.max(0, cappedSeconds - Math.max(0, remainAtSave));
+      }else{
+        // ยังไม่ครบกำหนดแม้ผ่านช่วงออฟไลน์มาแล้ว - ปล่อยให้เดินต่อตามปกติ ไม่ต้องทำอะไรกับ lane นี้เพิ่ม
+        continue;
+      }
+    }
+
+    if(!autoOn){
+      if(sKey.completions > 0) summary[key] = sKey;
+      continue; // ออโต้ปิดอยู่ - ไม่ส่งกองทัพชุดใหม่ให้เอง ผู้เล่นต้องกลับมากดเองตามปกติ
+    }
+
+    let guard = 0;
+    while(budget >= cfg.duration && guard++ < 5000){
+      const troopHave = (gameData.troops && gameData.troops[cfg.reqType]) || 0;
+      if(troopHave < cfg.reqNum) break; // กำลังพลไม่พอ รอรอบถัดไปตอนกลับมาออนไลน์
+      let canAfford = true;
+      if(cfg.cost){ for(let res in cfg.cost){ if((gameData[res]||0) < cfg.cost[res]){ canAfford = false; break; } } }
+      if(!canAfford) break; // เสบียงไม่พอ รอรอบถัดไปตอนกลับมาออนไลน์
+      if(cfg.cost){ for(let res in cfg.cost){ gameData[res] -= cfg.cost[res]; } }
+      gameData.troops[cfg.reqType] -= cfg.reqNum;
+      budget -= cfg.duration;
+      grantExpeditionReward(cfg, sKey);
+    }
+
+    // เศษเวลาที่เหลือไม่พอครบอีก 1 รอบ แต่กำลังพล/เสบียงพร้อมส่ง -> เริ่มภารกิจใหม่ค้างไว้เลย
+    // ตั้งเวลาที่เหลือให้ตรงกับที่ควรจะเป็นจริง (เดินหน้าไปแล้ว cfg.duration-budget วิ) จะได้จบพอดีตอนกลับมาออนไลน์
+    const troopHave2 = (gameData.troops && gameData.troops[cfg.reqType]) || 0;
+    let canAfford2 = true;
+    if(cfg.cost){ for(let res in cfg.cost){ if((gameData[res]||0) < cfg.cost[res]){ canAfford2 = false; break; } } }
+    if(budget > 0 && troopHave2 >= cfg.reqNum && canAfford2){
+      if(cfg.cost){ for(let res in cfg.cost){ gameData[res] -= cfg.cost[res]; } }
+      gameData.troops[cfg.reqType] -= cfg.reqNum;
+      gameData.expeditions[key] = { endTime: now + (cfg.duration - budget)*1000, duration: cfg.duration };
+    }
+
+    if(sKey.completions > 0) summary[key] = sKey;
+  }
+  return summary;
+}
+
 // ===== คำนวณความคืบหน้าที่เกิดขึ้นระหว่างออฟไลน์ แล้วสรุปผลให้ผู้เล่นเห็นในโมดัลเดียว =====
 function calcOfflineProgress(){
   const rawElapsedSec = (Date.now() - gameData.lastSaveTime)/1000;
@@ -4851,21 +4447,24 @@ function calcOfflineProgress(){
 
   const cappedSec = Math.min(rawElapsedSec, OFFLINE_CONFIG.capSeconds);
   const sim = simulateOfflineMining(cappedSec);
+  const expSim = simulateOfflineExpeditions(rawElapsedSec, cappedSec);
 
   const hasGains = sim.gains.iron>0 || sim.gains.silver>0 || sim.gains.goldOre>0;
-  if(!hasGains && sim.repairsUsed===0 && sim.levelsGained===0) return; // ไม่มีอะไรเกิดขึ้นเลย ไม่ต้องรบกวนผู้เล่น
+  const hasExpGains = Object.keys(expSim).length > 0;
+  if(!hasGains && !hasExpGains && sim.repairsUsed===0 && sim.levelsGained===0) return; // ไม่มีอะไรเกิดขึ้นเลย ไม่ต้องรบกวนผู้เล่น
 
   showOfflineSummaryModal({
     awaySeconds: rawElapsedSec,
     wasCapped: rawElapsedSec > OFFLINE_CONFIG.capSeconds,
-    sim
+    sim,
+    expSim
   });
 }
 
 // ===== แสดงโมดัลสรุปผลตอบแทนออฟไลน์ ("ยินดีต้อนรับกลับมา") =====
 function showOfflineSummaryModal(data){
   const m = document.getElementById('offline-modal'); if(!m) return;
-  const { awaySeconds, wasCapped, sim } = data;
+  const { awaySeconds, wasCapped, sim, expSim } = data;
 
   setTxt(document.getElementById('offline-modal-away'),
     'คุณออฟไลน์ไป ' + formatOfflineDuration(awaySeconds) + (wasCapped ? ' (คำนวณให้สูงสุด 12 ชม.)' : ''));
@@ -4892,6 +4491,19 @@ function showOfflineSummaryModal(data){
   }
   if(sim.ranOutOfDurability){
     rows.push('<div class="offline-stat-row warn"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--danger)"><use href="#pi-warning"></use></svg> ความทนทานหมด</span><span class="v">การขุดหยุดก่อนกำหนด</span></div>');
+  }
+  if(expSim){
+    for(let key in expSim){
+      const cfg = EXP_CFG[key]; const d = expSim[key]; if(!cfg) continue;
+      const parts = [];
+      if(d.gold) parts.push('+'+d.gold.toLocaleString()+' Gold');
+      if(d.gems) parts.push('+'+d.gems+' Gems');
+      for(let ok in d.ore){ parts.push('+'+d.ore[ok].toLocaleString()+' '+(ORE_META[ok]?ORE_META[ok].label:ok)); }
+      rows.push('<div class="offline-stat-row"><span class="k"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-map"></use></svg> '+cfg.name+' x'+d.completions+'</span><span class="v">'+parts.join(', ')+'</span></div>');
+      if(d.deaths > 0){
+        rows.push('<div class="offline-stat-row warn"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--danger)"><use href="#pi-warning"></use></svg> ทหารเสียชีวิตระหว่างสำรวจ ('+cfg.name+')</span><span class="v">-'+d.deaths+' นาย</span></div>');
+      }
+    }
   }
   const listEl = document.getElementById('offline-stat-list');
   if(listEl) listEl.innerHTML = rows.join('');
@@ -4936,6 +4548,15 @@ function updateUI(){
   if(aBtn){
     setTxt(aBtn, gameData.autoRepair ? 'Auto: เปิด' : 'Auto: ปิด');
     setCls(aBtn, gameData.autoRepair ? 'btn btn-success' : 'btn btn-danger');
+  }
+  const dashRepairBadge = document.getElementById('dash-auto-repair-badge');
+  const dashRepairSub = document.getElementById('dash-auto-repair-sub');
+  if(dashRepairBadge){
+    setTxt(dashRepairBadge, gameData.autoRepair ? 'เปิด' : 'ปิด');
+    setCls(dashRepairBadge, gameData.autoRepair ? 'dash-auto-badge on' : 'dash-auto-badge off');
+  }
+  if(dashRepairSub){
+    setTxt(dashRepairSub, gameData.autoRepair ? 'ทนทาน ' + Math.round(gameData.durability) + '%' : '');
   }
 
   const repairKitBtn = document.getElementById('shop-repairkit-btn');
@@ -5021,6 +4642,16 @@ function updateUI(){
         if(card) card.classList.remove('mining-active');
       }
     }
+    const dashMineBadge = document.getElementById('dash-mine-'+t+'-badge');
+    const dashMineSub = document.getElementById('dash-mine-'+t+'-sub');
+    const mineActive = !!gameData.mines[t].active && gameData.level >= MINE_CFG[t].reqLv;
+    if(dashMineBadge){
+      setTxt(dashMineBadge, mineActive ? 'กำลังขุด' : 'หยุด');
+      setCls(dashMineBadge, mineActive ? 'dash-auto-badge on' : 'dash-auto-badge off');
+    }
+    if(dashMineSub){
+      setTxt(dashMineSub, mineActive ? 'ผลิต '+getMineYield(t).toLocaleString()+' ชิ้น / '+getMineTime(t).toFixed(1)+' วิ' : '');
+    }
   });
 
   if(gameData.troops){
@@ -5050,19 +4681,38 @@ function updateUI(){
     const cfg = EXP_CFG[key];
     const statusEl = document.getElementById('exp-status-' + cfg.label);
     const btnEl = document.getElementById('exp-btn-' + cfg.label);
+    const autoEl = document.getElementById('exp-auto-' + cfg.label);
     const exp = gameData.expeditions[key];
     const troopHave = (gameData.troops && gameData.troops[cfg.reqType]) || 0;
     const troopOk = troopHave >= cfg.reqNum;
+    const autoOn = !!(gameData.autoExplore && gameData.autoExplore[key]);
     if(exp && exp.endTime > now){
       const remain = Math.ceil((exp.endTime - now)/1000);
-      if(statusEl) setTxt(statusEl, 'สถานะ: กำลังสำรวจ (' + remain + ' วิ)');
+      if(statusEl) setTxt(statusEl, 'สถานะ: กำลังสำรวจ (' + remain + ' วิ)' + (autoOn ? ' 🔁' : ''));
       if(btnEl){ setTxt(btnEl, 'กำลังลุย...'); setCls(btnEl, 'btn btn-locked'); btnEl.disabled = true; }
     }else if(!troopOk){
-      if(statusEl) setTxt(statusEl, 'สถานะ: กำลังพลไม่พอ');
+      if(statusEl) setTxt(statusEl, 'สถานะ: กำลังพลไม่พอ' + (autoOn ? ' (รอออโต้ส่งเมื่อครบ)' : ''));
       if(btnEl){ setTxt(btnEl, '🔒 ต้องการ '+HERO_BY_TYPE[cfg.reqType].name+' '+cfg.reqNum+' นาย (มี '+troopHave+')'); setCls(btnEl, 'btn btn-locked'); btnEl.disabled = true; }
     }else{
       if(statusEl) setTxt(statusEl, 'สถานะ: พร้อมออกเดินทาง');
       if(btnEl){ setTxt(btnEl, 'ส่งกองทัพสำรวจ'); setCls(btnEl, 'btn btn-success'); btnEl.disabled = false; }
+    }
+    if(autoEl){
+      setTxt(autoEl, autoOn ? '🔁 ออโต้: เปิด' : '🔁 ออโต้: ปิด');
+      setCls(autoEl, autoOn ? 'btn btn-success' : 'btn btn-danger');
+    }
+    const dashBadge = document.getElementById('dash-auto-'+cfg.label+'-badge');
+    const dashSub = document.getElementById('dash-auto-'+cfg.label+'-sub');
+    if(dashBadge){
+      setTxt(dashBadge, autoOn ? 'เปิด' : 'ปิด');
+      setCls(dashBadge, autoOn ? 'dash-auto-badge on' : 'dash-auto-badge off');
+    }
+    if(dashSub){
+      let sub = '';
+      if(exp && exp.endTime > now) sub = 'กำลังสำรวจ (' + Math.ceil((exp.endTime-now)/1000) + ' วิ)';
+      else if(autoOn && !troopOk) sub = 'รอกำลังพลครบ';
+      else if(autoOn) sub = 'พร้อมส่งรอบถัดไป';
+      setTxt(dashSub, sub);
     }
   }
 
@@ -5106,7 +4756,6 @@ function updateUI(){
     av.innerHTML = skin.svg;
     av.dataset.skinId = gameData.equippedSkin;
   }
-  syncPixiMineTickers();
 }
 function refreshAll(){ updateUI(); renderSkinShop(); }
 
@@ -5117,7 +4766,6 @@ window.addEventListener('load', function(){
     updateSoundBtn();
     renderThemeOptions();
     syncPixiTickers();
-    syncPixiMineTickers();
     // any first tap/click unlocks the WebAudio context (autoplay policy) and starts music if it's enabled
     (function(){
       let unlocked = false;
@@ -5171,6 +4819,7 @@ window.addEventListener('load', function(){
       lastResumeCall = now;
       calcOfflineProgress();
       checkExpeditions(); // ให้ผลของภารกิจที่จบระหว่างออฟไลน์ขึ้นทันที ไม่ต้องรอ loop tick แรก
+      checkAutoExplore(); // ส่งกองทัพชุดใหม่ทันทีถ้าเปิดออโต้ไว้และพร้อม ไม่ต้องรอ loop tick แรก
       refreshAll();
       wakeLoop();
     }
@@ -5178,11 +4827,10 @@ window.addEventListener('load', function(){
       if(document.hidden){ autoSaveGame(true); }
       else { resumeFromBackground(); }
       syncPixiTickers();
-      syncPixiMineTickers();
     });
     // Backstop #1: window focus can fire on desktop (alt-tab, clicking back into the window)
     // even when document.hidden never toggled. Just re-arm the loop - cheap and idempotent.
-    window.addEventListener('focus', function(){ wakeLoop(); syncPixiTickers(); syncPixiMineTickers(); });
+    window.addEventListener('focus', function(){ wakeLoop(); syncPixiTickers(); });
     // Backstop #2: pageshow fires on normal load AND whenever the page is restored from the
     // browser's back-forward cache - which is exactly what happens on many phones when you
     // switch to another app and swipe back, and it can fire without a matching
@@ -5207,7 +4855,7 @@ window.addEventListener('load', function(){
       }
       if(!widthChanged) return;
       if(isTabActive('market')) drawAllMarketCharts();
-      clearTimeout(window.__pxT); window.__pxT = setTimeout(function(){ checkPixiRes(); checkPixiMineRes(); }, 300);
+      clearTimeout(window.__pxT); window.__pxT = setTimeout(function(){ checkPixiRes(); }, 300);
     });
     window.addEventListener('beforeunload', function(){ autoSaveGame(true); });
     // iOS Safari often skips beforeunload; pagehide fires reliably when the tab is closed/backgrounded
