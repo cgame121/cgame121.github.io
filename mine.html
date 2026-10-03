@@ -3670,7 +3670,7 @@ function numOr(v, def){ return (v === undefined || v === null || isNaN(Number(v)
 function sanitizeData(){
   const d = createDefaultData();
   if(!gameData || typeof gameData !== 'object') gameData = d;
-  const num = (v, def) => (v === undefined || v === null || isNaN(Number(v))) ? def : Number(v);
+  const num = (v, def) => (v === undefined || v === null || !isFinite(Number(v))) ? def : Math.min(Number.MAX_SAFE_INTEGER, Math.max(-Number.MAX_SAFE_INTEGER, Number(v)));
   // ===== ย้ายเซฟเก่า: ระบบอุปกรณ์ถูกนำออกแล้ว -> คืนทรัพยากรที่เคยจ่ายอัปเกรด 100% ครั้งเดียว แล้วลบข้อมูลอุปกรณ์ทิ้ง =====
   if(gameData.equipment && typeof gameData.equipment === 'object'){
     const LEGACY = {
@@ -3852,10 +3852,11 @@ function autoSaveGame(force, syncBackupNow){
 }
 function manualSaveGame(){ autoSaveGame(true, true); showToast('💾 บันทึกเกมเรียบร้อยแล้ว!'); }
 function loadGame(){
-  let loaded = null;
-  try{ const raw = localStorage.getItem('mcPrimarySave'); if(raw) loaded = JSON.parse(raw); }catch(e){ loaded = null; }
-  if(!loaded){ try{ const bk = localStorage.getItem('mcBackupSave'); if(bk) loaded = JSON.parse(bk); }catch(e){ loaded = null; } }
-  if(loaded && typeof loaded==='object') gameData = loaded;
+  let loaded = null, fromBackup = false;
+  try{ const raw = localStorage.getItem('mcPrimarySave'); if(raw){ const o = JSON.parse(raw); if(looksLikeValidSave(o)) loaded = o; } }catch(e){ loaded = null; }
+  if(!loaded){ try{ const bk = localStorage.getItem('mcBackupSave'); if(bk){ const o = JSON.parse(bk); if(looksLikeValidSave(o)){ loaded = o; fromBackup = !!localStorage.getItem('mcPrimarySave'); } } }catch(e){ loaded = null; } }
+  if(loaded) gameData = loaded;
+  if(fromBackup) setTimeout(function(){ showToast('⚠️ เซฟหลักเสียหาย กู้คืนจากเซฟสำรองแล้ว'); }, 800);
   sanitizeData(); calcOfflineProgress();
   gameData.lastSaveTime = Date.now();
   autoSaveGame(true, true); refreshAll();
@@ -3876,6 +3877,7 @@ function importSaveFile(ev){
     try{
       const obj = JSON.parse(e.target.result);
       if(looksLikeValidSave(obj)){
+        try{ localStorage.setItem('mcPreImportSave', JSON.stringify(gameData)); }catch(_e){}
         gameData = obj; sanitizeData(); autoSaveGame(true, true);
         // เดิม location.reload() ถูกเรียกทันทีในบรรทัดถัดจาก showAppAlert() ทำให้แทบไม่มีโอกาส
         // เห็นข้อความยืนยันเลยก่อนหน้าเว็บจะรีโหลด จึงย้าย reload ไปเป็น callback ที่ทำงานหลังผู้เล่น
@@ -3902,7 +3904,8 @@ function importSaveCode(){
   try{
     const obj = JSON.parse(safeAtob(code)); // safeAtob โยน error ต่อได้แล้วถ้าโค้ดถอดไม่ได้ (ดักด้านล่าง)
     if(looksLikeValidSave(obj)){
-      gameData = obj; sanitizeData(); autoSaveGame(true, true);
+      try{ localStorage.setItem('mcPreImportSave', JSON.stringify(gameData)); }catch(_e){}
+        gameData = obj; sanitizeData(); autoSaveGame(true, true);
       // เช่นเดียวกับ importSaveFile: เลื่อน reload ไปหลังผู้เล่นกดปิดโมดัลยืนยัน แทนที่จะรีโหลดทันที
       showAppAlert('กู้คืนข้อมูลสำเร็จ!'+(equipRefundText() ? ' (คืนทรัพยากรอุปกรณ์เดิมให้แล้ว)' : ''), undefined, function(){ location.reload(); });
     }
@@ -3921,6 +3924,7 @@ function executeResetGame(){
   gameData = createDefaultData();
   try{ localStorage.removeItem('mcPrimarySave'); }catch(e){ console.error('reset: ลบ mcPrimarySave ไม่สำเร็จ', e); }
   try{ localStorage.removeItem('mcBackupSave'); }catch(e){ console.error('reset: ลบ mcBackupSave ไม่สำเร็จ', e); }
+  try{ localStorage.removeItem('mcPreImportSave'); }catch(e){}
   location.reload();
 }
 
