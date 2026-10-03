@@ -1239,6 +1239,24 @@ header {
 .stat-row span {
   color: var(--text-muted);
 }
+.profile-wide {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(16px,3vw,40px);
+  text-align: left;
+}
+.profile-wide .profile-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.profile-wide .profile-stats {
+  flex: 1 1 260px;
+  width: auto;
+  margin-top: 0;
+}
 .skin-avatar {
   width: 140px;
   height: 140px;
@@ -1834,6 +1852,81 @@ body {
   font-weight: 700;
   color: var(--text-main);
 }
+
+/* ===== สัญญาองครักษ์: การ์ดเลือกระดับ ===== */
+.contract-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0 10px}
+.tier-btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:14px 10px 12px;border-radius:14px;border:2px solid rgba(255,255,255,.12);background:var(--bg-sidebar);color:inherit;font-family:inherit;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.tier-btn:hover:not(:disabled){transform:translateY(-2px);border-color:var(--success)}
+.tier-btn:disabled{cursor:default}
+.tier-btn.active{border-color:var(--gold);box-shadow:0 0 14px rgba(255,207,61,.25),inset 0 0 0 1px rgba(255,207,61,.35)}
+.tier-btn .t-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1a1200;font-size:.68rem;font-weight:800;border-radius:99px;padding:2px 10px;white-space:nowrap}
+.tier-btn .t-name{font-weight:700;font-size:.95rem;line-height:1.25;margin-top:4px}
+.tier-btn .t-red{font-size:1.9rem;font-weight:800;color:var(--success);line-height:1}
+.tier-btn .t-lbl{font-size:.72rem;color:var(--text-muted);margin-top:-2px}
+.tier-btn .t-fee{font-size:.85rem;font-weight:700;color:var(--accent);margin-top:4px;border-top:1px dashed rgba(255,255,255,.15);padding-top:6px;width:100%}
+.tier-btn .t-net{font-size:.74rem;font-weight:600}
+.tier-btn .t-net.good{color:var(--success)}
+.tier-btn .t-net.bad{color:var(--text-muted)}
+.contract-cancel{width:100%;margin-top:2px}
+#contract-info,#contract-risk{text-align:right}
+
+/* ===== คลังใต้ดิน ===== */
+.vault-card{display:flex;flex-direction:column;gap:12px}
+.vault-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vault-head h3{margin:0}
+.vault-lv{font-weight:800;color:var(--gold);background:rgba(255,207,61,.12);border-radius:99px;padding:3px 12px;font-size:.85rem;white-space:nowrap}
+.vault-pips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.vault-pips .pip{height:10px;border-radius:99px;background:rgba(255,255,255,.1)}
+.vault-pips .pip.on{background:linear-gradient(90deg,#00c26e,#55ffb0);box-shadow:0 0 8px rgba(0,255,150,.35)}
+.vault-desc{font-size:.82rem;line-height:1.5;color:var(--text-muted)}
+.vault-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--bg-sidebar);border:1px solid rgba(255,255,255,.08)}
+.vault-hero .vh-k{font-size:.85rem;color:var(--text-muted)}
+.vault-hero .vh-v{font-size:1.05rem;font-weight:800;text-align:right}
+.vault-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vault-tile{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:12px;background:var(--bg-sidebar);border:1px solid rgba(255,255,255,.08)}
+.vault-tile .vt-k{font-size:.74rem;color:var(--text-muted)}
+.vault-tile .vt-v{font-size:.95rem;font-weight:700;color:var(--success)}
+.vault-tile .vt-v small{font-weight:500;color:var(--text-muted)}
+.vault-req{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;border:1px dashed rgba(255,255,255,.18)}
+.vault-req-title{font-size:.74rem;color:var(--text-muted);margin-bottom:2px}
+.vr-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.88rem}
+.vr-row .vr-v{font-weight:700;color:var(--success)}
+.vr-row.short .vr-v{color:#ff6b7a}
+.vault-btn{width:100%}
+@media (max-width:420px){.vault-grid{grid-template-columns:1fr}}
+
+/* ===== หน้าคลัง & ความปลอดภัย ===== */
+.def-flow{margin-bottom:16px;padding:14px;border-radius:14px;background:var(--bg-sidebar);border:1px solid rgba(255,255,255,.08)}
+.def-flow-title{font-size:.82rem;color:var(--text-muted);margin-bottom:10px}
+.def-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.def-step{position:relative;display:flex;flex-direction:column;gap:3px;padding:10px 12px 10px 42px;border-radius:12px;background:rgba(255,255,255,.04)}
+.def-step .ds-n{position:absolute;left:10px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--success);color:#04210f;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.def-step b{font-size:.9rem}
+.def-step small{font-size:.72rem;color:var(--text-muted)}
+.def-step .ds-s{font-size:.8rem;font-weight:700;color:var(--gold);margin-top:2px}
+
+/* ===== หน้าคลัง: เลย์เอาต์ใหม่ ===== */
+#vault .vp-header{margin-bottom:14px}
+#vault .vp-header h2{font-size:1.2rem;margin:0 0 4px;color:var(--text)}
+#vault .vp-header p{margin:0;font-size:.85rem;color:var(--text-muted)}
+.vp-hero{display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;justify-content:space-between;padding:16px;margin-bottom:16px;border-radius:16px;border:1px solid rgba(255,255,255,.1);border-left:6px solid var(--success);background:linear-gradient(135deg,rgba(0,255,150,.10),rgba(0,0,0,0) 60%),var(--bg-sidebar)}
+.vp-hero.warn{border-left-color:var(--gold);background:linear-gradient(135deg,rgba(255,207,61,.12),rgba(0,0,0,0) 60%),var(--bg-sidebar)}
+.vp-hero.danger{border-left-color:#ff4d5e;background:linear-gradient(135deg,rgba(255,77,94,.14),rgba(0,0,0,0) 60%),var(--bg-sidebar)}
+.vp-hero-main{flex:1 1 260px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.vp-label{font-size:.74rem;color:var(--text-muted)}
+.vp-status{font-size:1.05rem;font-weight:800;line-height:1.35}
+.vp-hint{font-size:.78rem;color:var(--text-muted);line-height:1.5}
+.vp-stats{flex:1 1 300px;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.vp-stat{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.05)}
+.vp-stat span{font-size:.72rem;color:var(--text-muted)}
+.vp-stat b{font-size:1.15rem;font-weight:800;color:var(--text)}
+.vp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px;align-items:start}
+.monument-pips{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.monument-pips .pip{height:10px;border-radius:99px;background:rgba(255,255,255,.1)}
+.monument-pips .pip.on{background:linear-gradient(90deg,#c9961a,#ffcf3d);box-shadow:0 0 8px rgba(255,207,61,.35)}
+.monument-ms{display:flex;flex-wrap:wrap;gap:8px}
+.monument-ms .ms{font-size:.75rem;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--text-muted)}
+.monument-ms .ms.done{background:rgba(0,255,150,.15);color:var(--success);font-weight:700}
 </style>
 <script>
 (function(){
@@ -1967,8 +2060,9 @@ body {
     <li class="menu-item active" onclick="switchTab(event,'dashboard')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-house"></use></svg> แดชบอร์ดหลัก</li>
     <li class="menu-item" onclick="switchTab(event,'mining')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-mountain"></use></svg> ศูนย์ขุดเหมือง</li>
     <li class="menu-item" onclick="switchTab(event,'smelting')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-fire"></use></svg> เตาหลอมแร่</li>
-    <li class="menu-item" onclick="switchTab(event,'character')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร &amp; อุปกรณ์</li>
+    <li class="menu-item" onclick="switchTab(event,'character')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร</li>
     <li class="menu-item" onclick="switchTab(event,'military')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-castle"></use></svg> ค่ายทหาร &amp; สำรวจ</li>
+    <li class="menu-item" onclick="switchTab(event,'vault')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-castle"></use></svg> คลัง &amp; ความปลอดภัย</li>
     <li class="menu-item" onclick="switchTab(event,'market')"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-cart"></use></svg> ตลาดกลางซื้อขายแร่</li>
     <li class="menu-item" onclick="switchTab(event,'shop')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> ร้านค้าพิเศษ</li>
     <li class="menu-item" onclick="switchTab(event,'inventory')"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-backpack"></use></svg> ช่องเก็บของ</li>
@@ -2172,34 +2266,25 @@ body {
       </div>
       <div class="card">
         <h3>ℹ️ แท่งโลหะเอาไปทำอะไร</h3>
-        <p>ใช้แท่งโลหะอัปเกรด <b>เหมือง อุปกรณ์</b> และ<b>เกณฑ์ทหาร</b> — ยิ่งเลเวลสูงยิ่งต้องใช้เยอะขึ้น ควรเก็บแร่ไว้หลอมบ้าง ไม่ขายทิ้งหมด</p>
+        <p>ใช้แท่งโลหะอัปเกรด <b>เหมือง</b> และ<b>เกณฑ์ทหาร</b> — ยิ่งเลเวลสูงยิ่งต้องใช้เยอะขึ้น ควรเก็บแร่ไว้หลอมบ้าง ไม่ขายทิ้งหมด</p>
       </div>
     </div>
 
     <div id="character" class="tab-content">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร &amp; อุปกรณ์</h2>
-      <div class="grid-2">
-        <div class="card profile-card">
+      <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-person"></use></svg> ตัวละคร</h2>
+      <div class="card profile-card profile-wide" style="margin-bottom:clamp(12px,1.5vw,20px)">
+        <div class="profile-left">
           <div id="active-avatar-box" class="avatar-box"></div>
           <h3 style="justify-content:center;margin-bottom:2px">โปรไฟล์นักขุด</h3>
           <p style="margin-bottom:8px">ฉายา: <b id="char-title" style="color:var(--primary)">นักขุดฝึกหัด</b></p>
+        </div>
           <div class="profile-stats">
             <div class="stat-row"><span>โบนัสความเร็วขุด</span><b id="char-speed-bonus" style="color:var(--success)">+0%</b></div>
             <div class="stat-row"><span>โบนัสผลผลิตแร่</span><b id="char-yield-bonus" style="color:var(--success)">+0%</b></div>
             <div class="stat-row"><span>ลดการสึกหรอ</span><b id="char-dura-bonus" style="color:var(--success)">0%</b></div>
             <div class="stat-row"><span>โบนัสราคาขาย</span><b id="char-market-bonus" style="color:var(--success)">+0%</b></div>
-            <div class="stat-row"><span>โอกาสขุดพลาด</span><b id="char-fail-rate" style="color:var(--danger)">7%</b></div>
+            <div class="stat-row"><span>โอกาสขุดพลาด</span><b id="char-fail-rate" style="color:var(--danger)">30%</b></div>
           </div>
-        </div>
-        <div class="card">
-          <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-wrench"></use></svg> อุปกรณ์สวมใส่</h3>
-          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> พลั่ว (Lv.<span id="eq-pickaxe-lvl">1</span>)</b> — เร็ว +5% / ผลผลิต +10%</div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ราคา</span><span class="v"><span id="eq-pickaxe-cost" style="color:var(--accent)">50</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--primary)"><use href="#pi-diamond"></use></svg> + <span id="eq-pickaxe-barcost" style="color:var(--gold)">1</span> <svg class="picon" viewBox="0 0 10 7" style="color:#ffcf3d"><use href="#pi-goldbar"></use></svg> + <span id="eq-pickaxe-orecost" style="color:var(--primary)">5</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-backpack"></use></svg> มี</span><span class="v"><span id="eq-pickaxe-barhave">0</span> <svg class="picon" viewBox="0 0 10 7" style="color:#ffcf3d"><use href="#pi-goldbar"></use></svg> / <span id="eq-pickaxe-orehave">0</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-goldore-img"></use></svg></span></div></div>
-          <button id="eq-pickaxe-upgrade-btn" class="btn btn-warning" style="margin-bottom:10px" onclick="upgradeEquipment('pickaxe')">อัปเกรดพลั่ว</button>
-          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 8 8"><use href="#pi-helmet"></use></svg> หมวก (Lv.<span id="eq-helmet-lvl">0</span>)</b> — ลดสึกหรอทุก 3 เลเวล</div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ราคา</span><span class="v"><span id="eq-helmet-cost" style="color:var(--accent)">25,000</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + <span id="eq-helmet-barcost" style="color:var(--gold)">1</span> <svg class="picon" viewBox="0 0 10 7" style="color:#8fa3c9"><use href="#pi-steelbar"></use></svg> + <span id="eq-helmet-orecost" style="color:var(--primary)">40</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-backpack"></use></svg> มี</span><span class="v"><span id="eq-helmet-barhave">0</span> <svg class="picon" viewBox="0 0 10 7" style="color:#8fa3c9"><use href="#pi-steelbar"></use></svg> / <span id="eq-helmet-orehave">50</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-ironore-img"></use></svg></span></div></div>
-          <button id="eq-helmet-upgrade-btn" class="btn btn-success" style="margin-bottom:10px" onclick="upgradeEquipment('helmet')">อัปเกรดหมวก</button>
-          <div class="info"><div class="d"><b><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> เกราะ (Lv.<span id="eq-armor-lvl">0</span>)</b> — ลดโอกาสพลาด 1% ต่อเลเวล</div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-moneybag"></use></svg> ราคา</span><span class="v"><span id="eq-armor-cost" style="color:var(--accent)">40,000</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> + <span id="eq-armor-barcost" style="color:var(--gold)">1</span> <svg class="picon" viewBox="0 0 10 7" style="color:#dde3f0"><use href="#pi-silverbar"></use></svg> + <span id="eq-armor-orecost" style="color:var(--primary)">25</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg></span></div><div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-backpack"></use></svg> มี</span><span class="v"><span id="eq-armor-barhave">0</span> <svg class="picon" viewBox="0 0 10 7" style="color:#dde3f0"><use href="#pi-silverbar"></use></svg> / <span id="eq-armor-orehave">0</span> <svg class="picon" viewBox="0 0 8 7" ><use href="#pi-silverore-img"></use></svg></span></div></div>
-          <button id="eq-armor-upgrade-btn" class="btn btn-success" onclick="upgradeEquipment('armor')">อัปเกรดเกราะ</button>
-        </div>
       </div>
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shirt"></use></svg> เลือกและซื้อสกินตัวละคร</h2>
       <div id="skin-shop-grid" class="grid-3"></div>
@@ -2251,7 +2336,78 @@ body {
       </div>
     </div>
 
-    <div id="market" class="tab-content">
+    <div id="vault" class="tab-content">
+  <div class="vp-header"><h2>🛡️ คลังใต้ดิน &amp; ความปลอดภัย</h2><p>ปกป้อง Gold ของคุณจากโจร ยิ่งมี Gold มาก ยิ่งต้องป้องกันหลายชั้น</p></div>
+
+  <div class="vp-hero safe" id="vp-hero">
+    <div class="vp-hero-main">
+      <span class="vp-label">สถานะตอนนี้</span>
+      <div id="robbery-status" class="vp-status">🛡️ ปลอดภัย</div>
+      <div class="vp-hint">เก็บ "พลทหารยาม" ไว้เฝ้าบ้านแทนที่จะส่งไปสำรวจทั้งหมด เพื่อลดโอกาสโดนปล้น</div>
+    </div>
+    <div class="vp-stats">
+      <div class="vp-stat"><span>โอกาสโดนปล้น/รอบ</span><b id="robbery-chance">0%</b></div>
+      <div class="vp-stat"><span>เสียสูงสุด/ครั้ง</span><b id="vp-maxloss">—</b></div>
+      <div class="vp-stat"><span>Gold ที่ถูกปล้นสะสม</span><b id="robbery-total-lost">0</b></div>
+      <div class="vp-stat"><span>Gems ที่ถูกปล้นสะสม</span><b id="robbery-total-gems">0</b></div>
+    </div>
+  </div>
+
+  <div class="def-flow">
+    <div class="def-flow-title">ลำดับชั้นป้องกัน — ยิ่งซ้อนหลายชั้น โอกาสและความเสียหายยิ่งลด</div>
+    <div class="def-steps">
+      <div class="def-step"><span class="ds-n">1</span><b>ทหารยาม</b><small>ลดโอกาสโดนปล้น</small><span class="ds-s" id="step-guard">0 นาย</span></div>
+      <div class="def-step"><span class="ds-n">2</span><b>สัญญาองครักษ์</b><small>ลดโอกาสโดนปล้นต่อ</small><span class="ds-s" id="step-contract">ไม่มี</span></div>
+      <div class="def-step"><span class="ds-n">3</span><b>คลังใต้ดิน</b><small>ลดเพดานที่ถูกขโมย</small><span class="ds-s" id="step-vault">Lv.0</span></div>
+      <div class="def-step"><span class="ds-n">4</span><b>อนุสาวรีย์</b><small>ลดความเสียหายสุดท้าย</small><span class="ds-s" id="step-monument">ขั้น 0</span></div>
+    </div>
+  </div>
+
+  <div class="vp-grid">
+    <div class="card vault-card">
+          <div class="vault-head"><h3><svg class="picon" viewBox="0 0 10 8"><use href="#pi-castle"></use></svg> คลังใต้ดิน</h3><span class="vault-lv">Lv.<span id="vault-lvl">0 / 5</span></span></div>
+          <div class="vault-pips" id="vault-pips"></div>
+          <div class="vault-desc">อัพเกรดถาวร ลดเพดาน % Gold สูงสุดที่โดนขโมยได้ต่อครั้ง ไม่ต้องพึ่งทหารอย่างเดียว</div>
+          <div class="vault-hero"><span class="vh-k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shield"></use></svg> เสียสูงสุดต่อครั้ง</span><span class="vh-v" id="vault-stealcap" style="color:var(--success)">20%</span></div>
+          <div class="vault-grid">
+            <div class="vault-tile"><span class="vt-k">ลดเพดานขโมย</span><span class="vt-v" id="vault-tile-cap">−0%</span></div>
+            <div class="vault-tile"><span class="vt-k">ลด % ที่โดนขโมย</span><span class="vt-v" id="vault-tile-pct">−0%</span></div>
+          </div>
+          <div class="vault-req" id="vault-req">
+            <div class="vault-req-title">วัสดุอัพเกรดขั้นถัดไป</div>
+            <div class="vr-row" id="vr-gold"><span class="vr-k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg> Gold</span><span class="vr-v"><b id="vault-goldhave">0</b> / <span id="vault-cost">20,000</span></span></div>
+            <div class="vr-row" id="vr-bar"><span class="vr-k"><svg class="picon" viewBox="0 0 10 7" style="color:#8fa3c9"><use href="#pi-steelbar"></use></svg> แท่งเหล็กกล้า</span><span class="vr-v"><b id="vault-barhave">0</b> / <span id="vault-barcost">3</span></span></div>
+          </div>
+          <button id="vault-upgrade-btn" class="btn btn-success vault-btn" onclick="upgradeVault()">อัพเกรดคลังใต้ดิน</button>
+        </div>
+    <div class="card">
+          <h3>🛡️ สัญญาองครักษ์</h3>
+          <div class="info">
+            <div class="d">จ่ายค่าจ้างเป็น Gold ทุกชั่วโมง (รวมตอนออฟไลน์ สูงสุด 12 ชม.) เพื่อลดโอกาสโดนปล้นซ้อนกับทหารและคลังใต้ดิน ค่าจ้าง = มากกว่าระหว่างค่าขั้นต่ำกับ % ของ Gold ที่ถือ ถ้า Gold ไม่พอสัญญาจะหมดเอง</div>
+            <div class="r"><span class="k">สถานะ</span><span class="v" id="contract-info"></span></div>
+            <div class="r"><span class="k">ความเสี่ยงตอนนี้</span><span class="v" id="contract-risk"></span></div>
+            <div class="r"><span class="k">จ่ายไปแล้วรวม</span><span class="v"><b id="contract-total">0</b> Gold</span></div>
+          </div>
+          <div class="contract-tiers"><button id="contract-btn-1" class="tier-btn" onclick="setContract(1)"></button><button id="contract-btn-2" class="tier-btn" onclick="setContract(2)"></button><button id="contract-btn-3" class="tier-btn" onclick="setContract(3)"></button></div>
+          <button class="btn btn-danger contract-cancel" onclick="setContract(0)">ยกเลิกสัญญา</button>
+        </div>
+  </div>
+
+  <div class="card monument-card">
+    <div class="vault-head"><h3>🗿 อนุสาวรีย์เหมือง</h3><span class="vault-lv">ขั้น <span id="monument-lvl">0 / 10</span></span></div>
+    <div class="monument-pips" id="monument-pips"></div>
+    <div class="vault-desc">สร้างด้วย Gold ล้วน ไม่เพิ่มรายได้ แต่ช่วยลดความเสียหาย ยิ่งสร้างสูงยิ่งราคาแพงขึ้นมาก ใช้เป็นเป้าหมายระยะยาวสำหรับ Gold ส่วนเกิน</div>
+    <div class="vault-grid">
+      <div class="vault-tile"><span class="vt-k">ลดความเสียหายจากปล้น</span><span class="vt-v" id="monument-steal">0%</span></div>
+      <div class="vault-tile"><span class="vt-k">ลดค่าซ่อม</span><span class="vt-v" id="monument-repair">0%</span></div>
+    </div>
+    <div class="monument-ms"><span class="ms" id="ms-5">🔧 ขั้น 5: ค่าซ่อม −15%</span><span class="ms" id="ms-10">🏆 ขั้น 10: ค่าซ่อม −30%</span></div>
+    <div class="vault-req"><div class="vr-row"><span class="vr-k">ราคาขั้นถัดไป</span><span class="vr-v"><b id="monument-cost" style="color:var(--accent)">250,000</b> Gold</span></div></div>
+    <button id="monument-btn" class="btn btn-success vault-btn" onclick="buildMonument()">สร้างอนุสาวรีย์ขั้นถัดไป</button>
+  </div>
+</div>
+
+<div id="market" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)"><svg class="picon" viewBox="0 0 10 8"><use href="#pi-cart"></use></svg> ตลาดกลางซื้อขายแร่</h2>
       <div class="market-hero">
         <div class="market-hero-stat">
@@ -2274,9 +2430,9 @@ body {
           </div>
           <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-iron">3</b> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div>
           <canvas id="chart-iron" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-iron">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('iron',100)">ขาย 100</button><button class="btn btn-warning" onclick="sellOre('iron',500)">ขาย 500</button></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('iron',1000)">ขาย 1000</button><button class="btn btn-success" onclick="sellOre('iron','all')">ขายทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-iron" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-iron">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div><div class="r"><span class="k">ความต้องการซื้อ</span><span class="v" id="market-demand-iron">100%</span></div></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('iron',25)">ขาย 25%</button><button class="btn btn-warning" onclick="sellOrePercent('iron',50)">ขาย 50%</button></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('iron',75)">ขาย 75%</button><button class="btn btn-success" onclick="sellOre('iron','all')">ขายทั้งหมด</button></div>
         </div>
         <div class="card market-card">
           <div class="ticker-head">
@@ -2288,9 +2444,9 @@ body {
           </div>
           <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-silver">10</b> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div>
           <canvas id="chart-silver" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-silver">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('silver',100)">ขาย 100</button><button class="btn btn-warning" onclick="sellOre('silver',500)">ขาย 500</button></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('silver',1000)">ขาย 1000</button><button class="btn btn-success" onclick="sellOre('silver','all')">ขายทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-silver" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-silver">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div><div class="r"><span class="k">ความต้องการซื้อ</span><span class="v" id="market-demand-silver">100%</span></div></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('silver',25)">ขาย 25%</button><button class="btn btn-warning" onclick="sellOrePercent('silver',50)">ขาย 50%</button></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('silver',75)">ขาย 75%</button><button class="btn btn-success" onclick="sellOre('silver','all')">ขายทั้งหมด</button></div>
         </div>
         <div class="card market-card">
           <div class="ticker-head">
@@ -2302,20 +2458,31 @@ body {
           </div>
           <div class="ticker-price-row"><span class="ticker-price-label">ราคาตลาด</span><span class="ticker-price-value"><b id="price-goldOre">20</b> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg></span></div>
           <canvas id="chart-goldOre" class="market-chart-mini"></canvas>
-          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-goldOre">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('goldOre',100)">ขาย 100</button><button class="btn btn-warning" onclick="sellOre('goldOre',500)">ขาย 500</button></div>
-          <div class="btn-row"><button class="btn btn-warning" onclick="sellOre('goldOre',1000)">ขาย 1000</button><button class="btn btn-success" onclick="sellOre('goldOre','all')">ขายทั้งหมด</button></div>
+          <div class="info"><div class="r"><span class="k">มีในคลัง</span><span class="v"><span id="market-inv-goldOre" style="color:var(--success);font-weight:bold">0</span> ชิ้น</span></div><div class="r"><span class="k">มูลค่ารวม</span><span class="v" id="market-value-goldOre">0 Gold</span></div><div class="r"><span class="k">ค่าธรรมเนียม</span><span class="v" style="color:var(--danger)">5% ของยอดขาย</span></div><div class="r"><span class="k">ความต้องการซื้อ</span><span class="v" id="market-demand-goldOre">100%</span></div></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('goldOre',25)">ขาย 25%</button><button class="btn btn-warning" onclick="sellOrePercent('goldOre',50)">ขาย 50%</button></div>
+          <div class="btn-row"><button class="btn btn-warning" onclick="sellOrePercent('goldOre',75)">ขาย 75%</button><button class="btn btn-success" onclick="sellOre('goldOre','all')">ขายทั้งหมด</button></div>
         </div>
       </div>
     </div>
 
     <div id="shop" class="tab-content">
       <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--primary)"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-shopbag"></use></svg> ร้านค้าพิเศษ</h2>
+
+      <div class="card" style="margin-bottom:16px;--card-line:#ffcf3d;--card-grad:linear-gradient(90deg,#a87a00,#ffcf3d 55%,#fff2ab)">
+        <h3><svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-fire"></use></svg> ตะเกียงนักขุดในตำนาน (Lv.<span id="lamp-lvl">0</span> / <span id="lamp-maxlvl">50</span>)</h3>
+        <p>ไอเทมที่สำคัญที่สุดในร้าน — อัพเกรด <b>ถาวร ไม่มีวันหาย</b> แม้โดนปล้นหรือทหารตายก็ไม่กระทบ เพิ่ม<b>ผลผลิตแร่ทุกชนิด</b>ทันทีทั้งตอนขุดมือ/ออโต้/แม้แต่ตอนออฟไลน์ สะสมได้เรื่อยๆ ยิ่งเลเวลสูงยิ่งแพงขึ้น</p>
+        <div class="info">
+          <div class="r"><span class="k"><svg class="picon" viewBox="0 0 10 10"><use href="#pi-pickaxe"></use></svg> โบนัสผลผลิตจากตะเกียงตอนนี้</span><span class="v"><b id="lamp-bonus" style="color:var(--success)">+0%</b></span></div>
+          <div class="r"><span class="k"><svg class="picon" viewBox="0 0 8 8"><use href="#pi-diamond"></use></svg> ราคาเลเวลถัดไป</span><span class="v"><span id="lamp-cost" style="color:var(--primary)">40</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--primary)"><use href="#pi-diamond"></use></svg></span></div>
+        </div>
+        <button id="shop-lamp-btn" class="btn btn-success" onclick="buyShopItem('minerLamp')">จุดตะเกียงเพิ่ม 1 เลเวล</button>
+      </div>
+
       <div class="grid-2">
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-bolt"></use></svg> ชุดซ่อมเครื่องมือฉุกเฉิน</h3>
           <p>ซ่อมความทนทานกลับมาเต็ม 100% ทันที</p>
-          <button id="shop-repairkit-btn" class="btn btn-success" onclick="buyShopItem('repairKit')">ซื้อและใช้งาน (200 <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg>)</button>
+          <button id="shop-repairkit-btn" class="btn btn-success" onclick="buyShopItem('repairKit')">ซื้อและใช้งาน (<span id="shop-repairkit-cost">200</span> <svg class="picon" viewBox="0 0 8 8" style="color:var(--gold)"><use href="#pi-circle"></use></svg>)</button>
         </div>
         <div class="card">
           <h3><svg class="picon" viewBox="0 0 8 8"><use href="#pi-gift"></use></svg> กล่องสุ่มวัตถุดิบ</h3>
@@ -2547,22 +2714,43 @@ function spawnConfetti(){
   }
 }
 
-// ===== ตั้งค่าเกมหลักทั้งหมด (เหมือง / ตลาด / อุปกรณ์ / ฝึกทหาร / ด่านผจญภัย / สกิน) =====
+// ===== ตั้งค่าเกมหลักทั้งหมด (เหมือง / ตลาด / ฝึกทหาร / ด่านผจญภัย / สกิน) =====
 const MINE_CFG = {
   iron:    { baseTime:5, baseYield:20, baseXp:5,  upCost:500,  reqLv:1, label:'เหมืองเหล็ก' },
   silver:  { baseTime:6, baseYield:10, baseXp:12, upCost:1200, reqLv:3, label:'เหมืองเงิน' },
-  goldOre: { baseTime:8, baseYield:5,  baseXp:25, upCost:3000, reqLv:5, label:'เหมืองทอง' }
+  goldOre: { baseTime:8, baseYield:8,  baseXp:25, upCost:3000, reqLv:5, label:'เหมืองทอง' } // baseYield 5→8: เดิมเหมืองทองให้ Gold/วินาทีต่อเลเวลน้อยกว่าเหมืองเงิน และคืนทุนช้ากว่าเหล็กราว 6 เท่า
 };
-const MARKET_CFG = { iron:{min:1,max:10,base:3}, silver:{min:5,max:20,base:10}, goldOre:{min:10,max:50,base:20} };
-// ===== ปรับจูนระบบตลาด: ลดผลกระทบตอน "เทขาย" ก้อนใหญ่ + ให้กราฟฟื้นตัวเร็วขึ้น =====
+// ===== ตลาดกลางแบบ "อุปสงค์-อุปทาน" =====
+// ราคาตลาด = ราคาพื้นฐาน × ความผันผวนตามธรรมชาติ (ข่าว/เทรนด์) ส่วนราคาที่ได้จริง = ราคาตลาด × ตัวคูณความต้องการซื้อ
+// ขายแร่ = ใช้ "ความต้องการซื้อ" ของตลาด (saturation) แล้วค่อยๆ ฟื้นตัวตามเวลา ไม่ว่าจะแบ่งขายหรือเทขายก็คิดสูตรเดียวกัน
+// vol: ความผันผวน (เหล็กนิ่ง/เงินกลาง/ทองเสี่ยงสูง กำไรสูงแต่ราคาตกลึกด้วย)
+// ===== ปรับสมดุลเศรษฐกิจ (แพ็กเกจเกมไม่ง่ายเกินไป) =====
+const MINE_COST_MULT = 2.5;   // คูณต้นทุน Gold อัปเกรดเหมืองทุกเลเวล (เดิม ×1)
+const MINE_COST_GROWTH = 1.5; // อัตราเพิ่มต้นทุนต่อเลเวล (เดิม 1.7: รายได้โตเชิงเส้นแต่ต้นทุนโตชันกว่ามาก เลเวล ~18+ แทบไม่คืนทุน)
+const MINE_BAR_MULT = { iron:2, silver:2, goldOre:1.5 }; // แท่งต่ออัปเกรด = ปัดขึ้น(เลเวล × ค่านี้) ทองลด 1.5 เพื่อไม่ให้ต้องฟาร์มแร่ทองนานเกิน (~20 นาที/เลเวล เทียบเหล็ก ~8, เงิน ~15)
+function mineUpCost(type, level){ return Math.max(1, Math.floor(MINE_CFG[type].upCost * MINE_COST_MULT * Math.pow(MINE_COST_GROWTH, Math.max(1, level) - 1))); }
+const MARKET_CFG = {
+  iron:   { base:3,  min:2.1, max:4.5, vol:0.6 },
+  silver: { base:10, min:6,   max:17,  vol:1.0 },
+  goldOre:{ base:20, min:10,  max:40,  vol:1.5 }
+};
 const MARKET_SELL_CONFIG = {
-  sellPressureCap: 0.18,      // เพดานแรงกดดันขายต่อครั้ง (เดิม 0.4) - ขายทั้งหมดแล้วกราฟไม่ดิ่งค้างนาน
-  sellPressureDecay: 0.60,    // decay ต่อ tick (ทุก 4 วิ) ของแรงกดดันขาย - หายเกือบหมดใน ~20-30 วิ
-  priceBlendWeight: 0.08,     // น้ำหนักที่ราคาเฉลี่ยที่เพิ่งขายมีต่อราคาตลาดถัดไป (เดิม 0.25)
-  maxSingleSaleDrop: 0.08,    // ราคาตลาดห้ามตกเกินกี่ % จากการขายครั้งเดียว (เดิมไม่มีเพดาน)
-  previewConfirmQty: 600      // ขายเกินจำนวนนี้ต้องมี preview ให้ผู้เล่นยืนยันก่อน (กันเทขายพลาดโดยไม่ตั้งใจ) - ตั้งสูงกว่าปุ่มลัด 500 เพื่อไม่ให้ปุ่มลัดต้องยืนยันทุกครั้ง
+  depthSeconds: 1800,   // ตลาดรับแร่ได้เท่าผลผลิตของเหมืองนั้น ~30 นาที ก่อนราคาเริ่มตกชัด (โตตามเลเวล/โบนัสผลผลิตอัตโนมัติ)
+  floorMult: 0.55,      // ราคาที่ได้ต่ำสุดเมื่อตลาดอิ่มตัวเต็มที่ (55% ของราคาตลาด)
+  halfLifeSec: 300,     // ความต้องการซื้อฟื้นตัวครึ่งหนึ่งทุก 5 นาที
+  sellPressureDecay: Math.pow(0.5, 4/300), // ค่าสลายต่อ tick (4 วิ) คำนวณจาก halfLifeSec
+  maxSaturation: 8,     // เพดานความอิ่มตัวสะสม (หน่วย = ความลึกตลาด)
+  confirmBelowAvg: 0.92,// ถ้าราคาเฉลี่ยที่จะได้ต่ำกว่า 92% ของราคาตลาด ให้ยืนยันก่อนขาย
+  newsChance: 0.025     // โอกาสเกิด "ข่าวตลาด" ต่อ tick ต่อแร่
 };
-const EQUIP_CFG = { pickaxe:{baseCost:50,growth:1.5,currency:'gems',barType:'ingotGold',barLabel:'แท่งทองคำ',oreType:'goldOre',oreLabel:'แร่ทองดิบ',oreBase:5}, helmet:{baseCost:25000,growth:1.6,currency:'gold',barType:'ingotIron',barLabel:'แท่งเหล็กกล้า',oreType:'iron',oreLabel:'แร่เหล็ก',oreBase:40}, armor:{baseCost:40000,growth:1.6,currency:'gold',barType:'ingotSilver',barLabel:'แท่งเงิน',oreType:'silver',oreLabel:'แร่เงิน',oreBase:25} };
+// ===== ตะเกียงนักขุดในตำนาน (ไอเทมเด่นในร้านค้าพิเศษ): อัพเกรดถาวร "ไม่มีวันหาย" เพิ่มผลผลิตแร่ทุกชนิดถาวร =====
+// ซื้อซ้ำได้เรื่อยๆ ด้วย Gems ราคาสูงขึ้นแบบ exponential ทุกเลเวล ผลที่ได้ (getLampBonus) ไปรวมเข้ากับ getYieldBonus()
+// ซึ่งเป็นจุดคำนวณผลผลิตกลางที่ทั้งขุดมือ/ขุดอัตโนมัติ/จำลองออฟไลน์เรียกใช้ร่วมกันหมด จึงกระทบ "แกนกลาง" ของเกมโดยตรง
+// และถาวร (ไม่หายแม้โดนปล้น/ทหารตาย) ต่างจากไอเทมอื่นในร้านที่ใช้ครั้งเดียวหมดไป
+// ===== โอกาสขุดพลาด: เริ่ม 30% แล้วลดลง 0.6% ต่อเลเวลผู้เล่น (ต่ำสุด 10% ที่เลเวล 35; เดิม 1%/เลเวลถึงพื้นที่ Lv.21 ราว 5 ชม. ทำให้เลเวลผู้เล่นหมดความหมายเร็วเกินไป) - ใช้แทนระบบเกราะที่ถูกนำออก =====
+const REPAIR_CFG = { minRate:2, ratePerMineLevel:1.2 }; // Gold ต่อแต้มความทนทาน = max(2, 1.2 × เลเวลเหมืองสูงสุด)
+const FAIL_CFG = { base:0.30, perLevel:0.006, min:0.10 };
+const LAMP_CFG = { maxLevel:50, baseCost:40, costGrowth:1.12, yieldPerLevel:0.02 };
 const SMELT_CFG = {
   iron:   { bar:'ingotIron',  ratio:1000, goldCost:300, label:'แท่งเหล็กกล้า', icon:'🔩' },
   silver: { bar:'ingotSilver',ratio:750, goldCost:800, label:'แท่งเงิน',      icon:'⚙️' },
@@ -2571,34 +2759,167 @@ const SMELT_CFG = {
 const MARKET_FEE = 0.05; // ค่าธรรมเนียมตลาดกลาง 5% ของยอดขาย
 const MINE_TYPES = ['iron','silver','goldOre'];
 const MINE_UP_BAR = { iron:{bar:'ingotIron',label:'แท่งเหล็กกล้า'}, silver:{bar:'ingotSilver',label:'แท่งเงิน'}, goldOre:{bar:'ingotGold',label:'แท่งทองคำ'} };
-function mineBarCost(type){ return Math.max(1, gameData.mines[type].level); }
+function mineBarCost(type){ return Math.max(1, Math.ceil(Math.max(1, gameData.mines[type].level) * MINE_BAR_MULT[type])); }
 const SMELT_TYPES = ['iron','silver','goldOre'];
-const EQUIP_TYPES = ['pickaxe','helmet','armor'];
 const TRAIN_CFG = {
   guard:     { costGold:7000,  ore:'iron',    qty:100, bar:'ingotIron',   barQty:1, barLabel:'แท่งเหล็กกล้า', btnCls:'btn btn-success' },
   swordsman: { costGold:24000, ore:'silver',  qty:55,  bar:'ingotSilver', barQty:2, barLabel:'แท่งเงิน',      btnCls:'btn btn-warning' },
   knight:    { costGold:85000, ore:'goldOre', qty:35,  bar:'ingotGold',   barQty:3, barLabel:'แท่งทองคำ',     btnCls:'btn btn-success' }
 };
 
+// สมดุลด่านสำรวจ: ปรับ deathChance ให้ "ต้นทุน Gold (รวมมูลค่าทหารที่ตาย) ต่อ 1 Gem" ใกล้เคียงกันทุกด่าน (ก๊อบลิน ≈930 / ซากโบราณ ≈910 / มังกร ≈820)
+// เดิมด่านสูงแพงกว่าด่านต้นมาก (≈930 / 1,800 / 3,050) จึงไม่มีเหตุผลเล่นด่านมังกร ตอนนี้ด่านสูงให้ Gems ต่อ Gold ดีกว่าเล็กน้อย + ได้ Gems ต่อชั่วโมงมากกว่า
 const EXP_CFG = {
-  goblin: { name:'ถ้ำก๊อบลินรกร้าง', reqType:'guard', reqNum:3, duration:45, cost:{gold:1000,iron:20}, reward:{gold:3200,iron:30,gems:4}, deathChance:0.40, label:'goblin', bg:0x08302a },
-  ruins:  { name:'ซากโบราณสถาน', reqType:'swordsman', reqNum:5, duration:90, cost:{gold:4000,silver:30}, reward:{silver:60,gems:15,gold:11000}, deathChance:0.55, label:'ruins', bg:0x2a1250 },
-  dragon: { name:'ภูเขาไฟมังกร', reqType:'knight', reqNum:5, duration:150, cost:{gold:15000,goldOre:30}, reward:{goldOre:70,gems:35,gold:42000}, deathChance:0.70, label:'dragon', bg:0x4a1212 }
+  goblin: { name:'ถ้ำก๊อบลินรกร้าง', reqType:'guard', reqNum:3, duration:45, cost:{gold:1000,iron:20}, reward:{gold:3200,iron:30,gems:2}, deathChance:0.40, label:'goblin', bg:0x08302a },
+  ruins:  { name:'ซากโบราณสถาน', reqType:'swordsman', reqNum:5, duration:90, cost:{gold:4000,silver:30}, reward:{silver:60,gems:8,gold:11000}, deathChance:0.37, label:'ruins', bg:0x2a1250 },
+  dragon: { name:'ภูเขาไฟมังกร', reqType:'knight', reqNum:5, duration:150, cost:{gold:15000,goldOre:30}, reward:{goldOre:70,gems:18,gold:42000}, deathChance:0.36, label:'dragon', bg:0x4a1212 }
 };
+
+// ===== ระบบ "โดนปล้น" (Robbery): ยิ่งมี Gold สะสมเยอะยิ่งเสี่ยงโดนขโมย ป้องกันได้ด้วยทหารที่เก็บไว้เฝ้าบ้าน =====
+// minGoldThreshold  : ต่ำกว่านี้ปิดระบบทั้งหมด (กันผู้เล่นใหม่โดนซวยก่อนมีปัญญาป้องกัน)
+// checkIntervalMin/Max (วินาที) : สุ่มระยะเวลาระหว่างการ "roll" แต่ละครั้งตอนออนไลน์ (~3-5 นาที)
+// richReference     : ระดับ Gold ที่ตัวคูณความรวยเท่ากับ 1 เท่าพอดี ยิ่งมีมากกว่านี้ยิ่งเสี่ยงขึ้นสูงสุดถึง richMultiplierCap เท่า
+// guardHardCapCount : มี "พลทหารยาม" เฝ้าบ้านครบตามนี้ -> โอกาสโดนปล้นลด squadReduction (85%) แต่ไม่เคยเหลือ 0% (ไม่ต่ำกว่า squadMinChance ถ้าโอกาสเดิมสูงกว่านั้น)
+// guardDefense/swordsmanDefense/knightDefense : สัดส่วนที่ทหารแต่ละประเภท (ที่ไม่ได้ถูกล็อกไปสำรวจ) ลดโอกาสโดนปล้นลงแบบทวีคูณต่อหัว
+//   ตั้งใจให้ guard ถูกสุดแต่ลดโอกาส "ต่อบาทที่ลงทุน" ได้คุ้มที่สุด เพื่อให้มีเหตุผลเก็บไว้เฝ้าบ้านทั้งที่ราคาถูก
+// stealPctMin/Max   : สัดส่วน Gold ที่จะถูกขโมยไปต่อครั้ง (สุ่มในช่วงนี้) ก่อนหักด้วยระดับคลังใต้ดิน (VAULT_CFG)
+// stealCap          : เพดานจำนวน Gold สูงสุดที่โดนขโมยได้ต่อครั้ง กันเคสมีสะสมเยอะแล้วโดนหมดทีเดียว
+// offlineMultiplier : ตอนออฟไลน์ไม่มีคนเฝ้าหน้าจอ ให้เสี่ยงกว่าตอนออนไลน์
+const ROBBERY_CONFIG = {
+  minGoldThreshold: 5000,
+  checkIntervalMin: 180, checkIntervalMax: 300,
+  baseChance: 0.16,
+  richReference: 50000, richMultiplierFloor: 0.2, richMultiplierCap: 3,
+  maxChance: 0.50,
+  guardHardCapCount: 3,
+  squadReduction: 0.85, squadMinChance: 0.05, // ยามครบ: ลดโอกาสโดนปล้น 85% แต่ถ้าโอกาสเดิมสูงกว่า 5% จะไม่ต่ำกว่า 5% (เดิม 8%: โดนปล้นเฉลี่ยทุก ~50 นาทีแม้ป้องกันครบ)
+  guardDefense: 0.12, swordsmanDefense: 0.12, knightDefense: 0.18, // ดาบ/อัศวิน ถูกคิดหลังพื้นของยามแล้ว (เดิมโดนพื้น 8% กลบจนไม่มีผล) จึงลดค่าต่อหัวลงให้ไม่อิ่มตัวเร็วเกินไป
+  stealPctMin: 0.08, stealPctMax: 0.20,
+  stealCap: 100000,        // เพดานขั้นต่ำ
+  stealCapPct: 0.04,      // เพดานจะโตตาม Gold ที่ถือ = 4% ของ Gold (คลังใต้ดินแต่ละเลเวลลดเพดานนี้ 10%)
+  offlineMultiplier: 1.5,
+  offlineMaxChecks: 12,   // จำกัดจำนวนรอบเช็คโจรตอนออฟไลน์ (≈ 1 รอบ/ชม. ที่เพดาน 12 ชม.) เดิมเช็คครบทุก 3-5 นาที ~180 รอบ ทำให้ปล่อยเครื่องข้ามคืนแล้ว Gold ที่ค้างเกือบหมด
+  gemMinStock: 30, gemPctMin: 0.04, gemPctMax: 0.10, gemCap: 120, // Gems ที่ถูกปล้นพ่วงมากับเหตุปล้น Gold: 4–10% ของ Gems (เพดาน 120/ครั้ง) เริ่มเสี่ยงเมื่อมี Gems ตั้งแต่ 30
+  minChance: 0.03         // พื้นโอกาสโดนปล้นต่ำสุดเมื่อมี Gold เกินเกณฑ์ (แม้ยาม+สัญญาซ้อนกัน ก็ไม่เหลือ 0%)
+};
+// ===== คลังใต้ดิน (Vault): อัพเกรดถาวรด้วยแท่งเหล็กกล้า+Gold ลด "เพดานเปอร์เซ็นต์ที่โดนขโมย" ต่อระดับ =====
+const VAULT_CFG = { maxLevel:5, baseCost:20000, costGrowth:1.8, bar:'ingotIron', barBase:3, barGrowth:1.5, barLabel:'แท่งเหล็กกล้า', stealPctReductionPerLevel:0.025, stealCapReductionPerLevel:0.10 };
 
 // ===== ระบบคำนวณความคืบหน้าออฟไลน์ (Offline Progress) =====
 // capSeconds  : ระยะเวลาออฟไลน์สูงสุดที่จะคำนวณผลตอบแทนให้ (คิดเต็มอัตราตลอดช่วงนี้ ไม่มีการลดอัตราครึ่งทาง)
 // minSeconds  : ต่ำกว่านี้ถือว่าเพิ่งออกไปแป๊บเดียว ไม่ต้องคำนวณ/แจ้งเตือน
-const OFFLINE_CONFIG = { capSeconds: 12*3600, minSeconds: 10 };
 
+// ===== ระบบดึง Gold ออกจากเกม: สัญญาองครักษ์ (ค่าจ้างรายชั่วโมง) + อนุสาวรีย์เหมือง (sink ระยะยาว) =====
+// สัญญาองครักษ์: ค่าจ้าง/ชม. = max(ขั้นต่ำ, % ของ Gold ที่ถือ) คิดตามเวลาจริงรวมออฟไลน์ (ไม่เกิน capSeconds) ลดโอกาสโดนปล้นแบบคูณ
+// ถ้า Gold ไม่พอจ่ายค่าจ้างสัญญาจะหมดอายุเอง (ไม่หักจนติดลบ)
+const CONTRACT_CFG = { tiers:[ null,
+  { name:'ยามประจำ',     pct:0.0025, min:3000, red:0.20 },
+  { name:'หน่วยคุ้มกัน', pct:0.0060, min:8000, red:0.40 },
+  { name:'กองกำลังหลวง', pct:0.0110, min:18000, red:0.60 } ] };
+// อนุสาวรีย์: 10 ขั้น ต้นทุน Gold ล้วน base×growth^ขั้น (รวม ~550 ล้าน) โบนัสไม่เพิ่มรายได้: ลดความเสียหายจากโดนปล้น 2.5%/ขั้น และลดค่าซ่อม 15% (ขั้น 5) / 30% (ขั้น 10)
+const MONUMENT_CFG = { maxLevel:10, baseCost:250000, growth:2.2, stealCutPerLevel:0.025 };
+function contractFeePerHour(t){ const c=CONTRACT_CFG.tiers[t]; return c ? Math.round(Math.max(c.min, (gameData.gold||0)*c.pct)) : 0; }
+function contractReduction(){ const c=gameData.contract, t=CONTRACT_CFG.tiers[c&&c.tier]; return t ? t.red : 0; }
+function billContract(){
+  const c = gameData.contract; if(!c || !c.tier) return;
+  const now = Date.now(), el = Math.min(Math.max(0, now - (c.lastBilled||now)), OFFLINE_CONFIG.capSeconds*1000);
+  if(el < 1000) return;
+  const fee = Math.round(contractFeePerHour(c.tier) * el / 3600000);
+  c.lastBilled = now;
+  if(gameData.gold >= fee){ gameData.gold -= fee; c.totalPaid = (c.totalPaid||0) + fee; }
+  else { c.tier = 0; showToast('สัญญาองครักษ์สิ้นสุด: Gold ไม่พอจ่ายค่าจ้าง'); }
+}
+function setContract(t){
+  sanitizeData(); billContract();
+  if(t && gameData.gold < contractFeePerHour(t)){ showAppAlert('Gold ไม่พอ! ต้องมีอย่างน้อย '+contractFeePerHour(t).toLocaleString()+' Gold สำหรับค่าจ้างชั่วโมงแรก'); return; }
+  gameData.contract.tier = t; gameData.contract.lastBilled = Date.now();
+  SFX.upgrade(); updateUI(); autoSaveGame(true);
+}
+function monumentCost(){ return Math.round(MONUMENT_CFG.baseCost * Math.pow(MONUMENT_CFG.growth, gameData.monument.level)); }
+function getMonumentStealFactor(){ return 1 - MONUMENT_CFG.stealCutPerLevel * ((gameData.monument&&gameData.monument.level)||0); }
+function getMonumentRepairFactor(){ const l=(gameData.monument&&gameData.monument.level)||0; return l>=10 ? 0.70 : l>=5 ? 0.85 : 1; }
+function buildMonument(){
+  sanitizeData();
+  if(gameData.monument.level >= MONUMENT_CFG.maxLevel){ showToast('อนุสาวรีย์สร้างเสร็จสมบูรณ์แล้ว'); return; }
+  const cost = monumentCost();
+  if(gameData.gold < cost){ showAppAlert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
+  gameData.gold -= cost; gameData.monument.level += 1;
+  SFX.upgrade(); showToast('🗿 สร้างอนุสาวรีย์ขั้นที่ '+gameData.monument.level+' สำเร็จ!');
+  updateUI(); autoSaveGame(true);
+}
+function updateSinkUI(){
+  const el = document.getElementById('contract-info'); if(!el) return;
+  const c = gameData.contract, t = CONTRACT_CFG.tiers[c.tier];
+  el.innerHTML = t ? ('ใช้งาน: <b>'+t.name+'</b> · ลดโอกาสโดนปล้น '+Math.round(t.red*100)+'% · ค่าจ้างตอนนี้ <b>'+contractFeePerHour(c.tier).toLocaleString()+'</b> Gold/ชม.')
+                   : 'ยังไม่มีสัญญา — โอกาสโดนปล้นเป็นปกติ';
+  setText('contract-risk', gameData.gold < ROBBERY_CONFIG.minGoldThreshold ? 'ปลอดภัย (Gold ไม่ถึงเกณฑ์)' : (Math.round(computeRobberyChance(false)*1000)/10)+'% ต่อรอบ · เสียสูงสุด ≈'+maxStealNow().toLocaleString()+' Gold');
+  const tot = document.getElementById('contract-total'); if(tot) tot.textContent = (c.totalPaid||0).toLocaleString();
+  // ประเมินความคุ้ม: ความเสียหายคาดหวัง/ชม. (~15 รอบ/ชม.) × สัดส่วนที่สัญญาลดได้ เทียบกับค่าจ้าง (ประมาณการ ไม่รวมพื้นโอกาส)
+  const savedTier = c.tier; c.tier = 0; const baseChance = computeRobberyChance(false); c.tier = savedTier;
+  const avgPct = (ROBBERY_CONFIG.stealPctMin + stealMaxPct()) / 2;
+  const avgSteal = Math.min(stealCapNow(), gameData.gold * avgPct) * getMonumentStealFactor();
+  const lossPerHr = gameData.gold < ROBBERY_CONFIG.minGoldThreshold ? 0 : 3600 / ((ROBBERY_CONFIG.checkIntervalMin + ROBBERY_CONFIG.checkIntervalMax) / 2) * baseChance * avgSteal;
+  for(let i=1;i<=3;i++){
+    const b = document.getElementById('contract-btn-'+i); if(!b) continue;
+    const x = CONTRACT_CFG.tiers[i], fee = contractFeePerHour(i), net = Math.round(lossPerHr * x.red - fee);
+    b.classList.toggle('active', c.tier === i); b.disabled = (c.tier === i);
+    b.innerHTML = (c.tier === i ? '<span class="t-badge">ใช้งานอยู่</span>' : '') +
+      '<span class="t-name">'+x.name+'</span><span class="t-red">−'+Math.round(x.red*100)+'%</span><span class="t-lbl">โอกาสโดนปล้น</span>' +
+      '<span class="t-fee">'+fee.toLocaleString()+' Gold/ชม.</span>' +
+      '<span class="t-net '+(net > 0 ? 'good' : 'bad')+'">'+(net > 0 ? 'คุ้ม ≈ +' : 'ไม่คุ้ม ≈ ')+net.toLocaleString()+'/ชม.</span>';
+  }
+  // ===== คลังใต้ดิน: จัดการแสดงผลแบบแยกส่วน (แถบเลเวล / ค่าก่อน→หลัง / ของที่มี vs ที่ต้องใช้) =====
+  if(document.getElementById('vault-pips')){
+    const vl = gameData.vault.level, vmax = VAULT_CFG.maxLevel, vdone = vl >= vmax;
+    document.getElementById('vault-pips').innerHTML = Array.from({length:vmax}, (_,k)=>'<span class="pip'+(k<vl?' on':'')+'"></span>').join('');
+    const nx = Math.min(vmax, vl+1), cutCap = l => Math.round(l*VAULT_CFG.stealCapReductionPerLevel*100);
+    const maxPctAt = l => Math.max(ROBBERY_CONFIG.stealPctMin, ROBBERY_CONFIG.stealPctMax - l*VAULT_CFG.stealPctReductionPerLevel);
+    const pctCut = l => Math.round((ROBBERY_CONFIG.stealPctMax - maxPctAt(l))*1000)/10;
+    const arrow = (f,u) => vdone ? '−'+f(vl)+u+' <small>(สูงสุด)</small>' : '−'+f(vl)+u+' <small>→ −'+f(nx)+u+'</small>';
+    document.getElementById('vault-tile-cap').innerHTML = arrow(cutCap,'%');
+    document.getElementById('vault-tile-pct').innerHTML = arrow(pctCut,' จุด');
+    const needG = vaultCost(), needB = vaultBarCost();
+    setText('vault-goldhave', Math.floor(gameData.gold).toLocaleString());
+    document.getElementById('vr-gold').classList.toggle('short', !vdone && gameData.gold < needG);
+    document.getElementById('vr-bar').classList.toggle('short', !vdone && (gameData.ingotIron||0) < needB);
+    document.getElementById('vault-req').style.display = vdone ? 'none' : '';
+  }
+  if(document.getElementById('step-guard')){
+    setText('step-guard', ((gameData.troops&&gameData.troops.guard)||0)+' นาย');
+    const ct = CONTRACT_CFG.tiers[gameData.contract.tier];
+    setText('step-contract', ct ? ct.name+' (−'+Math.round(ct.red*100)+'%)' : 'ไม่มี');
+    setText('step-vault', 'Lv.'+gameData.vault.level+' / '+VAULT_CFG.maxLevel);
+    setText('step-monument', 'ขั้น '+gameData.monument.level+' / '+MONUMENT_CFG.maxLevel);
+  }
+  if(document.getElementById('vp-hero')){
+    const rich = gameData.gold >= ROBBERY_CONFIG.minGoldThreshold, ch = rich ? computeRobberyChance(false) : 0;
+    document.getElementById('vp-hero').className = 'vp-hero ' + (!rich || ch < 0.06 ? 'safe' : ch < 0.15 ? 'warn' : 'danger');
+    setText('vp-maxloss', rich ? maxStealNow().toLocaleString()+' Gold'+(maxStealGemsNow()>0 ? ' + '+maxStealGemsNow().toLocaleString()+' Gems' : '') : '—');
+    setText('robbery-total-gems', (gameData.totalRobbedGems||0).toLocaleString());
+    const mlv = gameData.monument.level;
+    document.getElementById('monument-pips').innerHTML = Array.from({length:MONUMENT_CFG.maxLevel}, (_,k)=>'<span class="pip'+(k<mlv?' on':'')+'"></span>').join('');
+    document.getElementById('ms-5').classList.toggle('done', mlv >= 5); document.getElementById('ms-10').classList.toggle('done', mlv >= 10);
+  }
+  const lv = gameData.monument.level, done = lv >= MONUMENT_CFG.maxLevel;
+  setText('monument-lvl', lv+' / '+MONUMENT_CFG.maxLevel);
+  setText('monument-cost', done ? 'สร้างครบแล้ว' : monumentCost().toLocaleString());
+  setText('monument-steal', Math.round((1-getMonumentStealFactor())*100)+'%');
+  setText('monument-repair', Math.round((1-getMonumentRepairFactor())*100)+'%');
+  const mb = document.getElementById('monument-btn'); if(mb) mb.disabled = done;
+}
+
+const OFFLINE_CONFIG = { capSeconds: 12*3600, minSeconds: 10, yieldRate: 0.65 }; // yieldRate: ผลผลิต/XP ออฟไลน์เทียบกับตอนออนไลน์
+
+// ราคาสกินปรับให้สัมพันธ์กับโบนัสรวม (ผลผลิต/ความเร็ว/ราคาขาย ≈ 1% รายได้ต่อ 1% โบนัส, ลดสึกหรอ ≈ 0.05% ต่อ 1%) ราว 42–60 Gems ต่อ 1% สกินที่ดีกว่าราคาสูงกว่าเสมอ
+// (เดิม: โกเลม/เอลฟ์แพงเกินโบนัส, สกินมังกรลาวาดีที่สุดแต่ 600k Gold ถูกกว่าสกิน Gems ทุกตัว ซื้อได้ราวชั่วโมงที่ 4–6)
 const skinDatabase = {
   default:{ name:"นักขุดฝึกหัด", priceType:"free", price:0, desc:"ชุดมาตรฐานของนักขุดมือใหม่", bonus:"ไม่มีโบนัสพิเศษ", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="1" fill="#fbbf24"/><rect x="8" y="3" width="8" height="3" fill="#f59e0b"/><rect x="11" y="4" width="2" height="2" fill="#fef9c3"/><rect x="6" y="6" width="12" height="2" fill="#d97706"/><rect x="7" y="8" width="10" height="6" fill="#fde047"/><rect x="7" y="8" width="10" height="1" fill="#fef9c3"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="13" y="10" width="1" height="1" fill="#000"/><rect x="10" y="12" width="4" height="1" fill="#b45309"/><rect x="9" y="14" width="6" height="7" fill="#3b82f6"/><rect x="9" y="14" width="6" height="1" fill="#60a5fa"/><rect x="10" y="14" width="1" height="3" fill="#1e40af"/><rect x="13" y="14" width="1" height="3" fill="#1e40af"/><rect x="10" y="18" width="4" height="2" fill="#1e40af"/><rect x="6" y="14" width="3" height="5" fill="#1e293b"/><rect x="15" y="14" width="3" height="5" fill="#1e293b"/><rect x="6" y="18" width="3" height="1" fill="#475569"/><rect x="15" y="18" width="3" height="1" fill="#475569"/><rect x="17" y="15" width="1" height="6" fill="#78350f"/><rect x="16" y="14" width="3" height="1" fill="#9ca3af"/><rect x="9" y="21" width="3" height="2" fill="#292524"/><rect x="13" y="21" width="3" height="2" fill="#292524"/></svg>' },
   ninja:{ name:"นินจาเหมืองมืด", priceType:"gems", price:450, desc:"เงาพเนจรแห่งอุโมงค์ลึก", bonus:"ขุดเร็วขึ้น 10%", speedBonus:0.10, yieldBonus:0, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="2" fill="#1e293b"/><rect x="9" y="3" width="6" height="1" fill="#334155"/><rect x="7" y="6" width="10" height="7" fill="#1e293b"/><rect x="8" y="9" width="8" height="2" fill="#0f172a"/><rect x="9" y="9" width="2" height="1" fill="#ef4444"/><rect x="13" y="9" width="2" height="1" fill="#ef4444"/><rect x="9" y="9" width="1" height="1" fill="#fca5a5"/><rect x="13" y="9" width="1" height="1" fill="#fca5a5"/><rect x="17" y="7" width="2" height="1" fill="#dc2626"/><rect x="18" y="8" width="2" height="1" fill="#dc2626"/><rect x="7" y="13" width="10" height="1" fill="#0f172a"/><rect x="9" y="14" width="6" height="7" fill="#0f172a"/><rect x="9" y="14" width="6" height="1" fill="#1e293b"/><rect x="9" y="17" width="6" height="1" fill="#7f1d1d"/><rect x="6" y="14" width="3" height="5" fill="#334155"/><rect x="15" y="14" width="3" height="5" fill="#334155"/><rect x="6" y="18" width="3" height="1" fill="#1e293b"/><rect x="15" y="18" width="3" height="1" fill="#1e293b"/><rect x="16" y="17" width="2" height="2" fill="#94a3b8"/><rect x="16" y="17" width="1" height="1" fill="#e2e8f0"/><rect x="9" y="21" width="3" height="2" fill="#0f172a"/><rect x="13" y="21" width="3" height="2" fill="#0f172a"/></svg>' },
-  golem:{ name:"โกเลมหินผา", priceType:"gems", price:1100, desc:"ร่างศิลาโบราณทนทานทุกสภาพ", bonus:"ลดการสึกหรอ 30% / ผลผลิต +10%", speedBonus:0, yieldBonus:0.10, durabilityBonus:0.30, marketBonus:0,
+  golem:{ name:"โกเลมหินผา", priceType:"gems", price:700, desc:"ร่างศิลาโบราณทนทานทุกสภาพ", bonus:"ลดการสึกหรอ 30% / ผลผลิต +10%", speedBonus:0, yieldBonus:0.10, durabilityBonus:0.30, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="10" fill="#64748b"/><rect x="6" y="4" width="12" height="2" fill="#94a3b8"/><rect x="6" y="12" width="12" height="2" fill="#475569"/><rect x="6" y="7" width="1" height="1" fill="#334155"/><rect x="17" y="9" width="1" height="1" fill="#334155"/><rect x="10" y="4" width="1" height="1" fill="#334155"/><rect x="7" y="5" width="2" height="2" fill="#65a30d"/><rect x="9" y="8" width="2" height="2" fill="#f97316"/><rect x="13" y="8" width="2" height="2" fill="#f97316"/><rect x="9" y="8" width="1" height="1" fill="#fed7aa"/><rect x="13" y="8" width="1" height="1" fill="#fed7aa"/><rect x="11" y="11" width="2" height="2" fill="#fbbf24"/><rect x="4" y="13" width="3" height="3" fill="#94a3b8"/><rect x="17" y="13" width="3" height="3" fill="#94a3b8"/><rect x="8" y="14" width="8" height="7" fill="#475569"/><rect x="8" y="14" width="8" height="1" fill="#64748b"/><rect x="10" y="18" width="1" height="2" fill="#f97316"/><rect x="13" y="18" width="1" height="2" fill="#f97316"/><rect x="5" y="14" width="3" height="6" fill="#334155"/><rect x="16" y="14" width="3" height="6" fill="#334155"/><rect x="5" y="19" width="3" height="1" fill="#64748b"/><rect x="16" y="19" width="3" height="1" fill="#64748b"/><rect x="8" y="21" width="3" height="2" fill="#1e293b"/><rect x="13" y="21" width="3" height="2" fill="#1e293b"/></svg>' },
-  king:{ name:"ราชาทองคำ", priceType:"gems", price:1000, desc:"มงกุฎแห่งมหาเศรษฐีเหมืองแร่", bonus:"ราคาขายแร่ +15%", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0.15,
+  king:{ name:"ราชาทองคำ", priceType:"gems", price:900, desc:"มงกุฎแห่งมหาเศรษฐีเหมืองแร่", bonus:"ราคาขายแร่ +15%", speedBonus:0, yieldBonus:0, durabilityBonus:0, marketBonus:0.15,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><polygon points="7,6 10,2 12,5 14,2 17,6" fill="#facc15"/><rect x="11" y="1" width="2" height="1" fill="#fef08a"/><rect x="11" y="3" width="2" height="2" fill="#dc2626"/><rect x="7" y="6" width="10" height="2" fill="#eab308"/><rect x="7" y="6" width="10" height="1" fill="#fde047"/><rect x="7" y="8" width="10" height="6" fill="#fef08a"/><rect x="7" y="8" width="10" height="1" fill="#fef9c3"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="9" y="10" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="9" y="12" width="2" height="1" fill="#78350f"/><rect x="13" y="12" width="2" height="1" fill="#78350f"/><rect x="6" y="13" width="12" height="2" fill="#f8fafc"/><rect x="8" y="13" width="1" height="1" fill="#1e293b"/><rect x="15" y="13" width="1" height="1" fill="#1e293b"/><rect x="9" y="14" width="6" height="7" fill="#b45309"/><rect x="9" y="14" width="6" height="1" fill="#d97706"/><rect x="10" y="17" width="1" height="1" fill="#facc15"/><rect x="13" y="19" width="1" height="1" fill="#facc15"/><rect x="6" y="14" width="3" height="5" fill="#78350f"/><rect x="15" y="14" width="3" height="5" fill="#78350f"/><rect x="6" y="18" width="3" height="1" fill="#f8fafc"/><rect x="15" y="18" width="3" height="1" fill="#f8fafc"/><rect x="18" y="10" width="1" height="10" fill="#78350f"/><rect x="17" y="8" width="3" height="3" fill="#facc15"/><rect x="18" y="9" width="1" height="1" fill="#fef9c3"/><rect x="9" y="21" width="3" height="2" fill="#78350f"/><rect x="13" y="21" width="3" height="2" fill="#78350f"/></svg>' },
   dwarf:{ name:"คนแคระผู้บุกเบิก", priceType:"gems", price:350, desc:"ผู้เชี่ยวชาญงานเหมืองมาหลายชั่วอายุคน", bonus:"ผลผลิตแร่ +8%", speedBonus:0, yieldBonus:0.08, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="8" y="2" width="2" height="1" fill="#f87171"/><rect x="7" y="3" width="10" height="3" fill="#dc2626"/><rect x="6" y="6" width="12" height="2" fill="#991b1b"/><rect x="7" y="8" width="10" height="4" fill="#fbbf24"/><rect x="7" y="8" width="10" height="1" fill="#fcd34d"/><rect x="8" y="9" width="2" height="1" fill="#78350f"/><rect x="14" y="9" width="2" height="1" fill="#78350f"/><rect x="9" y="10" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="8" y="11" width="1" height="1" fill="#fca5a5"/><rect x="15" y="11" width="1" height="1" fill="#fca5a5"/><rect x="6" y="12" width="12" height="3" fill="#e5e7eb"/><rect x="6" y="15" width="12" height="1" fill="#cbd5e1"/><rect x="7" y="16" width="2" height="1" fill="#e5e7eb"/><rect x="15" y="16" width="2" height="1" fill="#e5e7eb"/><rect x="8" y="17" width="8" height="4" fill="#78350f"/><rect x="8" y="19" width="8" height="1" fill="#5c2c06"/><rect x="10" y="19" width="4" height="1" fill="#facc15"/><rect x="4" y="17" width="3" height="4" fill="#451a03"/><rect x="2" y="14" width="1" height="7" fill="#78350f"/><rect x="1" y="13" width="3" height="1" fill="#9ca3af"/><rect x="0" y="14" width="1" height="1" fill="#9ca3af"/><rect x="4" y="14" width="1" height="1" fill="#9ca3af"/><rect x="17" y="17" width="3" height="4" fill="#451a03"/><rect x="8" y="21" width="3" height="2" fill="#1c1917"/><rect x="13" y="21" width="3" height="2" fill="#1c1917"/></svg>' },
@@ -2606,10 +2927,10 @@ const skinDatabase = {
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><polygon points="7,5 12,1 17,5" fill="#4338ca"/><rect x="11" y="2" width="2" height="1" fill="#a5b4fc"/><rect x="11" y="3" width="2" height="1" fill="#facc15"/><rect x="8" y="5" width="8" height="3" fill="#6366f1"/><rect x="8" y="5" width="8" height="1" fill="#818cf8"/><rect x="6" y="7" width="2" height="4" fill="#1e1b4b"/><rect x="16" y="7" width="2" height="4" fill="#1e1b4b"/><rect x="8" y="8" width="8" height="5" fill="#c7d2fe"/><rect x="8" y="8" width="8" height="1" fill="#e0e7ff"/><rect x="10" y="10" width="1" height="1" fill="#4c1d95"/><rect x="13" y="10" width="1" height="1" fill="#4c1d95"/><rect x="11" y="12" width="2" height="1" fill="#a855f7"/><rect x="8" y="13" width="8" height="8" fill="#312e81"/><rect x="8" y="13" width="8" height="1" fill="#4338ca"/><rect x="10" y="16" width="1" height="1" fill="#facc15"/><rect x="13" y="18" width="1" height="1" fill="#facc15"/><rect x="6" y="14" width="2" height="6" fill="#1e1b4b"/><rect x="16" y="14" width="2" height="6" fill="#1e1b4b"/><rect x="5" y="19" width="1" height="2" fill="#1e1b4b"/><rect x="18" y="19" width="1" height="2" fill="#1e1b4b"/><rect x="19" y="10" width="1" height="10" fill="#78350f"/><rect x="18" y="8" width="3" height="3" fill="#22d3ee"/><rect x="19" y="9" width="1" height="1" fill="#a5f3fc"/><rect x="9" y="21" width="3" height="2" fill="#1e1b4b"/><rect x="13" y="21" width="3" height="2" fill="#1e1b4b"/></svg>' },
   zombie:{ name:"ผีดิบเหมืองลึก", priceType:"gems", price:250, desc:"วิญญาณนักขุดที่ไม่มีวันหยุดพัก", bonus:"ขุดเร็วขึ้น 6%", speedBonus:0.06, yieldBonus:0, durabilityBonus:0, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="8" fill="#4d7c0f"/><rect x="7" y="4" width="10" height="2" fill="#65a30d"/><rect x="7" y="10" width="10" height="2" fill="#3f6212"/><rect x="12" y="5" width="1" height="4" fill="#1a2e05"/><rect x="9" y="7" width="1" height="2" fill="#ef4444"/><rect x="14" y="7" width="1" height="2" fill="#ef4444"/><rect x="9" y="7" width="1" height="1" fill="#fca5a5"/><rect x="14" y="7" width="1" height="1" fill="#fca5a5"/><rect x="9" y="10" width="6" height="1" fill="#1a2e05"/><rect x="9" y="10" width="1" height="1" fill="#f8fafc"/><rect x="11" y="10" width="1" height="1" fill="#f8fafc"/><rect x="13" y="10" width="1" height="1" fill="#f8fafc"/><rect x="9" y="12" width="6" height="7" fill="#365314"/><rect x="9" y="12" width="6" height="1" fill="#4d7c0f"/><rect x="10" y="15" width="1" height="3" fill="#a3e635"/><rect x="13" y="15" width="1" height="3" fill="#a3e635"/><rect x="9" y="18" width="1" height="1" fill="#000"/><rect x="11" y="19" width="1" height="1" fill="#000"/><rect x="14" y="18" width="1" height="1" fill="#000"/><rect x="5" y="9" width="3" height="6" fill="#1a2e05"/><rect x="4" y="8" width="2" height="2" fill="#4d7c0f"/><rect x="15" y="12" width="3" height="6" fill="#1a2e05"/><rect x="15" y="18" width="2" height="2" fill="#4d7c0f"/><rect x="9" y="19" width="3" height="3" fill="#27272a"/><rect x="12" y="19" width="3" height="3" fill="#27272a"/><rect x="16" y="16" width="1" height="3" fill="#65a30d"/></svg>' },
-  elfWarrior:{ name:"นักรบเอลฟ์พิทักษ์ป่า", priceType:"gems", price:550, desc:"นักรบเอลฟ์ผู้เฝ้าปกป้องป่าลึกด้วยโล่ไม้และเกราะเงิน", bonus:"ลดการสึกหรอ 15% / ขุดเร็วขึ้น 5%", speedBonus:0.05, yieldBonus:0, durabilityBonus:0.15, marketBonus:0,
+  elfWarrior:{ name:"นักรบเอลฟ์พิทักษ์ป่า", priceType:"gems", price:300, desc:"นักรบเอลฟ์ผู้เฝ้าปกป้องป่าลึกด้วยโล่ไม้และเกราะเงิน", bonus:"ลดการสึกหรอ 15% / ขุดเร็วขึ้น 5%", speedBonus:0.05, yieldBonus:0, durabilityBonus:0.15, marketBonus:0,
     svg:'<img src="data:image/png;base64,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" style="width:100%;height:100%;object-fit:contain;object-position:center;image-rendering:pixelated;image-rendering:crisp-edges;" alt="Elven Warrior">'},
 
-  lavaDragon:{ name:"ผู้พิทักษ์เปลวเพลิง", priceType:"gold", price:600000, desc:"อัศวินมังกรลาวาแห่งภูเขาไฟ ทนทานและทรงพลังที่สุด", bonus:"ลดการสึกหรอ 35% / ผลผลิต +15%", speedBonus:0, yieldBonus:0.15, durabilityBonus:0.35, marketBonus:0,
+  lavaDragon:{ name:"ผู้พิทักษ์เปลวเพลิง", priceType:"gold", price:1500000, desc:"อัศวินมังกรลาวาแห่งภูเขาไฟ ทนทานและทรงพลังที่สุด", bonus:"ลดการสึกหรอ 35% / ผลผลิต +15%", speedBonus:0, yieldBonus:0.15, durabilityBonus:0.35, marketBonus:0,
     svg:'<svg width="60" height="60" viewBox="0 0 24 24"><rect x="6" y="1" width="2" height="3" fill="#1c1917"/><rect x="16" y="1" width="2" height="3" fill="#1c1917"/><rect x="6" y="1" width="1" height="1" fill="#f59e0b"/><rect x="17" y="1" width="1" height="1" fill="#f59e0b"/><rect x="7" y="3" width="10" height="4" fill="#292524"/><rect x="7" y="3" width="10" height="1" fill="#44403c"/><rect x="11" y="4" width="1" height="2" fill="#f97316"/><rect x="9" y="6" width="2" height="1" fill="#fbbf24"/><rect x="13" y="6" width="2" height="1" fill="#fbbf24"/><rect x="5" y="8" width="2" height="3" fill="#44403c"/><rect x="17" y="8" width="2" height="3" fill="#44403c"/><rect x="7" y="8" width="10" height="6" fill="#1c1917"/><rect x="7" y="8" width="10" height="1" fill="#3f3f46"/><rect x="8" y="10" width="1" height="3" fill="#ea580c"/><rect x="15" y="10" width="1" height="3" fill="#ea580c"/><rect x="11" y="9" width="2" height="1" fill="#fbbf24"/><rect x="6" y="14" width="3" height="5" fill="#1c1917"/><rect x="15" y="14" width="3" height="5" fill="#1c1917"/><rect x="9" y="14" width="6" height="7" fill="#292524"/><rect x="9" y="14" width="6" height="1" fill="#44403c"/><rect x="11" y="17" width="2" height="1" fill="#f97316"/><rect x="9" y="19" width="3" height="2" fill="#0c0a09"/><rect x="13" y="19" width="3" height="2" fill="#0c0a09"/><rect x="10" y="21" width="1" height="2" fill="#f97316"/><rect x="13" y="21" width="1" height="2" fill="#f97316"/></svg>' }
 };
 
@@ -2620,7 +2941,7 @@ function createDefaultData(){
     notificationsEnabled:true, soundEnabled:true, musicEnabled:false, theme:'default',
     iron:50, silver:0, goldOre:0,
     ingotIron:0, ingotSilver:0, ingotGold:0,
-    durability:100, autoRepair:false, repairCount:0,
+    durability:100, autoRepair:true, repairCount:0, // autoRepair เริ่มเปิด: เดิมปิด ผู้เล่นใหม่ที่ออฟไลน์จะขุดได้แค่ราว 4 นาทีก่อนความทนทานหมด (ราว 100 วินาทีเมื่อเปิดสามเหมือง) ทำให้ระบบออฟไลน์ 12 ชม. ไม่ทำงาน
     lastSaveTime:Date.now(),
     equippedSkin:'default', ownedSkins:['default'],
     troops:{ guard:0, swordsman:0, knight:0 },
@@ -2631,17 +2952,32 @@ function createDefaultData(){
     marketTrend:{ iron:0, silver:0, goldOre:0 },
     sellPressure:{ iron:0, silver:0, goldOre:0 },
     priceHistory:{ iron:[3], silver:[10], goldOre:[20] },
-    mines:{ iron:{level:1,cost:500,active:false}, silver:{level:1,cost:1200,active:false}, goldOre:{level:1,cost:3000,active:false} },
+    mines:{ iron:{level:1,cost:mineUpCost('iron',1),active:false}, silver:{level:1,cost:mineUpCost('silver',1),active:false}, goldOre:{level:1,cost:mineUpCost('goldOre',1),active:false} },
     totalMined:{ iron:0, silver:0, goldOre:0 },
     mineMilestone:{ iron:0, silver:0, goldOre:0 },
-    equipment:{ pickaxe:{level:1,cost:50}, helmet:{level:0,cost:25000}, armor:{level:0,cost:40000} }
+    vault:{ level:0, cost:VAULT_CFG.baseCost },
+    nextRobberyCheckAt:0, totalRobbedGold:0, totalRobbedGems:0,
+    lampLevel:0,
+    contract:{ tier:0, lastBilled:0, totalPaid:0 },
+    monument:{ level:0 }
   };
 }
 
 let gameData = createDefaultData();
+let equipRefundPending = null; // สรุปของที่คืนจากระบบอุปกรณ์เดิม (ไม่เก็บลงเซฟ) ไว้แสดงให้ผู้เล่นเห็นครั้งเดียว
+function equipRefundText(){
+  if(!equipRefundPending) return '';
+  const names = { gems:'Gems', gold:'Gold', ingotGold:'แท่งทองคำ', ingotIron:'แท่งเหล็กกล้า', ingotSilver:'แท่งเงิน', goldOre:'แร่ทองดิบ', iron:'แร่เหล็ก', silver:'แร่เงิน' };
+  const parts = Object.keys(names).filter(k=>equipRefundPending[k] > 0).map(k=>names[k]+' '+equipRefundPending[k].toLocaleString());
+  equipRefundPending = null;
+  return parts.length ? 'ระบบอุปกรณ์ถูกนำออกแล้ว — คืนทรัพยากรที่เคยใช้อัปเกรดให้ครบ: '+parts.join(', ') : '';
+}
 let miningProgress = { iron:0, silver:0, goldOre:0 };
 let manualCooldownUntil = { iron:0, silver:0, goldOre:0 };
 const MANUAL_MINE_COOLDOWN = 4000;
+// ขุดมือให้อัตราผลผลิต ≈ 40% ของออโต้เหมืองเดียวกันเท่ากันทุกแร่ (เดิมตัวคูณคงที่ 0.4 ต่อครั้ง = เหล็ก 50% / เงิน 60% / ทอง 80% ของออโต้ ทำให้ขุดมือเหมืองทองแรงเกินเหมาะ)
+const MANUAL_RATE_RATIO = 0.4;
+function manualYieldFactor(type){ return Math.min(1, MANUAL_RATE_RATIO * (MANUAL_MINE_COOLDOWN/1000) / getMineTime(type)); }
 let lastFrameTime = performance.now();
 // ===== เซฟสำรอง (Backup save) =====
 // เดิม backup ถูกเขียนทับทุกครั้งที่ force=true (ซึ่งคือแทบทุกแอ็กชันในเกม) ทำให้ backup
@@ -3316,13 +3652,15 @@ function initPixiBattles(){
   });
 }
 
-// ===== สูตรคำนวณโบนัสจากอุปกรณ์ / สกินที่สวมอยู่ =====
+// ===== สูตรคำนวณโบนัสจากสกินที่สวมอยู่ =====
 function getSkin(){ return skinDatabase[gameData.equippedSkin] || skinDatabase.default; }
-function getSpeedBonus(){ return Math.min(0.6, (gameData.equipment.pickaxe.level-1)*0.05 + getSkin().speedBonus); }
-function getYieldBonus(){ return (gameData.equipment.pickaxe.level-1)*0.10 + getSkin().yieldBonus; }
-function getDurabilityReduce(){ return Math.min(0.8, gameData.equipment.helmet.level*0.06 + getSkin().durabilityBonus); }
+function getSpeedBonus(){ return Math.min(0.6, getSkin().speedBonus); }
+function getLampBonus(){ return (gameData.lampLevel||0) * LAMP_CFG.yieldPerLevel; }
+function lampCost(){ return Math.round(LAMP_CFG.baseCost * Math.pow(LAMP_CFG.costGrowth, gameData.lampLevel||0)); }
+function getYieldBonus(){ return getSkin().yieldBonus + getLampBonus(); }
+function getDurabilityReduce(){ return Math.min(0.8, getSkin().durabilityBonus); }
 function getMarketBonus(){ return getSkin().marketBonus; }
-function getFailChance(){ return Math.max(0.01, 0.50 - gameData.equipment.armor.level*0.01); }
+function getFailChance(){ return Math.max(FAIL_CFG.min, FAIL_CFG.base - ((gameData.level||1)-1)*FAIL_CFG.perLevel); }
 function getMineTime(type){ return Math.max(1, MINE_CFG[type].baseTime * (1 - getSpeedBonus())); }
 function getMineYield(type){ return Math.max(1, Math.round(MINE_CFG[type].baseYield * gameData.mines[type].level * (1 + getYieldBonus()))); }
 function getDurabilityCost(){ return Math.max(0.5, 2 * (1 - getDurabilityReduce())); }
@@ -3333,6 +3671,33 @@ function sanitizeData(){
   const d = createDefaultData();
   if(!gameData || typeof gameData !== 'object') gameData = d;
   const num = (v, def) => (v === undefined || v === null || isNaN(Number(v))) ? def : Number(v);
+  // ===== ย้ายเซฟเก่า: ระบบอุปกรณ์ถูกนำออกแล้ว -> คืนทรัพยากรที่เคยจ่ายอัปเกรด 100% ครั้งเดียว แล้วลบข้อมูลอุปกรณ์ทิ้ง =====
+  if(gameData.equipment && typeof gameData.equipment === 'object'){
+    const LEGACY = {
+      pickaxe:{ base:50,    g:1.5, oreBase:5,  start:1, cur:'gems', bar:'ingotGold',   ore:'goldOre' },
+      helmet: { base:25000, g:1.6, oreBase:40, start:0, cur:'gold', bar:'ingotIron',   ore:'iron' },
+      armor:  { base:40000, g:1.6, oreBase:25, start:0, cur:'gold', bar:'ingotSilver', ore:'silver' }
+    };
+    const refund = { gems:0, gold:0, ingotGold:0, ingotIron:0, ingotSilver:0, goldOre:0, iron:0, silver:0 };
+    Object.keys(LEGACY).forEach(t=>{
+      const c = LEGACY[t], e = gameData.equipment[t];
+      const lv = Math.min(80, Math.max(c.start, Math.floor(Number(e && e.level) || c.start)));
+      for(let k=c.start; k<lv; k++){
+        const step = (t==='pickaxe') ? k : k+1;
+        refund[c.cur] += Math.round(c.base * Math.pow(c.g, Math.max(0, step-1)));
+        refund[c.bar] += Math.max(1, step);
+        refund[c.ore] += Math.round(c.oreBase * Math.pow(c.g, Math.max(0, step-1)));
+      }
+    });
+    let any = false;
+    Object.keys(refund).forEach(k=>{
+      if(isFinite(refund[k]) && refund[k] > 0){ gameData[k] = (Number(gameData[k]) || 0) + refund[k]; any = true; }
+    });
+    delete gameData.equipment;
+    if(any){
+      equipRefundPending = refund;
+    }
+  }
   gameData.gold = Math.max(0, num(gameData.gold, d.gold));
   gameData.gems = Math.max(0, num(gameData.gems, d.gems));
   gameData.level = Math.max(1, Math.floor(num(gameData.level,1)));
@@ -3376,17 +3741,21 @@ function sanitizeData(){
   MINE_TYPES.forEach(t=>{
     if(!gameData.mines[t] || typeof gameData.mines[t]!=='object') gameData.mines[t] = d.mines[t];
     gameData.mines[t].level = Math.max(1, Math.floor(num(gameData.mines[t].level,1)));
-    gameData.mines[t].cost  = Math.max(1, Math.floor(num(gameData.mines[t].cost, MINE_CFG[t].upCost)));
+    gameData.mines[t].cost  = mineUpCost(t, gameData.mines[t].level); // คำนวณจากเลเวลเสมอ: เซฟเก่าได้ต้นทุนใหม่อัตโนมัติ
     gameData.mines[t].active = !!gameData.mines[t].active;
   });
 
-  if(!gameData.equipment || typeof gameData.equipment!=='object') gameData.equipment = d.equipment;
-  EQUIP_TYPES.forEach(t=>{
-    if(!gameData.equipment[t] || typeof gameData.equipment[t]!=='object') gameData.equipment[t] = d.equipment[t];
-    const minLv = (t==='pickaxe')?1:0;
-    gameData.equipment[t].level = Math.max(minLv, Math.floor(num(gameData.equipment[t].level, minLv)));
-    gameData.equipment[t].cost = equipCost(t);
-  });
+  if(!gameData.vault || typeof gameData.vault!=='object') gameData.vault = d.vault;
+  gameData.vault.level = Math.max(0, Math.min(VAULT_CFG.maxLevel, Math.floor(num(gameData.vault.level,0))));
+  gameData.vault.cost = vaultCost();
+  gameData.nextRobberyCheckAt = num(gameData.nextRobberyCheckAt, 0);
+  gameData.totalRobbedGold = Math.max(0, Math.floor(num(gameData.totalRobbedGold,0)));
+  gameData.lampLevel = Math.max(0, Math.min(LAMP_CFG.maxLevel, Math.floor(num(gameData.lampLevel,0))));
+  if(!gameData.contract || typeof gameData.contract!=='object') gameData.contract = { tier:0, lastBilled:0, totalPaid:0 };
+  gameData.contract.tier = Math.max(0, Math.min(3, Math.floor(num(gameData.contract.tier,0))));
+  gameData.contract.lastBilled = num(gameData.contract.lastBilled,0); gameData.contract.totalPaid = Math.max(0, num(gameData.contract.totalPaid,0));
+  if(!gameData.monument || typeof gameData.monument!=='object') gameData.monument = { level:0 };
+  gameData.monument.level = Math.max(0, Math.min(10, Math.floor(num(gameData.monument.level,0))));
 
   if(!gameData.marketPrices) gameData.marketPrices = d.marketPrices;
   if(!gameData.marketMultipliers) gameData.marketMultipliers = d.marketMultipliers;
@@ -3399,10 +3768,10 @@ function sanitizeData(){
   MINE_TYPES.forEach(t=>{
     const cfg = MARKET_CFG[t];
     let p = num(gameData.marketPrices[t], cfg.base);
-    gameData.marketPrices[t] = Math.min(cfg.max, Math.max(cfg.min, Math.round(p)));
+    gameData.marketPrices[t] = Math.min(cfg.max, Math.max(cfg.min, Math.round(p*100)/100));
     gameData.marketMultipliers[t] = parseFloat((gameData.marketPrices[t]/cfg.base).toFixed(2));
     gameData.marketTrend[t] = Math.max(-1, Math.min(1, num(gameData.marketTrend[t], 0)));
-    gameData.sellPressure[t] = Math.max(0, Math.min(1, num(gameData.sellPressure[t], 0)));
+    gameData.sellPressure[t] = Math.max(0, Math.min(MARKET_SELL_CONFIG.maxSaturation, num(gameData.sellPressure[t], 0)));
     let hist = Array.isArray(gameData.priceHistory[t]) ? gameData.priceHistory[t].map(Number).filter(v=>!isNaN(v)) : [];
     if(hist.length===0) hist = [gameData.marketPrices[t]];
     if(hist.length>20) hist = hist.slice(-20);
@@ -3410,22 +3779,16 @@ function sanitizeData(){
   });
 }
 
-// ===== สูตรคำนวณเศรษฐกิจ: อุปกรณ์ / การหลอมแร่ =====
-function equipCost(type){
-  const e = gameData.equipment[type]; const cfg = EQUIP_CFG[type];
-  const lv = e ? e.level : 0; const step = (type==='pickaxe') ? lv : lv+1;
-  return Math.round(cfg.baseCost * Math.pow(cfg.growth, Math.max(0, step-1)));
+// ===== สูตรคำนวณเศรษฐกิจ: คลังใต้ดิน (ป้องกันโจรปล้น) =====
+function vaultCost(){
+  const lv = gameData.vault ? gameData.vault.level : 0;
+  return Math.round(VAULT_CFG.baseCost * Math.pow(VAULT_CFG.costGrowth, lv));
 }
-function equipBarCost(type){
-  const e = gameData.equipment[type];
-  const lv = e ? e.level : 0; const step = (type==='pickaxe') ? lv : lv+1;
-  return Math.max(1, step);
+function vaultBarCost(){
+  const lv = gameData.vault ? gameData.vault.level : 0;
+  return Math.round(VAULT_CFG.barBase * Math.pow(VAULT_CFG.barGrowth, lv));
 }
-function equipOreCost(type){
-  const e = gameData.equipment[type]; const cfg = EQUIP_CFG[type];
-  const lv = e ? e.level : 0; const step = (type==='pickaxe') ? lv : lv+1;
-  return Math.round(cfg.oreBase * Math.pow(cfg.growth, Math.max(0, step-1)));
-}
+// ===== สูตรคำนวณเศรษฐกิจ: การหลอมแร่ =====
 function smeltOre(type, amount){
   sanitizeData();
   const cfg = SMELT_CFG[type]; if(!cfg) return;
@@ -3459,7 +3822,6 @@ function safeAtob(b64){ return decodeURIComponent(Array.prototype.map.call(atob(
 function looksLikeValidSave(obj){
   return !!obj && typeof obj==='object'
     && typeof obj.mines==='object' && obj.mines
-    && typeof obj.equipment==='object' && obj.equipment
     && typeof obj.troops==='object' && obj.troops;
 }
 
@@ -3496,7 +3858,8 @@ function loadGame(){
   if(loaded && typeof loaded==='object') gameData = loaded;
   sanitizeData(); calcOfflineProgress();
   gameData.lastSaveTime = Date.now();
-  autoSaveGame(true, true); refreshAll(); // จุดนี้คือฐานข้อมูลที่ผ่านการตรวจสอบแล้ว sync backup ทันทีไปด้วย
+  autoSaveGame(true, true); refreshAll();
+  { const rt = equipRefundText(); if(rt) setTimeout(function(){ showAppAlert(rt); }, 600); } // จุดนี้คือฐานข้อมูลที่ผ่านการตรวจสอบแล้ว sync backup ทันทีไปด้วย
 }
 function downloadSaveFile(){
   autoSaveGame(true);
@@ -3517,7 +3880,7 @@ function importSaveFile(ev){
         // เดิม location.reload() ถูกเรียกทันทีในบรรทัดถัดจาก showAppAlert() ทำให้แทบไม่มีโอกาส
         // เห็นข้อความยืนยันเลยก่อนหน้าเว็บจะรีโหลด จึงย้าย reload ไปเป็น callback ที่ทำงานหลังผู้เล่น
         // กดปิดโมดัลเอง (ข้อมูลถูกบันทึกเรียบร้อยไปแล้วตั้งแต่บรรทัดก่อนหน้า ไม่ต้องรีบรีโหลด)
-        showAppAlert('กู้คืนข้อมูลสำเร็จ!', undefined, function(){ location.reload(); });
+        showAppAlert('กู้คืนข้อมูลสำเร็จ!'+(equipRefundText() ? ' (คืนทรัพยากรอุปกรณ์เดิมให้แล้ว)' : ''), undefined, function(){ location.reload(); });
       }
       else showAppAlert('ไฟล์นี้ไม่ใช่ไฟล์เซฟของเกมนี้ หรือข้อมูลไม่ครบถ้วน');
     }catch(err){ showAppAlert('อ่านไฟล์เซฟไม่สำเร็จ (ไฟล์เสียหายหรือไม่ใช่ไฟล์ JSON)'); }
@@ -3541,7 +3904,7 @@ function importSaveCode(){
     if(looksLikeValidSave(obj)){
       gameData = obj; sanitizeData(); autoSaveGame(true, true);
       // เช่นเดียวกับ importSaveFile: เลื่อน reload ไปหลังผู้เล่นกดปิดโมดัลยืนยัน แทนที่จะรีโหลดทันที
-      showAppAlert('กู้คืนข้อมูลสำเร็จ!', undefined, function(){ location.reload(); });
+      showAppAlert('กู้คืนข้อมูลสำเร็จ!'+(equipRefundText() ? ' (คืนทรัพยากรอุปกรณ์เดิมให้แล้ว)' : ''), undefined, function(){ location.reload(); });
     }
     else showAppAlert('โค้ดเซฟไม่ถูกต้อง หรือไม่ใช่โค้ดเซฟของเกมนี้');
   }catch(e){ showAppAlert('รูปแบบโค้ดผิดพลาด อ่านไม่ได้'); }
@@ -3686,7 +4049,14 @@ function addXP(amount, silent){
   if(leveledUp && !silent) showBigReward('🎉 เลเวลอัพ!', 'ตอนนี้คุณคือเลเวล '+gameData.level, 'pi-star');
   return guard;
 }
-function getRepairCost(){ return Math.round(Math.max(0, 100 - gameData.durability) * 2); }
+// ค่าซ่อมต่อ 1 แต้มความทนทาน: โตตามเลเวลเหมืองสูงสุด (ราว 5% ของรายได้ต่อรอบขุด) ขั้นต่ำ 2 Gold เท่าค่าเดิมตอนต้นเกม
+function getRepairRate(){
+  const lv = Math.max(1, ...MINE_TYPES.map(t=>(gameData.mines && gameData.mines[t] && gameData.mines[t].level) || 1));
+  return Math.max(REPAIR_CFG.minRate, Math.round(REPAIR_CFG.ratePerMineLevel * lv * 10) / 10);
+}
+function getRepairCost(){ return Math.round(Math.max(0, 100 - gameData.durability) * getRepairRate() * getMonumentRepairFactor()); }
+// ชุดซ่อมฉุกเฉิน: เดิมคิดราคาเต็ม 100 แต้มเสมอและไม่ได้ส่วนลดอนุสาวรีย์ จึงแย่กว่าปุ่ม "ซ่อม" ทุกกรณี ตอนนี้คิดราคาเท่ากับค่าซ่อมจริง
+function getRepairKitCost(){ return getRepairCost(); }
 function toggleAutoRepair(){
   gameData.autoRepair = !gameData.autoRepair;
   showToast(gameData.autoRepair ? '🔧 เปิดระบบซ่อมอัตโนมัติ' : '🔧 ปิดระบบซ่อมอัตโนมัติ');
@@ -3824,6 +4194,124 @@ function checkExpeditions(){
   if(updated){ updateUI(); autoSaveGame(true); }
 }
 
+// ===== ระบบ "โดนปล้น": คำนวณโอกาส/จำนวนที่ขโมยไป แล้ว roll เป็นระยะตอนออนไลน์ + จำลองย้อนหลังตอนออฟไลน์ =====
+// โอกาสโดนปล้น ณ ขณะนี้ (0 ถ้า Gold ต่ำกว่าเกณฑ์ขั้นต่ำ หรือมี "พลทหารยาม" เฝ้าบ้านครบ hard cap)
+function computeRobberyChance(offline){
+  if(!gameData || (gameData.gold||0) < ROBBERY_CONFIG.minGoldThreshold) return 0;
+  const guardCount = (gameData.troops && gameData.troops.guard) || 0;
+  const swordsmanCount = (gameData.troops && gameData.troops.swordsman) || 0;
+  const knightCount = (gameData.troops && gameData.troops.knight) || 0;
+  const richMultiplier = Math.min(ROBBERY_CONFIG.richMultiplierCap,
+    Math.max(ROBBERY_CONFIG.richMultiplierFloor, gameData.gold / ROBBERY_CONFIG.richReference));
+  const offlineMultiplier = offline ? ROBBERY_CONFIG.offlineMultiplier : 1;
+  // ชั้นที่ 1: ยามเฝ้าบ้าน (+ พื้นของ "ยามครบ")
+  let chance = Math.min(ROBBERY_CONFIG.maxChance, ROBBERY_CONFIG.baseChance * richMultiplier * offlineMultiplier)
+    * Math.pow(1 - ROBBERY_CONFIG.guardDefense, guardCount);
+  if(guardCount >= ROBBERY_CONFIG.guardHardCapCount){
+    // ยามครบ: ลดโอกาส 85% แต่ไม่ให้ต่ำกว่า squadMinChance (และไม่เกินโอกาสเดิม เพื่อไม่ให้คนที่เสี่ยงต่ำอยู่แล้วเสี่ยงสูงขึ้น)
+    chance = Math.min(chance, Math.max(ROBBERY_CONFIG.squadMinChance, chance * (1 - ROBBERY_CONFIG.squadReduction)));
+  }
+  // ชั้นที่ 2: นักรบดาบ/อัศวินที่อยู่บ้าน คิด "หลัง" พื้นของยาม (เดิมคิดก่อน จึงถูกพื้น 8% กลบจนไม่มีผลเมื่อยามครบ)
+  chance *= Math.pow(1 - ROBBERY_CONFIG.swordsmanDefense, swordsmanCount) * Math.pow(1 - ROBBERY_CONFIG.knightDefense, knightCount);
+  return Math.max(ROBBERY_CONFIG.minChance, chance * (1 - contractReduction()));
+}
+// จำนวน Gold ที่ถูกขโมยไปในครั้งนี้ (สุ่ม % แล้วหักลดด้วยระดับคลังใต้ดิน ก่อนกดเพดานสูงสุดต่อครั้ง)
+// เพดานจำนวนที่โดนขโมยต่อครั้ง = max(เพดานขั้นต่ำ, % ของ Gold) แล้วคลังใต้ดินลดทั้งก้อน (เดิมลดเฉพาะส่วน %, ทำให้คลังไม่มีผลเมื่อ Gold ~0.35–2.5 ล้าน)
+function stealMaxPct(){
+  const vaultLv = (gameData.vault && gameData.vault.level) || 0;
+  return Math.max(ROBBERY_CONFIG.stealPctMin, ROBBERY_CONFIG.stealPctMax - vaultLv * VAULT_CFG.stealPctReductionPerLevel);
+}
+function stealCapNow(){
+  const vaultLv = (gameData.vault && gameData.vault.level) || 0;
+  return Math.max(ROBBERY_CONFIG.stealCap, gameData.gold * ROBBERY_CONFIG.stealCapPct) * Math.max(0, 1 - vaultLv * VAULT_CFG.stealCapReductionPerLevel);
+}
+function maxStealNow(){ return Math.round(Math.min(stealCapNow(), gameData.gold * stealMaxPct()) * getMonumentStealFactor()); }
+function computeStolenGold(){
+  const maxPct = stealMaxPct();
+  const pct = ROBBERY_CONFIG.stealPctMin + Math.random() * (maxPct - ROBBERY_CONFIG.stealPctMin);
+  return Math.round(Math.min(Math.round(stealCapNow()), Math.round(gameData.gold * pct)) * getMonumentStealFactor());
+}
+// Gems โดนปล้นพ่วงกับเหตุปล้น Gold (โอกาสเกิดเหตุคิดจาก Gold เท่านั้น) คลังใต้ดิน/อนุสาวรีย์ลดทั้งเพดานและยอดเหมือน Gold
+function gemStealCapNow(){
+  const vaultLv = (gameData.vault && gameData.vault.level) || 0;
+  return ROBBERY_CONFIG.gemCap * Math.max(0, 1 - vaultLv * VAULT_CFG.stealCapReductionPerLevel);
+}
+function maxStealGemsNow(){
+  const g = Math.floor(gameData.gems||0); if(g < ROBBERY_CONFIG.gemMinStock) return 0;
+  return Math.min(g, Math.max(1, Math.round(Math.min(gemStealCapNow(), g * ROBBERY_CONFIG.gemPctMax) * getMonumentStealFactor())));
+}
+function computeStolenGems(){
+  const g = Math.floor(gameData.gems||0); if(g < ROBBERY_CONFIG.gemMinStock) return 0;
+  const pct = ROBBERY_CONFIG.gemPctMin + Math.random() * (ROBBERY_CONFIG.gemPctMax - ROBBERY_CONFIG.gemPctMin);
+  return Math.min(g, Math.max(1, Math.round(Math.min(gemStealCapNow(), g * pct) * getMonumentStealFactor())));
+}
+// ตั้งรอบเช็คโจรครั้งถัดไป นับจาก "ตอนนี้" ห่างออกไปแบบสุ่ม 3-5 นาที (ตามค่าคอนฟิก)
+function scheduleNextRobberyCheck(){
+  const interval = ROBBERY_CONFIG.checkIntervalMin + Math.random() * (ROBBERY_CONFIG.checkIntervalMax - ROBBERY_CONFIG.checkIntervalMin);
+  gameData.nextRobberyCheckAt = Date.now() + interval * 1000;
+}
+// เรียกทุกติ๊กของเกม (ตอนออนไลน์เท่านั้น): ถึงเวลาเช็คหรือยัง ถ้าถึงแล้ว roll หนึ่งครั้งแล้วตั้งรอบถัดไปใหม่
+function checkRobberyOnline(){
+  if(!gameData || !gameData.nextRobberyCheckAt){ if(gameData) scheduleNextRobberyCheck(); return; }
+  if(Date.now() < gameData.nextRobberyCheckAt) return;
+  const chance = computeRobberyChance(false);
+  if(Math.random() < chance){
+    const stolen = computeStolenGold();
+    if(stolen > 0){
+      gameData.gold -= stolen;
+      gameData.totalRobbedGold = (gameData.totalRobbedGold||0) + stolen;
+      const gemsLost = computeStolenGems(); gameData.gems -= gemsLost; gameData.totalRobbedGems = (gameData.totalRobbedGems||0) + gemsLost;
+      const gemTxt = gemsLost > 0 ? ' + '+gemsLost.toLocaleString()+' Gems' : '';
+      const guardCount = (gameData.troops && gameData.troops.guard) || 0;
+      const reason = guardCount > 0 ? ' (ยามเฝ้าไม่พอ)' : ' (ไม่มีทหารเฝ้าบ้าน)';
+      showToast('🥷 โจรลอบเข้าปล้นคลัง! เสียไป '+stolen.toLocaleString()+' Gold'+gemTxt+reason);
+      SFX.error();
+      updateUI(); autoSaveGame(true);
+    }
+  }
+  scheduleNextRobberyCheck();
+}
+// จำลองการ "roll" ที่ควรเกิดขึ้นระหว่างออฟไลน์แบบคร่าวๆ (ประมาณจำนวนรอบจากเวลาเฉลี่ยระหว่างรอบ)
+// ใช้ cappedSeconds เดียวกับเพดานออฟไลน์ของระบบอื่นๆ ในเกม กันไม่ให้ปล่อยเครื่องค้างนานเกินไปแล้วมีความเสี่ยงสะสมไม่จำกัด
+function simulateOfflineRobbery(cappedSeconds){
+  billContract();
+  const result = { hits:0, totalStolen:0, totalGems:0 };
+  if(!gameData.nextRobberyCheckAt){ scheduleNextRobberyCheck(); return result; }
+  let remain = cappedSeconds;
+  let guard = 0, checks = 0;
+  while(remain > 0 && guard++ < 500){
+    const interval = ROBBERY_CONFIG.checkIntervalMin + Math.random() * (ROBBERY_CONFIG.checkIntervalMax - ROBBERY_CONFIG.checkIntervalMin);
+    if(interval > remain) break; // เวลาที่เหลือไม่พอครบรอบเช็คถัดไป เก็บไว้รอตอนกลับมาออนไลน์
+    remain -= interval;
+    if(checks++ >= ROBBERY_CONFIG.offlineMaxChecks) break; // เพดานจำนวนรอบเช็คตอนออฟไลน์
+    const chance = computeRobberyChance(true);
+    if(Math.random() < chance){
+      const stolen = computeStolenGold();
+      if(stolen > 0){
+        gameData.gold -= stolen;
+        gameData.totalRobbedGold = (gameData.totalRobbedGold||0) + stolen;
+        const gl = computeStolenGems(); gameData.gems -= gl; gameData.totalRobbedGems = (gameData.totalRobbedGems||0) + gl; result.totalGems += gl;
+        result.hits++; result.totalStolen += stolen;
+      }
+    }
+  }
+  scheduleNextRobberyCheck(); // กลับมาออนไลน์แล้ว ตั้งตารางเช็คใหม่จากตอนนี้
+  return result;
+}
+// ===== อัพเกรดคลังใต้ดิน: ลดเพดาน % ที่โดนขโมยต่อครั้งอย่างถาวร (ไม่พึ่งทหารอย่างเดียว) =====
+function upgradeVault(){
+  sanitizeData();
+  if(gameData.vault.level >= VAULT_CFG.maxLevel){ showToast('คลังใต้ดินอัพเกรดสูงสุดแล้ว'); return; }
+  const cost = vaultCost();
+  const barCost = vaultBarCost();
+  if((gameData.ingotIron||0) < barCost){ showAppAlert(VAULT_CFG.barLabel+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (ตอนนี้มี '+(gameData.ingotIron||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
+  if(gameData.gold < cost){ showAppAlert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
+  gameData.gold -= cost; gameData.ingotIron -= barCost; gameData.vault.level += 1; gameData.vault.cost = vaultCost();
+  SFX.upgrade();
+  showToast('🏦 อัพเกรดคลังใต้ดินสำเร็จ! (Lv.'+gameData.vault.level+')');
+  updateUI(); autoSaveGame(true);
+}
+
 // ===== ระบบขุดแร่หลัก (เปิด/ปิดการขุดอัตโนมัติ + ขุดด้วยมือ) =====
 function toggleMining(type){
   sanitizeData();
@@ -3862,12 +4350,12 @@ function manualMine(type){
     showFloatingReward(type, '❌ พลาด!', true);
     SFX.fail();
   }else{
-    const y = Math.max(1, Math.round(getMineYield(type) * 0.4));
+    const y = Math.max(1, Math.round(getMineYield(type) * manualYieldFactor(type)));
     gameData[type] += y;
     gameData.totalMined[type] = (gameData.totalMined[type]||0) + y;
     showFloatingReward(type, '+'+y.toLocaleString(), false);
     SFX.hit();
-    addXP(Math.round(MINE_CFG[type].baseXp * gameData.mines[type].level * 0.4));
+    addXP(Math.round(MINE_CFG[type].baseXp * gameData.mines[type].level * manualYieldFactor(type)));
   }
   updateUI(); autoSaveGame(true);
 }
@@ -3877,13 +4365,13 @@ function upgradeMine(type){
   const ub = MINE_UP_BAR[type], barCost = mineBarCost(type);
   if(gameData.gold < cost){ showAppAlert('Gold ไม่พอ! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
   if((gameData[ub.bar]||0) < barCost){ showAppAlert(ub.label+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (ตอนนี้มี '+(gameData[ub.bar]||0)+') — หลอมได้ในแท็บ "เตาหลอมแร่"'); return; }
-  gameData.gold -= cost; gameData[ub.bar] -= barCost; mine.level += 1; mine.cost = Math.floor(cost * 1.7);
+  gameData.gold -= cost; gameData[ub.bar] -= barCost; mine.level += 1; mine.cost = mineUpCost(type, mine.level);
   addXP(Math.floor(cost/15));
   SFX.upgrade();
   showToast('⬆️ อัปเกรด'+MINE_CFG[type].label+'เป็น Lv.'+mine.level+' (-'+barCost+' '+ub.label+')');
   if(mine.level % 5 === 0 && gameData.mineMilestone[type] < mine.level){
     gameData.mineMilestone[type] = mine.level;
-    const gemReward = Math.round(mine.level/5) * 5;
+    const gemReward = Math.max(1, Math.round(Math.round(mine.level/5) * 5 * 0.5)); // ลดครึ่งจากเดิม
     gameData.gems += gemReward;
     showBigReward('🏆 ไมล์สโตน!', MINE_CFG[type].label+' ถึง Lv.'+mine.level+' รับโบนัส '+gemReward+' Gems', 'pi-trophy');
   }
@@ -3955,7 +4443,7 @@ setInterval(function(){
   if(!document.hidden && (performance.now() - lastTickAt) > 3000) wakeLoop();
 }, 2000);
 function updateMiningProgress(dt){
-  checkAutoRepair(); checkExpeditions(); checkAutoExplore();
+  checkAutoRepair(); checkExpeditions(); checkAutoExplore(); checkRobberyOnline();
   let dirty = false;
   MINE_TYPES.forEach(type=>{
     const mine = gameData.mines[type];
@@ -3989,33 +4477,7 @@ function updateMiningProgress(dt){
   if(dirty) updateUI();
 }
 
-// ===== อัปเกรดอุปกรณ์ & ร้านสกิน =====
-function upgradeEquipment(type){
-  sanitizeData();
-  const eq = gameData.equipment[type]; const cfg = EQUIP_CFG[type]; const cost = eq.cost;
-  const barCost = equipBarCost(type);
-  const oreCost = equipOreCost(type);
-  if((gameData[cfg.barType] || 0) < barCost){
-    showAppAlert(cfg.barLabel+' ไม่พอ! ต้องใช้ '+barCost+' แท่ง (หลอมได้ในแท็บ "เตาหลอมแร่")'); return;
-  }
-  if((gameData[cfg.oreType] || 0) < oreCost){
-    showAppAlert(cfg.oreLabel+' ไม่พอ! ต้องใช้ '+oreCost.toLocaleString()+' ชิ้น'); return;
-  }
-  if(cfg.currency === 'gems'){
-    if(gameData.gems < cost){ showAppAlert('Gems ไม่พออัปเกรด!'); return; }
-    gameData.gems -= cost;
-  }else{
-    if(gameData.gold < cost){ showAppAlert('Gold ไม่พออัปเกรด!'); return; }
-    gameData.gold -= cost;
-  }
-  gameData[cfg.barType] -= barCost;
-  gameData[cfg.oreType] -= oreCost;
-  eq.level += 1; eq.cost = equipCost(type);
-  const names = { pickaxe:'⛏️ พลั่ว', helmet:'🪖 หมวกนิรภัย', armor:'🛡️ ชุดเกราะ' };
-  SFX.upgrade();
-  showToast(names[type]+' อัปเกรดเป็น Lv.'+eq.level+' แล้ว! (-'+barCost+' '+cfg.barLabel+', -'+oreCost.toLocaleString()+' '+cfg.oreLabel+')');
-  refreshAll(); autoSaveGame(true);
-}
+// ===== ร้านสกิน =====
 function buyOrEquipSkin(skinId){
   sanitizeData();
   const skin = skinDatabase[skinId]; if(!skin) return;
@@ -4071,34 +4533,25 @@ function updateMarketPricesRealtime(){
     const cfg = MARKET_CFG[type];
     let cur = gameData.marketPrices[type];
     let trend = Math.max(-1, Math.min(1, numOr(gameData.marketTrend[type], 0)));
-
-    // เทรนด์ค่อยๆแกว่งเอง แล้วสลายตัวกลับหา 0 (จำลองแรงซื้อ/ขายที่ต่อเนื่องเป็นช่วงๆ)
     trend += (Math.random()*0.16 - 0.08);
     trend *= 0.90;
-
-    // "ข่าวตลาด" นานๆครั้ง ทำให้เกิดแรงเหวี่ยงแรงกว่าปกติ เริ่มเทรนด์ใหม่
-    if(Math.random() < 0.06){
-      trend += (Math.random()<0.5 ? -1 : 1) * (0.35 + Math.random()*0.35);
+    // ข่าวตลาด: นานๆ ครั้ง เริ่มเทรนด์ใหม่แรงๆ (ทองคำสะเทือนมากกว่าเหล็ก ตาม vol)
+    if(Math.random() < MARKET_SELL_CONFIG.newsChance){
+      const dir = Math.random()<0.5 ? -1 : 1;
+      trend += dir * (0.5 + Math.random()*0.4);
+      if(cfg.vol >= 1) showToast('📰 ข่าวตลาด: '+MINE_CFG[type].label.replace('เหมือง','แร่')+(dir>0?' ความต้องการพุ่งสูง!':' ราคาถูกกดดัน!'));
     }
     trend = Math.max(-1, Math.min(1, trend));
     gameData.marketTrend[type] = trend;
-
-    // แรงกดดันจากการ "เทขาย" ก้อนใหญ่ (ตั้งต้นตอน sellOre) สลายตัวเร็วกว่า trend ทั่วไปมาก
-    // เพื่อไม่ให้กราฟดิ่งค้างเป็นนาทีหลังผู้เล่นขายทั้งหมดในครั้งเดียว
-    let sellPressure = Math.max(0, numOr(gameData.sellPressure[type], 0)) * MARKET_SELL_CONFIG.sellPressureDecay;
-    if(sellPressure < 0.001) sellPressure = 0;
-    gameData.sellPressure[type] = sellPressure;
-
-    // แรงดึงกลับหาราคาฐาน ยิ่งเบี่ยงเบนมากยิ่งดึงแรง (mean reversion)
-    const dev = (cur - cfg.base) / cfg.base;
-    const reversion = -dev * 0.07;
-
-    // สัญญาณรบกวนเล็กน้อยต่อรอบ ให้เส้นกราฟไม่นิ่งเป็นบันได
+    // ความอิ่มตัวของตลาดจากการขาย ฟื้นตัวตามครึ่งชีวิต
+    let sat = Math.max(0, numOr(gameData.sellPressure[type], 0)) * MARKET_SELL_CONFIG.sellPressureDecay;
+    if(sat < 0.001) sat = 0;
+    gameData.sellPressure[type] = sat;
+    // ดึงกลับหาราคาฐาน + สัญญาณรบกวน (ไม่บังคับขยับ ±1 อีกต่อไป ราคาเก็บทศนิยม 2 ตำแหน่ง)
+    const reversion = -((cur - cfg.base) / cfg.base) * 0.05;
     const noise = Math.random()*0.03 - 0.015;
-
-    const change = trend*0.05 + reversion + noise - sellPressure*0.05;
-    let np = Math.round(cur * (1+change));
-    if(np === cur) np = cur + (change>=0?1:-1);
+    const change = (trend*0.06 + noise) * cfg.vol + reversion;
+    let np = Math.round(cur * (1+change) * 100) / 100;
     np = Math.min(cfg.max, Math.max(cfg.min, np));
     gameData.marketPrices[type] = np;
     gameData.marketMultipliers[type] = parseFloat((np/cfg.base).toFixed(2));
@@ -4169,30 +4622,33 @@ function drawSingleChart(canvasId, rawData, lineColor, fillColor, type){
     ctx.beginPath(); ctx.arc(X(i),Y(v),3,0,Math.PI*2); ctx.fill(); ctx.stroke();
   });
   ctx.fillStyle = '#64748b'; ctx.font = '11px sans-serif';
-  ctx.fillText('Max: '+max, pad, pad+8);
-  ctx.fillText('Min: '+min, pad, pad+ch);
+  ctx.fillText('Max: '+(Math.round(max*10)/10), pad, pad+8);
+  ctx.fillText('Min: '+(Math.round(min*10)/10), pad, pad+ch);
 }
-// ===== ขั้นบันไดราคาขายภายในออเดอร์เดียว (แบ่งตาม % ของจำนวนที่ขาย ไม่ใช่จำนวนคงที่) =====
-// เดิมแบ่งเป็นจำนวนหน่วยคงที่ (500/1500/5000 ชิ้นแรก) ทำให้ยิ่งขายเยอะ (สต๊อกหลักหมื่นตอนเล่นไปนานๆ)
-// ส่วนที่เกิน 7,000 ชิ้นทั้งหมดโดนตัดเหลือ 55% แบบไม่มีเพดาน กด "ขายทั้งหมด" ทีเดียวราคาเฉลี่ยเลยดิ่งหนักมาก
-// เปลี่ยนเป็นสัดส่วน % ของ qty เอง ทำให้ไม่ว่าจะขายเยอะแค่ไหน ค่าเฉลี่ยจะลู่เข้าเพดานประมาณ 83% เสมอ ไม่ดิ่งไม่จำกัด
-function calculateTieredSale(qty, price){
-  const t1 = Math.min(qty, Math.max(500, Math.round(qty*0.05)));
-  let left = qty - t1, total = t1*price;
-  const t2 = Math.min(left, Math.round(qty*0.15)); total += t2*price*0.92; left -= t2;
-  const t3 = Math.min(left, Math.round(qty*0.30)); total += t3*price*0.85; left -= t3;
-  if(left>0) total += left*price*0.78;
-  return { total: Math.round(total), avg: Math.max(1, Math.round(total/qty)) };
+// ===== คำนวณการขาย: ปริมาณที่ขายกินความต้องการซื้อของตลาด (อินทิกรัลต่อเนื่อง ไม่มีขั้นบันไดให้เลี่ยง) =====
+// ตัวคูณราคาหน่วยที่ความอิ่มตัว x  = floor + (1-floor)·e^(-x)   |  ราคาเฉลี่ยทั้งออเดอร์ = ค่าเฉลี่ยของสูตรนี้ตั้งแต่ x0 ถึง x1
+function marketDepth(type){
+  const perSec = getMineYield(type) / getMineTime(type) * (1 - getFailChance());
+  return Math.max(200, perSec * MARKET_SELL_CONFIG.depthSeconds);
 }
-// คำนวณ preview ล่วงหน้าโดยไม่แก้ไข gameData ใดๆ - ใช้ทั้งแสดงผลก่อนขายและตอนขายจริง
+function marketDemandMult(x){ const f = MARKET_SELL_CONFIG.floorMult; return f + (1-f)*Math.exp(-x); }
+function marketAvgMult(x0, x1){
+  if(x1 - x0 < 1e-9) return marketDemandMult(x0);
+  const f = MARKET_SELL_CONFIG.floorMult;
+  return f + (1-f) * (Math.exp(-x0) - Math.exp(-x1)) / (x1 - x0);
+}
 function previewSale(type, qty){
   const price = gameData.marketPrices[type];
-  const res = calculateTieredSale(qty, price);
+  const x0 = Math.max(0, numOr(gameData.sellPressure && gameData.sellPressure[type], 0));
+  const x1 = x0 + qty / marketDepth(type); // ไม่ตัดเพดานตอนคิดราคา: ขายเยอะแค่ไหนก็เฉลี่ยลู่เข้า floor จริง
+  const mult = marketAvgMult(x0, x1);
+  const total = Math.round(qty * price * mult);
+  const res = { total, avg: Math.round(total / Math.max(1, qty) * 100) / 100 };
   const bonus = getMarketBonus();
-  const gross = Math.round(res.total * (1+bonus));
+  const gross = Math.round(total * (1+bonus));
   const fee = Math.round(gross * MARKET_FEE);
   const earned = Math.max(0, gross - fee);
-  return { price, res, bonus, gross, fee, earned };
+  return { price, res, bonus, gross, fee, earned, impact: 1 - mult, x1: Math.min(MARKET_SELL_CONFIG.maxSaturation, x1) };
 }
 
 // ===== โมดัลกลางสำหรับแจ้งเตือน/ยืนยัน แทน alert()/confirm() ของเบราว์เซอร์ทั้งหมด =====
@@ -4256,6 +4712,16 @@ function closeAppModal(){
   if(cb) cb();
 }
 
+// ขายตามสัดส่วน % ของแร่ที่มีอยู่ตอนนี้ (ปุ่มลัดในตลาดกลาง) - คำนวณจำนวนจริงแล้วส่งต่อให้ sellOre ทำงานตามปกติ
+function sellOrePercent(type, pct){
+  sanitizeData();
+  const have = gameData[type];
+  if(have <= 0){ showToast('ไม่มีแร่ให้ขาย'); return; }
+  if(pct >= 100){ sellOre(type, 'all'); return; }
+  const qty = Math.floor(have * pct / 100);
+  if(qty <= 0){ showToast('มีแร่ไม่พอสำหรับขาย '+pct+'%'); return; }
+  sellOre(type, qty);
+}
 function sellOre(type, amount){
   sanitizeData();
   const have = gameData[type];
@@ -4270,9 +4736,10 @@ function sellOre(type, amount){
   if(!isFinite(qty) || qty <= 0){ showToast('จำนวนแร่ไม่เพียงพอ'); return; }
 
   const preview = previewSale(type, qty);
-  if(qty >= MARKET_SELL_CONFIG.previewConfirmQty){
+  if(preview.impact >= 1 - MARKET_SELL_CONFIG.confirmBelowAvg){
     const rows = [
-      '<div class="offline-stat-row"><span class="k">ราคาตลาดตอนนี้</span><span class="v" style="color:var(--text-main)">'+preview.price.toLocaleString()+' Gold/ชิ้น</span></div>',
+      '<div class="offline-stat-row"><span class="k">ราคาตลาดตอนนี้</span><span class="v" style="color:var(--text-main)">'+preview.price.toFixed(2)+' Gold/ชิ้น</span></div>',
+      (preview.impact >= 0.005 ? '<div class="offline-stat-row"><span class="k">ตลาดอิ่มตัว (ขายหนัก)</span><span class="v" style="color:var(--danger)">-'+(preview.impact*100).toFixed(1)+'%</span></div>' : ''),
       '<div class="offline-stat-row"><span class="k">ราคาเฉลี่ยที่จะได้จริง</span><span class="v" style="color:var(--text-main)">'+preview.res.avg.toLocaleString()+' Gold/ชิ้น</span></div>',
       '<div class="offline-stat-row"><span class="k">รับสุทธิ (หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'%)</span><span class="v">'+preview.earned.toLocaleString()+' Gold</span></div>'
     ].join('');
@@ -4282,29 +4749,13 @@ function sellOre(type, amount){
   executeSale(type, qty, preview);
 }
 function executeSale(type, qty, preview){
-  const cfg = MARKET_CFG[type];
   const { res, bonus, fee, earned } = preview;
-
-  // ราคาตลาดถัดไป: ผสมราคาเฉลี่ยที่เพิ่งขายเข้าไปเพียงเล็กน้อย (เดิมผสม 25% ทำให้ราคาพังซ้ำหลังโดนสไลด์ในออเดอร์ไปแล้ว)
-  // และมีเพดานกันราคาตกเกิน maxSingleSaleDrop ต่อการขายครั้งเดียว ไม่ว่าจะขายเยอะแค่ไหนก็ตาม
-  let np = Math.round(gameData.marketPrices[type]*(1-MARKET_SELL_CONFIG.priceBlendWeight) + res.avg*MARKET_SELL_CONFIG.priceBlendWeight);
-  const floorPrice = Math.round(gameData.marketPrices[type] * (1-MARKET_SELL_CONFIG.maxSingleSaleDrop));
-  np = Math.max(np, floorPrice);
-  np = Math.min(cfg.max, Math.max(cfg.min, np));
-  gameData.marketPrices[type] = np;
-  gameData.marketMultipliers[type] = parseFloat((np/cfg.base).toFixed(2));
-
   if(!gameData.sellPressure || typeof gameData.sellPressure!=='object') gameData.sellPressure = { iron:0, silver:0, goldOre:0 };
-  // แรงกดดันขาย: แยกจาก marketTrend และสลายตัวเร็วกว่ามาก (ดู updateMarketPricesRealtime) - เพดานต่ำกว่าเดิมมาก (0.4 -> 0.18)
-  const have = gameData[type] + qty; // จำนวนก่อนขาย ใช้คำนวณสัดส่วนแรงกดดัน
-  const sellPressure = Math.min(MARKET_SELL_CONFIG.sellPressureCap, (qty/Math.max(1,have)) * MARKET_SELL_CONFIG.sellPressureCap);
-  gameData.sellPressure[type] = Math.min(1, Math.max(0, numOr(gameData.sellPressure[type],0)) + sellPressure);
-
-  gameData.priceHistory[type].push(np);
-  if(gameData.priceHistory[type].length>20) gameData.priceHistory[type].shift();
+  // ขายแล้วกินความต้องการของตลาด (ราคาตลาดพื้นฐานไม่โดนกดตรงๆ แต่ราคาที่ได้ครั้งถัดไปจะต่ำลงจนกว่าตลาดจะฟื้น)
+  gameData.sellPressure[type] = Math.min(MARKET_SELL_CONFIG.maxSaturation, preview.x1);
   gameData[type] -= qty; gameData.gold += earned; addXP(Math.floor(qty/10));
   SFX.coin();
-  const bonusTxt = bonus>0 ? ' (โบนัสสกิน +'+Math.round(bonus*100)+'%)' : '';
+  const bonusTxt = (bonus>0 ? ' (โบนัสสกิน +'+Math.round(bonus*100)+'%)' : '') + (preview.impact >= 0.005 ? ' [ตลาดอิ่มตัว -'+(preview.impact*100).toFixed(1)+'%]' : '');
   showToast('💰 ขาย '+qty.toLocaleString()+' ชิ้น เฉลี่ย '+res.avg+' Gold → หักค่าธรรมเนียม '+Math.round(MARKET_FEE*100)+'% (-'+fee.toLocaleString()+') รับสุทธิ '+earned.toLocaleString()+' Gold'+bonusTxt);
   updateUI();
   if(isTabActive('market')) drawAllMarketCharts();
@@ -4314,9 +4765,9 @@ function executeSale(type, qty, preview){
 function buyShopItem(item){
   sanitizeData();
   if(item === 'repairKit'){
-    const cost = 200;
+    const cost = getRepairKitCost();
     if(gameData.durability >= 100){ showToast('ความทนทานเต็มอยู่แล้ว'); return; }
-    if(gameData.gold < cost){ showAppAlert('Gold ไม่พอซื้อชุดซ่อม!'); return; }
+    if(gameData.gold < cost){ showAppAlert('Gold ไม่พอซื้อชุดซ่อม! ต้องใช้ '+cost.toLocaleString()+' Gold'); return; }
     gameData.gold -= cost; gameData.durability = 100;
     showToast('⚡ ซ่อมเครื่องมือเต็ม 100% แล้ว!');
   }else if(item === 'mysteryBox'){
@@ -4324,10 +4775,18 @@ function buyShopItem(item){
     if(gameData.gems < cost){ showAppAlert('Gems ไม่พอเปิดกล่องสุ่ม!'); return; }
     gameData.gems -= cost;
     const roll = Math.random();
-    if(roll < 0.45){ const g = 1500 + Math.floor(Math.random()*2500); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); SFX.coin(); }
-    else if(roll < 0.8){ const o = 50 + Math.floor(Math.random()*100); gameData.iron += o; showToast('🎁 ได้รับแร่เหล็ก '+o.toLocaleString()+' ชิ้น!'); SFX.coin(); }
-    else if(roll < 0.95){ const s = 20 + Math.floor(Math.random()*40); gameData.silver += s; showToast('🎁 ได้รับแร่เงิน '+s.toLocaleString()+' ชิ้น!'); SFX.coin(); }
+    // มูลค่าคาดหวังต่อกล่อง ≈ 16,000 Gold-เทียบเท่า (~57% ของ 30 Gems ที่จ่าย) + โอกาสแจ็คพอต เดิมคืนแค่ราว 5% จึงไม่มีเหตุผลซื้อ
+    if(roll < 0.45){ const g = 20000 + Math.floor(Math.random()*16001); gameData.gold += g; showToast('🎁 ได้รับ '+g.toLocaleString()+' Gold!'); SFX.coin(); }
+    else if(roll < 0.8){ const o = 300 + Math.floor(Math.random()*201); gameData.iron += o; showToast('🎁 ได้รับแร่เหล็ก '+o.toLocaleString()+' ชิ้น!'); SFX.coin(); }
+    else if(roll < 0.95){ const s = 120 + Math.floor(Math.random()*81); gameData.silver += s; showToast('🎁 ได้รับแร่เงิน '+s.toLocaleString()+' ชิ้น!'); SFX.coin(); }
     else{ gameData.gems += 60; showBigReward('🎉 แจ็คพอต!', 'กล่องสุ่มมอบ 60 Gems ให้คุณ!', 'pi-diamond'); }
+  }else if(item === 'minerLamp'){
+    if(gameData.lampLevel >= LAMP_CFG.maxLevel){ showToast('ตะเกียงนักขุดอัพเกรดสูงสุดแล้ว!'); return; }
+    const cost = lampCost();
+    if(gameData.gems < cost){ showAppAlert('Gems ไม่พอจุดตะเกียง!'); return; }
+    gameData.gems -= cost; gameData.lampLevel += 1;
+    SFX.upgrade();
+    showToast('🏮 ตะเกียงนักขุดสว่างขึ้น! ผลผลิตแร่ทุกชนิด +'+Math.round(getLampBonus()*100)+'% ถาวร (Lv.'+gameData.lampLevel+')');
   }
   updateUI(); autoSaveGame(true);
 }
@@ -4359,9 +4818,8 @@ function simulateOfflineMining(seconds){
     }
   }
 
-  const fail = getFailChance();
   const durCost = getDurabilityCost();
-  // เวลาที่ต้องใช้ต่อรอบ/ผลผลิตต่อรอบ/XP ต่อรอบ คงที่ตลอดช่วงจำลอง เพราะอุปกรณ์ไม่เปลี่ยนระหว่างออฟไลน์
+  // เวลาที่ต้องใช้ต่อรอบ/ผลผลิตต่อรอบ/XP ต่อรอบ คงที่ตลอดช่วงจำลอง (ส่วนโอกาสพลาดคิดใหม่ทุกรอบเพราะเลเวลอาจเพิ่ม) เพราะอุปกรณ์ไม่เปลี่ยนระหว่างออฟไลน์
   const state = {};
   active.forEach(t=>{
     const need = getMineTime(t);
@@ -4406,13 +4864,14 @@ function simulateOfflineMining(seconds){
         gameData.durability -= durCost;
       }
 
-      if(Math.random() >= fail){
-        const y = state[t].yield;
+      if(Math.random() >= getFailChance()){
+        const y = Math.max(1, Math.round(state[t].yield * OFFLINE_CONFIG.yieldRate));
+        const oxp = Math.max(1, Math.round(state[t].xp * OFFLINE_CONFIG.yieldRate));
         gameData[t] += y;
         gameData.totalMined[t] = (gameData.totalMined[t]||0) + y;
         result.gains[t] += y;
-        result.xpGained += state[t].xp;
-        result.levelsGained += addXP(state[t].xp, true); // silent: กันโมดัลเลเวลอัพเด้งระหว่างจำลอง
+        result.xpGained += oxp;
+        result.levelsGained += addXP(oxp, true); // silent: กันโมดัลเลเวลอัพเด้งระหว่างจำลอง
       }
     }
   }
@@ -4513,29 +4972,37 @@ function calcOfflineProgress(){
   const rawElapsedSec = (Date.now() - gameData.lastSaveTime)/1000;
   if(!isFinite(rawElapsedSec) || rawElapsedSec < OFFLINE_CONFIG.minSeconds) return;
 
+  // แรงกดดันตลาดสลายตัวตามเวลาจริงที่ผ่านไปด้วย (ปกติสลายทุก tick 4 วิ ตอนออนไลน์เท่านั้น)
+  if(gameData.sellPressure){
+    const f = Math.pow(MARKET_SELL_CONFIG.sellPressureDecay, rawElapsedSec/4);
+    Object.keys(gameData.sellPressure).forEach(t=>{ gameData.sellPressure[t] = (gameData.sellPressure[t]||0) * f; if(gameData.sellPressure[t] < 0.001) gameData.sellPressure[t] = 0; });
+  }
   const cappedSec = Math.min(rawElapsedSec, OFFLINE_CONFIG.capSeconds);
   const sim = simulateOfflineMining(cappedSec);
   const expSim = simulateOfflineExpeditions(rawElapsedSec, cappedSec);
+  // จำลองหลังภารกิจสำรวจเสมอ เพราะทหารที่ถูกส่งออกไปสำรวจระหว่างออฟไลน์ไม่นับเป็นยามเฝ้าบ้านแล้ว
+  const robSim = simulateOfflineRobbery(cappedSec);
 
   const hasGains = sim.gains.iron>0 || sim.gains.silver>0 || sim.gains.goldOre>0;
   const hasExpGains = Object.keys(expSim).length > 0;
-  if(!hasGains && !hasExpGains && sim.repairsUsed===0 && sim.levelsGained===0) return; // ไม่มีอะไรเกิดขึ้นเลย ไม่ต้องรบกวนผู้เล่น
+  if(!hasGains && !hasExpGains && sim.repairsUsed===0 && sim.levelsGained===0 && robSim.hits===0) return; // ไม่มีอะไรเกิดขึ้นเลย ไม่ต้องรบกวนผู้เล่น
 
   showOfflineSummaryModal({
     awaySeconds: rawElapsedSec,
     wasCapped: rawElapsedSec > OFFLINE_CONFIG.capSeconds,
     sim,
-    expSim
+    expSim,
+    robSim
   });
 }
 
 // ===== แสดงโมดัลสรุปผลตอบแทนออฟไลน์ ("ยินดีต้อนรับกลับมา") =====
 function showOfflineSummaryModal(data){
   const m = document.getElementById('offline-modal'); if(!m) return;
-  const { awaySeconds, wasCapped, sim, expSim } = data;
+  const { awaySeconds, wasCapped, sim, expSim, robSim } = data;
 
   setTxt(document.getElementById('offline-modal-away'),
-    'คุณออฟไลน์ไป ' + formatOfflineDuration(awaySeconds) + (wasCapped ? ' (คำนวณให้สูงสุด 12 ชม.)' : ''));
+    'คุณออฟไลน์ไป ' + formatOfflineDuration(awaySeconds) + (wasCapped ? ' (คำนวณให้สูงสุด 12 ชม.)' : '') + ' · ผลผลิตออฟไลน์ ' + Math.round(OFFLINE_CONFIG.yieldRate*100) + '%');
 
   const ORE_META = {
     iron:    { label:'แร่เหล็ก', color:'#8fa3c9' },
@@ -4573,6 +5040,9 @@ function showOfflineSummaryModal(data){
       }
     }
   }
+  if(robSim && robSim.hits > 0){
+    rows.push('<div class="offline-stat-row warn"><span class="k"><svg class="picon" viewBox="0 0 8 8" style="color:var(--danger)"><use href="#pi-warning"></use></svg> โจรบุกปล้นระหว่างออฟไลน์ x'+robSim.hits+'</span><span class="v">-'+robSim.totalStolen.toLocaleString()+' Gold'+(robSim.totalGems>0 ? ' · -'+robSim.totalGems.toLocaleString()+' Gems' : '')+'</span></div>');
+  }
   const listEl = document.getElementById('offline-stat-list');
   if(listEl) listEl.innerHTML = rows.join('');
 
@@ -4583,6 +5053,7 @@ function closeOfflineModal(){ const m = document.getElementById('offline-modal')
 
 // ===== อัปเดต UI หลักทั้งหมด (เรียกทุกครั้งที่ข้อมูลเกมเปลี่ยน) =====
 function updateUI(){
+  try{ updateSinkUI(); }catch(e){}
   updateNotifBtn();
   setNum('gold-val', gameData.gold, true);
   setNum('gems-val', gameData.gems, true);
@@ -4629,7 +5100,9 @@ function updateUI(){
 
   const repairKitBtn = document.getElementById('shop-repairkit-btn');
   if(repairKitBtn){
-    const canRepairKit = gameData.durability < 100 && gameData.gold >= 200;
+    const kitCost = getRepairKitCost();
+    const canRepairKit = gameData.durability < 100 && gameData.gold >= kitCost;
+    setText('shop-repairkit-cost', kitCost.toLocaleString());
     setCls(repairKitBtn, canRepairKit ? 'btn btn-success' : 'btn btn-locked');
     repairKitBtn.disabled = !canRepairKit;
   }
@@ -4638,6 +5111,20 @@ function updateUI(){
     const canMysteryBox = gameData.gems >= 30;
     setCls(mysteryBoxBtn, canMysteryBox ? 'btn btn-warning' : 'btn btn-locked');
     mysteryBoxBtn.disabled = !canMysteryBox;
+  }
+  setText('lamp-lvl', gameData.lampLevel||0);
+  setText('lamp-bonus', '+'+Math.round(getLampBonus()*100)+'%');
+  const lampBtn = document.getElementById('shop-lamp-btn');
+  if(lampBtn){
+    if((gameData.lampLevel||0) >= LAMP_CFG.maxLevel){
+      setText('lamp-cost', '-');
+      setTxt(lampBtn, 'สว่างไสวเต็มที่แล้ว!'); setCls(lampBtn, 'btn btn-locked'); lampBtn.disabled = true;
+    }else{
+      const cost = lampCost();
+      setText('lamp-cost', cost.toLocaleString());
+      const canLamp = gameData.gems >= cost;
+      setTxt(lampBtn, 'จุดตะเกียงเพิ่ม 1 เลเวล'); setCls(lampBtn, canLamp ? 'btn btn-success' : 'btn btn-locked'); lampBtn.disabled = !canLamp;
+    }
   }
 
   setText('inv2-gold', gameData.gold.toLocaleString());
@@ -4657,8 +5144,12 @@ function updateUI(){
     setNum('inv-'+t, gameData[t]);
     setNum('market-inv-'+t, gameData[t]);
     setNum('dash-ore-'+t, gameData[t]);
-    setText('price-'+t, gameData.marketPrices[t].toLocaleString());
-    const stockValue = (gameData[t]||0) * (gameData.marketPrices[t]||0);
+    setText('price-'+t, Number(gameData.marketPrices[t]).toFixed(2));
+    const stockValue = (gameData[t]||0) > 0 ? previewSale(t, gameData[t]).gross : 0; // มูลค่าถ้าขายทั้งหมดตอนนี้ (รวมตลาดอิ่มตัว ไม่หักค่าธรรมเนียม)
+    const dm = marketDemandMult(Math.max(0, numOr(gameData.sellPressure && gameData.sellPressure[t], 0)));
+    setText('market-demand-'+t, Math.round(dm*100)+'%');
+    const dmEl = document.getElementById('market-demand-'+t);
+    if(dmEl) dmEl.style.color = dm>=0.9 ? 'var(--success)' : (dm>=0.75 ? 'var(--gold)' : 'var(--danger)');
     marketPortfolioValue += stockValue;
     setText('market-value-'+t, stockValue.toLocaleString()+' Gold');
     const tr = document.getElementById('trend-'+t);
@@ -4744,6 +5235,41 @@ function updateUI(){
     });
   }
 
+  // ===== สถานะ "คลังทอง & การป้องกันโจร" =====
+  {
+    const guardCount = (gameData.troops && gameData.troops.guard) || 0;
+    const chance = computeRobberyChance(false);
+    const chanceEl = document.getElementById('robbery-chance');
+    const statusEl = document.getElementById('robbery-status');
+    const totalEl = document.getElementById('robbery-total-lost');
+    if(totalEl) setTxt(totalEl, (gameData.totalRobbedGold||0).toLocaleString());
+    if(gameData.gold < ROBBERY_CONFIG.minGoldThreshold){
+      if(chanceEl) setTxt(chanceEl, '0%');
+      if(statusEl){ setTxt(statusEl, '🛡️ ปลอดภัย (Gold ยังไม่ถึง '+ROBBERY_CONFIG.minGoldThreshold.toLocaleString()+')'); statusEl.style.color = 'var(--success)'; }
+    }else if(guardCount >= ROBBERY_CONFIG.guardHardCapCount){
+      if(chanceEl) setTxt(chanceEl, Math.round(chance*100)+'%');
+      if(statusEl){ setTxt(statusEl, '🛡️ เสี่ยงต่ำ (ยามเฝ้าครบ '+ROBBERY_CONFIG.guardHardCapCount+' นาย ลดโอกาสโดนปล้น '+Math.round(ROBBERY_CONFIG.squadReduction*100)+'%) แต่ยังเสี่ยงอยู่บ้าง'); statusEl.style.color = 'var(--success)'; }
+    }else{
+      if(chanceEl) setTxt(chanceEl, Math.round(chance*100)+'%');
+      if(statusEl){ setTxt(statusEl, '⚠️ เสี่ยงโดนปล้นทุก ~3-5 นาที (เก็บ "พลทหารยาม" ไว้เฝ้าบ้าน '+ROBBERY_CONFIG.guardHardCapCount+' นายเพื่อลดโอกาสโดนปล้น '+Math.round(ROBBERY_CONFIG.squadReduction*100)+'%)'); statusEl.style.color = 'var(--danger)'; }
+    }
+    setText('vault-lvl', gameData.vault.level+' / '+VAULT_CFG.maxLevel);
+    const maxPct = Math.max(ROBBERY_CONFIG.stealPctMin, ROBBERY_CONFIG.stealPctMax - gameData.vault.level * VAULT_CFG.stealPctReductionPerLevel);
+    setText('vault-stealcap', gameData.gold > 0 ? (Math.round(maxStealNow()/gameData.gold*1000)/10)+'% (≈'+maxStealNow().toLocaleString()+' Gold)' : Math.round(maxPct*100)+'%');
+    setText('vault-cost', vaultCost().toLocaleString());
+    setText('vault-barcost', vaultBarCost());
+    setText('vault-barhave', (gameData.ingotIron||0).toLocaleString());
+    const vaultBtn = document.getElementById('vault-upgrade-btn');
+    if(vaultBtn){
+      if(gameData.vault.level >= VAULT_CFG.maxLevel){
+        setTxt(vaultBtn, 'อัพเกรดสูงสุดแล้ว'); setCls(vaultBtn, 'btn btn-locked'); vaultBtn.disabled = true;
+      }else{
+        const canVault = gameData.gold >= vaultCost() && (gameData.ingotIron||0) >= vaultBarCost();
+        setTxt(vaultBtn, 'อัพเกรดคลังใต้ดิน'); setCls(vaultBtn, canVault ? 'btn btn-success' : 'btn btn-locked'); vaultBtn.disabled = !canVault;
+      }
+    }
+  }
+
   const now = Date.now();
   for(let key in EXP_CFG){
     const cfg = EXP_CFG[key];
@@ -4784,23 +5310,6 @@ function updateUI(){
     }
   }
 
-  const EQUIP_BTN_CLASS = { pickaxe:'btn btn-warning', helmet:'btn btn-success', armor:'btn btn-success' };
-  EQUIP_TYPES.forEach(t=>{
-    setText('eq-'+t+'-lvl', gameData.equipment[t].level);
-    setText('eq-'+t+'-cost', gameData.equipment[t].cost.toLocaleString());
-    setText('eq-'+t+'-barcost', equipBarCost(t));
-    setText('eq-'+t+'-barhave', gameData[EQUIP_CFG[t].barType] || 0);
-    setText('eq-'+t+'-orecost', equipOreCost(t).toLocaleString());
-    setText('eq-'+t+'-orehave', (gameData[EQUIP_CFG[t].oreType] || 0).toLocaleString());
-    const eqBtn = document.getElementById('eq-'+t+'-upgrade-btn');
-    if(eqBtn){
-      const eCfg = EQUIP_CFG[t];
-      const currencyOk = eCfg.currency === 'gems' ? gameData.gems >= gameData.equipment[t].cost : gameData.gold >= gameData.equipment[t].cost;
-      const canEq = currencyOk && (gameData[eCfg.barType]||0) >= equipBarCost(t) && (gameData[eCfg.oreType]||0) >= equipOreCost(t);
-      setCls(eqBtn, canEq ? EQUIP_BTN_CLASS[t] : 'btn btn-locked');
-      eqBtn.disabled = !canEq;
-    }
-  });
 
   SMELT_TYPES.forEach(t=>{
     const cfg = SMELT_CFG[t];
@@ -4875,6 +5384,7 @@ window.addEventListener('load', function(){
 
     setInterval(updateMarketPricesRealtime, 4000);
     setInterval(function(){ autoSaveGame(false); }, 15000);
+    setInterval(function(){ try{ billContract(); }catch(e){} }, 30000);
 
     // Single shared "coming back from background" path, used by every resume signal below.
     // Debounced so that if two resume events fire almost together (e.g. visibilitychange AND
