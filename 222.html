@@ -377,7 +377,7 @@ function tile(t,i,j){const X=i*T,Y=j*T,f=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(
  const h=hits[i+','+j];if(h){x.fillStyle='#000a';x.fillRect(X+10,Y+6,2,10+h*3);x.fillRect(X+10,Y+16,8,2)}}
 const LBL={9:'ร้านค้า',14:'โรงตีจอบ',16:'เตาหลอม',18:'ค่ายทหาร',19:'ค่ายคนงาน',20:'ภารกิจ',8:'ทางเข้าเหมือง'};
 function labels(){x.save();x.font="600 11px Mitr,'Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif";x.textAlign='center';x.textBaseline='middle';
- for(let j=0;j<H;j++)for(let i=0;i<W;i++){const t=LBL[map[j][i]];if(!t)continue;const w=Math.round(x.measureText(t).width+12),cx=Math.round(Math.min(VW-2-w/2,Math.max(w/2+2,i*T+T/2))),cy=j*T-8;
+ for(let j=0;j<H;j++)for(let i=0;i<W;i++){const t=LBL[map[j][i]];if(!t)continue;const w=Math.round(x.measureText(t).width+12),cx=Math.round(Math.min(CX+VW-2-w/2,Math.max(CX+w/2+2,i*T+T/2))),cy=j*T-8;
   x.fillStyle='rgba(22,16,11,.8)';x.fillRect(cx-w/2|0,cy-9,w,18);x.strokeStyle='#d2a94f';x.lineWidth=1;x.strokeRect((cx-w/2|0)+.5,cy-8.5,w-1,17);x.fillStyle='#f1e6c6';x.fillText(t,cx,cy+1)}
  x.restore()}
 function draw(){
