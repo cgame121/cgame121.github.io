@@ -2603,5 +2603,21 @@ addEventListener('resize',()=>{const n=b.classList.contains('pv')&&wr.clientWidt
 apply();setTimeout(apply,300);
 })();
 </script>
+
+<style>
+/* ===== มือถือแนวนอน: ปุ่มทางลัดเล็กชิดปุ่มฟัน, แจ้งเตือนอยู่กลางบน, เมนูอยู่กลางล่าง ===== */
+@media(pointer:coarse) and (orientation:landscape){
+ #autob2,#fishb2,#profb2{position:absolute!important;margin:0!important;width:42px!important;height:42px!important;font-size:19px!important;opacity:.75!important;
+  bottom:calc(var(--js)*.12 + 6px)!important;align-self:auto!important}
+ #autob2{right:calc(var(--gx) + var(--sr) + var(--ab) + 32px)!important}
+ #fishb2{right:calc(var(--gx) + var(--sr) + var(--ab) + 80px)!important}
+ #profb2{right:calc(var(--gx) + var(--sr) + var(--ab) + 128px)!important}
+ #pad{padding-right:var(--gx)!important}
+ #log{left:50%!important;right:auto!important;bottom:auto!important;top:6.6em!important;transform:translateX(-50%);width:min(52%,26em)!important;align-items:center}
+ #log div{background:linear-gradient(90deg,#0000,#000b 20%,#000b 80%,#0000)!important;border-left:0!important;text-align:center;border-radius:6px!important}
+ #abs{top:10.5em!important}
+ #dock{left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:.5em!important;max-width:60%!important}
+}
+</style>
 </body>
 </html>
