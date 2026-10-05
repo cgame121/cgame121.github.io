@@ -235,7 +235,20 @@ body:has(#bld:not([hidden])) #dock{display:none}
 var ZM=1;try{ZM=Math.min(2.5,Math.max(.6,+localStorage.getItem('mvzm')||1))}catch(e){}
 var VW=640,VH=448,CX=0,CY=0,GK=1,RAF=0,SIMT=0,OWED=0,QUIET=0;
 let W=20,H=14;const T=32,$=i=>document.getElementById(i),cv=$('c'),x=cv.getContext('2d');
-const SOL=new Set([2,3,4,5,6,9,10,13,14,15,16,18,19,20]),PRICE={i:12,s:30,g:80,bi:40,bs:100,bg:260},REC=[0,0,{gold:300,bi:5},{gold:900,bi:6,bs:5},{gold:2400,bs:6,bg:5},{gold:6500,bs:6,bg:10}],LB={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'},PN=['','จอบไม้','จอบเหล็ก','จอบเงิน','จอบทองคำ','จอบมิธริล'];
+/* ===== ปรับเศรษฐกิจทั้งเกม: แก้ตัวเลขตรงนี้ที่เดียว =====
+   sell   ราคารับซื้อแร่/แท่ง/เพชร ×        ore    ความหนาแน่นเส้นแร่และโอกาสเจอเพชร ×
+   luck   โอกาสแร่ก้อนที่สอง (ชั้นลึก/ทักษะ/บัฟ) ×   reward รางวัลทองจากภารกิจ/บอส/มอนสเตอร์/หีบ/เลเวลอัป ×
+   cost   ค่าทองอัปเกรด/จ้าง/สร้าง ×          mat    จำนวนแท่งแร่ที่ใช้ตีจอบ/อุปกรณ์/ค่าย/สิ่งก่อสร้าง ×
+   ingot  ราคาซื้อแท่งจากร้าน ×               smelt  เวลาหลอมแท่ง ×
+   worker คนงานขุดแร่ช้าลง ×                  fish/crop ราคาขายปลา/ผัก ×
+   fee    ค่าเข้าดันเจี้ยน   deathGold/deathOre สัดส่วนที่เสียเมื่อตายในเหมือง */
+const ECON={sell:.3,ore:.4,luck:.2,reward:.3,cost:3.6,mat:3.2,ingot:3.6,smelt:2.8,worker:2.8,fish:.34,crop:.36,fee:2500,deathGold:0,deathOre:0,
+ base:{i:12,s:30,g:80,bi:40,bs:100,bg:260,dm:150},
+ p(k){return Math.max(1,Math.round(ECON.base[k]*ECON.sell))},
+ g(n){return Math.round(n*ECON.cost/10)*10},
+ sc(c){const o={};for(const k in c)o[k]=k=='gold'?ECON.g(c[k]):Math.max(1,Math.round(c[k]*ECON.mat));return o}};
+const SOL=new Set([2,3,4,5,6,9,10,13,14,15,16,18,19,20]),PRICE={i:ECON.p('i'),s:ECON.p('s'),g:ECON.p('g'),bi:ECON.p('bi'),bs:ECON.p('bs'),bg:ECON.p('bg')},REC=[0,0,{gold:300,bi:5},{gold:900,bi:6,bs:5},{gold:2400,bs:6,bg:5},{gold:6500,bs:6,bg:10}],LB={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'},PN=['','จอบไม้','จอบเหล็ก','จอบเงิน','จอบทองคำ','จอบมิธริล'];
+for(let i=2;i<REC.length;i++)REC[i]=ECON.sc(REC[i]);
 let S={gold:0,i:0,s:0,g:0,bi:0,bs:0,bg:0,pick:1,day:1,cp:0,gd:0,wk:0,wi:0,ws:0,wp:0,rd:0,qi:0,qp:0};
 (function(){for(const k of ['mv1','mv1b']){try{const o=JSON.parse(localStorage.getItem(k)||'null');if(o&&typeof o=='object'&&!Array.isArray(o)){Object.assign(S,o);return}}catch(e){}}})();
 function sanitize(){const d={gold:0,i:0,s:0,g:0,bi:0,bs:0,bg:0,dm:0,pick:1,gd:0,wk:0,wi:0,ws:0,wp:0,cp:0,qi:0,qp:0,lv:1,xp:0,mk:0,rc:0,tm:0,fqi:0,fqs:0,fqg:0,foi:0,fos:0,fog:0,fp:0,fv:1,pn:6};
@@ -258,11 +271,11 @@ const ZN=[{n:'ถ้ำเหล็ก',fl:'#5a5560',f2:'#4d4852',w:'#24222b',w2
 {n:'เหมืองลาวา',fl:'#5a3a34',f2:'#4b2f2a',w:'#2a1512',w2:'#3a1e19',r:'#9a6a5a',rh:'#c08a74',rd:'#7a4d3e'}];
 let Z=ZN[0];
 function mine(f){W=32;H=22;where='mine';floor=f;hits={};map=[];const zi=Math.min(2,Math.ceil(f/5)-1),boss=f%5==0;Z=ZN[zi];
- const pg=Math.min(.06,Math.max(0,.008*(f-2))),ps=Math.min(.09,.008+.011*f),lp=zi==0?0:zi==1?.03:.06;
+ const pg=ECON.ore*Math.min(.06,Math.max(0,.008*(f-2))),ps=ECON.ore*Math.min(.09,.008+.011*f),lp=zi==0?0:zi==1?.03:.06;
  for(let y=0;y<H;y++){map[y]=[];for(let q=0;q<W;q++){let t=11;
   if(!q||!y||q==W-1||y==H-1)t=2;
   else if(boss){if(Math.random()<.05)t=3}
-  else if(Math.random()<.36){const r=Math.random();t=r<pg?6:r<pg+ps?5:r<pg+ps+.10?4:3}
+  else if(Math.random()<.36){const r=Math.random();t=r<pg?6:r<pg+ps?5:r<pg+ps+.10*ECON.ore?4:3}
   else if(Math.random()<lp)t=17;
   map[y][q]=t}}
  for(let y=1;y<4;y++)for(let q=1;q<4;q++)map[y][q]=11;
@@ -273,17 +286,17 @@ function mine(f){W=32;H=22;where='mine';floor=f;hits={};map=[];const zi=Math.min
    if(map[y][q]==11&&Math.hypot(q-2.5,y-2.5)>6){n++;const t=f>=4&&Math.random()<.4?'k':'g',h=t=='k'?40+f*6:20+f*4;MS.push({x:q+.5,y:y+.5,t,hp:h,mx:h,cd:0,fl:0})}}}
  qa('fl',f);toast('ชั้น '+f+' — '+Z.n+(boss?' ⚠ มีบอส!':''))}
 const QS=[{t:'ขุดแร่ 10 ก้อน',k:'mn',n:10,r:150},{t:'หลอมแท่งโลหะ 4 แท่ง',k:'sm',n:4,r:200},{t:'ปราบมอนสเตอร์ 6 ตัว',k:'kl',n:6,r:250},{t:'ลงเหมืองให้ถึงชั้น 4',k:'fl',n:4,r:400},{t:'ไล่โจร 4 คน',k:'bd',n:4,r:500},{t:'ขุดแร่ 40 ก้อน',k:'mn',n:40,r:700},{t:'ลงเหมืองให้ถึงชั้น 7',k:'fl',n:7,r:1200},{t:'ปราบมอนสเตอร์ 20 ตัว',k:'kl',n:20,r:900}];
-const FT_={i:6,s:12,g:20},FK={i:'bi',s:'bs',g:'bg'},FO={i:'แร่เหล็ก',s:'แร่เงิน',g:'แร่ทอง'},FN={i:'แท่งเหล็ก',s:'แท่งเงิน',g:'แท่งทองคำ'},FUP=[0,0,400,1200,3500];
+const FT_={i:Math.round(6*ECON.smelt),s:Math.round(12*ECON.smelt),g:Math.round(20*ECON.smelt)},FK={i:'bi',s:'bs',g:'bg'},FO={i:'แร่เหล็ก',s:'แร่เงิน',g:'แร่ทอง'},FN={i:'แท่งเหล็ก',s:'แท่งเงิน',g:'แท่งทองคำ'},FUP=[0,0,ECON.g(400),ECON.g(1200),ECON.g(3500)];
 function fspd(){return 1+.5*((S.fv||1)-1)}
 function fcur(){return S.fqi>0?'i':S.fqs>0?'s':S.fqg>0?'g':null}
-function furn(dt){let t=dt*fspd(),n=0;while(t>0&&n++<5000){const k=fcur();if(!k){S.fp=0;return}const need=FT_[k]-S.fp;if(t<need){S.fp+=t;return}t-=need;S.fp=0;S['fq'+k]--;S['fo'+k]+=Math.random()<.1*((S.fv||1)-1)?2:1}}
+function furn(dt){let t=dt*fspd(),n=0;while(t>0&&n++<5000){const k=fcur();if(!k){S.fp=0;return}const need=FT_[k]-S.fp;if(t<need){S.fp+=t;return}t-=need;S.fp=0;S['fq'+k]--;S['fo'+k]+=Math.random()<.06*((S.fv||1)-1)?2:1}}
 function fqueue(k,all){const n=all?S[k]>>1:Math.min(1,S[k]>>1);if(!n)return toast('ต้องมี'+FO[k]+'อย่างน้อย 2 ก้อน');S[k]-=n*2;S['fq'+k]+=n;toast('ใส่'+FO[k]+'เข้าเตา '+n*2+' ก้อน')}
 function fcollect(){let t=0;for(const k of['i','s','g']){const n=S['fo'+k];if(n){S[FK[k]]+=n;S['fo'+k]=0;t+=n}}if(!t)return toast('ยังไม่มีแท่งที่หลอมเสร็จ');qa('sm',t);toast('หลอมได้ '+t+' แท่ง รับเข้ากระเป๋าแล้ว');save()}
 function fup(){const lv=S.fv||1;if(lv>=4)return;const c=FUP[lv+1];if(S.gold<c)return toast('ต้องใช้ '+c+' ทอง');S.gold-=c;S.fv=lv+1;toast('อัปเกรดเตาหลอมเป็น Lv.'+S.fv+' สำเร็จ!');save()}
 function furnAct(a){const m=a.match(/^f_([isg])([1a])$/);if(m){fqueue(m[1],m[2]=='a');save()}else if(a=='f_take')fcollect();else if(a=='f_up')fup()}
 function qa(k,n){const q=QS[S.qi%QS.length];if(q.k!=k)return;S.qp=k=='fl'?Math.min(q.n,Math.max(S.qp,n)):Math.min(q.n,S.qp+(n||1))}
-function work(sec){if(!S.wk)return;S.wp+=sec*S.wk;const n=Math.floor(S.wp/90);S.wp-=n*90;for(let i=0;i<n;i++){if(S.pick>=3&&Math.random()<.33)S.ws=Math.min(200,S.ws+1);else S.wi=Math.min(200,S.wi+1)}}
-function killB(m){MS=MS.filter(q=>q!==m);const c=15+(m.loot||0);S.gold+=c;qa('bd');toast('ไล่โจรได้! +'+c+' ทอง')}
+function work(sec){if(!S.wk)return;S.wp+=sec*S.wk;const n=Math.floor(S.wp/(90*ECON.worker));S.wp-=n*(90*ECON.worker);for(let i=0;i<n;i++){if(S.pick>=3&&Math.random()<.33)S.ws=Math.min(200,S.ws+1);else S.wi=Math.min(200,S.wi+1)}}
+function killB(m){MS=MS.filter(q=>q!==m);const c=Math.round(15*ECON.reward)+(m.loot||0);S.gold+=c;qa('bd');toast('ไล่โจรได้! +'+c+' ทอง')}
 function mv(o,tx,ty,sp,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);if(d>.05){const nx=o.x+dx/d*sp*dt,ny=o.y+dy/d*sp*dt;if(can(nx,o.y))o.x=nx;if(can(o.x,ny))o.y=ny}return d}
 function raid(){S.rc=(S.rc||0)+1;const B=Math.min(8,2+((S.rc-1)/3|0));
  if(where=='town'){for(let i=0;i<B;i++)MS.push({x:5+Math.random()*7,y:H-1.6,t:'b',hp:30,mx:30,cd:0,fl:0});toast('โจรบุกหมู่บ้าน! ปกป้องหีบทอง')}
@@ -331,7 +344,7 @@ function act(){swing=.18;
  if(MS.length){let best=null,bd=9;for(const m of MS){const rx=m.x-P.x,ry=m.y-P.y,fw=rx*face[0]+ry*face[1],lt=Math.abs(rx*face[1]-ry*face[0]);if(fw>-.2&&fw<(m.b?2:1.4)&&lt<(m.b?1.2:.8)&&fw<bd){bd=fw;best=m}}
   if(best){const dmg=Math.round((8+S.pick*6)*(1+.04*(Math.min(S.lv,40)-1)));best.hp-=dmg;best.fl=.15;flt(best.x,best.y-.4,dmg);
    const nx=best.x+face[0]*.5,ny=best.y+face[1]*.5;if(can(nx,best.y))best.x=nx;if(can(best.x,ny))best.y=ny;
-   if(best.hp<=0){MS=MS.filter(q=>q!==best);if(best.b){const c=100*floor,n=floor/5|0;S.gold+=c;S.bs+=1+n;S.bg+=n;qa('kl');S.cp=Math.max(S.cp,floor);map[Math.floor(best.y)][Math.floor(best.x)]=7;toast('ปราบบอสได้! +'+c+' ทอง บันไดลงเปิดแล้ว');save()}else if(best.t=='b')killB(best);else{qa('kl');const c=Math.round((best.t=='k'?15+floor*4:5+floor*2)*(best.gmul||1)*(window.IN_HUNT&&IN_HUNT()?.4:1));S.gold+=c;toast('ปราบได้! +'+c+' ทอง')}}return}}
+   if(best.hp<=0){MS=MS.filter(q=>q!==best);if(best.b){const c=Math.round(100*floor*ECON.reward),n=floor/5|0;S.gold+=c;S.bs+=Math.max(1,Math.round((1+n)*ECON.reward));S.bg+=Math.round(n*ECON.reward);qa('kl');S.cp=Math.max(S.cp,floor);map[Math.floor(best.y)][Math.floor(best.x)]=7;toast('ปราบบอสได้! +'+c+' ทอง บันไดลงเปิดแล้ว');save()}else if(best.t=='b')killB(best);else{qa('kl');const c=Math.round((best.t=='k'?15+floor*4:5+floor*2)*(best.gmul||1)*ECON.reward*(window.IN_HUNT&&IN_HUNT()?.4:1));S.gold+=c;toast('ปราบได้! +'+c+' ทอง')}}return}}
 const a=Math.floor(P.x+face[0]*.8),b=Math.floor(P.y+face[1]*.8);if(a<0||b<0||a>=W||b>=H)return;const t=map[b][a];
  if(window.openBld&&openBld(t))return;
  if(t>=3&&t<=6){
@@ -350,7 +363,7 @@ const a=Math.floor(P.x+face[0]*.8),b=Math.floor(P.y+face[1]*.8);if(a<0||b<0||a>=
  else if(t==18){if(S.gd>=5)return toast('ทหารยามเต็มแล้ว (5 นาย)');const c=150*(S.gd+1);if(S.gold<c||S.bi<2)return toast('จ้างทหารยามนายที่ '+(S.gd+1)+' ต้องใช้ '+c+' ทอง + 2 แท่งเหล็ก');
   S.gold-=c;S.bi-=2;S.gd++;GD.push({x:7+(S.gd-1)*.8,y:5.2,hx:7+(S.gd-1)*.8,cd:0});toast('จ้างทหารยามแล้ว! มี '+S.gd+' นาย');save()}
  else if(t==19){if(S.wi+S.ws){S.i+=S.wi;S.s+=S.ws;toast('รับแร่จากคนงาน เหล็ก '+S.wi+' เงิน '+S.ws);S.wi=S.ws=0;save();return}
-  if(S.wk>=5)return toast('คนงานเต็มแล้ว (5 คน)');const c=250*(S.wk+1);if(S.gold<c)return toast('จ้างคนงานคนที่ '+(S.wk+1)+' ต้องใช้ '+c+' ทอง (ขุดเหล็ก 1 ก้อน/นาที/คน)');
+  if(S.wk>=5)return toast('คนงานเต็มแล้ว (5 คน)');const c=ECON.g(250*(S.wk+1));if(S.gold<c)return toast('จ้างคนงานคนที่ '+(S.wk+1)+' ต้องใช้ '+c+' ทอง (ขุดเหล็ก 1 ก้อน/นาที/คน)');
   S.gold-=c;S.wk++;toast('จ้างคนงานแล้ว! มี '+S.wk+' คน');save()}
  else if(t==20){const q=QS[S.qi%QS.length],rw=Math.round(q.r*(1+Math.min(2,S.qi/QS.length|0)*.5));
   if(S.qp>=q.n){S.gold+=rw;S.qi++;S.qp=0;toast('ภารกิจสำเร็จ! +'+rw+' ทอง');save()}else toast('ภารกิจ: '+q.t+' ('+S.qp+'/'+q.n+') รางวัล '+rw+' ทอง')}}
@@ -426,7 +439,7 @@ function recover(e){const n=performance.now();eT=eT.filter(t=>n-t<3000);eT.push(
  try{x.globalAlpha=1;sanitize();if(!Number.isFinite(HP))HP=mhp();inv=Math.min(inv,1)}catch(_){}
  if(eT.length>=3){eT=[];try{MS=[];BL=0;NOUI=0;const a=document.getElementById('bld');if(a)a.hidden=true;TG=null;town();HP=mhp();toast('เกมแก้ไขข้อผิดพลาดอัตโนมัติ — กลับสู่หมู่บ้าน')}catch(_){location.reload()}}}
 function pump(ms){if(OWED<.05)return;const t0=performance.now();QUIET=1;try{while(OWED>=.05&&performance.now()-t0<ms){update(.05);OWED-=.05}}finally{QUIET=0}}
-let _fT=0,_hT=0;const FRAME_MS=28,HUD_MS=160; // จำกัด ~30fps และอัปเดต HUD/แผนที่ย่อ ~6 ครั้ง/วิ เพื่อประหยัดแบตเตอรี่
+let _fT=0,_hT=0;let FRAME_MS=28,HUD_MS=160; // จำกัด ~30fps และอัปเดต HUD/แผนที่ย่อ ~6 ครั้ง/วิ เพื่อประหยัดแบตเตอรี่
 function loop(n){if(n-_fT<FRAME_MS){RAF=requestAnimationFrame(loop);return}_fT=n;try{const raw=Math.max(0,(n-last)/1000),dt=Math.min(.05,raw);last=n;lastTick=performance.now();if(raw>1)OWED=Math.min(1800,OWED+raw-dt);
  if(!Number.isFinite(P.x)||!Number.isFinite(P.y)||solid(Math.floor(P.x),Math.floor(P.y)))unstuckP();
  if(!Number.isFinite(HP))HP=mhp();
@@ -442,10 +455,10 @@ setInterval(save,20000);if(S.ts&&(S.fqi+S.fqs+S.fqg)>0){const el=Math.min(28800,
 (function(){
 const st=$('stage'),wr=$('wrap'),fs=$('fs'),de=document.documentElement;
 function fit(){const w=st.clientWidth,h=st.clientHeight;if(!w||!h)return;
-const a=Math.max(640/704,Math.min(1024/448,w/h)),bw=Math.floor(Math.min(w,h*a)),bh=Math.floor(Math.min(h,w/a));
+const a=Math.max(.55,Math.min(1024/448,w/h)),bw=Math.floor(Math.min(w,h*a)),bh=Math.floor(Math.min(h,w/a));
 wr.style.width=bw+'px';wr.style.height=bh+'px';
-let nw=640,nh=448;if(a>=640/448){nh=448;nw=Math.round(448*a)}else{nw=640;nh=Math.round(640/a)}
-nw=Math.min(1024,nw);nh=Math.min(704,nh);nw=Math.round(nw/ZM);nh=Math.round(nh/ZM);
+let nw=640,nh=448;if(a>=640/448){nh=448;nw=Math.round(448*a)}else{nw=a<.95?480:640;nh=Math.round(nw/a)}
+nw=Math.min(1024,nw);nh=Math.min(900,nh);nw=Math.round(nw/ZM);nh=Math.round(nh/ZM);
 if(nw!=VW||nh!=VH){VW=nw;VH=nh;window.SNAPREQ=1;if(window.RES)window.RES()}}
 addEventListener('resize',fit);addEventListener('orientationchange',fit);if(window.visualViewport)visualViewport.addEventListener('resize',fit);document.addEventListener('fullscreenchange',()=>{fit();fs.textContent=document.fullscreenElement?'🗗':'⛶'});
 if('ResizeObserver'in window)new ResizeObserver(fit).observe(st);
@@ -465,8 +478,8 @@ const HR='<hr style="border:0;border-top:1px solid #4a3a22;margin:.7em 0">';
 const IN={
 16:()=>{const lv=S.fv||1,cur=fcur(),out=S.foi+S.fos+S.fog,tot=S.fqi+S.fqs+S.fqg,sg=[S.fqi,S.fqs,S.fqg,S.foi,S.fos,S.fog,S.i,S.s,S.g,S.fv,S.gold].join();
  const line=k=>row(FO[k]+' <small>มี '+S[k]+' · '+FT_[k]+' วิ/แท่ง</small>','ในเตา '+S['fq'+k]+' แท่ง')+'<div class="bgr">'+btn('f_'+k+'1','ใส่ 2 ก้อน',S[k]>=2)+btn('f_'+k+'a','ใส่ทั้งหมด ('+(S[k]>>1)+' แท่ง)',S[k]>=2)+'</div>';
- const up=lv<4?HR+'<b>⬆️ อัปเกรดเตา Lv.'+lv+' → '+(lv+1)+'</b><small style="display:block;margin:.2em 0">เร็วขึ้นเป็น ×'+(1+.5*lv)+' · โอกาสได้แท่งโบนัส '+10*lv+'%</small>'+need('ทอง',S.gold,FUP[lv+1])+btn('f_up','อัปเกรดเตา ('+FUP[lv+1]+' ทอง)',S.gold>=FUP[lv+1],'ทองยังไม่พอ'):HR+'<small>เตาหลอมระดับสูงสุดแล้ว</small>';
- return{t:'🔥 เตาหลอม Lv.'+lv,d:'ใส่แร่ 2 ก้อนต่อ 1 แท่ง เตาหลอมต่อเนื่องเองแม้คุณลงเหมืองอยู่ แล้วค่อยกลับมารับแท่ง (ความเร็ว ×'+(1+.5*(lv-1))+(lv>1?' · โอกาสแท่งโบนัส '+10*(lv-1)+'%':'')+')',
+ const up=lv<4?HR+'<b>⬆️ อัปเกรดเตา Lv.'+lv+' → '+(lv+1)+'</b><small style="display:block;margin:.2em 0">เร็วขึ้นเป็น ×'+(1+.5*lv)+' · โอกาสได้แท่งโบนัส '+6*lv+'%</small>'+need('ทอง',S.gold,FUP[lv+1])+btn('f_up','อัปเกรดเตา ('+FUP[lv+1]+' ทอง)',S.gold>=FUP[lv+1],'ทองยังไม่พอ'):HR+'<small>เตาหลอมระดับสูงสุดแล้ว</small>';
+ return{t:'🔥 เตาหลอม Lv.'+lv,d:'ใส่แร่ 2 ก้อนต่อ 1 แท่ง เตาหลอมต่อเนื่องเองแม้คุณลงเหมืองอยู่ แล้วค่อยกลับมารับแท่ง (ความเร็ว ×'+(1+.5*(lv-1))+(lv>1?' · โอกาสแท่งโบนัส '+6*(lv-1)+'%':'')+')',
   b:line('i')+line('s')+line('g')+HR+row('กำลังหลอม',cur?FN[cur]+' (เหลือคิว '+tot+')':'ว่าง')+'<div class="pb"><i id="fpb" data-s="'+sg+'" style="width:'+(cur?Math.min(100,S.fp/FT_[cur]*100):0)+'%"></i></div>'+row('แท่งที่รอรับ','เหล็ก '+S.foi+' · เงิน '+S.fos+' · ทอง '+S.fog,out>0?1:null)+btn('f_take','รับแท่งโลหะ ('+out+')',out>0,'ยังไม่มีแท่งที่หลอมเสร็จ')+up}},
 14:()=>{if(S.pick>=5)return{t:'🔨 โรงตีจอบ',d:'จอบของคุณคือ '+PN[5]+' ซึ่งดีที่สุดแล้ว',b:''};
  const r=REC[S.pick+1],ks=Object.keys(r),ok=ks.every(k=>S[k]>=r[k]);
@@ -475,7 +488,7 @@ const IN={
  return{t:'🛡️ ค่ายทหารยาม',d:'ทหารยามช่วยป้องกันเมืองตอนโจรบุก ยิ่งมีมาก เสียหายยิ่งน้อย (สูงสุด 5 นาย)',b:row('ทหารยามตอนนี้',S.gd+' / 5')+(S.gd<5?'<small>ค่าจ้างนายที่ '+(S.gd+1)+'</small>'+need('ทอง',S.gold,c)+need('แท่งเหล็ก',S.bi,2):'')+btn(18,'จ้างทหารยาม',ok,S.gd>=5?'ทหารยามเต็มแล้ว':'ทรัพยากรยังไม่พอ')}},
 20:()=>{const q=QS[S.qi%QS.length],rw=Math.round(q.r*(1+Math.min(2,S.qi/QS.length|0)*.5)),p=Math.min(S.qp,q.n);
  return{t:'📜 ผู้ให้ภารกิจ',d:'ทำภารกิจให้สำเร็จเพื่อรับทองเป็นรางวัล ภารกิจถัดไปจะขึ้นเองเมื่อรับรางวัล',b:'<b>'+q.t+'</b><div class="pb"><i style="width:'+p/q.n*100+'%"></i></div>'+row('ความคืบหน้า',p+' / '+q.n,p>=q.n?1:null)+row('รางวัล',rw+' ทอง')+btn(20,'รับรางวัล',p>=q.n,'ยังทำไม่ครบ')}},
-help:()=>({t:'❓ วิธีเล่น',d:'ขุดแร่ → หลอม → ขายเป็นทอง → อัปเกรดจอบ เพื่อลงเหมืองลึกขึ้นและรวยขึ้น',b:row('เดิน','ลูกศร / WASD')+row('ฟัน / ขุด / คุยกับอาคาร','Space / E / Enter')+row('เมาส์ / แตะจอ','คลิกเพื่อเดิน ขุด ฟัน หรือเปิดอาคาร (กดค้างแล้วลากได้)')+row('เต็มจอ','F')+row('อาคารในเมือง','เดินไปชนแล้วกดฟัน')+'<p style="margin-top:.5em">ระวังมอนสเตอร์ในเหมือง ถ้าเลือดหมดจะถูกหามกลับบ้านและเสียทอง 10% กับแร่ที่ยังไม่ขาย 25% (ดันเจี้ยนและทุ่งล่ามอนไม่เสีย)</p>'})};
+help:()=>({t:'❓ วิธีเล่น',d:'ขุดแร่ → หลอม → ขายเป็นทอง → อัปเกรดจอบ เพื่อลงเหมืองลึกขึ้นและรวยขึ้น',b:row('เดิน','ลูกศร / WASD')+row('ฟัน / ขุด / คุยกับอาคาร','Space / E / Enter')+row('เมาส์ / แตะจอ','คลิกเพื่อเดิน ขุด ฟัน หรือเปิดอาคาร (กดค้างแล้วลากได้)')+row('เต็มจอ','F')+row('อาคารในเมือง','เดินไปชนแล้วกดฟัน')+'<p style="margin-top:.5em">ระวังมอนสเตอร์ในเหมือง ถ้าเลือดหมดจะถูกหามกลับบ้านโดยไม่เสียทองและแร่ใดๆ</p>'})};
 let cur=0;
 setInterval(()=>{if(ov.hidden||cur!=16)return;const b=ov.querySelector('#fpb');if(!b)return;const sg=[S.fqi,S.fqs,S.fqg,S.foi,S.fos,S.fog,S.i,S.s,S.g,S.fv,S.gold].join();if(b.dataset.s!=sg)return render();const k=fcur();b.style.width=(k?Math.min(100,S.fp/FT_[k]*100):0)+'%'},300);
 function render(){const o=IN[cur](),op=ov.querySelector('.bp2'),st=op&&ov.dataset.k==String(cur)?op.scrollTop:0;ov.innerHTML='<section class="pn bp2"><div class="bh"><span>'+o.t+'</span><button data-a="x">✕ ปิด</button></div><p>'+o.d+'</p>'+o.b+'</section>';ov.dataset.k=cur;if(st){const n=ov.querySelector('.bp2');if(n)n.scrollTop=st}}
@@ -507,7 +520,7 @@ const _d=draw;draw=function(){_d();const n=performance.now(),dt=Math.min(.05,(n-
  for(let i=PT.length-1;i>=0;i--){const p=PT[i];p.l-=dt;if(p.l<=0){PT.splice(i,1);continue}p.vy+=300*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;x.globalAlpha=Math.min(1,p.l*3);x.fillStyle=p.c;x.fillRect(p.x|0,p.y|0,3,3)}
  x.globalAlpha=1;if(flash>0){flash-=dt;x.fillStyle='rgba(217,68,63,'+Math.max(0,flash*.9)+')';x.fillRect(CX-2,CY-2,VW+4,VH+4)}
  if(shake>0){shake-=dt;const m=Math.max(0,shake)*18;cv.style.transform='translate('+((Math.random()-.5)*m).toFixed(1)+'px,'+((Math.random()-.5)*m).toFixed(1)+'px)'}else if(cv.style.transform)cv.style.transform=''};
-['pointerdown','keydown'].forEach(v=>addEventListener(v,()=>{try{AC2&&AC2.state=='suspended'&&AC2.resume()}catch(e){}},{passive:true}));
+['pointerdown','touchend','click','keydown'].forEach(v=>addEventListener(v,()=>{try{if(on&&!AC2){AC2=new(window.AudioContext||window.webkitAudioContext)();const b=AC2.createBuffer(1,1,22050),q=AC2.createBufferSource();q.buffer=b;q.connect(AC2.destination);q.start(0)}if(AC2&&AC2.state!='running')AC2.resume()}catch(e){}},{passive:true}));
 })();
 
 addEventListener('keydown',e=>{if(BL&&(KC[e.code]||/^(Arrow\w+|[wasdeWASDE ]|Enter)$/.test(e.key))){e.stopImmediatePropagation();e.preventDefault()}},true);
@@ -536,10 +549,11 @@ b.onclick=cy;ap();$('hv').style.pointerEvents='auto';
 addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyH'||e.key=='h'||e.key=='H'))cy()});
 })();
 (function(){
-S.eq=S.eq||{h:0,a:0,b:0};PRICE.dm=PRICE.dm||150;S.dm=S.dm||0;
+S.eq=S.eq||{h:0,a:0,b:0};PRICE.dm=PRICE.dm||ECON.p('dm');S.dm=S.dm||0;
 const NM={i:'แร่เหล็ก',s:'แร่เงิน',g:'แร่ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ',dm:'เพชร'},HR='<hr style="border:0;border-top:1px solid #4a3a22;margin:.7em 0">';
 // ---------- equipment ----------
 const EQ=[['h','⛑️ หมวก',[['bi',3,1],['bs',3,2]]],['a','🦺 เกราะ',[['bi',5,2],['bs',5,4]]],['b','🥾 รองเท้า',[['bi',3,1],['bs',3,2]]]],TN=['ยังไม่มี','เหล็ก','เงิน'];
+EQ.forEach(e=>e[2].forEach(m=>{m[1]=Math.max(1,Math.round(m[1]*ECON.mat))}));
 const defn=()=>EQ.reduce((a,e)=>a+(S.eq[e[0]]?e[2][S.eq[e[0]]-1][2]:0),0),red=()=>Math.min(.5,defn()*.05);
 const _m3=mhp;mhp=()=>_m3()+defn()*5;
 dmgRed=red;
@@ -588,11 +602,11 @@ $('bld').addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset
 const _a3=act;act=function(){const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8),ok=tx>=0&&ty>=0&&tx<W&&ty<H,t=ok?map[ty][tx]:0;
  _a3();
  if(where=='mine'&&ok&&t>=3&&t<=6&&map[ty][tx]!=t){
-  if(t>=4&&Math.random()<.03+floor*.004){S.dm++;toast('💎 โชคดี! ขุดเจอเพชร +1')}
-  if(t==3&&Math.random()<.035){const g=30+floor*8;S.gold+=g;toast('📦 พบหีบสมบัติ! ได้ทอง '+g);}}};
+  if(t>=4&&Math.random()<ECON.ore*(.03+floor*.004)){S.dm++;toast('💎 โชคดี! ขุดเจอเพชร +1')}
+  if(t==3&&Math.random()<.025){const g=Math.round((30+floor*8)*ECON.reward);S.gold+=g;toast('📦 พบหีบสมบัติ! ได้ทอง '+g);}}};
 // ---------- market: prices drift every day ----------
 const BASE={},MK=['i','s','g','bi','bs','bg','dm'];MK.forEach(k=>BASE[k]=PRICE[k]);let ld=0;
-const mult=(k,d)=>{const x=Math.sin(d*12.9898+MK.indexOf(k)*78.233)*43758.5453;return .75+.6*(x-Math.floor(x))};
+const mult=(k,d)=>{const x=Math.sin(d*12.9898+MK.indexOf(k)*78.233)*43758.5453;return .75+.5*(x-Math.floor(x))};
 function mkt(){ld=S.mk||0;let bk='i',bm=1;MK.forEach(k=>{const m=mult(k,S.mk||0);PRICE[k]=Math.max(1,Math.round(BASE[k]*m));if(Math.abs(m-1)>Math.abs(bm-1)){bm=m;bk=k}});
  toast('📈 ตลาดตอนนี้: '+NM[bk]+(bm>1?' ราคาขึ้น ▲':' ราคาตก ▼')+Math.round(Math.abs(bm-1)*100)+'%')}
 mkt();setInterval(()=>{S.mk=(S.mk||0)+1;mkt()},180000);
@@ -771,21 +785,21 @@ const av=$('av').getContext('2d'),_h=hud;hud=function(){_h();const q=S.eq,f=(c,a
  if(q.a){f(C1[q.a],2,9,8,3);f(C2[q.a],2,11,8,1)}if(q.h){f(C1[q.h],2,1,8,3);f(C2[q.h],2,3,8,1)}};
 })();
 (function(){const wr=$('wrap');
-function res(){const dpr=Math.min(window.devicePixelRatio||1,2),k=Math.max(1,Math.min(2,Math.ceil(wr.clientWidth*dpr/VW-.05)));
+function res(){const dpr=Math.min(window.devicePixelRatio||1,2),k=Math.max(1,Math.min(window.LOWQ?1:2,Math.ceil(wr.clientWidth*dpr/VW-.05)));
  if(k!=GK||cv.width!=VW*k||cv.height!=VH*k){GK=k;cv.width=VW*k;cv.height=VH*k;cv.style.imageRendering=k>1?'auto':'pixelated'}}
 window.RES=res;res();addEventListener('resize',res);if('ResizeObserver'in window)new ResizeObserver(res).observe(wr);
 })();
 (function(){
 let tab='sell';
 const NM={i:'แร่เหล็ก',s:'แร่เงิน',g:'แร่ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ',dm:'เพชร'},
- BASE0={i:12,s:30,g:80,bi:40,bs:100,bg:260,dm:150},ORDER=['i','s','g','bi','bs','bg','dm'],IC={i:'🪨',s:'🪨',g:'🪨',bi:'▬',bs:'▬',bg:'▬',dm:'💎'};
+ BASE0=(()=>{const o={};for(const k in ECON.base)o[k]=ECON.p(k);return o})(),ORDER=['i','s','g','bi','bs','bg','dm'],IC={i:'🪨',s:'🪨',g:'🪨',bi:'▬',bs:'▬',bg:'▬',dm:'💎'};
 const keep=k=>{const r=REC[S.pick+1]||{};return k[0]=='b'&&k.length==2?(r[k]||0):0};
 const sellable=k=>Math.max(0,(S[k]||0)-keep(k));
 const pct=k=>Math.round((PRICE[k]/BASE0[k]-1)*100);
 const trend=k=>{const p=pct(k);return'<span style="color:'+(p>5?'#7fe08a':p<-5?'#ff8a80':'#bfb394')+'">'+PRICE[k]+' ทอง '+(p>0?'▲':p<0?'▼':'')+(p?Math.abs(p)+'%':'')+'</span>'};
 const sb=(a,t,en)=>'<button class="sb" type="button" data-a="'+a+'"'+(en?'':' disabled')+'>'+t+'</button>';
 const btn=(id,t,en,why)=>'<button class="ac" type="button" data-a="'+id+'"'+(en?'':' disabled')+'>'+t+'</button>'+(!en&&why?'<small class="wh">'+why+'</small>':'');
-const ingotCost=k=>Math.round(PRICE[k]*2.2);
+const ingotCost=k=>Math.round(PRICE[k]/ECON.sell*2.2*ECON.ingot);
 BIN[9]=()=>{
  let b='<div class="tabs"><button type="button" class="tb'+(tab=='sell'?' on':'')+'" data-a="sh-tab-sell">💰 ขาย</button><button type="button" class="tb'+(tab=='buy'?' on':'')+'" data-a="sh-tab-buy">🛒 ซื้อ</button></div>'
   +'<div class="rw"><span>ทองของคุณ</span><b>'+S.gold.toLocaleString('en-US')+'</b></div>';
@@ -840,7 +854,7 @@ setInterval(()=>{try{
 (function(){
 const SP=3.4,EX=18.5,REST=4,WKS=[],NAMES=['สมชาย','สมหญิง','ช้าง','บุญมี','ปราณี'],
  ST={rest:'พักผ่อนที่ค่าย',out:'วิ่งไปเหมือง',in:'ขุดแร่อยู่ในเหมือง',back:'แบกแร่กลับค่าย'},LBn={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'};
-const WL=()=>Math.min(4,S.wl|0),WC=()=>Math.min(2,S.wc|0),spd=()=>1+.10*WL(),cp=()=>1+WC(),cyc=()=>90/spd();
+const WL=()=>Math.min(4,S.wl|0),WC=()=>Math.min(2,S.wc|0),spd=()=>1+.10*WL(),cp=()=>1+WC(),cyc=()=>90*ECON.worker/spd();
 const slot=i=>12.6+i*.55,yy=i=>9.4+(i%2)*.3,leaveAt=i=>cyc()-(EX-slot(i))/SP-.05;
 const pickType=()=>S.pick>=3&&Math.random()<.33?'s':'i',load=()=>Array.from({length:cp()},pickType);
 function mk(i,fresh){
@@ -907,12 +921,13 @@ window.drawWK=function(){
 const UP={
  wl:{t:'⚡ ฝึกคนงาน',d:'วิ่งและขุดเร็วขึ้น +10% ต่อระดับ',max:4,cost:[{gold:500,bi:3},{gold:900,bi:5},{gold:1500,bs:4},{gold:2500,bs:6}],lv:WL},
  wc:{t:'🎒 ถุงแบกใหญ่',d:'แบกแร่ได้เที่ยวละ +1 ก้อนต่อระดับ',max:2,cost:[{gold:1200,bi:8},{gold:4000,bs:6,bg:4}],lv:WC}};
+for(const k in UP)UP[k].cost=UP[k].cost.map(ECON.sc);
 function upCard(k){const u=UP[k],lv=u.lv();let pips='';for(let q=0;q<u.max;q++)pips+='<i class="'+(q<lv?'on':'')+'"></i>';
   let h='<div class="wu"><div class="wh2"><b>'+u.t+'</b><span class="pips">'+pips+'</span></div><small>'+u.d+'</small>';
   if(lv>=u.max)return h+'<div class="mx">✔ ระดับสูงสุดแล้ว</div></div>';
   const c=u.cost[lv];let ok=1,rows='';for(const r in c){const g=(S[r]||0)>=c[r];if(!g)ok=0;rows+='<div class="rw'+(g?' ok':' no')+'"><span>'+LBn[r]+'</span><b>'+(S[r]||0)+' / '+c[r]+'</b></div>'}
   return h+rows+'<button class="ac" data-a="up_'+k+'"'+(ok?'':' disabled')+'>อัปเกรดเป็นระดับ '+(lv+1)+'</button></div>'}
-BIN[19]=()=>{const n=S.wk,c=250*(n+1),rate=(n*spd()*cp()).toFixed(1);let cards='';
+BIN[19]=()=>{const n=S.wk,c=ECON.g(250*(n+1)),rate=(n*spd()*cp()).toFixed(1);let cards='';
   for(let i=0;i<n;i++)cards+='<div class="wc"><div class="av2">⛏</div><div class="wi"><div class="wn"><b>'+NAMES[i]+'</b><span class="ws" data-wi="'+i+'">…</span></div><div class="wb"><i data-wp="'+i+'"></i></div></div></div>';
   return{t:'⛺ ค่ายคนงาน',d:'จ้างคนงานให้วิ่งเข้าเหมืองขุดแร่แล้วแบกกลับมาส่งเอง แม้ปิดเกมก็ทำงานต่อ (จอบเงินขึ้นไปมีโอกาสได้แร่เงิน)',
   b:'<div class="wcamp"><div class="wsum"><span>👷 '+n+' / 5 คน</span><span>⛏ ~'+rate+' ก้อน/นาที</span></div>'+(cards||'<small>ยังไม่มีคนงาน จ้างคนแรกได้เลย</small>')
@@ -1026,7 +1041,7 @@ window.drawPL=function(f){
 
 // ---- ดันเจี้ยนวิหารโบราณ (5 ชั้น + บอส) ----
 (function(){
-const DMAX=5,FEE=300,NEED=3,ov=$('bld');
+const DMAX=5,FEE=ECON.fee,NEED=3,ov=$('bld');
 let DUN=0,DCP=0,open=0,fixP=0,prev=[],stair=null;
 SOL.add(21);LBL[21]='ดันเจี้ยน';MC[21]='#7a5cff';
 const _t=town;town=function(){const was=DUN;DUN=0;_t();map[7][18]=21;if(was){fixP=1;S.cp=DCP}};
@@ -1058,10 +1073,10 @@ function tick(){
   if(!DUN||where!='mine')return;
   for(const m of prev)if(!MS.includes(m)&&m.hp<=0){
     if(m.b){const d=2+Math.floor(Math.random()*2);S.dm=(S.dm||0)+d;toast('💎 บอสทิ้งเพชร ×'+d)}
-    else{S.gold+=Math.round(floor*2*(m.gmul||1));if(Math.random()<.1){S.dm=(S.dm||0)+1;toast('💎 ได้เพชร +1')}}}
+    else{S.gold+=Math.round(floor*2*(m.gmul||1)*ECON.reward);if(Math.random()<.1*ECON.ore){S.dm=(S.dm||0)+1;toast('💎 ได้เพชร +1')}}}
   prev=MS.slice();
   if(!open&&stair&&!MS.length){open=1;map[stair.y][stair.x]=7;toast('ศัตรูหมดแล้ว! บันไดลงเปิดแล้ว')}}
-function finish(){const first=!(S.dc>0),g=first?1500:600;S.dc=(S.dc||0)+1;S.gold+=g;S.cp=DCP;DUN=0;
+function finish(){const first=!(S.dc>0),g=Math.round((first?1500:600)*ECON.reward/10)*10;S.dc=(S.dc||0)+1;S.gold+=g;S.cp=DCP;DUN=0;
   toast('🏆 พิชิตดันเจี้ยนสำเร็จ! +'+g+' ทอง'+(first?' (โบนัสครั้งแรก)':''));town();P={x:18.5,y:8.5};save()}
 const _die=die;die=function(){if(DUN&&where=='mine'){HP=mhp();P={x:2.5,y:2.5};inv=2.5;TG=null;
   toast('💀 ล้มในดันเจี้ยน! ฟื้นที่ทางเข้าชั้น '+(floor-5)+' (ศัตรูยังอยู่ที่เดิม ไม่เสียของ)')}else _die()};
@@ -1135,11 +1150,11 @@ if(where=='town')town();
 
 // ---- ตกปลา + ปลูกผัก ----
 (function(){
-const ov=$('bld'),FISH=[['ปลาซิว','🐟',5,62],['ปลาตะเพียน','🐠',12,25],['ปลาช่อน','🐡',35,10],['ปลาทอง','✨🐠',100,3]],
- CR=[{n:'ผักกาด',e:'🥬',t:60,c:8,v:20,col:'#9bdc6e'},{n:'มะเขือเทศ',e:'🍅',t:150,c:20,v:55,col:'#e0453a'},{n:'ฟักทอง',e:'🎃',t:360,c:50,v:150,col:'#e8892b'}];
+const ov=$('bld'),FISH=[['ปลาซิว','🐟',Math.round(5*ECON.fish),62],['ปลาตะเพียน','🐠',Math.round(12*ECON.fish),25],['ปลาช่อน','🐡',Math.round(35*ECON.fish),10],['ปลาทอง','✨🐠',Math.round(100*ECON.fish),3]],
+ CR=[{n:'ผักกาด',e:'🥬',t:60,c:Math.round(8*ECON.cost/1.4),v:Math.round(20*ECON.crop),col:'#9bdc6e'},{n:'มะเขือเทศ',e:'🍅',t:150,c:Math.round(20*ECON.cost/1.4),v:Math.round(55*ECON.crop),col:'#e0453a'},{n:'ฟักทอง',e:'🎃',t:360,c:Math.round(50*ECON.cost/1.4),v:Math.round(150*ECON.crop),col:'#e8892b'}];
 let sel=0,fs={st:0},sig='';
 SOL.add(25);MC[25]='#6b4a2b';
-const UC=[150,250,400,600,850,1200],PX=(i,j)=>i>=15?(j-18)*3+(i-15):6+(j-18)*3+(i-12),PL=()=>{if(!Array.isArray(S.pl))S.pl=[];S.pn=Math.max(6,Math.min(12,Math.floor(+S.pn)||6));for(let i=0;i<12;i++)if(S.pl[i]===undefined)S.pl[i]=null;return S.pl},FM=()=>S.fm||(S.fm={});
+const UC=[150,250,400,600,850,1200].map(v=>ECON.g(v)),PX=(i,j)=>i>=15?(j-18)*3+(i-15):6+(j-18)*3+(i-12),PL=()=>{if(!Array.isArray(S.pl))S.pl=[];S.pn=Math.max(6,Math.min(12,Math.floor(+S.pn)||6));for(let i=0;i<12;i++)if(S.pl[i]===undefined)S.pl[i]=null;return S.pl},FM=()=>S.fm||(S.fm={});
 const prog=q=>q?Math.min(1,(Date.now()-q.t)/(CR[q.c].t*1000)):0,left=q=>Math.max(0,Math.ceil((CR[q.c].t*1000-(Date.now()-q.t))/1000));
 const fmt=n=>n>=60?Math.floor(n/60)+':'+String(n%60).padStart(2,'0'):n+' วิ';
 const _t3=town;town=function(){_t3();for(let q=12;q<=18;q++)map[17][q]=0;for(let y=18;y<=19;y++)for(let q=12;q<=17;q++)map[y][q]=25};
@@ -1347,7 +1362,7 @@ const _k=killB;killB=function(m){
     if(m.loot){if(m.v=='r')R.so=Math.max(0,R.so-m.loot);else R.sg=Math.max(0,R.sg-m.loot)}
     if(m.v=='r'&&m.cargo){S.wi=Math.min(200,S.wi+m.cargo.i);S.ws=Math.min(200,S.ws+m.cargo.s);toast('📦 ได้แร่คืนที่ค่ายคนงาน '+m.loot+' ก้อน')}
     if(m.v=='L'){extra+=100+rc*10;S.dm=(S.dm||0)+1;toast('👑 ล้มหัวหน้าโจรได้! ได้เพชร 💎 +1')}
-    S.gold+=extra}
+    S.gold+=Math.round(extra*ECON.reward)}
   _k(m)};
 // ----- อัปเดตสถานะการบุก -----
 const _u=update;update=function(dt){_u(dt);
@@ -1355,7 +1370,7 @@ const _u=update;update=function(dt){_u(dt);
   if(R.pend>0){R.pend-=dt;if(R.pend<=0){R.pend=0;spawn()}}
   for(const m of MS){if(m.t=='b'&&m.loot&&!m.seen){m.seen=1;if(m.v!='r'){let g=m.loot;if(m.v=='L'){const e=Math.min(S.gold,600,Math.floor(S.gold*.06));S.gold-=e;m.loot+=e;g+=e}R.sg+=g}}}
   if(R.on&&!MS.some(m=>m.t=='b')){R.on=0;const lost=R.sg+R.so;
-    if(!lost){const bn=40+(S.rc||1)*15;S.gold+=bn;toast('🛡 ป้องกันหมู่บ้านสำเร็จ! ไม่เสียอะไรเลย โบนัส +'+bn+' ทอง')}
+    if(!lost){const bn=Math.round((40+(S.rc||1)*15)*ECON.reward);S.gold+=bn;toast('🛡 ป้องกันหมู่บ้านสำเร็จ! ไม่เสียอะไรเลย โบนัส +'+bn+' ทอง')}
     else toast('โจรบุกจบแล้ว: ล้ม '+R.killed+'/'+R.total+' คน · เสียทอง '+R.sg+' แร่ '+R.so)}};
 // ----- ภาพ: หลอดเลือด ไอคอนเป้าหมาย ตัวชี้ทิศ และแบนเนอร์เตือน -----
 const _d=draw;draw=function(){_d();if(where!='town')return;
@@ -1366,11 +1381,11 @@ const _d=draw;draw=function(){_d();if(where!='town')return;
     x.font='13px sans-serif';x.fillText(m.loot?'🏃':v.i,X,Y-33)}
   x.setTransform(GK,0,0,GK,0,0);
   for(const m of MS){if(m.t!='b')continue;const sx=m.x*T-CX,sy=m.y*T-CY;if(sx>10&&sx<VW-10&&sy>10&&sy<VH-10)continue;
-    const cx=320,cy=224,dx=sx-cx,dy=sy-cy,k=Math.min(296/Math.abs(dx||1e-6),198/Math.abs(dy||1e-6)),ax=cx+dx*k,ay=cy+dy*k,an=Math.atan2(dy,dx),v=VAR[m.v||'n'];
+    const cx=VW/2,cy=VH/2,dx=sx-cx,dy=sy-cy,k=Math.min((VW/2-24)/Math.abs(dx||1e-6),(VH/2-26)/Math.abs(dy||1e-6)),ax=cx+dx*k,ay=cy+dy*k,an=Math.atan2(dy,dx),v=VAR[m.v||'n'];
     x.save();x.translate(ax,ay);x.rotate(an);x.fillStyle=v.c;x.strokeStyle='#000';x.lineWidth=2;x.beginPath();x.moveTo(10,0);x.lineTo(-7,-8);x.lineTo(-7,8);x.closePath();x.stroke();x.fill();x.restore()}
   if(R.pend>0){const a=.75+.25*Math.sin(performance.now()/120),t='⚠ โจรกำลังมาจากทางใต้! อีก '+Math.ceil(R.pend)+' วินาที';
     x.font="600 13px Mitr,'Noto Sans Thai',Tahoma,sans-serif";const w=Math.round(x.measureText(t).width+28);
-    x.globalAlpha=a;x.fillStyle='rgba(120,20,16,.92)';x.fillRect(400-w/2,410,w,24);x.strokeStyle='#ff8a7a';x.lineWidth=1.5;x.strokeRect(400-w/2+.5,410.5,w-1,23);x.fillStyle='#fff';x.fillText(t,400,423)}
+    x.globalAlpha=a;x.fillStyle='rgba(120,20,16,.92)';const bx=VW/2,by=VH-72;x.fillRect(bx-w/2,by,w,24);x.strokeStyle='#ff8a7a';x.lineWidth=1.5;x.strokeRect(bx-w/2+.5,by+.5,w-1,23);x.fillStyle='#fff';x.fillText(t,bx,by+13)}
   x.restore()};
 window.__raid=R;
 })();
@@ -1410,7 +1425,7 @@ if(where=='town'&&map)map[5][16]=30;
 })();
 
 (function(){
-const ov=$('bld'),BASEP={i:12,s:30,g:80,bi:40,bs:100,bg:260,dm:150};
+const ov=$('bld'),BASEP=(()=>{const o={};for(const k in ECON.base)o[k]=ECON.p(k);return o})();
 const IT=[['i','🪨','แร่เหล็ก','แร่'],['s','🥈','แร่เงิน','แร่'],['g','🟡','แร่ทอง','แร่'],['bi','🔩','แท่งเหล็ก','แท่ง'],['bs','⚪','แท่งเงิน','แท่ง'],['bg','🧈','แท่งทองคำ','แท่ง'],['dm','💎','เพชร','แท่ง']];
 const FS=[['ปลาซิว','🐟',5],['ปลาตะเพียน','🐠',12],['ปลาช่อน','🐡',35],['ปลาทอง','✨',100]],CRP=[['ผักกาด','🥬',20],['มะเขือเทศ','🍅',55],['ฟักทอง','🎃',150]];
 let tab='all',sel=null;
@@ -1526,7 +1541,7 @@ const B=p=>{const b=buff();return b&&b[p]?b[p]:0};
 
 // ---------- ผลของทักษะ/บัฟ ----------
 const ron=k=>(S.rb[k]||0)>Date.now();
-const luck=()=>(where=='mine'?Math.min(.3,Math.max(0,floor-1)*.015):0)+.08*sk('m')+B('luck')+(ron('ore')?.2:0)+(MOD&&MOD.k=='rich'?.1:0);
+const luck=()=>ECON.luck*((where=='mine'?Math.min(.3,Math.max(0,floor-1)*.015):0)+.08*sk('m')+B('luck')+(ron('ore')?.2:0)+(MOD&&MOD.k=='rich'?.1:0));
 const atkB=()=>.08*sk('c')+B('atk')+(ron('atk')?.15:0);
 const goldK=()=>.08*sk('g')+(MOD&&MOD.k=='nest'?.5:0);
 const fishK=()=>.08*sk('f');
@@ -1578,6 +1593,7 @@ const _tw=town;town=function(){MOD=null;_tw()};
 
 // ---------- เควสใหม่ (ต่อท้ายรายการเดิม) ----------
 QS.push({t:'ปรุงอาหาร 3 จาน',k:'ck',n:3,r:300},{t:'ตกปลา 5 ตัว',k:'fs',n:5,r:350},{t:'ใช้แต้มทักษะ 4 แต้ม',k:'sp',n:4,r:450});
+QS.forEach(q=>{q.r=Math.round(q.r*ECON.reward/10)*10});
 
 // ---------- หน้าต่างทักษะ ----------
 BIN.skills=()=>{const pts=points();
@@ -1587,7 +1603,7 @@ BIN.skills=()=>{const pts=points();
   if(lv>=mx)h+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';
   else{const c=s.dm?s.dm[lv]:COST[lv],ok=s.dm?(S.dm||0)>=c:pts>=c;h+='<button class="ac" data-a="sk_u_'+s.k+'"'+(ok?'':' disabled')+'>เรียนรู้ระดับ '+(lv+1)+' ('+c+(s.dm?' 💎':' แต้ม')+')</button>'}
   h+='</div>'});
- h+=HR+'<button class="ac" data-a="sk_r"'+(S.gold>=300&&spent()>0?'':' disabled')+'>รีเซ็ตทักษะ (300 ทอง · คืนแต้ม ไม่รวมโชคลาภ)</button>';
+ h+=HR+'<button class="ac" data-a="sk_r"'+(S.gold>=ECON.g(300)&&spent()>0?'':' disabled')+'>รีเซ็ตทักษะ ('+ECON.g(300)+' ทอง · คืนแต้ม ไม่รวมโชคลาภ)</button>';
  return{t:'🌟 ทักษะ',d:'เลเวลอัปทีละครั้งได้ 1 แต้ม นำไปเสริมการขุด การต่อสู้ เตาหลอม ตกปลา และปลูกผัก ส่วนโชคลาภจ่ายด้วยเพชร',b:h}};
 
 // ---------- ครัว (ต่อท้ายหน้าต่างแปลงผัก) ----------
@@ -1607,7 +1623,7 @@ const o25=BIN[25];BIN[25]=()=>{const o=o25();o.b=o.b.replace(/<\/div>$/,kitchen(
 
 ov.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-a]'),a=el&&el.dataset.a;if(!a)return;
  if(a.slice(0,3)=='sk_'){e.stopImmediatePropagation();
-  if(a=='sk_r'){if(S.gold<300||!spent())return;S.gold-=300;S.sk={l:S.sk.l||0};toast('รีเซ็ตทักษะแล้ว ได้แต้มคืน (โชคลาภไม่ถูกรีเซ็ต)')}
+  if(a=='sk_r'){if(S.gold<ECON.g(300)||!spent())return;S.gold-=ECON.g(300);S.sk={l:S.sk.l||0};toast('รีเซ็ตทักษะแล้ว ได้แต้มคืน (โชคลาภไม่ถูกรีเซ็ต)')}
   else{const k=a.slice(5),s=SKS.find(q=>q.k==k);if(!s)return;const lv=sk(k),mx=s.mx||5;if(lv>=mx)return;const c=s.dm?s.dm[lv]:COST[lv];
    if(s.dm){if((S.dm||0)<c)return toast('เพชรไม่พอ');S.dm-=c}else{if(points()<c)return toast('แต้มทักษะไม่พอ');qa('sp',c)}
    S.sk[k]=lv+1;toast('🌟 เรียนรู้ '+s.n+' ระดับ '+(lv+1)+' สำเร็จ!');HP=Math.min(HP,mhp())}
@@ -1701,8 +1717,8 @@ const HPX=1.35,   // เลือดมอนสเตอร์/โจร/บอ
  DMX=1.3,         // ความเสียหายที่ได้รับ ×
  REGEN=.4,        // อัตราฟื้นเลือดในหมู่บ้าน (เดิม 1)
  RAID=180,        // โจรบุกทุกกี่วินาที (เดิม 240)
- DGOLD=.1,DORE=.25,DCAP=3000,   // ตายในเหมืองปกติ: เสียทอง/แร่ที่ยังไม่ขาย (ดันเจี้ยนและทุ่งล่ามอนไม่เสีย)
- PRICEX=1.3;      // ราคาตีจอบ ×
+ DGOLD=ECON.deathGold,DORE=ECON.deathOre,DCAP=3000,   // ตายในเหมืองปกติ: เสียทอง/แร่ที่ยังไม่ขาย (ดันเจี้ยนและทุ่งล่ามอนไม่เสีย)
+ PRICEX=1.8;      // ราคาตีจอบ × (คูณซ้อนกับ ECON.cost)
 for(let i=2;i<REC.length;i++)if(REC[i]&&REC[i].gold)REC[i].gold=Math.round(REC[i].gold*PRICEX/10)*10;
 const _dd=dmgRed;dmgRed=()=>_dd()-(DMX-1);
 const _u=update;update=function(dt){const h0=HP;_u(dt);
@@ -1723,7 +1739,7 @@ const _die=die;die=function(){
  if(where=='mine'&&!String((typeof Z!='undefined'&&Z.n)||'').startsWith('ดันเจี้ยน')&&!(window.IN_HUNT&&IN_HUNT())){
   const g=Math.min(S.gold,Math.min(DCAP,Math.floor(S.gold*DGOLD))),o=[Math.floor(S.i*DORE),Math.floor(S.s*DORE),Math.floor(S.g*DORE)],n=o[0]+o[1]+o[2];
   S.gold-=g;S.i-=o[0];S.s-=o[1];S.g-=o[2];
-  sleep(true,'💀 ถูกหามกลับบ้าน เสียทอง '+g+(n?' และแร่ที่ยังไม่ขาย '+n+' ก้อน':''));return}
+  sleep(true,g||n?'💀 ถูกหามกลับบ้าน เสียทอง '+g+(n?' และแร่ที่ยังไม่ขาย '+n+' ก้อน':''):'💀 หมดสติ! ถูกหามกลับบ้าน (ไม่เสียของและทอง)');return}
  _die()};
 })();
 
@@ -1786,6 +1802,7 @@ UP={bk:{nm:'ขยายค่าย',t:'🏰 ขยายค่าย',d:'เ�
  bm:{nm:'คลังเกราะ',t:'🛡️ คลังเกราะ',d:'เลือดทหารทุกนาย +15% ต่อระดับ',c:[{gold:500,bi:4},{gold:1200,bi:8},{gold:2800,bs:6}]},
  bh:{nm:'เต็นท์พยาบาล',t:'🏥 เต็นท์พยาบาล',d:'ทหารที่ล้มลุกเร็วขึ้น (28→18→10 วิ) และฟื้นเลือดไวขึ้น',c:[{gold:700,bi:5},{gold:2000,bs:5}]},
  bw:{nm:'หอสังเกตการณ์',t:'🔭 หอสังเกตการณ์',d:'เห็นโจรล่วงหน้านานขึ้น +8 วิต่อระดับ และพลธนูยิงไกลขึ้น',c:[{gold:600,bi:4},{gold:1500,bs:4},{gold:3200,bs:6,bg:2}]}};
+for(let i=0;i<PR.length;i++)PR[i]=ECON.sc(PR[i]);for(const k in UP)UP[k].c=UP[k].c.map(ECON.sc);
 const lv=k=>k=='bk'?Math.min(4,Math.max(1,S.bk|0||1)):Math.min(MX[k],Math.max(0,S[k]|0)),
  gl=()=>Array.isArray(S.gl)?S.gl:(S.gl=[]),
  mxhp=g=>Math.round(RL[g.e.r].hp*(1+.12*(g.e.rk-1))*(1+.15*lv('bm'))),
@@ -1794,7 +1811,7 @@ const lv=k=>k=='bk'?Math.min(4,Math.max(1,S.bk|0||1)):Math.min(MX[k],Math.max(0,
  ready=e=>e.rk<5&&e.xp>=XN[e.rk-1]-.01,
  afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),
  pay=c=>{for(const k in c)S[k]-=c[k]},
- cost=(k,n)=>{const R=RL[k],c={gold:R.g*(n+1),bi:R.bi};if(R.bs)c.bs=R.bs;return c},
+ cost=(k,n)=>{const R=RL[k],c={gold:R.g*(n+1),bi:R.bi};if(R.bs)c.bs=R.bs;return ECON.sc(c)},
  rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
  pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
 const mk=(e,x0,y0)=>({e:e,x:x0,y:y0,cd:0,at:0,hv:0,pt:0,dn:0,hp:0,mx:0,f:1,leg:0,wt:0,st:''});
@@ -1945,13 +1962,13 @@ if(S.ts&&lv('bt')){const el=Math.min(28800,(Date.now()-S.ts)/1000);if(el>30)gl()
 (function(){
 const ov=$('bld'),QN=['ธรรมดา','ดี','ยอดเยี่ยม','ชิ้นเอก'],QM=[1,1.15,1.3,1.5],
 TR={s:['⚡ จังหวะขุด','โอกาสที่สวิงเดียวนับเป็น 2 ที (ต่อระดับ +8%)'],f:['✨ โชคแร่','โอกาสได้แร่เพิ่ม +1 ตอนขุดแตก (ต่อระดับ +6%)'],e:['🗡 คมจอบ','ดาเมจใส่มอนสเตอร์เพิ่ม (ต่อระดับ +8%)']},TV={s:.08,f:.06,e:.08},
-FU=[{gold:500,bi:4},{gold:1400,bs:4},{gold:3000,bs:6,bg:2}];
+FU=[{gold:500,bi:4},{gold:1400,bs:4},{gold:3000,bs:6,bg:2}].map(c=>ECON.sc(c));
 S.fg=S.fg&&typeof S.fg=='object'?S.fg:{s:0,f:0,e:0};
 const TL=k=>Math.min(5,Math.max(0,S.fg[k]|0)),FL=()=>Math.min(3,Math.max(0,S.fl|0)),TQ=()=>QM[Math.min(3,S.pq|0)]||1,
  zw=()=>.09+.04*FL(),pos=()=>{const t=(performance.now()%1300)/1300;return t<.5?t*2:2-t*2},
  afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
  rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
- tc=l=>{const c={gold:[300,650,1100,1900,3200][l],bi:[2,3,4,0,0][l],bs:[0,0,2,4,6][l]};for(const k in c)if(!c[k])delete c[k];return c},
+ tc=l=>{const c={gold:[300,650,1100,1900,3200][l],bi:[2,3,4,0,0][l],bs:[0,0,2,4,6][l]};for(const k in c)if(!c[k])delete c[k];return ECON.sc(c)},
  rc=()=>{const r=REC[S.pick];if(!r)return{gold:120};const c={};for(const k in r)c[k]=Math.max(1,Math.round(r[k]*.4));return c},
  pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
 let FG=null;
@@ -2001,6 +2018,7 @@ RO={m:['⛏','ช่างขุด','+18% โอกาสได้แร่เ�
 FA={wf:{t:'🍲 โรงอาหาร',d:'ขวัญฟื้นเร็วขึ้น และจัดเลี้ยงถูกลง 15% ต่อระดับ',m:3,c:[{gold:400,bi:3},{gold:1000,bi:6},{gold:2200,bs:5}]},
  wt:{t:'🧰 ชุดเครื่องมือ',d:'โบนัสจากทุกสายงานแรงขึ้น +12% ต่อระดับ',m:3,c:[{gold:600,bi:4},{gold:1500,bs:4},{gold:3000,bs:6,bg:2}]},
  wa:{t:'🛒 รถเข็นส่งแร่',d:'ส่งแร่ที่รอรับเข้ากระเป๋าให้อัตโนมัติเมื่อกองถึง 30 ก้อน (Lv.1) / 10 ก้อน (Lv.2)',m:2,c:[{gold:800,bi:5},{gold:2000,bs:5}]}};
+for(const k in FA)FA[k].c=FA[k].c.map(ECON.sc);
 const F=k=>Math.min(FA[k].m,Math.max(0,S[k]|0)),ar=k=>Array.isArray(S[k])?S[k]:(S[k]=[]),
  ro=i=>ar('wr')[i]||'m',xp=i=>ar('wx')[i]|0,wlv=i=>{let l=1;for(const t of LX)if(xp(i)>=t)l++;return l},
  fm=()=>{for(let i=0;i<(S.wk|0);i++)if(ro(i)=='f')return 1;return 0},
@@ -2009,7 +2027,7 @@ const F=k=>Math.min(FA[k].m,Math.max(0,S[k]|0)),ar=k=>Array.isArray(S[k])?S[k]:(
  mood=()=>md()>=75?'😄':md()>=30?'🙂':'😟',
  afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
  rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
- feast=()=>({gold:Math.max(40,Math.round(60*(S.wk|0)*(1-.15*F('wf'))))}),
+ feast=()=>({gold:Math.max(ECON.g(40),ECON.g(60*(S.wk|0)*(1-.15*F('wf'))))}),
  pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
 const addOre=()=>{if(S.pick>=3&&Math.random()<.33)S.ws=Math.min(200,S.ws+1);else S.wi=Math.min(200,S.wi+1)};
 function deliver(i,n){n=Math.max(1,n);const k=tf()*mf(),l0=wlv(i);let got=0;
@@ -2038,7 +2056,7 @@ BIN[19]=()=>{const o=old(),m=md(),n=S.wk|0,fc=feast();
  +rows(fc)+'<button class="ac" data-a="wx_f"'+(n&&m<100&&afford(fc)?'':' disabled')+'>🍲 จัดเลี้ยง (ขวัญ +35)</button><h5>👷 ทีมงาน</h5>';
  if(!n)a+='<small>ยังไม่มีคนงาน</small>';
  for(let i=0;i<n;i++){const r=RO[ro(i)],l=wlv(i),nx=LX[l-1],b=Math.round(bc(i)*100);
-  a+='<div class="gcd"><div class="gtop"><div class="av2">'+r[0]+'</div><div class="wi"><div class="wn"><b>'+NM[i]+' <small>'+r[1]+' · ระดับ '+l+'</small></b></div><small>'+r[2]+' · โอกาสแร่เพิ่มตอนนี้ '+b+'% · ส่งแร่ '+xp(i)+' ครั้ง</small><div class="wb xp"><i style="width:'+(nx?Math.min(100,xp(i)/nx*100):100)+'%"></i></div></div></div><div class="gbt"><button class="gb" data-a="wx_r'+i+'"'+(S.gold>=120?'':' disabled')+'>🔁 เปลี่ยนสายงาน (120 ทอง)</button></div></div>'}
+  a+='<div class="gcd"><div class="gtop"><div class="av2">'+r[0]+'</div><div class="wi"><div class="wn"><b>'+NM[i]+' <small>'+r[1]+' · ระดับ '+l+'</small></b></div><small>'+r[2]+' · โอกาสแร่เพิ่มตอนนี้ '+b+'% · ส่งแร่ '+xp(i)+' ครั้ง</small><div class="wb xp"><i style="width:'+(nx?Math.min(100,xp(i)/nx*100):100)+'%"></i></div></div></div><div class="gbt"><button class="gb" data-a="wx_r'+i+'"'+(S.gold>=ECON.g(120)?'':' disabled')+'>🔁 เปลี่ยนสายงาน ('+ECON.g(120)+' ทอง)</button></div></div>'}
  let c='<h5>🏕 สิ่งอำนวยความสะดวก</h5>';
  for(const k in FA){const u=FA[k],l=F(k);c+='<div class="wu"><div class="wh2"><b>'+u.t+'</b><span class="pips">'+pips(l,u.m)+'</span></div><small>'+u.d+'</small>';
   if(l>=u.m)c+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';else c+=rows(u.c[l])+'<button class="ac" data-a="wx_g'+k+'"'+(afford(u.c[l])?'':' disabled')+'>อัปเกรดเป็นระดับ '+(l+1)+'</button>';c+='</div>'}
@@ -2048,8 +2066,8 @@ BIN[19]=()=>{const o=old(),m=md(),n=S.wk|0,fc=feast();
 ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a||a.slice(0,3)!='wx_')return;e.stopImmediatePropagation();
  const c=a[3],k=a.slice(4);
  if(a=='wx_f'){const fc=feast();if(!(S.wk|0)||!afford(fc))return;pay(fc);S.wm=Math.min(100,md()+35);toast('🍲 จัดเลี้ยงสำเร็จ! ขวัญกำลังใจ +35')}
- else if(c=='r'){const i=+k;if(i>=(S.wk|0)||S.gold<120)return;const o=['m','p','f'].filter(r=>r!='f'||ro(i)=='f'||!fm()),cur=ro(i);
-  S.gold-=120;ar('wr')[i]=o[(o.indexOf(cur)+1)%o.length];toast('เปลี่ยนสายงาน '+NM[i]+' เป็น'+RO[ro(i)][1]+'สำเร็จ')}
+ else if(c=='r'){const i=+k;if(i>=(S.wk|0)||S.gold<ECON.g(120))return;const o=['m','p','f'].filter(r=>r!='f'||ro(i)=='f'||!fm()),cur=ro(i);
+  S.gold-=ECON.g(120);ar('wr')[i]=o[(o.indexOf(cur)+1)%o.length];toast('เปลี่ยนสายงาน '+NM[i]+' เป็น'+RO[ro(i)][1]+'สำเร็จ')}
  else if(c=='g'){const u=FA[k];if(!u)return;const l=F(k);if(l>=u.m||!afford(u.c[l]))return toast('วัตถุดิบไม่พอ');pay(u.c[l]);S[k]=l+1;toast('อัปเกรด'+u.t.slice(2)+'สำเร็จ! ระดับ '+(l+1))}
  save();rndBld()},true);
 setInterval(()=>{if(ov.hidden||ov.dataset.k!='19')return;const b=ov.querySelector('[data-wm]'),t=ov.querySelector('[data-wmt]');if(b)b.style.width=md()+'%';if(t)t.textContent=Math.round(md())+' / 100'},500);
@@ -2059,6 +2077,7 @@ setInterval(()=>{if(ov.hidden||ov.dataset.k!='19')return;const b=ov.querySelecto
 (function(){
 const ov=$('bld'),CAPS=[2000,5000,12000,30000],UL=[{gold:500,bi:3},{gold:1500,bi:6},{gold:4000,bs:6}],UK=[{gold:600,bi:4},{gold:1600,bs:4},{gold:3500,bs:6,bg:2}],
  LBt={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'};
+UL.forEach((c,i)=>{UL[i]=ECON.sc(c)});UK.forEach((c,i)=>{UK[i]=ECON.sc(c)});
 SOL.add(31);MC[31]='#d2a94f';LBL[31]='หีบทอง';LBICO[31]='🪙';
 const cg=()=>Math.max(0,Math.floor(+S.cg)||0),lc=()=>Math.min(3,S.cl|0),lk=()=>Math.min(3,S.ck|0),cap=()=>CAPS[lc()],
  afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
@@ -2266,7 +2285,7 @@ function setFish(v){ON=v;st='go';t=0;sellMode=0;trip=0;if(v&&window.__setAuto)__
   toast(v?'🎣 เปิดบอทตกปลา — ไปยืนริมบ่อให้เอง '+(FC().sell?'ขายผลผลิตทุก '+FC().sellN+' ตัว':'ไม่ขายอัตโนมัติ'):'🎣 ปิดบอทตกปลา')}
 window.__stopFish=()=>{if(ON)setFish(0);if(FON)setFarm(0)};
 window.__fish={sell:()=>{sellMode=1},cfg:FC,farm:()=>FON,setFarm};
-const FCRC=[8,20,50],FCRT=[60,150,360],FUC=[150,250,400,600,850,1200];
+const FCRC=[8,20,50].map(v=>Math.round(v*ECON.cost/1.4)),FCRT=[60,150,360],FUC=[150,250,400,600,850,1200].map(v=>ECON.g(v));
 const plots=()=>{const pl=Array.isArray(S.pl)?S.pl:[],n=Math.max(6,Math.min(12,Math.floor(+S.pn)||6));let ready=0,grow=0,empty=0,nx=0;for(let i=0;i<n;i++){const q=pl[i];if(!q)empty++;else{const l=FCRT[q.c]*1000-(Date.now()-q.t);if(l<=0)ready++;else{grow++;nx=nx?Math.min(nx,l):l}}}return{n,ready,grow,empty,nx}};
 const farmNeed=()=>{const c=FC(),p=plots();if(p.ready)return 1;if(c.replant&&p.empty&&S.gold>=FCRC[c.crop])return 1;if(c.expand&&p.n<12&&S.gold>=FUC[p.n-6]+FCRC[c.crop])return 1;return 0};
 window.mouseK=function(dt){
@@ -2317,9 +2336,23 @@ setInterval(()=>{if(!(ON||FON)||!(sellMode||trip)||!BL)return;
 
 // ---------- หน้าตั้งค่าบอทตกปลา ----------
 const fcss=document.createElement('style');
-let base='';for(const s of document.querySelectorAll('style'))if(s.textContent.includes('#abp{'))base=s.textContent;
-fcss.textContent=base.replace(/#abp/g,'#fbp').replace(/background:linear-gradient\(#2a2014,#16110d\)/,'background:linear-gradient(#14202e,#0d141c)')+'#fbp .go.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .g button.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .bx{max-height:94vh;overflow:auto}#fbp .st{display:flex;gap:.5em;margin:.5em 0}#fbp .st div{flex:1;text-align:center;padding:.4em;background:#0007;border:1px solid #7d5f2455;border-radius:6px}#fbp .st b{display:block;font:500 18px var(--hd);color:var(--coin)}#fbp .rs{margin-top:.6em;background:transparent;font-size:13px}#fbp .s{line-height:1.7}#fbp .rs:disabled{pointer-events:none}';
-fcss.textContent+='#fbp{align-items:flex-end;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px);overscroll-behavior:contain}#fbp .bx{display:flex;flex-direction:column;width:min(100vw,34em);max-width:100vw;max-height:92vh;max-height:92dvh;padding:0;overflow:hidden;border-radius:16px 16px 0 0;font-size:15px}#fbp h3{flex:none;margin:0;padding:.55em .9em;border-bottom:1px solid #7d5f2455;font-size:17px}#fbp h3 button{min-width:44px;min-height:44px;padding:0}#fbp .pl{flex:none;padding:.5em .9em 0}#fbp .pr{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:.1em .9em .9em}#fbp .ft{flex:none;padding:.6em .9em calc(.6em + env(safe-area-inset-bottom,0px));border-top:1px solid #7d5f2455;background:#0b1118}#fbp .ft .go{margin:0}#fbp button{min-height:44px;font-size:15px}#fbp .g button{flex:1 1 4.2em;text-align:center}#fbp .tabs{display:flex;gap:.4em;margin:.5em 0 .3em}#fbp .tabs button.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .tabs button{flex:1}#fbp .s{margin:.2em 0;min-height:0;font-size:14px}#fbp .go{min-height:48px;margin-top:.8em}#fbp .o{margin:.8em 0 .2em}#fbp .rs{width:100%;border:1px solid #7d5f2455}#fbp small{line-height:1.5}@media (min-width:700px) and (min-height:521px){#fbp{align-items:center}#fbp .bx{border-radius:14px;max-height:88vh}}@media (orientation:landscape) and (max-height:520px){#fbp{align-items:stretch;justify-content:center;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}#fbp .bx{display:grid;grid-template-columns:15em minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hd hd" "pl pr" "ft pr";width:min(100%,52em);max-height:none;height:100%;border-radius:0;font-size:14px}#fbp h3{grid-area:hd;padding:.25em .8em}#fbp .pl{grid-area:pl;overflow-y:auto;padding:.4em .8em}#fbp .pr{grid-area:pr;border-left:1px solid #7d5f2455;padding:.2em .9em .8em}#fbp .ft{grid-area:ft;padding:.5em .8em}#fbp .tabs{flex-direction:column}#fbp .o{margin:.6em 0 .1em}#fbp button{min-height:40px}#fbp .go{min-height:44px}}';
+fcss.textContent='#fbp{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center;background:#000a;pointer-events:auto;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px);overscroll-behavior:contain;touch-action:manipulation}#fbp[hidden]{display:none}#fbp *{box-sizing:border-box}'
++'#fbp .bx{display:flex;flex-direction:column;width:min(100vw,34em);max-height:92vh;max-height:92dvh;background:linear-gradient(#14202e,#0d141c);border:1px solid var(--brass2);border-bottom:0;border-radius:18px 18px 0 0;color:var(--parch);font:15px var(--bd);overflow:hidden}'
++'#fbp button{font:500 15px var(--hd);color:var(--parch);background:#233246;border:1px solid #3b5573;border-radius:10px;min-height:44px;padding:0 .8em;touch-action:manipulation}'
++'#fbp h3{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0;padding:.2em .5em .2em 1em;font:500 17px var(--hd);color:var(--brass)}#fbp h3 button{width:44px;padding:0;background:transparent;border-color:transparent;font-size:18px}'
++'#fbp .pl{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:.5em;padding:.1em .9em .6em}'
++'#fbp .card{padding:.6em .7em;border:1.5px solid #2b3f57;border-radius:12px;background:#0b1118;cursor:pointer;min-width:0}#fbp .card.sel{border-color:#6fb2ff;background:#12263b}'
++'#fbp .card .t{display:flex;align-items:center;justify-content:space-between;gap:.4em;font:500 15px var(--hd)}#fbp .card .t span{white-space:nowrap}#fbp .card .ss{margin-top:.3em;font-size:12.5px;line-height:1.35;color:#b8c7d8;min-height:2.7em}'
++'#fbp .sw{flex:none;position:relative;width:52px;min-width:52px;height:30px;min-height:30px;padding:0;border-radius:15px;background:#3a4656;border:0}#fbp .sw::before{content:"";position:absolute;inset:-9px -6px}#fbp .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s}#fbp .sw[aria-checked=true]{background:#2f8fe0}#fbp .sw[aria-checked=true]::after{transform:translateX(22px)}'
++'#fbp .pr{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:0 .9em .8em}'
++'#fbp .st{display:flex;gap:.4em;margin:.1em 0 .5em}#fbp .st div{flex:1;text-align:center;padding:.35em .2em;background:#0b1118;border:1px solid #243649;border-radius:10px;font-size:12px;color:#b8c7d8}#fbp .st b{display:block;font:500 18px var(--hd);color:var(--coin)}'
++'#fbp .lst{background:#0b1118;border:1px solid #243649;border-radius:12px;overflow:hidden}#fbp .it{padding:.65em .8em;border-top:1px solid #1d2c3d}#fbp .it:first-child{border-top:0}#fbp .it.tg{display:flex;align-items:center;justify-content:space-between;gap:.8em;min-height:58px}'
++'#fbp .it .lb{font:500 15px var(--hd)}#fbp .it small{display:block;margin-top:.15em;font:12.5px/1.4 var(--bd);color:#8fa5bb}'
++'#fbp .seg{display:flex;margin-top:.5em;border:1px solid #3b5573;border-radius:10px;overflow:hidden}#fbp .seg button{flex:1;min-height:40px;border:0;border-left:1px solid #3b5573;border-radius:0;background:#1a2738;padding:0 .2em;font-size:14px;white-space:nowrap}#fbp .seg button:first-child{border-left:0}#fbp .seg button.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f}'
++'#fbp .acts{display:flex;gap:.5em;margin-top:.7em}#fbp .acts button{flex:1;background:transparent;font-size:13.5px}#fbp .acts button:disabled{opacity:.4}#fbp .nt{margin:.7em 0 0;font:12px/1.55 var(--bd);color:#8fa5bb}'
++'#fbp .ft{flex:none;padding:.6em .9em calc(.6em + env(safe-area-inset-bottom,0px));border-top:1px solid #243649;background:#0b1118}#fbp .go{width:100%;min-height:48px;font-size:16px;background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .go.run{background:linear-gradient(#e0605a,#a82a27);color:#fff;border-color:#5a1210}'
++'@media (min-width:700px) and (min-height:521px){#fbp{align-items:center}#fbp .bx{border-radius:16px;border-bottom:1px solid var(--brass2);max-height:88vh}}'
++'@media (orientation:landscape) and (max-height:520px){#fbp{align-items:stretch;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}#fbp .bx{display:grid;grid-template-columns:15.5em minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hd hd" "pl pr" "ft pr";width:min(100%,54em);max-height:none;height:100%;border-radius:0;border:0;font-size:14px}#fbp h3{grid-area:hd;padding-top:0;padding-bottom:0}#fbp h3 button{min-height:40px}#fbp .pl{grid-area:pl;grid-template-columns:1fr;overflow-y:auto;align-content:start;padding:.1em .8em .4em}#fbp .card .ss{min-height:0}#fbp .pr{grid-area:pr;border-left:1px solid #243649;padding:.1em .9em .8em}#fbp .ft{grid-area:ft;padding:.5em .8em}#fbp .go{min-height:44px;font-size:15px}#fbp .it.tg{min-height:52px}}';
 document.head.appendChild(fcss);
 const fp=document.createElement('div');fp.id='fbp';fp.hidden=true;document.body.appendChild(fp);
 const SN={go:'🚶 เดินไปริมบ่อ',cast:'🎣 โยนเบ็ด',wait:'⏳ รอปลากินเบ็ด',hit:'❗ ปลากินเบ็ด! กำลังดึง',rest:'☕ พักก่อนโยนใหม่'};
@@ -2328,48 +2361,46 @@ const tmf=ms=>{const s=Math.ceil(ms/1000);return s>=60?Math.floor(s/60)+':'+Stri
 function fbind(){
   const $q=i=>document.getElementById(i);
   $q('fbx').onclick=fcl;
-  $q('fbboth').onclick=()=>{if(ON&&FON){setFish(0);setFarm(0);fpr()}else{if(!ON)setFish(1);if(!FON)setFarm(1);fcl()}};
-  if($q('fbgo'))$q('fbgo').onclick=()=>{setFish(!ON);if(ON)fcl();else fpr()};
+  $q('fbboth').onclick=()=>{if(ON&&FON){setFish(0);setFarm(0)}else{if(!ON)setFish(1);if(!FON)setFarm(1)}fpr()};
+  for(const c of fp.querySelectorAll('.card'))c.onclick=()=>{ptab=c.dataset.t;fpr()};
+  for(const s of fp.querySelectorAll('[data-bot]'))s.onclick=e=>{e.stopPropagation();if(s.dataset.bot=='f')setFish(!ON);else setFarm(!FON);fpr()};
   if($q('fbsell'))$q('fbsell').onclick=()=>{if(ON){sellMode=1;fpr()}};
-  if($q('fvgo'))$q('fvgo').onclick=()=>{setFarm(!FON);if(FON)fcl();else fpr()};
   if($q('fvnow'))$q('fvnow').onclick=()=>{if(FON&&!trip){trip=1;tripT=0;harv=0;fpr()}};
   $q('fbrst').onclick=()=>{Object.assign(FC(),FD);try{save()}catch(e){}fpr()};
-  for(const b of fp.querySelectorAll('[data-t]'))b.onclick=()=>{ptab=b.dataset.t;fpr()};
   for(const b of fp.querySelectorAll('[data-k]'))b.onclick=()=>{FC()[b.dataset.k]=+b.dataset.v;try{save()}catch(e){}fpr()}}
 function fpr(){if(fp.hidden)return;const c=FC(),p=plots();
-  const row=(t,key,vals,lab,hint)=>'<div class="o"><b>'+t+'</b><div class="g">'+vals.map(v=>'<button type="button" data-k="'+key+'" data-v="'+v+'" class="'+(c[key]==v?'on':'')+'">'+lab(v)+'</button>').join('')+'</div>'+(hint?'<small style="color:#9fb4c8;display:block;margin-top:.25em;font-size:12.5px">'+hint+'</small>':'')+'</div>';
-  const fst=!ON?'⚪ ตกปลา: ปิดอยู่':'🟢 ตกปลา: '+(sellMode?'🛒 ไปขายผลผลิต':trip?'⏸ พักไปดูแลแปลงผัก':(SN[st]||'เริ่มต้น'));
-  const vst=!FON?'⚪ ปลูกผัก: ปิดอยู่':'🟢 ปลูกผัก: '+(trip?'🚶 กำลังดูแลแปลง':p.ready?'✨ '+p.ready+' แปลงพร้อมเก็บ':p.grow?'🌱 รอผักโตอีก '+tmf(p.nx):'🟫 แปลงว่าง');
-  const S1=fst+'<br>'+vst,both=ON&&FON;
-  let T,body;
+  const tg=(t,key,hint)=>'<div class="it tg"><div><div class="lb">'+t+'</div>'+(hint?'<small>'+hint+'</small>':'')+'</div><button type="button" class="sw" role="switch" aria-checked="'+(c[key]?'true':'false')+'" aria-label="'+t+'" data-k="'+key+'" data-v="'+(c[key]?0:1)+'"></button></div>';
+  const sg=(t,key,vals,lab,hint)=>'<div class="it"><div class="lb">'+t+'</div><div class="seg">'+vals.map(v=>'<button type="button" data-k="'+key+'" data-v="'+v+'" class="'+(c[key]==v?'on':'')+'">'+lab(v)+'</button>').join('')+'</div>'+(hint?'<small>'+hint+'</small>':'')+'</div>';
+  const Sf=!ON?'ปิดอยู่':sellMode?'🛒 ไปขายผลผลิต':trip?'⏸ พักไปดูแลแปลง':(SN[st]||'เริ่มต้น');
+  const Sv=!FON?'ปิดอยู่':trip?'🚶 กำลังดูแลแปลง':p.ready?'✨ พร้อมเก็บ '+p.ready+' แปลง':p.grow?'🌱 อีก '+tmf(p.nx):'🟫 แปลงว่าง';
+  const card=(k,t,on)=>'<div class="card'+(ptab==k?' sel':'')+'" data-t="'+k+'" role="tab"><div class="t"><span>'+t+'</span><button type="button" class="sw" role="switch" aria-checked="'+(on?'true':'false')+'" aria-label="เปิด/ปิดบอท" data-bot="'+k+'"></button></div><div class="ss" id="fbs'+k+'">@@S'+k+'@@</div></div>';
+  const both=ON&&FON;let T,body;
   if(ptab=='f'){
    T='<div><b>'+catches+'</b>จับได้ (รอบนี้)</div><div><b>'+(c.sell?c.sellN:'–')+'</b>ขายเมื่อครบ</div>';
-   body=row('ขายผลผลิตอัตโนมัติ','sell',FV.sell,v=>v?'เปิด':'ปิด','พาไปขายที่แปลงผักเมื่อจับปลาครบจำนวน')
-   +(c.sell?row('ขายเมื่อจับได้ครบ','sellN',FV.sellN,v=>v+' ตัว'):'')
-   +row('รอปลากินเบ็ดนานสุด','wait',FV.wait,v=>v+' วิ','ถ้าเกินเวลานี้จะโยนเบ็ดใหม่')
-   +row('พักก่อนโยนครั้งถัดไป','rest',FV.rest,v=>v+' วิ')
-   +row('สู้มอนสเตอร์ที่เข้าใกล้','fight',FV.fight,v=>v?'สู้':'ไม่สู้')
-   +'<button type="button" id="fbgo" class="go '+(ON?'run':'on')+'">'+(ON?'⏹ หยุดตกปลา':'▶ เริ่มตกปลาอัตโนมัติ')+'</button>'
-   +'<button type="button" id="fbsell" class="rs"'+(ON?'':' disabled style="opacity:.4"')+'>🛒 ไปขายผลผลิตตอนนี้</button>'}
+   body='<div class="lst">'+tg('ขายผลผลิตอัตโนมัติ','sell','พาไปขายที่แปลงผักเมื่อจับครบจำนวน')
+    +(c.sell?sg('ขายเมื่อจับได้ครบ','sellN',FV.sellN,v=>v+' ตัว'):'')
+    +sg('รอปลากินเบ็ดนานสุด','wait',FV.wait,v=>v+' วิ','เกินเวลานี้จะโยนเบ็ดใหม่')
+    +sg('พักก่อนโยนครั้งถัดไป','rest',FV.rest,v=>v+' วิ')
+    +tg('สู้มอนสเตอร์ที่เข้าใกล้','fight')+'</div>'
+    +'<div class="acts"><button type="button" id="fbsell"'+(ON?'':' disabled')+'>🛒 ไปขายตอนนี้</button><button type="button" id="fbrst">↺ คืนค่าเริ่มต้น</button></div>'}
   else{
    T='<div><b>'+p.ready+'</b>พร้อมเก็บ</div><div><b>'+p.grow+'</b>กำลังโต</div><div><b>'+p.empty+'</b>แปลงว่าง</div>';
-   body=row('พืชที่ปลูก','crop',FV.crop,v=>['🥬 ผักกาด','🍅 มะเขือเทศ','🎃 ฟักทอง'][v],'โต '+tmf(FCRT[c.crop]*1000)+' · เมล็ด '+FCRC[c.crop]+' ทอง · ขายได้ '+[20,55,150][c.crop]+' ทอง')
-   +row('ปลูกใหม่ทุกแปลงที่ว่าง','replant',FV.replant,v=>v?'เปิด':'ปิด','ซื้อเมล็ดและปลูกให้ทันทีหลังเก็บเกี่ยว')
-   +row('ขายผักหลังเก็บเกี่ยว','vsell',FV.vsell,v=>v?'เปิด':'ปิด','ขายผลผลิตทั้งหมด (รวมปลา) ทุกครั้งที่แวะแปลง')
-   +row('ขยายแปลงอัตโนมัติ','expand',FV.expand,v=>v?'เปิด':'ปิด',p.n<12?'ขยายเมื่อมีทองพอ (แปลงที่ '+(p.n+1)+' ใช้ '+FUC[p.n-6]+' ทอง)':'ขยายครบ 12 แปลงแล้ว')
-   +'<button type="button" id="fvgo" class="go '+(FON?'run':'on')+'">'+(FON?'⏹ หยุดปลูกผัก':'▶ เริ่มปลูกผักอัตโนมัติ')+'</button>'
-   +'<button type="button" id="fvnow" class="rs"'+(FON?'':' disabled style="opacity:.4"')+'>🚶 ไปดูแลแปลงตอนนี้</button>'}
+   body='<div class="lst">'+sg('พืชที่ปลูก','crop',FV.crop,v=>['🥬 ผักกาด','🍅 มะเขือเทศ','🎃 ฟักทอง'][v],'โต '+tmf(FCRT[c.crop]*1000)+' · เมล็ด '+FCRC[c.crop]+' ทอง · ขายได้ '+[20,55,150].map(v=>Math.round(v*ECON.crop))[c.crop]+' ทอง')
+    +tg('ปลูกใหม่ทุกแปลงที่ว่าง','replant','ซื้อเมล็ดและปลูกทันทีหลังเก็บเกี่ยว')
+    +tg('ขายผักหลังเก็บเกี่ยว','vsell','ขายผลผลิตทั้งหมด (รวมปลา) ทุกครั้งที่แวะแปลง')
+    +tg('ขยายแปลงอัตโนมัติ','expand',p.n<12?'เมื่อมีทองพอ (แปลงที่ '+(p.n+1)+' ใช้ '+FUC[p.n-6]+' ทอง)':'ขยายครบ 12 แปลงแล้ว')+'</div>'
+    +'<div class="acts"><button type="button" id="fvnow"'+(FON?'':' disabled')+'>🚶 ไปดูแลแปลงตอนนี้</button><button type="button" id="fbrst">↺ คืนค่าเริ่มต้น</button></div>'}
   const struct='<div class="bx"><h3><span>🎣🌱 ตั้งค่าบอท</span><button type="button" id="fbx" aria-label="ปิด">✕</button></h3>'
-   +'<div class="pl"><div class="s" id="fbs">@@S@@</div><div class="tabs"><button type="button" data-t="f" class="'+(ptab=='f'?'on':'')+'">🎣 ตกปลา</button><button type="button" data-t="v" class="'+(ptab=='v'?'on':'')+'">🌱 ปลูกผัก</button></div></div>'
+   +'<div class="pl">'+card('f','🎣 ตกปลา',ON)+card('v','🌱 ปลูกผัก',FON)+'</div>'
    +'<div class="pr"><div class="st" id="fbst">@@T@@</div>'+body
-   +'<button type="button" id="fbrst" class="rs">↺ คืนค่าเริ่มต้น</button>'
-   +'<small>บอททั้งสองทำงานพร้อมกัน: บอทตกปลายืนริมบ่อ ส่วนบอทปลูกผักจะพักการตกปลาแล้วแวะไปเก็บเกี่ยว/ปลูกใหม่เมื่อผักโตหรือแปลงว่าง จากนั้นกลับมาตกปลาต่อเอง ผักโตตามเวลาจริงแม้ปิดเกม · กดปุ่มเดินเองบอทจะหยุดชั่วคราว · ปุ่มลัด G เปิด/ปิดบอทตกปลา</small></div>'
-   +'<div class="ft"><button type="button" id="fbboth" class="go '+(both?'run':'on')+'">'+(both?'⏹ หยุดทั้งสองบอท':'▶ เริ่มตกปลา + ปลูกผักพร้อมกัน')+'</button></div></div>';
+   +'<p class="nt">ทั้งสองบอททำงานพร้อมกัน: บอทตกปลายืนริมบ่อ ส่วนบอทปลูกผักจะพักการตกปลาแล้วแวะไปเก็บเกี่ยว/ปลูกใหม่เมื่อผักโตหรือแปลงว่าง แล้วกลับมาตกปลาต่อเอง ผักโตตามเวลาจริงแม้ปิดเกม · กดปุ่มเดินเองบอทจะหยุดชั่วคราว · ปุ่มลัด G เปิด/ปิดบอทตกปลา</p></div>'
+   +'<div class="ft"><button type="button" id="fbboth" class="go '+(both?'run':'')+'">'+(both?'⏹ หยุดทั้งสองบอท':'▶ เริ่มตกปลา + ปลูกผักพร้อมกัน')+'</button></div></div>';
+  const fill=s=>s.replace('@@Sf@@',Sf).replace('@@Sv@@',Sv).replace('@@T@@',T);
   // วาดใหม่ทั้งหมดเฉพาะเมื่อโครงสร้างเปลี่ยน; ปกติอัปเดตแค่สถานะ/ตัวเลข เพื่อไม่ให้เลื่อนค้างหรือกดพลาดบนมือถือ
   if(struct!==lastS){const old=fp.querySelector('.pr'),sy=old&&lastTab==ptab?old.scrollTop:0;lastS=struct;lastTab=ptab;
-    fp.innerHTML=struct.replace('@@S@@',S1).replace('@@T@@',T);fbind();const n=fp.querySelector('.pr');if(n)n.scrollTop=sy;return}
-  const a=document.getElementById('fbs'),b=document.getElementById('fbst');
-  if(a&&a.innerHTML!==S1)a.innerHTML=S1;if(b&&b.innerHTML!==T)b.innerHTML=T}
+    fp.innerHTML=fill(struct);fbind();const n=fp.querySelector('.pr');if(n)n.scrollTop=sy;return}
+  const u=(id,h)=>{const e=document.getElementById(id);if(e&&e.innerHTML!==h)e.innerHTML=h};
+  u('fbsf',Sf);u('fbsv',Sv);u('fbst',T)}
 const fop=()=>{lastS='';fp.hidden=false;fpr()},fcl=()=>{fp.hidden=true};
 fp.addEventListener('pointerdown',e=>{if(e.target===fp)fcl()});
 setInterval(()=>{if(!fp.hidden)fpr()},700);
@@ -2399,7 +2430,7 @@ D();let dirty=0;
 const LV=k=>D()[k].l;
 function gain(k,n,fx){if(n<=0)return;const r=D()[k],q=PR.find(a=>a.k==k);if(r.l>=MAXL)return;r.x+=n;dirty=1;
   try{if(typeof flt=='function'&&fx!==false)flt(P.x,P.y-.7,'+'+n+q.e)}catch(e){}
-  let up=0;while(r.l<MAXL&&r.x>=need(r.l)){r.x-=need(r.l);r.l++;up++;const g=r.l*30;S.gold+=g;
+  let up=0;while(r.l<MAXL&&r.x>=need(r.l)){r.x-=need(r.l);r.l++;up++;const g=Math.round(r.l*30*ECON.reward);S.gold+=g;
     toast('🆙 '+q.e+' '+q.n+' เลเวล '+r.l+'! รางวัล +'+g+' ทอง · '+q.perk(r.l))}
   if(r.l>=MAXL)r.x=0;if(up){try{save()}catch(e){}render()}else if(panel&&!panel.hidden)render()}
 // ---------- ขุดเหมือง: ฟังข้อความตอนได้แร่ ----------
@@ -2453,6 +2484,123 @@ if(pad&&A){const c=document.createElement('button');c.type='button';c.id='profb2
 c.style.cssText='pointer-events:auto;width:clamp(38px,10vw,46px);height:clamp(38px,10vw,46px);border-radius:50%;font-size:18px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:8px';
 c.onclick=tg;pad.insertBefore(c,A)}
 window.__prof={gain,D,need};
+})();
+</script>
+
+<style>
+/* ===== iOS / Safari: ความสูงจอจริง, ไม่ซูม/เลือกข้อความ, fallback เบราว์เซอร์เก่า ===== */
+html,body{height:100%;height:100dvh;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body{position:fixed;inset:0;width:100%;height:100dvh;touch-action:none;-webkit-overflow-scrolling:auto}
+#frame{height:100dvh}
+button,canvas{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+canvas#c{touch-action:none}
+.bp2,#fbp .pr,#profp .bx{-webkit-overflow-scrolling:touch}
+/* ไม่มี :has() (iOS < 15.4): ใช้คลาสแทน */
+body.bldopen #pad,body.bldopen #dock{display:none!important}
+</style>
+<script>
+(function(){
+const d=document,b=d.body,ua=navigator.userAgent||'',
+ IOS=/iP(hone|ad|od)/.test(ua)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1),
+ STANDALONE=!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+if(IOS)b.classList.add('ios');
+// 1) :has() fallback — ติดตามหน้าต่างอาคาร/กระเป๋า
+const bld=d.getElementById('bld');
+if(bld&&window.MutationObserver){const f=()=>b.classList.toggle('bldopen',!bld.hidden);new MutationObserver(f).observe(bld,{attributes:true,attributeFilter:['hidden']});f()}
+// 2) container-query units fallback (iOS < 16): คำนวณขนาดฟอนต์ HUD เอง
+if(!(window.CSS&&CSS.supports&&CSS.supports('container-type','size'))){
+ const wr=d.getElementById('wrap'),hud=d.getElementById('hud'),bd=d.getElementById('bld'),dk=d.getElementById('dock'),
+  fit=()=>{const w=wr.clientWidth,h=wr.clientHeight,u=Math.max(9,Math.min(w*.015,h*.0214))+'px';
+   hud.style.fontSize=u;if(bd)bd.style.fontSize=Math.max(10,Math.min(w*.015,h*.0214))+'px';if(dk)dk.style.fontSize=Math.max(11,Math.min(w*.015,h*.0214))+'px';
+   b.classList.toggle('nocq',w<560)};
+ addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,250));
+ if(window.ResizeObserver)new ResizeObserver(fit).observe(wr);fit();
+ const st=d.createElement('style');st.textContent='body.nocq #lc{width:13em;gap:.4em}body.nocq #lc #qp #crew,body.nocq #lc #qp small,body.nocq #lc #qp .bar{display:none}body.nocq #rt{width:8em}body.nocq #rt #mm{display:none}body.nocq #ct{font-size:.8em}';d.head.appendChild(st)}
+// 3) กันจอดับขณะเล่น (iOS 16.4+) + ต่อใหม่เมื่อกลับมาที่แอป
+let wl=null;const lock=async()=>{try{if(navigator.wakeLock&&!d.hidden&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){wl=null}};
+['pointerdown','touchend'].forEach(t=>addEventListener(t,lock,{passive:true}));
+d.addEventListener('visibilitychange',()=>{if(!d.hidden)lock()});
+// 4) ข้อมูลเซฟ: ขอให้เบราว์เซอร์เก็บถาวร + เตือนเรื่อง Safari ลบข้อมูลถ้าไม่เปิดเกิน 7 วัน
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+if(IOS&&!STANDALONE){try{if(!localStorage.getItem('mv_ios_tip')){localStorage.setItem('mv_ios_tip','1');
+ setTimeout(()=>{try{toast('📱 iPhone: กดแชร์ → "เพิ่มลงในหน้าจอโฮม" เพื่อเล่นเต็มจอ และกัน Safari ลบเซฟ')}catch(e){}},5000)}}catch(e){}}
+// 5) ไอคอนหน้าจอโฮม (สร้างเองด้วย canvas เพราะ iOS ไม่รับ SVG)
+try{const c=d.createElement('canvas');c.width=c.height=180;const g=c.getContext('2d');
+ g.fillStyle='#16110d';g.fillRect(0,0,180,180);g.fillStyle='#7d5f24';g.fillRect(8,8,164,164);g.fillStyle='#2a2118';g.fillRect(14,14,152,152);
+ g.fillStyle='#8a5a2b';g.fillRect(84,50,12,92);g.fillStyle='#b8925c';g.fillRect(44,40,92,18);g.fillRect(36,52,18,18);g.fillRect(126,52,18,18);
+ g.fillStyle='#ffd23f';g.fillRect(58,118,16,16);g.fillRect(104,126,14,14);g.fillStyle='#e9f0fa';g.fillRect(118,104,12,12);
+ const l=d.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');d.head.appendChild(l)}catch(e){}
+// 6) จอดำ/ค้างหลังกลับมาจากพื้นหลัง: บังคับคำนวณขนาดและวาดใหม่
+const kick=()=>{try{window.FITV&&FITV();window.RES&&RES();window.SNAPREQ=1}catch(e){}};
+d.addEventListener('visibilitychange',()=>{if(!d.hidden)setTimeout(kick,120)});
+addEventListener('pageshow',()=>setTimeout(kick,120));
+addEventListener('orientationchange',()=>{setTimeout(kick,200);setTimeout(kick,600)});
+// 7) ปล่อยปุ่มค้างเมื่อระบบแย่งนิ้ว (ขอบจอ/แจ้งเตือน/สลับแอป)
+addEventListener('touchcancel',()=>{try{Object.keys(keys).forEach(k=>keys[k]=0);keys.ax=keys.ay=null}catch(e){}},{passive:true});
+// 8) กันซูมสองนิ้ว/ดับเบิลแท็ปแบบ iOS ใหม่ๆ
+d.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!e.target.closest('#wrap'))e.preventDefault()},{passive:false});
+})();
+</script>
+
+<script>
+/* ===== ตัวคุมประสิทธิภาพ: เครื่องช้า/ร้อน → ลดความละเอียดและเฟรมเรตเอง, หยุดวาดตอนมีหน้าต่างบัง ===== */
+(function(){
+let ms=0,n=0,held=0,bad=0;const _d=draw;
+draw=function(){
+ if(BL){if(held>=2)return;held++}else held=0;
+ const t=performance.now();_d();ms+=performance.now()-t;n++;
+ if(n>=90){const a=ms/n;ms=0;n=0;
+  if(!window.LOWQ){bad=a>13?bad+1:0;
+   if(bad>=2){window.LOWQ=1;FRAME_MS=36;HUD_MS=250;try{window.RES&&RES()}catch(e){}toast('⚡ เครื่องหนัก: เปิดโหมดประหยัดพลังงานอัตโนมัติ')}}}};
+// ซ่อนแท็บ/ล็อกจอ: ไม่วาดอะไรเลย
+document.addEventListener('visibilitychange',()=>{if(document.hidden){ms=0;n=0}});
+})();
+</script>
+
+<style>
+/* ===== โหมดมือถือแนวตั้ง: เกมอยู่บน, แผงควบคุมอยู่ล่าง ไม่ซ้อนทับภาพเกม ===== */
+body.pv{--js:clamp(104px,30vw,140px);--ab:clamp(84px,24vw,104px)}
+body.pv #stage{align-items:center;padding:0}
+body.pv #pad{position:static!important;flex:none;width:100%!important;max-width:none!important;margin:0!important;
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"menu menu" "joy act";gap:8px 10px;align-items:center!important;
+ padding:8px 12px 6px!important;pointer-events:auto;z-index:5;
+ background:linear-gradient(180deg,#1b140d,#0d0a07);border-top:1px solid rgba(210,169,79,.45)}
+body.pv.bldopen #pad,body.pv.bldopen #dock{display:grid!important}
+/* เมนู: ย้ายออกจากภาพเกมมาเป็นแถบปุ่มใต้เกม เห็นครบทุกปุ่ม ไม่ต้องกดเปิด */
+body.pv #dock{grid-area:menu;position:static!important;transform:none!important;width:100%;max-width:none!important;opacity:1!important;
+ display:grid!important;grid-template-columns:repeat(6,1fr);gap:6px;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0;font-size:14px}
+body.pv #dock #mt{display:none!important}
+body.pv #dock button,body.pv #dock:not(.open) button:not(#mt):not(#ex){display:flex!important;order:0!important;min-width:0!important;width:100%;height:42px;min-height:42px!important;margin:0!important;padding:0!important;
+ font-size:20px!important;border-radius:12px!important;background:linear-gradient(180deg,rgba(60,45,28,.95),rgba(26,19,12,.95))!important;border:1px solid rgba(210,169,79,.4)!important;box-shadow:0 2px 0 #000a}
+body.pv #dock button[hidden],body.pv #dock #ex[hidden],body.pv #dock #fs[hidden]{display:none!important}
+body.pv #dock #ex{background:linear-gradient(180deg,rgba(150,45,40,.95),rgba(90,22,20,.95))!important;grid-column:span 2}
+body.pv #dock button:active{transform:scale(.94)}
+body.pv #autob2,body.pv #fishb2,body.pv #profb2{display:none!important}
+/* จอยสติ๊กซ้าย (ลอยตามนิ้ว) / ปุ่มตีขุดขวา */
+body.pv #jz{grid-area:joy;width:100%!important;height:calc(var(--js)*1.18)!important;min-height:calc(var(--ab) + 8px);justify-self:stretch;
+ background:radial-gradient(ellipse at 50% 60%,rgba(210,169,79,.07),transparent 70%);border-radius:18px}
+body.pv #dp{left:calc(50% - var(--js)/2);bottom:50%;transform:translateY(50%);opacity:.7!important}
+body.pv #A{grid-area:act;margin:0!important;justify-self:end;width:var(--ab)!important;height:var(--ab)!important}
+/* HUD ในภาพเกม: ขนาดอ่านง่ายและเรียงใหม่ ไม่ซ้อนกัน */
+body.pv #hud{font-size:12px!important}
+body.pv #bld{font-size:13px!important}
+body.pv #log{left:.9em!important;right:.9em!important;bottom:.9em!important;width:auto!important}
+body.pv #abs{top:auto!important;bottom:6em!important}
+body.pvn #ct{left:auto!important;right:1.2em!important;transform:none!important;top:4.3em!important;max-width:calc(100% - 17em);white-space:normal!important;text-align:right;padding:.3em .9em!important;border-radius:12px!important}
+body.pvn #clk{left:auto!important;right:1.2em!important;transform:none!important;top:7.6em!important}
+body.pvn #rt{width:auto!important}
+</style>
+<script>
+(function(){
+const b=document.body,d=document,pad=$('pad'),dock=$('dock'),hud=$('hud'),wr=$('wrap');
+const mq=matchMedia('(orientation:portrait) and (pointer:coarse)');
+function apply(){const pv=mq.matches;b.classList.toggle('pv',pv);
+ if(pv){if(dock.parentNode!==pad)pad.insertBefore(dock,pad.firstChild)}else if(dock.parentNode!==hud)hud.appendChild(dock);
+ const narrow=wr.clientWidth<560;b.classList.toggle('pvn',pv&&narrow);
+ try{window.FITV&&FITV();window.RES&&RES();window.SNAPREQ=1}catch(e){}}
+if(mq.addEventListener)mq.addEventListener('change',apply);else if(mq.addListener)mq.addListener(apply);
+addEventListener('resize',()=>{const n=b.classList.contains('pv')&&wr.clientWidth<560;if(n!==b.classList.contains('pvn'))b.classList.toggle('pvn',n)});
+apply();setTimeout(apply,300);
 })();
 </script>
 </body>
