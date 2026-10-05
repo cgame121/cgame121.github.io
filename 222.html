@@ -2547,7 +2547,7 @@ d.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!e.target.c
 (function(){
 let ms=0,n=0,held=0,bad=0;const _d=draw;
 draw=function(){
- if(BL){if(held>=2)return;held++}else held=0;
+ 
  const t=performance.now();_d();ms+=performance.now()-t;n++;
  if(n>=90){const a=ms/n;ms=0;n=0;
   if(!window.LOWQ){bad=a>13?bad+1:0;
