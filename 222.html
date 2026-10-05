@@ -354,7 +354,7 @@ const a=Math.floor(P.x+face[0]*.8),b=Math.floor(P.y+face[1]*.8);if(a<0||b<0||a>=
   S.gold-=c;S.wk++;toast('จ้างคนงานแล้ว! มี '+S.wk+' คน');save()}
  else if(t==20){const q=QS[S.qi%QS.length],rw=Math.round(q.r*(1+Math.min(2,S.qi/QS.length|0)*.5));
   if(S.qp>=q.n){S.gold+=rw;S.qi++;S.qp=0;toast('ภารกิจสำเร็จ! +'+rw+' ทอง');save()}else toast('ภารกิจ: '+q.t+' ('+S.qp+'/'+q.n+') รางวัล '+rw+' ทอง')}}
-function update(dt){SIMT+=dt;inv-=dt;FT.forEach(q=>{q.t-=dt;q.y-=.8*dt});FT=FT.filter(q=>q.t>0);work(dt);furn(dt);RT-=dt;if(RT<=0){RT=240;if(!QUIET)raid()}if(where=='town'){HP=Math.min(mhp(),HP+3*dt);bandit(dt)}else if(mon(dt))return;
+function update(dt){SIMT+=dt;inv-=dt;FT.forEach(q=>{q.t-=dt;q.y-=.8*dt});FT=FT.filter(q=>q.t>0);work(dt);furn(dt);RT-=dt;if(RT<=0){RT=240;if(!QUIET)raid()}if(where=='town'){HP=Math.min(mhp(),HP+Math.max(3,mhp()*.1)*dt);bandit(dt)}else if(mon(dt))return;
  const K=(window.mouseK&&mouseK(dt))||keys;let dx=K.ax!=null?K.ax:(K.right?1:0)-(K.left?1:0),dy=K.ay!=null?K.ay:(K.down?1:0)-(K.up?1:0);
  if(dx||dy){const l=Math.hypot(dx,dy);{const ax_=Math.abs(dx),ay_=Math.abs(dy),hz_=face[0]!=0?ax_>=ay_*.75:ax_>ay_*1.33;face=hz_&&dx?[Math.sign(dx),0]:dy?[0,Math.sign(dy)]:[Math.sign(dx),0]}
   const sp=Math.min(1,l),nx=P.x+dx/l*4*dt*sp,ny=P.y+dy/l*4*dt*sp;if(can(nx,P.y))P.x=nx;if(can(P.x,ny))P.y=ny}
@@ -2103,7 +2103,7 @@ const ORE={4:{k:'i',n:'เหล็ก',b:0},5:{k:'s',n:'เงิน',b:6},6:{k
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
 const CFGV={depth:[0,5,10,15],sellAt:[0,40,80,150]};
 const CFG=()=>{const o=S.ab&&typeof S.ab=='object'?S.ab:(S.ab={});if(!CFGV.depth.includes(o.depth))o.depth=0;if(!CFGV.sellAt.includes(o.sellAt))o.sellAt=80;return o};
-let ON=0,T=0,phase='idle',stat='',tgt=null,eng=null,noEng=0,wanderT=0,wdx=0,wdy=0,lx=0,ly=0,mvT=0,stuck=0,bl={},floorKey='',floorT=0,tgtT=0,leaving=0,leaveWhy='',fails=0,pw='town',sellT=0,sellTry=0,selling=0,qT=0;
+let ON=0,T=0,phase='idle',stat='',tgt=null,eng=null,noEng=0,wanderT=0,wdx=0,wdy=0,lx=0,ly=0,mvT=0,stuck=0,bl={},floorKey='',floorT=0,tgtT=0,leaving=0,leaveWhy='',fails=0,pw='town',sellT=0,sellTry=0,selling=0,qT=0,engT=0,progK='',progT=0,esc=0,noMine=0;
 const carried=()=>S.i+S.s+S.g;
 const inSpecial=()=>(window.IN_HUNT&&IN_HUNT())||String((typeof Z!='undefined'&&Z&&Z.n)||'').startsWith('ดันเจี้ยน');
 const hpR=()=>HP/mhp();
@@ -2167,6 +2167,11 @@ function townLogic(K,dt){
 function mineLogic(K,dt){
   const cfg=CFG(),sp=inSpecial(),r=hpR();
   const fk=where+floor;if(fk!=floorKey){floorKey=fk;floorT=0;tgt=eng=null;bl={}}floorT+=dt;
+  // ตัวกันวนลูป: ถ้า 20 วินาทีไม่มีความคืบหน้า (แร่/ชั้น/จำนวนศัตรู/เป้าหมาย) ให้เปลี่ยนแผน
+  const pk=carried()+'|'+floor+'|'+MS.length+'|'+(tgt?tgt.x+','+tgt.y:'');if(pk!=progK){progK=pk;progT=0;if(!tgt)esc=esc}else progT+=dt;
+  if(progT>20){progT=0;esc++;if(tgt){ban(tgt.x,tgt.y,120);tgt=null}eng=null;noEng=15;wanderT=1.5;const a=Math.random()*6.283;wdx=Math.cos(a);wdy=Math.sin(a);
+    if(esc>=3){esc=0;if(path(t=>t==7,PASS))noMine=40;else{leave('ติดขัดนาน');return null}}}
+  noMine-=dt;
   if(leaving){stat='กำลังออกจากเหมือง';qT+=dt;if(qT>1.2){qT=0;dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ',key:'q'}))}return null}
   if(r<.35&&!sp){leave('เลือดต่ำ');return null}
   if(!sp&&cfg.sellAt>0&&carried()>=cfg.sellAt){leave('กระเป๋าเต็มแล้วไปขาย');return null}
@@ -2174,14 +2179,15 @@ function mineLogic(K,dt){
   // สู้: ประชิดตีทันที / เจอใกล้ๆ ไล่ตีตัวเดียวจนจบ
   if(mm&&dd<1.4){phase='fight';stat='สู้มอนสเตอร์';face2(mm.x,mm.y);K.a=1;return K}
   if(eng&&(!MS.includes(eng)||Math.hypot(eng.x-P.x,eng.y-P.y)>5.5||r<=.4))eng=null;
-  if(!eng&&mm&&dd<3.2&&r>.5&&noEng<=0)eng=mm;
+  if(!eng&&mm&&dd<3.2&&r>.5&&noEng<=0){eng=mm;engT=0}
+  if(eng){engT+=dt;if(engT>10){eng=null;noEng=12}}
   if(eng){phase='fight';stat='ไล่ตีมอนสเตอร์';const cx=Math.floor(eng.x),cy=Math.floor(eng.y);
     if(go(K,path((t,x,y)=>x==cx&&y==cy,free)))return K;eng=null;noEng=4}
   // ขุดแร่ (มีเป้าหมายค้างไว้จนกว่าจะขุดหมดหรือหมดเวลา)
   if(tgt){const t=map[tgt.y][tgt.x];tgtT+=dt;
     if(!(t>=4&&t<=6)){tgt=null}
     else if(tgtT>25){ban(tgt.x,tgt.y,90);tgt=null}}
-  if(!tgt){const o=pickOre();if(o){tgt=o;tgtT=0}}
+  if(!tgt&&noMine<=0){const o=pickOre();if(o){tgt=o;tgtT=0}}
   if(tgt){phase='mine';stat='ขุดแร่'+ORE[map[tgt.y][tgt.x]].n+' ชั้น '+floor+' · มีแร่ '+carried();
     if(go(K,path((t,x,y)=>x==tgt.x&&y==tgt.y,PASS)))return K;ban(tgt.x,tgt.y,30);tgt=null}
   // ไม่เหลือแร่ที่เข้าถึงได้
