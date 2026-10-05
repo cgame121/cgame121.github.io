@@ -97,7 +97,7 @@ body.hud2 #lc #pl{width:11em;padding:.3em .4em;background:#16110d99}body.hud2 #l
 
 /* ===== UI refresh: lantern-lit stone & brass ===== */
 :root{--r:10px;--line:rgba(210,169,79,.42);--glass:linear-gradient(180deg,rgba(44,33,21,.88),rgba(17,12,8,.88));--lift:0 4px 14px #0009,inset 0 1px 0 rgba(255,225,150,.14)}
-.pn{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--lift);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.pn{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--lift);}
 #wrap::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 48px rgba(0,0,0,.4)}
 #pl{padding:.5em .6em;align-items:center}
 #av{border:2px solid var(--brass);box-shadow:0 0 0 2px #0008,0 0 10px rgba(210,169,79,.45)}
@@ -115,7 +115,7 @@ body.hud2 #lc #pl{width:11em;padding:.3em .4em;background:#16110d99}body.hud2 #l
 #log div{background:linear-gradient(90deg,#000b,#0000);border-left:3px solid var(--brass);border-radius:3px 0 0 3px;padding:.2em .8em .2em .6em}
 #ab{border-radius:99px;padding:.4em 1.4em;box-shadow:0 0 16px rgba(255,210,63,.3),var(--lift)}
 /* overlays: buildings, bag, character */
-#bld{backdrop-filter:blur(2px)}
+#bld{}
 #bld{background:radial-gradient(ellipse at center,#000a,#000d)}
 .bp2{background:linear-gradient(180deg,#2c2115,#150f0a);border:1px solid var(--brass);border-radius:14px;box-shadow:0 10px 34px #000c,inset 0 0 0 1px #0008,inset 0 1px 0 #ffe29a30;scrollbar-width:thin;scrollbar-color:var(--brass2) transparent}
 .bp2 .bh{padding-bottom:.5em;margin-bottom:.7em;border-bottom:1px solid var(--line);letter-spacing:.02em}
@@ -172,7 +172,7 @@ body.hud2 #lc #pl{width:11em;padding:.3em .4em;background:#16110d99}body.hud2 #l
 .bgr{display:flex;gap:.4em}.bgr .ac{margin-top:.4em}
 
 /* ===== เมนูด้านล่าง ===== */
-#dock{position:absolute;left:50%;bottom:.9em;transform:translateX(-50%);z-index:4;max-width:96%;display:flex;align-items:stretch;gap:.3em;padding:.3em .4em;font-size:max(11px,min(1.5cqw,2.14cqh));border-radius:1.8em;pointer-events:auto;background:var(--glass);border:1px solid var(--line);box-shadow:0 8px 22px #000b,inset 0 1px 0 rgba(255,225,150,.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#dock{position:absolute;left:50%;bottom:.9em;transform:translateX(-50%);z-index:4;max-width:96%;display:flex;align-items:stretch;gap:.3em;padding:.3em .4em;font-size:max(11px,min(1.5cqw,2.14cqh));border-radius:1.8em;pointer-events:auto;background:var(--glass);border:1px solid var(--line);box-shadow:0 8px 22px #000b,inset 0 1px 0 rgba(255,225,150,.18);}
 #dock button{order:5;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.05em;min-width:3.9em;min-height:3em;padding:.25em .55em;font:500 1.5em/1.1 var(--hd);color:var(--parch);background:transparent;border:1px solid transparent;border-radius:1.2em;box-shadow:none;pointer-events:auto;cursor:pointer;transition:background .15s,border-color .15s,transform .1s}
 #dock button[hidden]{display:none}
 #dock button::after{font:500 .45em/1 var(--hd);color:#bfb394;letter-spacing:.03em;white-space:nowrap}
@@ -203,6 +203,12 @@ body:has(#bld:not([hidden])) #dock{display:none}
 @media(pointer:coarse){#dock{bottom:calc(clamp(56px,16vw,74px) + 28px + env(safe-area-inset-bottom,0px))}}
 @container (max-width:560px){#dock button{min-width:2.9em;padding:.2em .3em}#dock button::after{display:none}#dock{bottom:.6em;gap:.15em}#log{bottom:4.4em}}
 @media(pointer:coarse){#dock button{min-height:2.7em}}
+.gcd{padding:.45em .5em;margin-bottom:.4em;background:linear-gradient(90deg,#000a,#0004);border-radius:8px;border:1px solid #3a2c18}
+.gtop{display:flex;gap:.6em;align-items:center}.gtop .wi{flex:1;min-width:0}.gtop .wn{font-family:var(--hd)}.gtop .wn small{color:#bfb394}.gtop>.wi>small{display:block;color:#cfc5a5;font-size:.8em;margin:.1em 0 .2em}
+.wb.hp i{background:linear-gradient(#ff9a8a,#c0392b)}.wb.xp i{background:linear-gradient(#9fd8ff,#3f84dc)}
+.gbt{display:flex;gap:.35em;flex-wrap:wrap;margin-top:.45em;align-items:center}.gbt .mx{color:#7fe08a;font-family:var(--hd);font-size:.85em}
+.gb{border-radius:99px;padding:.25em .8em;background:#0006;border:1px solid var(--line);color:var(--parch);font:inherit;font-size:.85em;cursor:pointer}.gb:hover:not(:disabled){background:var(--brass2)}.gb.go:not(:disabled){border-color:#ffe08a;color:#ffd96a}.gb:disabled{opacity:.45;cursor:default}
+.fgb{position:relative;height:1.7em;margin:.4em 0;background:#0009;border:1px solid var(--line);border-radius:8px;overflow:hidden}.fgz{position:absolute;top:0;bottom:0;background:linear-gradient(#7fe08a99,#3a9a4a99)}.fgm{position:absolute;top:0;bottom:0;width:5px;margin-left:-2px;background:#ffd96a;box-shadow:0 0 8px #ffd96a}
 </style>
 </head>
 <body>
@@ -234,7 +240,7 @@ let S={gold:0,i:0,s:0,g:0,bi:0,bs:0,bg:0,pick:1,day:1,cp:0,gd:0,wk:0,wi:0,ws:0,w
 (function(){for(const k of ['mv1','mv1b']){try{const o=JSON.parse(localStorage.getItem(k)||'null');if(o&&typeof o=='object'&&!Array.isArray(o)){Object.assign(S,o);return}}catch(e){}}})();
 function sanitize(){const d={gold:0,i:0,s:0,g:0,bi:0,bs:0,bg:0,dm:0,pick:1,gd:0,wk:0,wi:0,ws:0,wp:0,cp:0,qi:0,qp:0,lv:1,xp:0,mk:0,rc:0,tm:0,fqi:0,fqs:0,fqg:0,foi:0,fos:0,fog:0,fp:0,fv:1,pn:6};
  for(const k in d){let v=+S[k];if(!Number.isFinite(v)||v<0)v=d[k];S[k]=(k=='wp'||k=='fp')?v:Math.floor(v)}
- S.pick=Math.min(5,Math.max(1,S.pick));S.gd=Math.min(5,S.gd);S.wk=Math.min(5,S.wk);S.lv=Math.max(1,S.lv);S.fv=Math.min(4,Math.max(1,S.fv));
+ S.pick=Math.min(5,Math.max(1,S.pick));S.gd=Math.min(8,S.gd);S.wk=Math.min(5,S.wk);S.lv=Math.max(1,S.lv);S.fv=Math.min(4,Math.max(1,S.fv));
  if(!S.eq||typeof S.eq!='object')S.eq={h:0,a:0,b:0};for(const k of ['h','a','b']){const v=Math.floor(+S.eq[k]);S.eq[k]=v>=0&&v<=2?v:0}
  if(!Number.isFinite(S.ts))S.ts=Date.now()}
 sanitize();
@@ -252,7 +258,7 @@ const ZN=[{n:'ถ้ำเหล็ก',fl:'#5a5560',f2:'#4d4852',w:'#24222b',w2
 {n:'เหมืองลาวา',fl:'#5a3a34',f2:'#4b2f2a',w:'#2a1512',w2:'#3a1e19',r:'#9a6a5a',rh:'#c08a74',rd:'#7a4d3e'}];
 let Z=ZN[0];
 function mine(f){W=32;H=22;where='mine';floor=f;hits={};map=[];const zi=Math.min(2,Math.ceil(f/5)-1),boss=f%5==0;Z=ZN[zi];
- const pg=Math.min(.035,Math.max(0,.007*(f-2))),ps=Math.min(.06,.008+.009*f),lp=zi==0?0:zi==1?.03:.06;
+ const pg=Math.min(.06,Math.max(0,.008*(f-2))),ps=Math.min(.09,.008+.011*f),lp=zi==0?0:zi==1?.03:.06;
  for(let y=0;y<H;y++){map[y]=[];for(let q=0;q<W;q++){let t=11;
   if(!q||!y||q==W-1||y==H-1)t=2;
   else if(boss){if(Math.random()<.05)t=3}
@@ -281,7 +287,7 @@ function killB(m){MS=MS.filter(q=>q!==m);const c=15+(m.loot||0);S.gold+=c;qa('bd
 function mv(o,tx,ty,sp,dt){const dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);if(d>.05){const nx=o.x+dx/d*sp*dt,ny=o.y+dy/d*sp*dt;if(can(nx,o.y))o.x=nx;if(can(o.x,ny))o.y=ny}return d}
 function raid(){S.rc=(S.rc||0)+1;const B=Math.min(8,2+((S.rc-1)/3|0));
  if(where=='town'){for(let i=0;i<B;i++)MS.push({x:5+Math.random()*7,y:H-1.6,t:'b',hp:30,mx:30,cd:0,fl:0});toast('โจรบุกหมู่บ้าน! ปกป้องหีบทอง')}
- else{const th=Math.max(0,B-S.gd*2);let lost=0;for(let i=0;i<th;i++){const g=Math.min(S.gold,Math.max(5,Math.min(400,Math.floor(S.gold*.04))));S.gold-=g;lost+=g}
+ else{const th=Math.max(0,B-(window.BKPOW?BKPOW():S.gd*2));let lost=0;for(let i=0;i<th;i++){const g=Math.min(S.gold,Math.max(5,Math.min(400,Math.floor(S.gold*.04))));S.gold-=g;lost+=g}
   toast(th?'โจรบุกขณะคุณอยู่ในเหมือง! เสียทอง '+lost:'ทหารยามไล่โจรหมดแล้ว!')}}
 function wander(g,dt){
  if(g.tx!=null){g.mt=(g.mt||0)+dt;const d=mv(g,g.tx,g.ty,1.2,dt);if(d<.15||g.mt>5){g.tx=null;g.wt=1+Math.random()*3}return}
@@ -291,7 +297,7 @@ function wander(g,dt){
  g.wt=1}
 function bandit(dt){for(const m of MS){m.cd-=dt;m.fl-=dt;
   if(m.loot){mv(m,m.x,12.6,2.6,dt);if(m.y>12.3){MS=MS.filter(q=>q!==m);toast('โจรหนีไปพร้อม'+(m.v=='r'?'แร่ ':'ทอง ')+m.loot+'!')}}
-  else if(mv(m,9.5,4.4,1.9,dt)<.7){const g=Math.min(S.gold,Math.max(5,Math.min(400,Math.floor(S.gold*.04))));S.gold-=g;m.loot=g;toast('โจรขโมยทอง '+g+'!')}
+  else if(mv(m,9.5,4.4,1.9,dt)<.7){const g=Math.min(S.gold,Math.max(5,Math.min(400,Math.floor(S.gold*.04))));S.gold-=g;m.loot=Math.max(1,g);toast('โจรขโมยทอง '+g+'!')}
   if(Math.hypot(P.x-m.x,P.y-m.y)<.7&&m.cd<=0&&inv<=0){m.cd=1;inv=.8;const dd=Math.max(1,Math.round(6*(1-dmgRed())));HP-=dd;flt(P.x,P.y-.5,'-'+dd);if(HP<=0){die();return}}}
  for(const g of GD){g.cd-=dt;let b=null,bd=8;for(const m of MS){const d=Math.hypot(m.x-g.x,m.y-g.y);if(d<bd){bd=d;b=m}}
   if(b){mv(g,b.x,b.y,2.4,dt);if(bd<.9&&g.cd<=0){g.cd=.7;b.hp-=12;b.fl=.15;flt(b.x,b.y-.4,12);if(b.hp<=0)killB(b)}}else wander(g,dt)}}
@@ -316,20 +322,20 @@ function mon(dt){if(map[Math.floor(P.y)][Math.floor(P.x)]==17){HP-=12*dt*(1-dmgR
  for(const m of MS){m.cd-=dt;m.fl-=dt;
  if(m.b&&!m.sum&&m.hp<m.mx/2){m.sum=1;for(let n=0;n<2;n++){const h=20+floor*4;MS.push({x:m.x+(n?1:-1),y:m.y,t:'g',hp:h,mx:h,cd:0,fl:0})}toast('บอสเรียกลูกสมุน!')}const dx=P.x-m.x,dy=P.y-m.y,d=Math.hypot(dx,dy);
  if(d<(m.b?14:6.5)&&d>(m.b?.9:.45)){const sp=(m.b?1.8:m.t=='k'?2.2:1.6)*dt,nx=m.x+dx/d*sp,ny=m.y+dy/d*sp;if(can(nx,m.y))m.x=nx;if(can(m.x,ny))m.y=ny}
- if(d<(m.b?1.2:.8)&&m.cd<=0&&inv<=0){m.cd=m.b?1.2:1;inv=.8;const dm=m.b?20+floor:(m.t=='k'?14:8)+Math.floor(floor/3);const dd=Math.max(1,Math.round(dm*(1-dmgRed())));HP-=dd;flt(P.x,P.y-.5,'-'+dd);if(HP<=0){die();return true}}}return false}
+ if(d<(m.b?1.2:.8)&&m.cd<=0&&inv<=0){m.cd=m.b?1.2:1;inv=.8;const dm=Math.round((m.b?20+floor:(m.t=='k'?14:8)+Math.floor(floor/3))*(m.dmul||1));const dd=Math.max(1,Math.round(dm*(1-dmgRed())));HP-=dd;flt(P.x,P.y-.5,'-'+dd);if(HP<=0){die();return true}}}return false}
 function sleep(forced,msg){if(forced){toast(msg||'หมดสติ! ถูกหามกลับบ้าน (ไม่เสียทอง)')}else toast('พักผ่อน — เลือดเต็ม');
  HP=mhp();town();save()}
 function solid(a,b){return a<0||b<0||a>=W||b>=H||SOL.has(map[b][a])}
 function can(nx,ny){const r=.28;return[[-r,-r],[r,-r],[-r,r],[r,r]].every(o=>!solid(Math.floor(nx+o[0]),Math.floor(ny+o[1])))}
 function act(){swing=.18;
  if(MS.length){let best=null,bd=9;for(const m of MS){const rx=m.x-P.x,ry=m.y-P.y,fw=rx*face[0]+ry*face[1],lt=Math.abs(rx*face[1]-ry*face[0]);if(fw>-.2&&fw<(m.b?2:1.4)&&lt<(m.b?1.2:.8)&&fw<bd){bd=fw;best=m}}
-  if(best){const dmg=8+S.pick*6;best.hp-=dmg;best.fl=.15;flt(best.x,best.y-.4,dmg);
+  if(best){const dmg=Math.round((8+S.pick*6)*(1+.04*(Math.min(S.lv,40)-1)));best.hp-=dmg;best.fl=.15;flt(best.x,best.y-.4,dmg);
    const nx=best.x+face[0]*.5,ny=best.y+face[1]*.5;if(can(nx,best.y))best.x=nx;if(can(best.x,ny))best.y=ny;
-   if(best.hp<=0){MS=MS.filter(q=>q!==best);if(best.b){const c=100*floor,n=floor/5|0;S.gold+=c;S.bs+=1+n;S.bg+=n;qa('kl');S.cp=Math.max(S.cp,floor);map[Math.floor(best.y)][Math.floor(best.x)]=7;toast('ปราบบอสได้! +'+c+' ทอง บันไดลงเปิดแล้ว');save()}else if(best.t=='b')killB(best);else{qa('kl');const c=Math.round((best.t=='k'?15+floor*4:5+floor*2)*(window.IN_HUNT&&IN_HUNT()?.4:1));S.gold+=c;toast('ปราบได้! +'+c+' ทอง')}}return}}
+   if(best.hp<=0){MS=MS.filter(q=>q!==best);if(best.b){const c=100*floor,n=floor/5|0;S.gold+=c;S.bs+=1+n;S.bg+=n;qa('kl');S.cp=Math.max(S.cp,floor);map[Math.floor(best.y)][Math.floor(best.x)]=7;toast('ปราบบอสได้! +'+c+' ทอง บันไดลงเปิดแล้ว');save()}else if(best.t=='b')killB(best);else{qa('kl');const c=Math.round((best.t=='k'?15+floor*4:5+floor*2)*(best.gmul||1)*(window.IN_HUNT&&IN_HUNT()?.4:1));S.gold+=c;toast('ปราบได้! +'+c+' ทอง')}}return}}
 const a=Math.floor(P.x+face[0]*.8),b=Math.floor(P.y+face[1]*.8);if(a<0||b<0||a>=W||b>=H)return;const t=map[b][a];
  if(window.openBld&&openBld(t))return;
  if(t>=3&&t<=6){
-  const k=a+','+b,need=Math.max(1,[0,2,3,4,5][t-3+ (t==3?0:0)]*1+Math.floor(floor/4)-(S.pick-1));
+  const k=a+','+b,need=Math.max(1,[0,2,3,4,5][t-3+ (t==3?0:0)]*1+Math.floor(floor/4)-(S.pick-1)-Math.floor((Math.min(S.lv,40)-1)/3));
   hits[k]=(hits[k]||0)+1;
   if(hits[k]>=need){delete hits[k];map[b][a]=11;qa('mn');
    if(t==4){S.i++;toast('ได้แร่เหล็ก +1')}else if(t==5){S.s++;toast('ได้แร่เงิน +1')}else if(t==6){S.g++;toast('ได้แร่ทอง +1')}}}
@@ -367,7 +373,7 @@ function tile(t,i,j){const X=i*T,Y=j*T,f=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(
  case 15:f('#b5651d',0,0,T,T);if(j==1){f('#8b2e2e',0,0,T,14)}else f('#e0c9a0',4,8,10,10);break;
  
  case 9:grass();f('#6b4423',3,8,26,20);f('#8f5e2f',3,8,26,6);f('#ffd23f',13,13,6,6);break;
- case 14:grass();f('#555a66',4,14,24,8);f('#6d7380',8,8,16,8);f('#3a3d46',12,22,8,8);break;
+ case 14:grass();f('#0004',2,27,28,4);f('#6b4a2b',3,13,26,15);f('#583b20',3,18,26,1);f('#583b20',3,23,26,1);f('#3a3d46',1,7,30,7);f('#555a66',1,7,30,3);f('#6d7380',1,7,30,1);f('#4a4650',22,1,5,8);f('#2b2830',22,1,5,2);f('#8a8794',23,0,3,1);f('#1d1a20',9,16,12,12);f('#ff8a2b',11,22,8,5);f('#ffd23f',13,24,4,3);f('#c8924a',5,17,1,8);f('#aab2c0',3,16,6,2);f('#3a3d46',22,25,6,3);f('#8a909c',20,22,10,3);f('#8a909c',18,23,2,1);break;
  case 16:grass();f('#6f6d78',4,6,24,24);f('#2b2830',8,12,16,12);f('#ff8a2b',11,15,10,6);f('#ffd23f',14,17,4,3);break;case 18:grass();f('#8b2e2e',3,10,26,20);f('#c0392b',1,4,30,8);f('#f2e6c8',13,16,6,14);break;case 19:grass();f('#8f5e2f',3,10,26,20);f('#c8924a',1,4,30,8);f('#2b2830',12,18,8,12);break;case 20:grass();f('#6b4423',6,4,3,26);f('#6b4423',23,4,3,26);f('#e8d9b0',6,6,20,14);f('#6b4423',9,10,14,2);f('#6b4423',9,14,10,2);break;case 8:grass();f('#6f6d78',2,2,28,30);f('#15131a',7,8,18,24);break;
  case 2:f(Z.w,0,0,T,T);f(Z.w2,noise(i,j,20),noise(j,i,20),6,4);break;
  case 3:rock();break;case 4:rock('#d08a55');break;case 5:rock('#e9f0fa');break;case 6:rock('#ffd23f');break;
@@ -376,13 +382,15 @@ function tile(t,i,j){const X=i*T,Y=j*T,f=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(
  case 12:floorT();f('#e6c27a',4,4,24,24);f('#a8742c',8,8,16,16);break}
  const h=hits[i+','+j];if(h){x.fillStyle='#000a';x.fillRect(X+10,Y+6,2,10+h*3);x.fillRect(X+10,Y+16,8,2)}}
 const LBL={9:'ร้านค้า',14:'โรงตีจอบ',16:'เตาหลอม',18:'ค่ายทหาร',19:'ค่ายคนงาน',20:'ภารกิจ',8:'ทางเข้าเหมือง'};
+const LBICO={9:'🛒',14:'⛏',16:'🔥',18:'⚔️',19:'👷',20:'📜',8:'🕳',21:'🏰',30:'👹'};
 function labels(){x.save();x.font="600 11px Mitr,'Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif";x.textAlign='center';x.textBaseline='middle';
- for(let j=0;j<H;j++)for(let i=0;i<W;i++){const t=LBL[map[j][i]];if(!t)continue;const w=Math.round(x.measureText(t).width+12),cx=Math.round(Math.min(CX+VW-2-w/2,Math.max(CX+w/2+2,i*T+T/2))),cy=j*T-8;
-  x.fillStyle='rgba(22,16,11,.8)';x.fillRect(cx-w/2|0,cy-9,w,18);x.strokeStyle='#d2a94f';x.lineWidth=1;x.strokeRect((cx-w/2|0)+.5,cy-8.5,w-1,17);x.fillStyle='#f1e6c6';x.fillText(t,cx,cy+1)}
+ for(let j=0;j<H;j++)for(let i=0;i<W;i++){const id=map[j][i],t0=LBL[id];if(!t0)continue;const t=(LBICO[id]?LBICO[id]+' ':'')+t0,w=Math.round(x.measureText(t).width+14),cx=i*T+T/2,cy=j*T-8;
+  // วาดแบบเดียวกับป้ายบ่อตกปลา: ตรึงที่ตำแหน่งอาคาร ไม่ clamp ไม่จาง ปล่อยให้ขอบจอตัดตามธรรมชาติ
+  x.fillStyle='rgba(26,18,8,.88)';x.fillRect(Math.round(cx-w/2),cy-9,w,18);x.strokeStyle='#d2a94f';x.lineWidth=1;x.strokeRect(Math.round(cx-w/2)+.5,cy-8.5,w-1,17);x.fillStyle='#ffe08a';x.fillText(t,cx,cy+1)}
  x.restore()}
 function draw(){
  x.setTransform(1,0,0,1,0,0);x.fillStyle='#0d0b09';x.fillRect(0,0,cv.width,cv.height);x.setTransform(GK,0,0,GK,-CX*GK,-CY*GK);
- for(let j=0;j<H;j++)for(let i=0;i<W;i++)tile(map[j][i],i,j);
+ {const i0=Math.max(0,Math.floor(CX/T)),i1=Math.min(W-1,Math.floor((CX+VW)/T)),j0=Math.max(0,Math.floor(CY/T)),j1=Math.min(H-1,Math.floor((CY+VH)/T));for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)tile(map[j][i],i,j)}
  if(where=='town')labels();
  for(const m of MS){const X=Math.round(m.x*T),Y=Math.round(m.y*T),k=m.t=='k',c=m.fl>0?'#fff':k?'#e6e6e6':m.t=='b'?'#5b3a7a':'#4aa84a',g=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(X+a,Y+b,w,h)};
   if(m.b){const bc=m.fl>0?'#fff':m.t=='K'?'#2e8b3e':'#c0392b';g('#0004',-18,16,36,8);g(bc,-14,-18,28,32);if(m.t=='D'){g(bc,-26,-14,12,16);g(bc,14,-14,12,16)}g('#ffd23f',-12,-26,24,8);g('#fff',-8,-8,5,5);g('#fff',3,-8,5,5);g('#000',-6,-6,2,2);g('#000',5,-6,2,2);g('#000a',-18,-32,36,4);g('#e55',-18,-32,36*Math.max(0,m.hp/m.mx),4);continue}
@@ -418,10 +426,11 @@ function recover(e){const n=performance.now();eT=eT.filter(t=>n-t<3000);eT.push(
  try{x.globalAlpha=1;sanitize();if(!Number.isFinite(HP))HP=mhp();inv=Math.min(inv,1)}catch(_){}
  if(eT.length>=3){eT=[];try{MS=[];BL=0;NOUI=0;const a=document.getElementById('bld');if(a)a.hidden=true;TG=null;town();HP=mhp();toast('เกมแก้ไขข้อผิดพลาดอัตโนมัติ — กลับสู่หมู่บ้าน')}catch(_){location.reload()}}}
 function pump(ms){if(OWED<.05)return;const t0=performance.now();QUIET=1;try{while(OWED>=.05&&performance.now()-t0<ms){update(.05);OWED-=.05}}finally{QUIET=0}}
-function loop(n){try{const raw=Math.max(0,(n-last)/1000),dt=Math.min(.05,raw);last=n;lastTick=performance.now();if(raw>1)OWED=Math.min(1800,OWED+raw-dt);
+let _fT=0,_hT=0;const FRAME_MS=28,HUD_MS=160; // จำกัด ~30fps และอัปเดต HUD/แผนที่ย่อ ~6 ครั้ง/วิ เพื่อประหยัดแบตเตอรี่
+function loop(n){if(n-_fT<FRAME_MS){RAF=requestAnimationFrame(loop);return}_fT=n;try{const raw=Math.max(0,(n-last)/1000),dt=Math.min(.05,raw);last=n;lastTick=performance.now();if(raw>1)OWED=Math.min(1800,OWED+raw-dt);
  if(!Number.isFinite(P.x)||!Number.isFinite(P.y)||solid(Math.floor(P.x),Math.floor(P.y)))unstuckP();
  if(!Number.isFinite(HP))HP=mhp();
- update(dt);pump(8);draw();hud()}catch(e){OWED=0;QUIET=0;recover(e)}RAF=requestAnimationFrame(loop)}
+ update(dt);pump(8);draw();if(n-_hT>HUD_MS){_hT=n;hud()}}catch(e){OWED=0;QUIET=0;recover(e)}RAF=requestAnimationFrame(loop)}
 const KC={KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',KeyE:'a'},KM={ArrowUp:'up',w:'up',ArrowDown:'down',s:'down',ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',' ':'a',e:'a',Enter:'a'};
 addEventListener('keydown',e=>{const k=KM[e.key]||KC[e.code];if(k){keys[k]=1;e.preventDefault();}});
 addEventListener('keyup',e=>{const k=KM[e.key]||KC[e.code];if(k)keys[k]=0});
@@ -466,7 +475,7 @@ const IN={
  return{t:'🛡️ ค่ายทหารยาม',d:'ทหารยามช่วยป้องกันเมืองตอนโจรบุก ยิ่งมีมาก เสียหายยิ่งน้อย (สูงสุด 5 นาย)',b:row('ทหารยามตอนนี้',S.gd+' / 5')+(S.gd<5?'<small>ค่าจ้างนายที่ '+(S.gd+1)+'</small>'+need('ทอง',S.gold,c)+need('แท่งเหล็ก',S.bi,2):'')+btn(18,'จ้างทหารยาม',ok,S.gd>=5?'ทหารยามเต็มแล้ว':'ทรัพยากรยังไม่พอ')}},
 20:()=>{const q=QS[S.qi%QS.length],rw=Math.round(q.r*(1+Math.min(2,S.qi/QS.length|0)*.5)),p=Math.min(S.qp,q.n);
  return{t:'📜 ผู้ให้ภารกิจ',d:'ทำภารกิจให้สำเร็จเพื่อรับทองเป็นรางวัล ภารกิจถัดไปจะขึ้นเองเมื่อรับรางวัล',b:'<b>'+q.t+'</b><div class="pb"><i style="width:'+p/q.n*100+'%"></i></div>'+row('ความคืบหน้า',p+' / '+q.n,p>=q.n?1:null)+row('รางวัล',rw+' ทอง')+btn(20,'รับรางวัล',p>=q.n,'ยังทำไม่ครบ')}},
-help:()=>({t:'❓ วิธีเล่น',d:'ขุดแร่ → หลอม → ขายเป็นทอง → อัปเกรดจอบ เพื่อลงเหมืองลึกขึ้นและรวยขึ้น',b:row('เดิน','ลูกศร / WASD')+row('ฟัน / ขุด / คุยกับอาคาร','Space / E / Enter')+row('เมาส์ / แตะจอ','คลิกเพื่อเดิน ขุด ฟัน หรือเปิดอาคาร (กดค้างแล้วลากได้)')+row('เต็มจอ','F')+row('อาคารในเมือง','เดินไปชนแล้วกดฟัน')+'<p style="margin-top:.5em">ระวังมอนสเตอร์ในเหมือง ถ้าเลือดหมดจะถูกหามกลับบ้านโดยไม่เสียของและทอง</p>'})};
+help:()=>({t:'❓ วิธีเล่น',d:'ขุดแร่ → หลอม → ขายเป็นทอง → อัปเกรดจอบ เพื่อลงเหมืองลึกขึ้นและรวยขึ้น',b:row('เดิน','ลูกศร / WASD')+row('ฟัน / ขุด / คุยกับอาคาร','Space / E / Enter')+row('เมาส์ / แตะจอ','คลิกเพื่อเดิน ขุด ฟัน หรือเปิดอาคาร (กดค้างแล้วลากได้)')+row('เต็มจอ','F')+row('อาคารในเมือง','เดินไปชนแล้วกดฟัน')+'<p style="margin-top:.5em">ระวังมอนสเตอร์ในเหมือง ถ้าเลือดหมดจะถูกหามกลับบ้านและเสียทอง 10% กับแร่ที่ยังไม่ขาย 25% (ดันเจี้ยนและทุ่งล่ามอนไม่เสีย)</p>'})};
 let cur=0;
 setInterval(()=>{if(ov.hidden||cur!=16)return;const b=ov.querySelector('#fpb');if(!b)return;const sg=[S.fqi,S.fqs,S.fqg,S.foi,S.fos,S.fog,S.i,S.s,S.g,S.fv,S.gold].join();if(b.dataset.s!=sg)return render();const k=fcur();b.style.width=(k?Math.min(100,S.fp/FT_[k]*100):0)+'%'},300);
 function render(){const o=IN[cur](),op=ov.querySelector('.bp2'),st=op&&ov.dataset.k==String(cur)?op.scrollTop:0;ov.innerHTML='<section class="pn bp2"><div class="bh"><span>'+o.t+'</span><button data-a="x">✕ ปิด</button></div><p>'+o.d+'</p>'+o.b+'</section>';ov.dataset.k=cur;if(st){const n=ov.querySelector('.bp2');if(n)n.scrollTop=st}}
@@ -505,13 +514,13 @@ addEventListener('keydown',e=>{if(BL&&(KC[e.code]||/^(Arrow\w+|[wasdeWASDE ]|Ent
 
 (function(){
 S.lv=S.lv||1;S.xp=S.xp||0;if(S.pt){S.gold+=S.pt*15;}delete S.pt;delete S.day;delete S.rd;
-const xn=l=>40+l*35,_m=mhp;mhp=()=>_m()+(Math.min(S.lv,30)-1)*5;
+const xn=l=>40+l*35,_m=mhp;mhp=()=>_m()+(Math.min(S.lv,40)-1)*8;
 const xb=document.createElement('div');xb.className='bar qb xpb';xb.innerHTML='<i id="xpf"></i>';document.querySelector('#pl .bars').appendChild(xb);
 function note(t){const d=document.createElement('div');d.id='ab';d.className='pn';d.innerHTML='<b>'+t+'</b>';($('abs')||(()=>{const c=document.createElement('div');c.id='abs';$('wrap').appendChild(c);return c})()).appendChild(d);setTimeout(()=>d.remove(),3000)}
-function gain(n){S.xp+=n;let up=0;while(S.xp>=xn(S.lv)){S.xp-=xn(S.lv);S.lv++;up=1}if(up){HP=mhp();note('⬆️ เลเวลอัป! Lv.'+S.lv+' (เลือดสูงสุด +5)');toast('เลเวลอัปเป็น Lv.'+S.lv+'! เลือดเต็ม');save()}}
+function gain(n){S.xp+=n;let up=0;while(S.xp>=xn(S.lv)){S.xp-=xn(S.lv);S.lv++;up=1}if(up){HP=mhp();note('⬆️ เลเวลอัป! Lv.'+S.lv+' (เลือดสูงสุด +8 · ตีแรงขึ้น +4% · ลดดาเมจ +0.5%'+(S.lv%3==1?' · ขุดแร่เร็วขึ้น':'')+')');toast('เลเวลอัปเป็น Lv.'+S.lv+'! เลือดเต็ม');save()}}
 // xp + drops, hooked onto the swing
-const _a2=act;act=function(){const m4=MS.length,n4=MS.filter(m=>m.b).length,t0=S.tm||0;_a2();
- const k=m4-MS.length;if(k>0&&where=='mine'){const bs=n4-MS.filter(m=>m.b).length;gain(Math.round(k*(8+floor*3)*(window.IN_HUNT&&IN_HUNT()?.3:1))+bs*60);}
+const _a2=act;act=function(){const pre=MS.slice(),m4=MS.length,n4=MS.filter(m=>m.b).length,t0=S.tm||0;_a2();
+ const k=m4-MS.length;if(k>0&&where=='mine'){const bs=n4-MS.filter(m=>m.b).length;gain(Math.round(pre.filter(q=>!MS.includes(q)).reduce((a,q)=>a+(8+floor*3)*(q.gmul||1),0)*(window.IN_HUNT&&IN_HUNT()?.3:1))+bs*60);}
  if((S.tm||0)>t0)gain(3*((S.tm||0)-t0))};
 const _h=hud;hud=function(){_h();$('lv').textContent='Lv.'+S.lv+' '+PN[S.pick];$('xpf').style.width=S.xp/xn(S.lv)*100+'%';};
 })();
@@ -534,8 +543,45 @@ const EQ=[['h','⛑️ หมวก',[['bi',3,1],['bs',3,2]]],['a','🦺 เก�
 const defn=()=>EQ.reduce((a,e)=>a+(S.eq[e[0]]?e[2][S.eq[e[0]]-1][2]:0),0),red=()=>Math.min(.5,defn()*.05);
 const _m3=mhp;mhp=()=>_m3()+defn()*5;
 dmgRed=red;
-const o14=BIN[14];BIN[14]=()=>{const o=o14();let h=HR+'<b>🛡️ ตีอุปกรณ์</b> <small>ป้องกัน '+defn()+' (ลดความเสียหาย '+Math.round(red()*100)+'%) · เลือดสูงสุด +'+defn()*5+'</small>';
- EQ.forEach(e=>{const t=S.eq[e[0]],n=e[2][t];h+='<div class="rw"><span>'+e[1]+' · '+TN[t]+'</span><b>'+(n?'':'สูงสุด')+'</b></div>';if(n){const ok=S[n[0]]>=n[1];h+='<button class="ac" data-a="eq-'+e[0]+'"'+(ok?'':' disabled')+'>ตี'+e[1].slice(3)+TN[t+1]+' — '+n[1]+' '+NM[n[0]]+' ('+(S[n[0]]||0)+')</button>'}});o.b+=h;return o};
+// ===== โรงตีจอบ (ดีไซน์ใหม่) =====
+(()=>{const st=document.createElement('style');st.textContent=`
+.sm-lad{display:flex;gap:.3em;margin:.2em 0 .7em}
+.sm-st{flex:1;text-align:center;padding:.35em .1em;border-radius:8px;background:#0007;border:1px solid #3a2c18;opacity:.5}
+.sm-st span{display:block;font-size:1.3em}.sm-st small{display:block;font-size:.72em;color:#bfb394}
+.sm-st.done{opacity:.9;border-color:#4fbf5a}
+.sm-st.cur{opacity:1;border-color:var(--brass);box-shadow:0 0 10px rgba(210,169,79,.45);background:#2a1d0c}
+.sm-st.nxt{opacity:1;border-style:dashed;border-color:var(--brass2)}
+.sm-sec{margin:.5em 0 .4em;font:500 1.05em var(--hd);color:var(--brass);border-bottom:1px solid var(--line);padding-bottom:.25em}
+.sm-sts{display:grid;grid-template-columns:repeat(3,1fr);gap:.35em;margin-bottom:.6em}
+.sm-sts div{background:#0007;border-radius:8px;padding:.4em .3em;text-align:center}
+.sm-sts small{display:block;color:#bfb394;font-size:.78em}.sm-sts b{font:500 1em var(--hd);color:var(--parch)}.sm-sts em{font-style:normal;color:#7fe08a}
+.sm-mat{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;padding:.35em .7em;margin-bottom:.3em;background:linear-gradient(90deg,#000a,#0005);border-left:3px solid var(--hp);border-radius:7px}
+.sm-mat.ok{border-color:#4fbf5a}.sm-mat.ok b{color:#7fe08a}.sm-mat.no b{color:#ff8a80}.sm-mat b{font-family:var(--hd);font-weight:500}
+.sm-bar{flex-basis:100%;height:.35em;margin-top:.3em;border-radius:99px;background:#0009;overflow:hidden}
+.sm-bar i{display:block;height:100%;background:linear-gradient(#ff9a8a,#c0392b)}.sm-bar.ok i{background:linear-gradient(#9af0a2,#3fa84a)}
+.sm-eq{padding:.55em .7em;margin-bottom:.5em;background:#0b0805aa;border:1px solid #3a2c18;border-radius:10px}
+.sm-eh{display:flex;align-items:center;gap:.5em;margin-bottom:.3em}.sm-eh b{font-family:var(--hd);font-weight:500}.sm-eh small{margin-left:auto;color:#bfb394}
+.sm-pips i{display:inline-block;width:.6em;height:.6em;margin-right:.2em;border-radius:50%;background:#0009;border:1px solid var(--brass2)}.sm-pips i.on{background:var(--coin)}
+.sm-max{display:block;color:#7fe08a}.sm-sum{color:#bfb394;margin:.2em 0 .5em;font-size:.9em}.sm-note{display:block;color:#bfb394;margin:.2em 0 .3em}
+`;document.head.appendChild(st)})();
+const SMI={gold:'🪙',bi:'🔩',bs:'🥈',bg:'🥇'},SMT=['','🪵','🔩','🥈','🥇','💎'];
+const smBar=(h,n)=>'<div class="sm-bar'+(h>=n?' ok':'')+'"><i style="width:'+Math.min(100,h/n*100)+'%"></i></div>';
+const smMat=(ic,name,h,n)=>'<div class="sm-mat'+(h>=n?' ok':' no')+'"><span>'+ic+' '+name+'</span><b>'+h.toLocaleString('en-US')+' / '+n.toLocaleString('en-US')+'</b>'+smBar(h,n)+'</div>';
+BIN[14]=()=>{const p=S.pick,dm=q=>8+q*6;
+ let h='<div class="sm-sec">⛏ จอบของคุณ</div><div class="sm-lad">'+[1,2,3,4,5].map(i=>'<div class="sm-st'+(i<p?' done':i==p?' cur':i==p+1?' nxt':'')+'"><span>'+SMT[i]+'</span><small>'+PN[i].slice(3)+'</small></div>').join('')+'</div>';
+ if(p>=5){h+='<small class="sm-max">✔ '+PN[5]+' — จอบที่ดีที่สุดแล้ว</small>'}
+ else{const r=REC[p+1],ks=Object.keys(r),ok=ks.every(k=>S[k]>=r[k]);
+  h+='<div class="sm-sts"><div><small>⚔️ ความแรง</small><b>'+dm(p)+' → <em>'+dm(p+1)+'</em></b></div><div><small>❤️ เลือดสูงสุด</small><b>'+mhp()+' → <em>'+(mhp()+10)+'</em></b></div><div><small>⛏ ขุดแร่</small><b><em>เร็วขึ้น</em></b></div></div>'
+  +'<small class="sm-note">วัตถุดิบสำหรับ '+PN[p+1]+'</small>'+ks.map(k=>smMat(SMI[k]||'',LB[k],S[k]||0,r[k])).join('')
+  +'<button class="ac" data-a="14"'+(ok?'':' disabled')+'>🔨 ตี'+PN[p+1]+'</button>'+(ok?'':'<small class="wh">วัตถุดิบยังไม่พอ</small>')}
+ h+='<div class="sm-sec">🛡️ ตีอุปกรณ์</div><div class="sm-sum">ป้องกันรวม '+defn()+' · ลดความเสียหาย '+Math.round(red()*100)+'% · เลือดสูงสุด +'+defn()*5+'</div>';
+ EQ.forEach(e=>{const t=S.eq[e[0]],n=e[2][t],cur=t?e[2][t-1][2]:0;
+  h+='<div class="sm-eq"><div class="sm-eh"><b>'+e[1]+'</b><span class="sm-pips">'+[1,2].map(i=>'<i class="'+(t>=i?'on':'')+'"></i>').join('')+'</span><small>'+TN[t]+(cur?' · ป้องกัน +'+cur:'')+'</small></div>';
+  if(n){const have=S[n[0]]||0,ok=have>=n[1];
+   h+='<small class="sm-note">ถัดไป: '+TN[t+1]+' · ป้องกัน +'+n[2]+'</small>'+smMat(SMI[n[0]]||'',NM[n[0]],have,n[1])+'<button class="ac" data-a="eq-'+e[0]+'"'+(ok?'':' disabled')+'>🔨 ตี'+e[1].slice(3)+TN[t+1]+'</button>'}
+  else h+='<small class="sm-max">✔ ระดับสูงสุดแล้ว</small>';
+  h+='</div>'});
+ return{t:'🔨 โรงตีจอบ',d:'ตีจอบให้แกร่งขึ้น และตีหมวก เกราะ รองเท้าไว้ป้องกันตัวในเหมือง',b:h}};
 $('bld').addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
  if(a.startsWith('eq-')){e.stopPropagation();const k=a.slice(3),q=EQ.find(x=>x[0]==k),n=q[2][S.eq[k]];if(!n||S[n[0]]<n[1])return toast('วัตถุดิบไม่พอ');S[n[0]]-=n[1];S.eq[k]++;toast('ตี'+q[1].slice(3)+TN[S.eq[k]]+'สำเร็จ!');save();rndBld()}
 },true);
@@ -725,7 +771,7 @@ const av=$('av').getContext('2d'),_h=hud;hud=function(){_h();const q=S.eq,f=(c,a
  if(q.a){f(C1[q.a],2,9,8,3);f(C2[q.a],2,11,8,1)}if(q.h){f(C1[q.h],2,1,8,3);f(C2[q.h],2,3,8,1)}};
 })();
 (function(){const wr=$('wrap');
-function res(){const dpr=Math.min(window.devicePixelRatio||1,2),k=Math.max(1,Math.min(3,Math.ceil(wr.clientWidth*dpr/VW-.05)));
+function res(){const dpr=Math.min(window.devicePixelRatio||1,2),k=Math.max(1,Math.min(2,Math.ceil(wr.clientWidth*dpr/VW-.05)));
  if(k!=GK||cv.width!=VW*k||cv.height!=VH*k){GK=k;cv.width=VW*k;cv.height=VH*k;cv.style.imageRendering=k>1?'auto':'pixelated'}}
 window.RES=res;res();addEventListener('resize',res);if('ResizeObserver'in window)new ResizeObserver(res).observe(wr);
 })();
@@ -1012,7 +1058,7 @@ function tick(){
   if(!DUN||where!='mine')return;
   for(const m of prev)if(!MS.includes(m)&&m.hp<=0){
     if(m.b){const d=2+Math.floor(Math.random()*2);S.dm=(S.dm||0)+d;toast('💎 บอสทิ้งเพชร ×'+d)}
-    else{S.gold+=floor*2;if(Math.random()<.1){S.dm=(S.dm||0)+1;toast('💎 ได้เพชร +1')}}}
+    else{S.gold+=Math.round(floor*2*(m.gmul||1));if(Math.random()<.1){S.dm=(S.dm||0)+1;toast('💎 ได้เพชร +1')}}}
   prev=MS.slice();
   if(!open&&stair&&!MS.length){open=1;map[stair.y][stair.x]=7;toast('ศัตรูหมดแล้ว! บันไดลงเปิดแล้ว')}}
 function finish(){const first=!(S.dc>0),g=first?1500:600;S.dc=(S.dc||0)+1;S.gold+=g;S.cp=DCP;DUN=0;
@@ -1229,7 +1275,7 @@ const hud=document.getElementById('hud'),clk=document.createElement('section');c
 let mkAt=Date.now()+180000,lastMk=S.mk||0,lastPh=phase()[1],nf=0;
 function upd(){const h=hr(),hh=Math.floor(h),mm=Math.floor((h-hh)*60),[ic,nm]=phase();
   if((S.mk||0)!=lastMk){lastMk=S.mk||0;mkAt=Date.now()+180000}
-  clk.innerHTML='<b>'+ic+' '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+'</b><span>'+nm+'</span>'+(where=='town'?'<em>⚔ '+fm(RT)+'</em>':'')+'<em>📈 '+fm((mkAt-Date.now())/1000)+'</em>';
+  clk.innerHTML='<b>'+ic+' '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+'</b><span>'+nm+'</span>'+(where=='town'?'<em class="rc'+(RT<60?' hot':'')+'">⚔ '+fm(RT)+'</em>':'')+'<em class="mk">📈 '+fm((mkAt-Date.now())/1000)+'</em>';
   if(nm!=lastPh){lastPh=nm;if(nm=='กลางคืน')toast('🌙 ค่ำแล้ว... โจรจะบุกถี่ขึ้น ระวังตัวด้วย');else if(nm=='รุ่งอรุณ')toast('🌅 ใกล้รุ่งแล้ว');else if(nm=='กลางวัน')toast('☀️ เช้าวันใหม่ ตลาดคึกคัก')}}
 setInterval(upd,1000);upd();
 // ----- มืดตามเวลาจริงในเมือง + แสงไฟตามอาคาร -----
@@ -1289,11 +1335,10 @@ const _m=mv;mv=function(o,tx,ty,sp,dt){
         const n=S.wi+S.ws;if(n<1){o.v='n';return dist()}
         const a=Math.max(Math.min(S.wi,1),Math.floor(S.wi/2)),b=Math.floor(S.ws/2);S.wi-=a;S.ws-=b;o.cargo={i:a,s:b};o.loot=a+b;R.so+=a+b;
         toast('📦 โจรขโมยแร่จากค่ายคนงาน '+(a+b)+' ก้อน! รีบจัดการก่อนมันหนี');return 99}
-      if(o.y>9.9){if(Math.abs(o.x-9.5)>.25)_m(o,9.5,o.y,sp,dt);else _m(o,9.5,9.6,sp,dt)}else _m(o,15.4,9.6,sp,dt);
+      _m(o,15.4,9.6,sp,dt);
       return 99}
-    if(o.y<10.4&&o.y>8.5&&Math.abs(o.x-9.5)>.4){_m(o,9.5,9.6,sp,dt);return dist()}
+    if(o.y<10.4&&o.y>8.5&&Math.abs(o.x-8.4)>.4){_m(o,8.4,9.6,sp,dt);return dist()} // เลนผ่านลานอยู่ทางซ้ายของน้ำพุ (9,9)
   }
-  if(o.loot&&o.v=='r'&&o.y<10.4&&Math.abs(o.x-9.5)>.3){_m(o,9.5,o.y,sp,dt);return 9}
   return _m(o,tx,ty,sp,dt)};
 // ----- รางวัล / คืนของเมื่อกำจัดโจร -----
 const _k=killB;killB=function(m){
@@ -1435,61 +1480,172 @@ wr.addEventListener('pointermove',e=>{if(!ps.has(e.pointerId))return;ps.set(e.po
 })();
 </script>
 <script>
-/* ===== ความลึกเพิ่ม: ทักษะจากเลเวล + อาหารจากปลา/ผัก + เพชรเป็นโชคลาภ (ต่อยอดระบบเดิม) ===== */
+/* ===== ระบบเสริมความลึก: ทักษะ · ครัวและบัฟอาหาร · ชั้นเหมืองพิเศษ · เควสใหม่ ===== */
 (function(){
-const ov=$('bld'),PK=[['m','⛏ นักขุดชำนาญ','โอกาสได้แร่โบนัสตอนขุด +8% ต่อระดับ',5],['f','⚔ นักสู้','ตีมอนสเตอร์/โจรแรงขึ้น +3 ต่อระดับ',5],['e','❤ ร่างกายแกร่ง','เลือดสูงสุด +8 ต่อระดับ',5],['s','🔥 ช่างหลอม','เตาหลอมเร็วขึ้น +10% ต่อระดับ',5],['l','💎 โชคลาภ','โอกาสเจอเพชรตอนขุดแร่ +2% ต่อระดับ · จ่ายด้วยเพชร',3]],LC=[2,4,6];
-const FN=[['🐟','ปลาซิว'],['🐠','ปลาตะเพียน'],['🐡','ปลาช่อน'],['✨','ปลาทอง']],CN=[['🥬','ผักกาด'],['🍅','มะเขือเทศ'],['🎃','ฟักทอง']],OREK={4:'i',5:'s',6:'g'};
-S.pk=S.pk&&typeof S.pk=='object'?S.pk:{};PK.forEach(p=>S.pk[p[0]]=Math.max(0,Math.min(p[3],Math.floor(+S.pk[p[0]])||0)));
-S.bf=S.bf&&typeof S.bf=='object'?S.bf:{};
-if(!Number.isFinite(S.sl)){S.sl=S.lv||1;S.sp=Math.max(0,(S.lv||1)-1)}
-S.sp=Math.max(0,Math.floor(+S.sp)||0);
-const on=k=>(S.bf[k]||0)>Date.now(),spent=()=>PK.reduce((a,p)=>a+(p[0]=='l'?0:S.pk[p[0]]),0);
-// ทักษะ → ระบบเดิม: เลือด, เตาหลอม, ขุดแร่, การต่อสู้
-const _mh=mhp;mhp=()=>_mh()+S.pk.e*8;
-const _fs=fspd;fspd=function(){return _fs()*(1+.1*S.pk.s)};
+const ov=$('bld'),lc=$('lc');
+const HR='<hr style="border:0;border-top:1px solid #4a3a22;margin:.7em 0">';
+const st=document.createElement('style');
+st.textContent='#bf,#md{display:none;padding:.25em .8em;border-radius:99px;font-size:.92em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--parch)}#bf b,#md b{font-family:var(--hd);font-weight:500;color:var(--coin)}body.hud2 #bf,body.hud2 #md{display:none!important}#skb{order:1}';
+document.head.appendChild(st);
+if(!S.sk||typeof S.sk!='object')S.sk={};
+if(!S.ml||typeof S.ml!='object')S.ml={};
+if(!S.rb||typeof S.rb!='object')S.rb={};
+// ย้ายข้อมูลจากเวอร์ชันที่มีระบบทักษะ/อาหารอีกชุด
+if(S.bf&&S.bf.u==null){S.rb.atk=+S.bf.atk||0;S.rb.ore=+S.bf.ore||0;S.bf=null}
+if(S.pk&&typeof S.pk=='object'){if(!Object.keys(S.sk).length){const mp={m:'m',f:'c',e:'e',s:'s',l:'l'};for(const k in mp){const v=Math.max(0,Math.min(k=='l'?3:5,Math.floor(+S.pk[k])||0));if(v)S.sk[mp[k]]=v}}delete S.pk;delete S.sp;delete S.sl}
+let MOD=null;
+const mmss=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
+
+// ---------- ทักษะ (ได้ 1 แต้มต่อเลเวลที่เพิ่ม) ----------
+const COST=[1,1,2,2,3];
+const SKS=[
+ {k:'m',e:'⛏️',n:'ขุดเก่ง',d:'โอกาสขุดแร่ได้เพิ่มอีกก้อน +8% ต่อระดับ',f:l=>'+'+8*l+'%'},
+ {k:'c',e:'⚔️',n:'นักรบ',d:'โจมตีแรงขึ้น +8% ต่อระดับ',f:l=>'+'+8*l+'%'},
+ {k:'d',e:'🛡️',n:'ผิวเหล็ก',d:'ลดความเสียหายที่ได้รับ +3% ต่อระดับ',f:l=>'+'+3*l+'%'},
+ {k:'e',e:'❤️',n:'ร่างกายแกร่ง',d:'เลือดสูงสุด +8 ต่อระดับ',f:l=>'+'+8*l},
+ {k:'s',e:'🔥',n:'ช่างหลอม',d:'เตาหลอมเร็วขึ้น +10% ต่อระดับ',f:l=>'+'+10*l+'%'},
+ {k:'g',e:'💰',n:'นักล่าสมบัติ',d:'ทองจากมอนสเตอร์และหีบในเหมือง +8% ต่อระดับ',f:l=>'+'+8*l+'%'},
+ {k:'f',e:'🎣',n:'นักตกปลา',d:'โอกาสจับปลาได้เพิ่มอีกตัว +8% ต่อระดับ',f:l=>'+'+8*l+'%'},
+ {k:'a',e:'🌱',n:'เกษตรกร',d:'ผักโตเร็วขึ้น +8% ต่อระดับ (นับขณะเปิดเกม)',f:l=>'+'+8*l+'%'},
+ {k:'l',e:'💎',n:'โชคลาภ',d:'โอกาสเจอเพชรตอนขุดแร่ +2% ต่อระดับ · จ่ายด้วยเพชร',f:l=>'+'+2*l+'%',mx:3,dm:[2,4,6]}];
+const sk=k=>{const s=SKS.find(q=>q.k==k);return Math.min(s&&s.mx||5,Math.max(0,(+S.sk[k])|0))};
+const spent=()=>SKS.reduce((a,s)=>{if(s.dm)return a;let t=0;for(let l=0;l<sk(s.k);l++)t+=COST[l];return a+t},0);
+const points=()=>Math.max(0,(S.lv||1)-1-spent());
+
+// ---------- อาหารและบัฟ ----------
+const RN={f0:'🐟 ปลาซิว',f1:'🐠 ปลาตะเพียน',f2:'🐡 ปลาช่อน',f3:'✨🐠 ปลาทอง',c0:'🥬 ผักกาด',c1:'🍅 มะเขือเทศ',c2:'🎃 ฟักทอง'};
+const MEALS=[
+ {e:'🍲',n:'ซุปปลาซิว',d:'ฟื้นเลือด 2 หน่วย/วินาที นาน 10 นาที',r:{f0:2,c0:1},reg:2,dur:600},
+ {e:'🍢',n:'ปลาช่อนย่างสมุนไพร',d:'ลดความเสียหายที่ได้รับ 15% นาน 10 นาที',r:{f2:1,c1:1},def:.15,dur:600},
+ {e:'🥗',n:'สลัดผักรวม',d:'โอกาสขุดแร่ได้เพิ่ม +20% นาน 10 นาที',r:{c0:1,c1:1,c2:1},luck:.2,dur:600},
+ {e:'🍜',n:'ซุปฟักทองตุ๋นปลา',d:'โจมตีแรงขึ้น 25% นาน 10 นาที',r:{c2:2,f1:1},atk:.25,dur:600},
+ {e:'🍤',n:'ปลาทองทอดเลิศรส',d:'เลือดสูงสุด +30 · โจมตี +10% · โชคขุดแร่ +10% · ลดดาเมจ 5% นาน 15 นาที',r:{f3:1,c1:1,c2:1},hp:30,atk:.1,luck:.1,def:.05,dur:900}];
+const buff=()=>{const b=S.bf;return b&&b.u>Date.now()&&MEALS[b.k]?MEALS[b.k]:null};
+const bleft=()=>S.bf?Math.max(0,Math.ceil((S.bf.u-Date.now())/1000)):0;
+const B=p=>{const b=buff();return b&&b[p]?b[p]:0};
+
+// ---------- ผลของทักษะ/บัฟ ----------
+const ron=k=>(S.rb[k]||0)>Date.now();
+const luck=()=>(where=='mine'?Math.min(.3,Math.max(0,floor-1)*.015):0)+.08*sk('m')+B('luck')+(ron('ore')?.2:0)+(MOD&&MOD.k=='rich'?.1:0);
+const atkB=()=>.08*sk('c')+B('atk')+(ron('atk')?.15:0);
+const goldK=()=>.08*sk('g')+(MOD&&MOD.k=='nest'?.5:0);
+const fishK=()=>.08*sk('f');
+const _d0=dmgRed;dmgRed=()=>Math.min(.65,_d0()+.03*sk('d')+B('def')+Math.min(.15,.005*((S.lv||1)-1)));
+const _h0=mhp;mhp=()=>_h0()+B('hp')+8*sk('e');
+const _fs=fspd;fspd=function(){return _fs()*(1+.1*sk('s'))};
+
+function front(){let best=null,bd=9;for(const m of MS){const rx=m.x-P.x,ry=m.y-P.y,fw=rx*face[0]+ry*face[1],lt=Math.abs(rx*face[1]-ry*face[0]);
+ if(fw>-.2&&fw<(m.b?2:1.4)&&lt<(m.b?1.2:.8)&&fw<bd){bd=fw;best=m}}return best}
+const fishSnap=()=>{const m=S.fm||{};return[0,1,2,3].map(k=>m['f'+k]||0)};
 const _a=act;act=function(){
- const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8),ok=tx>=0&&ty>=0&&tx<W&&ty<H,b4=ok?map[ty][tx]:0,h0=new Map(MS.map(m=>[m,m.hp]));
+ const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8),ok=tx>=0&&ty>=0&&tx<W&&ty<H,t0=ok?map[ty][tx]:0,g0=S.gold,w0=where,f0=fishSnap();
+ const fm=front(),ab=atkB();
+ if(fm&&ab>0)fm.hp-=Math.round((8+S.pick*6)*ab);
  _a();
- if(where=='mine'&&OREK[b4]&&map[ty][tx]!=b4){
-  if(Math.random()<.08*S.pk.m+(on('ore')?.2:0)){S[OREK[b4]]++;toast('⛏ แร่โบนัส +1')}
-  if(Math.random()<.02*S.pk.l){S.dm=(S.dm||0)+1;toast('💎 โชคลาภ! เจอเพชร +1')}}
- const e=S.pk.f*3+(on('atk')?4:0);
- if(e>0)for(const m of MS){const o=h0.get(m);if(o!=null&&m.hp<o&&m.hp>0)m.hp=Math.max(1,m.hp-e)}};
-// อาหาร: ปลา = ฟื้นเลือด + ตีแรง · ผัก = แร่โบนัส (ใช้ของจากบ่อตกปลา/แปลงผักที่เคยทำได้แค่ขาย)
-function eat(id){const m=S.fm||{};if(!(m[id]>0))return;const k=+id.slice(1),cap=Date.now()+600000;m[id]--;
- if(id[0]=='f'){const h=Math.round(mhp()*(.2+.1*k));HP=Math.min(mhp(),HP+h);S.bf.atk=Math.min(cap,Math.max(Date.now(),S.bf.atk||0)+(60+40*k)*1000);toast('🍽 กิน'+FN[k][1]+' เลือด +'+h+' · ตีแรงขึ้น')}
- else{S.bf.ore=Math.min(cap,Math.max(Date.now(),S.bf.ore||0)+(60+60*k)*1000);toast('🍽 กิน'+CN[k][1]+' · ได้แร่โบนัสง่ายขึ้น')}}
-// หน้าต่างทักษะ & อาหาร
-BIN.perks=()=>{const t=Date.now(),m=S.fm||{};
- let h='<div class="farm pkp"><div class="wsum"><span>🌟 แต้ม '+S.sp+'</span><span>Lv.'+S.lv+'</span><span>💎 '+(S.dm||0)+'</span></div>';
- PK.forEach(p=>{const k=p[0],lv=S.pk[k],mx=p[3],c=k=='l'?LC[lv]:1,ok=lv<mx&&(k=='l'?(S.dm||0)>=c:S.sp>=c);let pp='';for(let i=0;i<mx;i++)pp+='<i class="'+(i<lv?'on':'')+'"></i>';
-  h+='<div class="wu"><div class="wh2"><b>'+p[1]+'</b><span class="pips">'+pp+'</span></div><small>'+p[2]+'</small>'+(lv>=mx?'<div class="mx">✔ ระดับสูงสุดแล้ว</div>':'<button class="ac" data-a="pk_u_'+k+'"'+(ok?'':' disabled')+'>อัปเกรด ('+(k=='l'?c+' 💎':'1 แต้ม')+')</button>')+'</div>'});
- h+='<button class="ac" data-a="pk_r"'+(spent()&&(S.dm||0)>=1?'':' disabled')+'>รีเซ็ตทักษะ (คืนแต้ม · 1 💎)</button>';
- h+='<h5>🍽 อาหาร</h5><small>ปลา: ฟื้นเลือด + ตีแรง · ผัก: แร่โบนัส (ยิ่งของหายากยิ่งนาน) — ได้จากบ่อตกปลาและแปลงผัก</small>';
- [['atk','⚔ ตีแรงขึ้น'],['ore','⛏ แร่โบนัส']].forEach(b=>{if(on(b[0]))h+='<div class="rw ok"><span>'+b[1]+'</span><b>'+Math.ceil((S.bf[b[0]]-t)/1000)+' วิ</b></div>'});
- let n=0;[['f',FN],['c',CN]].forEach(g=>g[1].forEach((f,k)=>{const q=m[g[0]+k]||0;if(q>0){n++;h+='<div class="wc"><div class="av2">'+f[0]+'</div><div class="wi"><div class="wn"><b>'+f[1]+' ×'+q+'</b></div></div><button class="ac" data-a="pk_e_'+g[0]+k+'">กิน</button></div>'}}));
- if(!n)h+='<small>ยังไม่มีอาหาร ลองตกปลาที่บ่อน้ำหรือปลูกผักดูครับ</small>';
- return{t:'🌟 ทักษะ & อาหาร',d:'เลเวลอัปแต้มทักษะ 1 แต้ม ใช้เสริมการขุด การสู้ และเตาหลอม · เพชรใช้ซื้อโชคลาภและรีเซ็ตทักษะ',b:h+'</div>'}};
-ov.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-a]'),a=el&&el.dataset.a;if(!a||a.slice(0,3)!='pk_')return;e.stopImmediatePropagation();const k=a.split('_');
- if(k[1]=='u'){const p=PK.find(q=>q[0]==k[2]),lv=S.pk[k[2]];if(!p||lv>=p[3])return;
-  if(k[2]=='l'){const c=LC[lv];if((S.dm||0)<c)return toast('เพชรไม่พอ');S.dm-=c}else{if(S.sp<1)return toast('แต้มทักษะไม่พอ');S.sp--}
-  S.pk[k[2]]++;HP=Math.min(HP,mhp());toast('อัปเกรด'+p[1].slice(2)+'สำเร็จ! ระดับ '+S.pk[k[2]])}
- else if(k[1]=='r'){if(!spent()||(S.dm||0)<1)return;S.dm--;S.sp+=spent();PK.forEach(p=>{if(p[0]!='l')S.pk[p[0]]=0});HP=Math.min(HP,mhp());toast('รีเซ็ตทักษะแล้ว คืนแต้มทั้งหมด')}
- else if(k[1]=='e')eat(k[2]);
- save();rndBld()},true);
-// ปุ่มในเมนู + ปุ่มลัด K
-const st=document.createElement('style');st.textContent='#pkb{order:1}#bfx{position:absolute;left:50%;top:6.3em;transform:translateX(-50%);padding:.2em .9em;border-radius:99px;font-size:.9em;white-space:nowrap;pointer-events:none;color:var(--parch)}#bfx[hidden]{display:none}';document.head.appendChild(st);
-const b=document.createElement('button');b.type='button';b.id='pkb';b.textContent='🌟';b.title='ทักษะ & อาหาร (K)';b.setAttribute('aria-label','ทักษะและอาหาร');$('hlp').before(b);b.style.pointerEvents='auto';
-const tg=()=>{if(BL){const x=ov.querySelector('[data-a=x]');if(x&&ov.querySelector('.pkp'))x.click();return}if(NOUI)return;showBld('perks')};
-b.onclick=tg;addEventListener('keydown',e=>{if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;if(e.code=='KeyK'){e.preventDefault();tg()}});
-// แถบบัฟ + แจกแต้มเมื่อเลเวลอัป
-const bx=document.createElement('section');bx.id='bfx';bx.className='pn';bx.hidden=true;$('hud').appendChild(bx);
-setInterval(()=>{if((S.lv||1)>S.sl){const d=S.lv-S.sl;S.sl=S.lv;S.sp+=d;toast('🌟 ได้แต้มทักษะ +'+d+' (กด K หรือปุ่ม 🌟)');save()}
- const t=Date.now(),a=[];if(on('atk'))a.push('⚔ ตีแรง '+Math.ceil((S.bf.atk-t)/1000)+' วิ');if(on('ore'))a.push('⛏ แร่โบนัส '+Math.ceil((S.bf.ore-t)/1000)+' วิ');
- bx.hidden=!a.length||BL;if(a.length)bx.textContent=a.join(' · ')},1000);
+ if(w0!='mine'||where!='mine'){/* ไม่ใช่ในเหมือง */}
+ else{
+  if(ok&&t0>=4&&t0<=6&&map[ty]&&map[ty][tx]!=t0){
+   if(Math.random()<luck()){if(t0==4)S.i++;else if(t0==5)S.s++;else S.g++;flt(tx+.5,ty+.2,'+1')}
+   if(Math.random()<.02*sk('l')){S.dm=(S.dm||0)+1;toast('💎 โชคลาภ! เจอเพชร +1')}}
+  const dg=S.gold-g0;
+  if(dg>0&&goldK()>0){const ex=Math.round(dg*goldK());if(ex>0){S.gold+=ex;flt(P.x,P.y-.9,'+'+ex+'💰')}}}
+ const f1=fishSnap();
+ for(let k=0;k<4;k++)if(f1[k]>f0[k]){qa('fs');if(Math.random()<fishK()){const m=S.fm;m['f'+k]=(m['f'+k]||0)+1;toast('🎣 โชคดี! จับได้เพิ่มอีกตัว')}}
+};
+const _u=update;update=function(dt){_u(dt);
+ const b=buff();if(b&&b.reg&&where=='mine'&&HP>0)HP=Math.min(mhp(),HP+b.reg*dt);
+ if(HP>mhp())HP=mhp()};
+// ผักโตเร็วตามทักษะเกษตรกร
+setInterval(()=>{const k=.08*sk('a');if(k<=0||!Array.isArray(S.pl))return;for(const q of S.pl)if(q&&typeof q.t=='number')q.t-=1000*k},1000);
+
+// ---------- ชั้นเหมืองพิเศษ ----------
+const MODS={rich:{k:'rich',e:'💎',n:'เส้นแร่อุดมสมบูรณ์'},nest:{k:'nest',e:'👹',n:'รังมอนสเตอร์ (ทอง +50%)'},quiet:{k:'quiet',e:'🍃',n:'ถ้ำเงียบสงบ'},lava:{k:'lava',e:'🌋',n:'ธารลาวา (แร่เยอะ)'}};
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function applyMod(f){
+ if(Math.random()>.5)return;
+ const r=Math.random()*100,k=r<35?'rich':r<60?'nest':r<75?'quiet':'lava',oreC=p=>{for(let y=1;y<H-1;y++)for(let q=1;q<W-1;q++)if(map[y][q]==3&&Math.random()<p){const z=Math.random();map[y][q]=z<.65?4:z<.9?5:(f>=4?6:5)}};
+ if(k=='rich')oreC(.3);
+ else if(k=='nest'){const n=Math.ceil(MS.length*.6)+2;
+  for(let c=0,t=0;c<n&&t<400;t++){const q=R(1,W-2),y=R(1,H-2);
+   if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>6&&!MS.some(m=>Math.hypot(m.x-q-.5,m.y-y-.5)<1.2)){c++;
+    const kk=f>=4&&Math.random()<.4?'k':'g',h=kk=='k'?40+f*6:20+f*4;MS.push({x:q+.5,y:y+.5,t:kk,hp:h,mx:h,cd:0,fl:0})}}}
+ else if(k=='quiet')MS=[];
+ else{oreC(.12);for(let y=1;y<H-1;y++)for(let q=1;q<W-1;q++)if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>5&&Math.random()<.04)map[y][q]=17}
+ MOD=MODS[k];toast('✨ ชั้นพิเศษ: '+MOD.e+' '+MOD.n)}
+const _mn=mine;mine=function(f){MOD=null;_mn(f);
+ try{if(where=='mine'&&f>=2&&f%5!=0&&!String((Z&&Z.n)||'').startsWith('ดันเจี้ยน')&&!(window.IN_HUNT&&IN_HUNT()))applyMod(f)}catch(e){MOD=null}};
+const _tw=town;town=function(){MOD=null;_tw()};
+
+// ---------- เควสใหม่ (ต่อท้ายรายการเดิม) ----------
+QS.push({t:'ปรุงอาหาร 3 จาน',k:'ck',n:3,r:300},{t:'ตกปลา 5 ตัว',k:'fs',n:5,r:350},{t:'ใช้แต้มทักษะ 4 แต้ม',k:'sp',n:4,r:450});
+
+// ---------- หน้าต่างทักษะ ----------
+BIN.skills=()=>{const pts=points();
+ let h='<div class="skp"></div><div class="wsum"><span>🌟 แต้มที่ใช้ได้ '+pts+'</span><span>🎖️ Lv.'+S.lv+'</span><span>💎 '+(S.dm||0)+'</span></div>';
+ SKS.forEach(s=>{const lv=sk(s.k),mx=s.mx||5;let pips='';for(let q=0;q<mx;q++)pips+='<i class="'+(q<lv?'on':'')+'"></i>';
+  h+='<div class="wu"><div class="wh2"><b>'+s.e+' '+s.n+'</b><span class="pips">'+pips+'</span></div><small>'+s.d+' · ตอนนี้ '+s.f(lv)+'</small>';
+  if(lv>=mx)h+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';
+  else{const c=s.dm?s.dm[lv]:COST[lv],ok=s.dm?(S.dm||0)>=c:pts>=c;h+='<button class="ac" data-a="sk_u_'+s.k+'"'+(ok?'':' disabled')+'>เรียนรู้ระดับ '+(lv+1)+' ('+c+(s.dm?' 💎':' แต้ม')+')</button>'}
+  h+='</div>'});
+ h+=HR+'<button class="ac" data-a="sk_r"'+(S.gold>=300&&spent()>0?'':' disabled')+'>รีเซ็ตทักษะ (300 ทอง · คืนแต้ม ไม่รวมโชคลาภ)</button>';
+ return{t:'🌟 ทักษะ',d:'เลเวลอัปทีละครั้งได้ 1 แต้ม นำไปเสริมการขุด การต่อสู้ เตาหลอม ตกปลา และปลูกผัก ส่วนโชคลาภจ่ายด้วยเพชร',b:h}};
+
+// ---------- ครัว (ต่อท้ายหน้าต่างแปลงผัก) ----------
+function kitchen(){const fm=S.fm||{},b=buff();
+ let h=HR+'<b>🍳 ครัว</b><small style="display:block;margin:.2em 0 .5em">ใช้ปลาและผักจากคลังผลผลิตปรุงอาหาร ได้บัฟแรงๆ ก่อนลงเหมือง (ปรุงก่อนขายผลผลิตนะ)</small>';
+ h+=b?'<div class="rw ok"><span>กำลังได้รับ: '+b.e+' '+b.n+'</span><b>'+mmss(bleft())+'</b></div>':'<div class="rw"><span>ยังไม่ได้กินอาหาร</span><b>—</b></div>';
+ MEALS.forEach((m,i)=>{const have=S.ml[i]||0,can=Object.keys(m.r).every(k=>(fm[k]||0)>=m.r[k]);
+  h+='<div class="wu"><div class="wh2"><b>'+m.e+' '+m.n+'</b><span class="mx">มี '+have+'</span></div><small>'+m.d+'</small>'
+   +Object.keys(m.r).map(k=>'<div class="rw'+((fm[k]||0)>=m.r[k]?' ok':' no')+'"><span>'+RN[k]+'</span><b>'+(fm[k]||0)+' / '+m.r[k]+'</b></div>').join('')
+   +'<div class="bgr"><button class="ac" data-a="ck_c_'+i+'"'+(can?'':' disabled')+'>ปรุง</button><button class="ac" data-a="ck_e_'+i+'"'+(have>0?'':' disabled')+'>กิน</button></div></div>'});
+ h+=HR+'<b>🍽 กินสด</b><small style="display:block;margin:.2em 0 .5em">ปลา: ฟื้นเลือด + ตีแรง 15% · ผัก: โชคขุดแร่ +20% (ของหายากยิ่งนาน)</small>';
+ [['atk','⚔ ตีแรงขึ้น'],['ore','⛏ โชคขุดแร่']].forEach(q=>{if(ron(q[0]))h+='<div class="rw ok"><span>'+q[1]+'</span><b>'+mmss(Math.ceil((S.rb[q[0]]-Date.now())/1000))+'</b></div>'});
+ let n=0;Object.keys(RN).forEach(id=>{const q=fm[id]||0;if(q>0){n++;h+='<div class="wc"><div class="av2">'+RN[id].split(' ')[0]+'</div><div class="wi"><div class="wn"><b>'+RN[id].split(' ').slice(1).join(' ')+' ×'+q+'</b></div></div><button class="ac" data-a="ck_r_'+id+'">กิน</button></div>'}});
+ if(!n)h+='<small>ยังไม่มีปลาหรือผักในคลัง</small>';
+ return h}
+const o25=BIN[25];BIN[25]=()=>{const o=o25();o.b=o.b.replace(/<\/div>$/,kitchen()+'</div>');return o};
+
+ov.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-a]'),a=el&&el.dataset.a;if(!a)return;
+ if(a.slice(0,3)=='sk_'){e.stopImmediatePropagation();
+  if(a=='sk_r'){if(S.gold<300||!spent())return;S.gold-=300;S.sk={l:S.sk.l||0};toast('รีเซ็ตทักษะแล้ว ได้แต้มคืน (โชคลาภไม่ถูกรีเซ็ต)')}
+  else{const k=a.slice(5),s=SKS.find(q=>q.k==k);if(!s)return;const lv=sk(k),mx=s.mx||5;if(lv>=mx)return;const c=s.dm?s.dm[lv]:COST[lv];
+   if(s.dm){if((S.dm||0)<c)return toast('เพชรไม่พอ');S.dm-=c}else{if(points()<c)return toast('แต้มทักษะไม่พอ');qa('sp',c)}
+   S.sk[k]=lv+1;toast('🌟 เรียนรู้ '+s.n+' ระดับ '+(lv+1)+' สำเร็จ!');HP=Math.min(HP,mhp())}
+  save();rndBld();chips()}
+ else if(a.slice(0,3)=='ck_'){e.stopImmediatePropagation();
+  const p=a.split('_');
+  if(p[1]=='r'){const id=p[2],fm=S.fm||(S.fm={});if(!RN[id]||!(fm[id]>0))return;const k=+id.slice(1),now=Date.now(),cap=now+600000;fm[id]--;
+   if(id[0]=='f'){const hh=Math.round(mhp()*(.2+.1*k));HP=Math.min(mhp(),HP+hh);S.rb.atk=Math.min(cap,Math.max(now,S.rb.atk||0)+(60+40*k)*1000);toast('🍽 กิน'+RN[id]+' เลือด +'+hh+' · ตีแรงขึ้น')}
+   else{S.rb.ore=Math.min(cap,Math.max(now,S.rb.ore||0)+(60+60*k)*1000);toast('🍽 กิน'+RN[id]+' · โชคขุดแร่เพิ่มขึ้น')}}
+  else{const i=+p[2],m=MEALS[i];if(!m)return;
+   if(p[1]=='c'){const fm=S.fm||(S.fm={});if(!Object.keys(m.r).every(k=>(fm[k]||0)>=m.r[k]))return toast('วัตถุดิบไม่พอ');
+    for(const k in m.r)fm[k]-=m.r[k];S.ml[i]=(S.ml[i]||0)+1;qa('ck');toast('🍳 ปรุง'+m.n+'สำเร็จ! (มี '+S.ml[i]+' จาน)')}
+   else{if(!(S.ml[i]>0))return;S.ml[i]--;const rep=!!buff();S.bf={k:i,u:Date.now()+m.dur*1000};
+    toast('😋 กิน'+m.n+'แล้ว! '+m.d+(rep?' (แทนที่บัฟเดิม)':''))}}
+  save();rndBld();chips()}
+},true);
+
+// ---------- HUD ชิปบัฟ/ชั้นพิเศษ + ปุ่มและคีย์ลัด ----------
+const bf=document.createElement('div'),md=document.createElement('div');bf.id='bf';md.id='md';bf.className=md.className='pn';lc.appendChild(bf);lc.appendChild(md);
+function chips(){const b=buff(),n=Date.now(),ps=[];
+ if(b)ps.push('<b>'+b.e+' '+b.n+'</b> '+mmss(bleft()));
+ if(ron('atk'))ps.push('<b>⚔</b> '+mmss(Math.ceil((S.rb.atk-n)/1000)));
+ if(ron('ore'))ps.push('<b>⛏</b> '+mmss(Math.ceil((S.rb.ore-n)/1000)));
+ const t=ps.join(' · '),m=where=='mine'&&MOD?'<b>'+MOD.e+'</b> '+MOD.n:'';
+ if(bf.dataset.t!==t){bf.dataset.t=t;bf.innerHTML=t;bf.style.display=t?'block':'none'}
+ if(md.dataset.t!==m){md.dataset.t=m;md.innerHTML=m;md.style.display=m?'block':'none'}}
+setInterval(chips,500);chips();
+let lastP=points();setInterval(()=>{const p=points();if(p>lastP)toast('🌟 ได้แต้มทักษะ +'+(p-lastP)+' · กด K หรือปุ่ม 🌟');lastP=p},1000);
+const sb=document.createElement('button');sb.type='button';sb.id='skb';sb.textContent='🌟';sb.title='ทักษะ (K)';sb.setAttribute('aria-label','ทักษะ');$('hlp').before(sb);
+const tg=()=>{if(BL){const x=ov.querySelector('[data-a=x]');if(x&&ov.querySelector('.skp'))x.click();return}if(NOUI)return;showBld('skills')};
+sb.onclick=tg;
+addEventListener('keydown',e=>{if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;if(e.code=='KeyK'){e.preventDefault();tg()}});
+const oh=BIN.help;BIN.help=()=>{const o=oh();o.b=o.b.replace('<p style','<div class="rw"><span>ทักษะ</span><b>K / ปุ่ม 🌟</b></div><div class="rw"><span>ทำอาหารกินเพิ่มพลัง</span><b>แปลงผัก → ครัว</b></div><p style');return o};
 })();
 </script>
 <style>
+/* นาฬิกา: โหมด HUD ย่อ = แสดงแค่เวลา (⚔ โผล่เมื่อโจรใกล้มา <60 วิ), โหมดแถบเลือด = ซ่อน */
+#clk{opacity:.8}body.hud1 #clk em.mk,body.hud1 #clk em.rc:not(.hot),body.hud1 #clk span{display:none}body.hud2 #clk{display:none}
 /* ===== รองรับ iPhone (รอยบาก / home indicator / Safari) ===== */
 :root{--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--sb:env(safe-area-inset-bottom,0px);--st2:env(safe-area-inset-top,0px)}
 html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
@@ -1505,7 +1661,7 @@ body{position:fixed;inset:0;width:100%}
 #dp{position:absolute!important;left:calc(50% - var(--js)/2);bottom:0;top:auto;width:var(--js)!important;height:var(--js)!important;border-radius:50%;pointer-events:none!important;opacity:.55!important;
  background:radial-gradient(circle at 50% 45%,rgba(60,44,24,.28) 0,rgba(20,14,8,.5) 62%,rgba(210,169,79,.16) 100%)!important;
  border:2px solid rgba(210,169,79,.5)!important;box-shadow:inset 0 0 22px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.45)!important;
- -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);transition:opacity .15s,box-shadow .15s,left .14s,bottom .14s,top .14s}
+ transition:opacity .15s,box-shadow .15s,left .14s,bottom .14s,top .14s}
 #dp.on{opacity:1!important;transition:opacity .08s,box-shadow .15s;box-shadow:inset 0 0 22px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.45),0 0 0 5px rgba(255,210,63,.22)!important}
 #dp::before{content:"";position:absolute;inset:0;border:0;border-radius:50%;
  background:repeating-conic-gradient(from -2deg,rgba(241,230,198,.75) 0 4deg,transparent 4deg 45deg);
@@ -1537,6 +1693,675 @@ body{position:fixed;inset:0;width:100%}
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+</script>
+<script>
+/* ===== ปรับความยาก: ตั้งค่าได้ที่ตัวเลขด้านล่าง ===== */
+(function(){
+const HPX=1.35,   // เลือดมอนสเตอร์/โจร/บอส ×
+ DMX=1.3,         // ความเสียหายที่ได้รับ ×
+ REGEN=.4,        // อัตราฟื้นเลือดในหมู่บ้าน (เดิม 1)
+ RAID=180,        // โจรบุกทุกกี่วินาที (เดิม 240)
+ DGOLD=.1,DORE=.25,DCAP=3000,   // ตายในเหมืองปกติ: เสียทอง/แร่ที่ยังไม่ขาย (ดันเจี้ยนและทุ่งล่ามอนไม่เสีย)
+ PRICEX=1.3;      // ราคาตีจอบ ×
+for(let i=2;i<REC.length;i++)if(REC[i]&&REC[i].gold)REC[i].gold=Math.round(REC[i].gold*PRICEX/10)*10;
+const _dd=dmgRed;dmgRed=()=>_dd()-(DMX-1);
+const _u=update;update=function(dt){const h0=HP;_u(dt);
+ for(const m of MS)if(!m.hz){m.hz=1;m.hp=Math.round(m.hp*HPX);m.mx=Math.round(m.mx*HPX)}
+ if(where=='town'&&HP>h0&&HP<mhp())HP=h0+(HP-h0)*REGEN;
+ if(RT>RAID)RT=RAID};
+// แร่เหล็ก/เงิน/ทอง ต้องฟันเพิ่มอีก 1 ครั้งก่อนแตก
+function front(){let best=null,bd=9;for(const m of MS){const rx=m.x-P.x,ry=m.y-P.y,fw=rx*face[0]+ry*face[1],lt=Math.abs(rx*face[1]-ry*face[0]);
+ if(fw>-.2&&fw<(m.b?2:1.4)&&lt<(m.b?1.2:.8)&&fw<bd){bd=fw;best=m}}return best}
+const _a=act;act=function(){
+ if(where=='mine'&&!BL&&!front()){const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8);
+  if(tx>=0&&ty>=0&&tx<W&&ty<H){const t=map[ty][tx];
+   if(t>=4&&t<=6){const k=tx+','+ty,need=Math.max(1,[0,2,3,4,5][t-3]+Math.floor(floor/4)-(S.pick-1)-Math.floor((Math.min(S.lv,40)-1)/3));
+    if((hits[k]||0)+1>=need&&!hits['x'+k]){hits['x'+k]=1;hits[k]=need-2}}}}
+ _a()};
+// ตายในเหมืองปกติ = เสียของ
+const _die=die;die=function(){
+ if(where=='mine'&&!String((typeof Z!='undefined'&&Z.n)||'').startsWith('ดันเจี้ยน')&&!(window.IN_HUNT&&IN_HUNT())){
+  const g=Math.min(S.gold,Math.min(DCAP,Math.floor(S.gold*DGOLD))),o=[Math.floor(S.i*DORE),Math.floor(S.s*DORE),Math.floor(S.g*DORE)],n=o[0]+o[1]+o[2];
+  S.gold-=g;S.i-=o[0];S.s-=o[1];S.g-=o[2];
+  sleep(true,'💀 ถูกหามกลับบ้าน เสียทอง '+g+(n?' และแร่ที่ยังไม่ขาย '+n+' ก้อน':''));return}
+ _die()};
+})();
+
+// ===== ระดับมอนสเตอร์ตามชั้นเหมือง =====
+(function(){
+ const inHunt=()=>!!(window.IN_HUNT&&window.IN_HUNT());
+ const lvOf=m=>m.b?floor+3:m.t=='k'?floor+1:floor;
+ function pass(){
+  if(where!='mine'||inHunt())return;
+  for(const m of MS){
+   if(m.lv!==undefined||(m.t=='b'&&!m.b))continue;
+   const L=Math.max(1,lvOf(m)),hm=1+(L-1)*.04;
+   m.lv=L;m.dmul=1+(L-1)*.03;m.gmul=1+(L-1)*.06;
+   m.mx=Math.round(m.mx*hm);m.hp=Math.round(m.hp*hm)}}
+ const _u=update;update=function(dt){_u(dt);try{pass()}catch(e){}};
+ const _d=draw;draw=function(){_d();
+  if(where!='mine'||inHunt()||!MS.length)return;
+  x.save();x.setTransform(GK,0,0,GK,-CX*GK,-CY*GK);
+  x.font="bold 9px Mitr,'Noto Sans Thai',Tahoma,sans-serif";x.textAlign='center';x.textBaseline='middle';x.lineWidth=2.5;x.strokeStyle='#000';x.lineJoin='round';
+  for(const m of MS){if(!m.lv)continue;
+   const X=Math.round(m.x*T),Y=Math.round(m.y*T)+(m.b?-37:-21);
+   if(X<CX-30||X>CX+VW+30||Y<CY-10||Y>CY+VH+10)continue;
+   const tx='Lv.'+m.lv;x.strokeText(tx,X,Y);x.fillStyle=m.b?'#ffd23f':m.lv>S.lv?'#ff8a7a':'#ffffff';x.fillText(tx,X,Y)}
+  x.restore()};
+})();
+
+// ===== แก้โจรติด: เดินเข้าหาเป้าหมายตรงๆ แล้วชนสิ่งกีดขวาง (น้ำพุกลางลาน) ไม่เบี่ยงหลบ =====
+(function(){
+ const _m=mv;
+ mv=function(o,tx,ty,sp,dt){
+  if(o.t!='b'||where!='town')return _m(o,tx,ty,sp,dt);
+  if(o.dtr>0){ // กำลังเบี่ยงหลบสิ่งกีดขวาง
+   o.dtr-=dt;
+   const nx=o.x+o.sd*sp*dt;
+   if(can(nx,o.y))o.x=nx;else o.sd=-o.sd;
+   return Math.hypot(tx-o.x,ty-o.y)}
+  const px=o.x,py=o.y,r=_m(o,tx,ty,sp,dt),moved=Math.hypot(o.x-px,o.y-py);
+  if(r>.6&&moved<sp*dt*.25){
+   o.bk=(o.bk||0)+dt;
+   if(o.bk>.25){o.bk=0;o.dtr=1.5;
+    const L=can(o.x-1,o.y),Rt=can(o.x+1,o.y);
+    o.sd=L&&!Rt?-1:Rt&&!L?1:(o.x<tx?1:-1)*(Math.random()<.5?1:-1)||1}}
+  else o.bk=Math.max(0,(o.bk||0)-dt*2);
+  return r};
+})();
+
+// ===== ค่ายทหาร 2.0: สายอาชีพ / ยศ+XP / เลือด+ล้มลง / เปลี่ยนจุดเฝ้า / อัปเกรดค่าย =====
+(function(){
+const ov=$('bld'),
+RL={s:{n:'ทหารหอก',i:'⚔️',hp:60,dm:12,rg:.95,cd:.7,u:1,g:150,bi:2,bs:0,w:2,d:'สมดุล สู้ประชิดด้วยหอก'},
+ h:{n:'ทหารโล่',i:'🛡️',hp:110,dm:8,rg:.95,cd:.9,u:2,g:230,bi:4,bs:0,w:2.4,d:'อึดสุด ยั่วให้โจรหันมาสู้ ตีแล้วโจรกระเด็นและช้าลง'},
+ a:{n:'พลธนู',i:'🏹',hp:42,dm:9,rg:5,cd:.85,u:3,g:210,bi:2,bs:2,w:2.2,d:'ยิงจากระยะไกล ถอยหนีเมื่อโจรเข้าใกล้ เล็งโจรที่ขโมยของก่อน'}},
+RK=['พลทหาร','สิบตรี','สิบโท','สิบเอก','จ่าสิบเอก'],XN=[40,90,170,300],
+PR=[{gold:200},{gold:450,bi:3},{gold:900,bs:3},{gold:1800,bs:5,bg:2}],
+PL={C:'📦 หีบทอง',G:'🚪 ประตูใต้',W:'⛺ ค่ายคนงาน'},PB={C:[9.5,5.7],G:[9.5,13.6],W:[14.6,10.8]},
+NM=['ชาติ','กล้า','ทอง','เก่ง','แสง','ภพ','วีร์','ธีร์','ศักดิ์','จักร','ไกร','นเรศ'],
+LB={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'},MX={bk:4,bt:4,bm:3,bh:2,bw:3},CAP=[5,6,7,8],RVT=[28,18,10],
+UP={bk:{nm:'ขยายค่าย',t:'🏰 ขยายค่าย',d:'เพิ่มที่นอน และปลดล็อกสายทหารใหม่',n:['Lv.2 จุ 6 นาย + ทหารโล่','Lv.3 จุ 7 นาย + พลธนู','Lv.4 จุ 8 นาย + ทหารใหม่เริ่มที่ยศสิบตรี'],c:[{gold:600,bi:4},{gold:1500,bi:8,bs:3},{gold:3500,bs:8,bg:3}]},
+ bt:{nm:'ลานฝึกซ้อม',t:'🎯 ลานฝึกซ้อม',d:'ทหารฝึกเองยามว่าง +1 XP/นาที ต่อระดับ (แม้ปิดเกม) และตีแรงขึ้น +5% ต่อระดับ',c:[{gold:400,bi:3},{gold:800,bi:5},{gold:1500,bs:4},{gold:2800,bs:6}]},
+ bm:{nm:'คลังเกราะ',t:'🛡️ คลังเกราะ',d:'เลือดทหารทุกนาย +15% ต่อระดับ',c:[{gold:500,bi:4},{gold:1200,bi:8},{gold:2800,bs:6}]},
+ bh:{nm:'เต็นท์พยาบาล',t:'🏥 เต็นท์พยาบาล',d:'ทหารที่ล้มลุกเร็วขึ้น (28→18→10 วิ) และฟื้นเลือดไวขึ้น',c:[{gold:700,bi:5},{gold:2000,bs:5}]},
+ bw:{nm:'หอสังเกตการณ์',t:'🔭 หอสังเกตการณ์',d:'เห็นโจรล่วงหน้านานขึ้น +8 วิต่อระดับ และพลธนูยิงไกลขึ้น',c:[{gold:600,bi:4},{gold:1500,bs:4},{gold:3200,bs:6,bg:2}]}};
+const lv=k=>k=='bk'?Math.min(4,Math.max(1,S.bk|0||1)):Math.min(MX[k],Math.max(0,S[k]|0)),
+ gl=()=>Array.isArray(S.gl)?S.gl:(S.gl=[]),
+ mxhp=g=>Math.round(RL[g.e.r].hp*(1+.12*(g.e.rk-1))*(1+.15*lv('bm'))),
+ dmg=g=>RL[g.e.r].dm*(1+.1*(g.e.rk-1))*(1+.05*lv('bt')),
+ gxp=(e,n)=>{if(e.rk<5)e.xp=Math.min(XN[e.rk-1],(e.xp||0)+n)},
+ ready=e=>e.rk<5&&e.xp>=XN[e.rk-1]-.01,
+ afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),
+ pay=c=>{for(const k in c)S[k]-=c[k]},
+ cost=(k,n)=>{const R=RL[k],c={gold:R.g*(n+1),bi:R.bi};if(R.bs)c.bs=R.bs;return c},
+ rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
+ pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
+const mk=(e,x0,y0)=>({e:e,x:x0,y:y0,cd:0,at:0,hv:0,pt:0,dn:0,hp:0,mx:0,f:1,leg:0,wt:0,st:''});
+function ppos(g){const p=g.e.p,m=GD.filter(q=>q.e.p==p),k=m.indexOf(g),n=m.length,b=PB[p]||PB.C;
+ let px=b[0]+(k-(n-1)/2)*1.15,py=b[1]+(k%2)*.8;
+ if(!can(px,py)){px=b[0];py=b[1];if(!can(px,py)){px=9.5;py=6}}return[px,py]}
+function sync(){const L=gl();
+ for(let i=L.length-1;i>=0;i--)if(!L[i]||!RL[L[i].r])L.splice(i,1);
+ while(L.length<(S.gd|0)&&L.length<8)L.push({r:'s',rk:1,xp:0,p:['C','G','W'][L.length%3],n:NM[L.length%12],c:150*(L.length+1),k:0});
+ L.length=Math.min(L.length,8);
+ L.forEach(e=>{e.rk=Math.min(5,Math.max(1,e.rk|0||1));e.xp=+e.xp||0;if(!PL[e.p])e.p='C'});
+ S.gd=L.length;GD=[];
+ for(const e of L){const g=mk(e,0,0);g.mx=mxhp(g);g.hp=g.mx;GD.push(g)}
+ GD.forEach(g=>{const p=ppos(g);g.x=p[0];g.y=p[1]})}
+const _tw=town;town=function(){_tw();sync()};
+// ---------- การต่อสู้ ----------
+const AR=[];let ws=0,wasOn=0,dnN=0;
+function hit(g,m,dm,bash){const d=Math.max(1,Math.round(dm*(.9+Math.random()*.2)));m.hp-=d;m.fl=.15;flt(m.x,m.y-.4,d);
+ if(bash){const dx=m.x-g.x,dy=m.y-g.y,l=Math.hypot(dx,dy)||1,nx=m.x+dx/l*.5,ny=m.y+dy/l*.5;if(can(nx,m.y))m.x=nx;if(can(m.x,ny))m.y=ny;m.sl=1.6}
+ if(m.hp<=0&&MS.includes(m)){gxp(g.e,m.v=='L'?40:m.v=='r'?16:m.v=='f'?14:10);g.e.k=(g.e.k|0)+1;killB(m)}}
+function idle(g,pp,dt){if(g.wt>0){g.wt-=dt;return}
+ const tx=pp[0]+(g.leg?1.2:-1.2),ty=pp[1],d=Math.hypot(tx-g.x,ty-g.y);
+ if(d<.12){g.leg^=1;g.wt=1.5+Math.random()*2;return}
+ if(Math.abs(tx-g.x)>.01)g.f=tx>g.x?1:-1;
+ mv(g,tx,ty,Math.hypot(pp[0]-g.x,pp[1]-g.y)>3?2.2:1.3,dt)}
+function guards(dt){const raidOn=MS.length>0,as=S.bo!==0,rv=RVT[lv('bh')];
+ for(const g of GD){const e=g.e,R=RL[e.r];g.mx=mxhp(g);g.cd-=dt;g.at-=dt;g.hv-=dt;g.pt-=dt;
+  if(g.dn>0){g.dn-=dt;g.st='dn';if(g.dn<=0){g.dn=0;g.hp=Math.round(g.mx*.5)}continue}
+  if(g.hp>g.mx)g.hp=g.mx;
+  if(!raidOn){if(g.hp<g.mx)g.hp=Math.min(g.mx,g.hp+g.mx*(.03+.02*lv('bh'))*dt);if(lv('bt'))gxp(e,lv('bt')*dt/60)}
+  const pp=ppos(g);let tg=null,bs=1e9;
+  for(const m of MS){const d=Math.hypot(m.x-g.x,m.y-g.y),dp=Math.hypot(m.x-pp[0],m.y-pp[1]);
+   if(!((m.loot&&d<11)||dp<7.5||(as&&d<16)))continue;
+   const sc=d-(m.loot?4:0)-(m.v=='L'?.5:0);if(sc<bs){bs=sc;tg=m}}
+  if(!tg){g.st='idle';idle(g,pp,dt);continue}
+  g.st='fight';const d=Math.hypot(tg.x-g.x,tg.y-g.y)||.01;g.f=tg.x>=g.x?1:-1;
+  if(e.r=='a'){const rg=R.rg+.6*lv('bw');
+   if(d<2.2)mv(g,g.x+(g.x-tg.x)/d*2,g.y+(g.y-tg.y)/d*2,2.2,dt);
+   else if(d>rg)mv(g,tg.x,tg.y,2.2,dt);
+   if(d<=rg&&g.cd<=0){g.cd=R.cd;g.at=.28;AR.push({x:g.x,y:g.y-.3,m:tg,d:dmg(g),g:g})}}
+  else{if(d>R.rg)mv(g,tg.x,tg.y,2.4,dt);else if(g.cd<=0){g.cd=R.cd;g.at=.28;hit(g,tg,dmg(g),e.r=='h')}}
+  if(e.r=='h'&&g.pt<=0){g.pt=3;for(const m of MS)if(!m.loot&&Math.hypot(m.x-g.x,m.y-g.y)<3.2){m.prov=2.2;m.pg=g}}}
+ for(let i=AR.length-1;i>=0;i--){const a=AR[i],m=a.m;if(!MS.includes(m)){AR.splice(i,1);continue}
+  const dx=m.x-a.x,dy=m.y-a.y,l=Math.hypot(dx,dy);if(l<.35){AR.splice(i,1);hit(a.g,m,a.d,0);continue}
+  a.x+=dx/l*14*dt;a.y+=dy/l*14*dt;a.a=Math.atan2(dy,dx)}
+ for(const m of MS){m.gc=(m.gc||0)-dt;if(m.loot||m.gc>0)continue;let b=null,bd=.85;
+  for(const g of GD)if(!g.dn){const d=Math.hypot(m.x-g.x,m.y-g.y);if(d<bd){bd=d;b=g}}
+  if(!b)continue;m.gc=1.1;const dm=Math.max(1,Math.round(({f:3,L:13}[m.v]||5)*(1+.04*(S.rc||1))*(b.e.r=='h'?.7:1)));
+  b.hp-=dm;b.hv=2.5;flt(b.x,b.y-.6,'-'+dm);
+  if(b.hp<=0){b.hp=0;b.dn=rv;dnN++;toast('🩹 '+b.e.n+' บาดเจ็บล้มลง!')}}}
+const _b=bandit;bandit=function(dt){if(where!='town')return _b(dt);const g0=GD,tmp=[];GD=tmp;try{_b(dt)}finally{if(GD===tmp)GD=g0}guards(dt)};
+const _mv=mv;mv=function(o,tx,ty,sp,dt){if(o.t!='b'||where!='town')return _mv(o,tx,ty,sp,dt);
+ if(o.sl>0){o.sl-=dt;sp*=.45}
+ if(o.prov>0&&!o.loot&&o.pg&&!o.pg.dn){o.prov-=dt;_mv(o,o.pg.x,o.pg.y,sp,dt);return Math.hypot(tx-o.x,ty-o.y)}
+ return _mv(o,tx,ty,sp,dt)};
+window.BKPOW=()=>Math.floor(gl().reduce((a,e)=>a+RL[e.r].w*(1+.12*(e.rk-1))*(1+.05*lv('bt')),0));
+const _rd=raid;raid=function(){if(where!='town')gl().forEach(e=>gxp(e,3));return _rd()};
+const _up=update;update=function(dt){_up(dt);if(where!='town')return;const R=window.__raid;if(!R)return;
+ if(R.pend>0&&!ws){ws=1;const b=8*lv('bw');if(b){R.pend+=b;toast('🔭 หอสังเกตการณ์เห็นโจรล่วงหน้า! ได้เวลาเตรียมตัวเพิ่ม '+b+' วินาที')}}else if(R.pend<=0)ws=0;
+ if(wasOn&&!R.on){const q=dnN?3:7;GD.forEach(g=>gxp(g.e,q));if(GD.length)toast('🎖 ทหารยามได้ประสบการณ์ +'+q+' จากการป้องกันเมือง');dnN=0}
+ wasOn=R.on};
+// ---------- ภาพ ----------
+window.drawGD=function(){const t=SIMT;
+ {const X=4*T,Y=8*T;for(let k=0;k<lv('bk');k++){x.fillStyle='#6b4423';x.fillRect(X+5+k*7,Y-4,2,10);x.fillStyle=k==3?'#ffd23f':'#2f5fa8';x.fillRect(X+7+k*7,Y-4,6,4)}}
+ for(const g of GD){const e=g.e,dx=g.x-(g.lx==null?g.x:g.lx),dy=g.y-(g.ly==null?g.y:g.ly);g.lx=g.x;g.ly=g.y;
+  const mvg=Math.abs(dx)+Math.abs(dy)>.004,f=g.f,X=Math.round(g.x*T),Y=Math.round(g.y*T),ph=Math.sin(t*12+GD.indexOf(g)*2),
+   bob=mvg?-Math.round(Math.abs(ph)*2):0,st=mvg?(ph>0?2:-2):0,at=g.at>0?1-g.at/.28:0,
+   r=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(X+a,Y+b,w,h)};
+  r('#0004',-9,10,18,6);
+  if(g.dn>0){r('#8e9bb0',-10,6,20,8);r('#f2c9a0',f>0?8:-14,5,6,6);r('#2f5fa8',-4,6,6,8);r('#e33',-1,-6,3,9);r('#e33',-4,-3,9,3);
+   r('#000a',-10,-10,20,3);r('#7fe08a',-10,-10,Math.round(20*Math.min(1,1-g.dn/RVT[lv('bh')])),3);continue}
+  r('#2a2f3a',-5,11+(st>0?-1:0),4,3);r('#2a2f3a',1,11+(st<0?-1:0),4,3);
+  if(e.r=='a'){
+   r('#6b4423',-f*7-1,-6+bob,4,10);r('#ddd',-f*7,-9+bob,1,3);r('#ddd',-f*7+2,-9+bob,1,3);
+   r('#3d7a3a',-6,-2+bob,12,13);r('#5a3d1e',-6,6+bob,12,2);
+   r('#f2c9a0',-5,-10+bob,10,8);r('#222',f>0?2:-4,-7+bob,2,2);
+   r('#2f6b32',-7,-16+bob,14,7);r('#2f6b32',f>0?-9:7,-13+bob,3,6);r('#e33',f>0?-5:3,-20+bob,2,5);
+   const bx=f>0?8:-10,s2=f>0?2:-2,pl=at>0&&at<1?3:0;
+   r('#8a5a2b',bx,-9+bob,2,18);r('#8a5a2b',bx+s2,-11+bob,2,3);r('#8a5a2b',bx+s2,7+bob,2,3);r('#eee',bx+(f>0?-1-pl:3+pl),-8+bob,1,16)}
+  else if(e.r=='h'){
+   r('#7f8aa0',-8,-3+bob,16,14);r('#c8d2e2',-8,-3+bob,16,2);r('#5a3d1e',-8,6+bob,16,2);r('#2f5fa8',-3,-3+bob,5,14);
+   r('#f2c9a0',-6,-12+bob,12,10);r('#222',f>0?2:-4,-8+bob,2,2);r('#99a4b8',-7,-16+bob,14,6);r('#d2a94f',-1,-21+bob,3,5);r('#d2a94f',-7,-11+bob,14,1);
+   const sx=(f>0?3:-11)+(at>0&&at<1?Math.round(Math.sin(at*3.14)*5)*f:0);
+   r('#1c3d78',sx,-8+bob,8,18);r('#d2a94f',sx,-8+bob,8,2);r('#d2a94f',sx,8+bob,8,2);r('#ffd96a',sx+3,-1+bob,2,6)}
+  else{
+   r('#1c3d78',-f*8-2,-6+bob,5,11);r('#d2a94f',-f*8-2,-6+bob,5,1);r('#d2a94f',-f*8-2,4+bob,5,1);r('#ffd96a',-f*8,-2+bob,1,3);
+   r('#8e9bb0',-7,-2+bob,14,13);r('#2f5fa8',-2,-2+bob,4,13);r('#5a3d1e',-7,6+bob,14,2);r('#c8d2e2',-7,-2+bob,14,2);
+   r('#f2c9a0',-6,-12+bob,12,10);r('#222',f>0?2:-4,-8+bob,2,2);r('#aab4c6',-7,-16+bob,14,6);r('#7d889c',-7,-11+bob,14,1);r('#d33',-1,-21+bob,3,5);r('#f66',-1,-21+bob,3,1);
+   if(at>0&&at<1){const th=Math.round(Math.sin(at*3.14)*8);r('#8a5a2b',f>0?3:-17-th,-5+bob,14+th,2);r('#e6edf7',f>0?17+th:-21-th,-6+bob,4,4)}
+   else{r('#8a5a2b',f*9-1,-20+bob,2,30);r('#e6edf7',f*9-2,-25+bob,4,6)}}
+  for(let k=1;k<e.rk;k++)r(e.rk==5?'#fff':'#ffd23f',-(e.rk-1)*3+(k-1)*6,-27,4,3);
+  if(g.hv>0||g.hp<g.mx){const q=Math.max(0,g.hp/g.mx);r('#000a',-10,-32,20,4);r(q>.5?'#6fe06f':q>.25?'#ffd23f':'#ff5a4a',-9,-31,Math.round(18*q),2)}}
+ for(const a of AR){x.save();x.translate(a.x*T,a.y*T);x.rotate(a.a||0);x.fillStyle='#e8d9a8';x.fillRect(-5,-1,10,2);x.fillStyle='#fff';x.fillRect(4,-2,3,4);x.restore()}};
+// ---------- หน้าต่างค่ายทหาร ----------
+let CF=-1,lastSig='';
+const stat=i=>{const g=GD[i],e=gl()[i];if(!g||!e)return '';
+ return (g.dn>0?'🩹 ฟื้นใน '+Math.ceil(g.dn)+' วิ':g.st=='fight'?'⚔ กำลังสู้':'🛡 ประจำการ')+' · XP '+(e.rk>=5?'MAX':Math.floor(e.xp)+'/'+XN[e.rk-1])+' · ❤ '+Math.ceil(g.hp)+'/'+g.mx+' · ปราบ '+(e.k|0)};
+BIN[18]=()=>{const L=gl(),n=L.length,cap=CAP[lv('bk')-1];
+ let h='<div class="wcamp"><div class="wsum"><span>💂 '+n+' / '+cap+'</span><span>⚔ พลังรบ '+BKPOW()+'</span><span>🏰 Lv.'+lv('bk')+'</span></div>'
+ +'<button class="ac" data-a="bk_st">'+(S.bo!==0?'🔁 โหมด: ช่วยกันไล่โจรทั่วเมือง':'📍 โหมด: ประจำจุดเท่านั้น')+'</button>'
+ +'<small class="wh">'+(S.bo!==0?'ทหารที่ว่างจะวิ่งไปช่วยเพื่อนได้ทุกที่':'ทหารสู้เฉพาะโจรที่เข้าใกล้จุดของตัวเอง (โจรที่หนีพร้อมของยังถูกไล่ตามเสมอ)')+'</small>'
+ +'<h5>กองทหาร</h5>'+(n?'':'<small>ยังไม่มีทหาร จ้างนายแรกได้เลย</small>');
+ L.forEach((e,i)=>{const R=RL[e.r],rd=ready(e),pc=PR[e.rk-1],g=GD[i];
+  h+='<div class="gcd"><div class="gtop"><div class="av2">'+R.i+'</div><div class="wi"><div class="wn"><b>'+e.n+' <small>'+R.n+' · '+RK[e.rk-1]+'</small></b></div>'
+  +'<small data-gs="'+i+'">'+stat(i)+'</small><div class="wb hp"><i data-gh="'+i+'" style="width:'+(g?Math.max(0,g.hp/g.mx*100):100)+'%"></i></div>'
+  +'<div class="wb xp"><i data-gx="'+i+'" style="width:'+(e.rk>=5?100:Math.min(100,e.xp/XN[e.rk-1]*100))+'%"></i></div></div></div><div class="gbt">'
+  +'<button class="gb" data-a="bk_p'+i+'">📍 '+PL[e.p]+'</button>'
+  +(e.rk<5?'<button class="gb'+(rd?' go':'')+'" data-a="bk_u'+i+'"'+(rd&&afford(pc)?'':' disabled')+'>🎖 เลื่อนยศ '+Object.keys(pc).map(k=>pc[k]+' '+LB[k]).join(' + ')+'</button>':'<span class="mx">ยศสูงสุดแล้ว</span>')
+  +'<button class="gb" data-a="bk_x'+i+'">'+(CF==i?'แน่ใจ? ปลด':'ปลด')+'</button></div></div>'});
+ h+='<h5>จ้างทหารใหม่</h5>';
+ for(const k in RL){const R=RL[k],c=cost(k,n),lock=lv('bk')<R.u,full=n>=cap;
+  h+='<div class="wu"><div class="wh2"><b>'+R.i+' '+R.n+'</b><span>เลือด '+R.hp+' · ตี '+R.dm+'</span></div><small>'+R.d+'</small>'
+  +(lock?'<div class="rw no"><span>ต้องขยายค่ายเป็น Lv.'+R.u+'</span></div>':rows(c))
+  +'<button class="ac" data-a="bk_h'+k+'"'+(!lock&&!full&&afford(c)?'':' disabled')+'>'+(full?'ค่ายเต็ม — ขยายค่ายเพื่อเพิ่มที่นอน':'จ้าง'+R.n)+'</button></div>'}
+ h+='<h5>อัปเกรดค่าย</h5>';
+ for(const k in UP){const u=UP[k],l=lv(k),o=k=='bk'?1:0;
+  h+='<div class="wu"><div class="wh2"><b>'+u.t+'</b><span class="pips">'+pips(l,MX[k])+'</span></div><small>'+u.d+'</small>';
+  if(l>=MX[k])h+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';
+  else{const c=u.c[l-o];h+=(u.n?'<small>ถัดไป: '+u.n[l-o]+'</small>':'')+rows(c)+'<button class="ac" data-a="bk_g'+k+'"'+(afford(c)?'':' disabled')+'>อัปเกรดเป็นระดับ '+(l+1)+'</button>'}
+  h+='</div>'}
+ return{t:'🛡️ ค่ายทหารยาม',d:'จ้างทหารหลายสาย ฝึกยศ แบ่งหน้าที่เฝ้าแต่ละจุด ทหารที่เลือดหมดจะล้มลงแล้วลุกขึ้นมาเองหลังพักฟื้น',b:h+'</div>'}};
+ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a||a.slice(0,3)!='bk_')return;e.stopImmediatePropagation();
+ const L=gl(),c=a[3],i=+a.slice(4),k=a.slice(4);
+ if(a=='bk_st')S.bo=S.bo!==0?0:1;
+ else if(c=='p'){const q=L[i];if(q){const o=Object.keys(PL);q.p=o[(o.indexOf(q.p)+1)%3]}}
+ else if(c=='u'){const q=L[i],pc=q&&PR[q.rk-1];if(!q||!ready(q)||!afford(pc))return;pay(pc);q.rk++;q.xp=0;GD[i].hp=mxhp(GD[i]);toast('🎖 '+q.n+' เลื่อนยศเป็น'+RK[q.rk-1]+'สำเร็จ!')}
+ else if(c=='x'){if(CF!=i){CF=i;setTimeout(()=>{if(CF==i){CF=-1;if(!ov.hidden&&ov.dataset.k=='18')rndBld()}},3000);rndBld();return}
+  const q=L[i];CF=-1;if(!q)return;const rf=Math.round((q.c||150)*.4);S.gold+=rf;L.splice(i,1);GD.splice(i,1);S.gd=L.length;toast('ปลด '+q.n+' แล้ว คืนค่าจ้าง '+rf+' ทอง')}
+ else if(c=='h'){const R=RL[k];if(!R)return;const n=L.length,cc=cost(k,n);
+  if(n>=CAP[lv('bk')-1]||lv('bk')<R.u||!afford(cc))return toast('ยังจ้างไม่ได้ ตรวจสอบทรัพยากรและที่นอน');
+  pay(cc);const en={r:k,rk:lv('bk')>=4?2:1,xp:0,p:['C','G','W'][n%3],n:NM.find(q=>!L.some(z=>z.n==q))||NM[n%12],c:cc.gold,k:0};
+  L.push(en);S.gd=L.length;const g=mk(en,4.5,9.6);g.mx=mxhp(g);g.hp=g.mx;GD.push(g);toast('จ้าง'+R.n+'แล้ว! มี '+S.gd+' นาย')}
+ else if(c=='g'){const u=UP[k];if(!u)return;const l=lv(k);if(l>=MX[k])return;const cc=u.c[l-(k=='bk'?1:0)];
+  if(!afford(cc))return toast('วัตถุดิบไม่พอ');pay(cc);S[k]=l+1;toast('อัปเกรด'+u.nm+'สำเร็จ! ระดับ '+(l+1))}
+ save();rndBld()},true);
+const sg=()=>[gl().map(e=>e.r+e.rk+e.p+(ready(e)?1:0)).join(),['bk','bt','bm','bh','bw'].map(lv).join(),S.gold,S.bi,S.bs,S.bg,S.bo,CF].join('|');
+setInterval(()=>{if(ov.hidden||ov.dataset.k!='18'){lastSig='';return}
+ const s=sg();if(lastSig&&s!=lastSig){lastSig=s;rndBld();return}lastSig=s;
+ ov.querySelectorAll('[data-gs]').forEach(el=>{el.textContent=stat(+el.dataset.gs)});
+ ov.querySelectorAll('[data-gh]').forEach(el=>{const g=GD[+el.dataset.gh];if(g)el.style.width=Math.max(0,g.hp/g.mx*100)+'%'});
+ ov.querySelectorAll('[data-gx]').forEach(el=>{const q=gl()[+el.dataset.gx];if(q)el.style.width=(q.rk>=5?100:Math.min(100,q.xp/XN[q.rk-1]*100))+'%'})},250);
+// ---------- เริ่มเกม: สร้างกองทหาร + XP ที่ฝึกเองตอนปิดเกม ----------
+if(where=='town'&&map)sync();
+if(S.ts&&lv('bt')){const el=Math.min(28800,(Date.now()-S.ts)/1000);if(el>30)gl().forEach(e=>gxp(e,el*lv('bt')/60))}
+})();
+
+// ===== โรงตีจอบ 2.0: มินิเกมตีเหล็ก+คุณภาพ / เทมเปอร์จอบ 3 สาย / หัวตีเหล็ก / ตีซ้ำ =====
+(function(){
+const ov=$('bld'),QN=['ธรรมดา','ดี','ยอดเยี่ยม','ชิ้นเอก'],QM=[1,1.15,1.3,1.5],
+TR={s:['⚡ จังหวะขุด','โอกาสที่สวิงเดียวนับเป็น 2 ที (ต่อระดับ +8%)'],f:['✨ โชคแร่','โอกาสได้แร่เพิ่ม +1 ตอนขุดแตก (ต่อระดับ +6%)'],e:['🗡 คมจอบ','ดาเมจใส่มอนสเตอร์เพิ่ม (ต่อระดับ +8%)']},TV={s:.08,f:.06,e:.08},
+FU=[{gold:500,bi:4},{gold:1400,bs:4},{gold:3000,bs:6,bg:2}];
+S.fg=S.fg&&typeof S.fg=='object'?S.fg:{s:0,f:0,e:0};
+const TL=k=>Math.min(5,Math.max(0,S.fg[k]|0)),FL=()=>Math.min(3,Math.max(0,S.fl|0)),TQ=()=>QM[Math.min(3,S.pq|0)]||1,
+ zw=()=>.09+.04*FL(),pos=()=>{const t=(performance.now()%1300)/1300;return t<.5?t*2:2-t*2},
+ afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
+ rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
+ tc=l=>{const c={gold:[300,650,1100,1900,3200][l],bi:[2,3,4,0,0][l],bs:[0,0,2,4,6][l]};for(const k in c)if(!c[k])delete c[k];return c},
+ rc=()=>{const r=REC[S.pick];if(!r)return{gold:120};const c={};for(const k in r)c[k]=Math.max(1,Math.round(r[k]*.4));return c},
+ pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
+let FG=null;
+// ----- ผลของเทมเปอร์ตอนขุด/ต่อสู้ -----
+const _ac=act;act=function(){let pre=null;
+ if(where=='mine'&&!BL){const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8);
+  if(tx>=0&&ty>=0&&tx<W&&ty<H){const t=map[ty][tx];
+   if(t>=3&&t<=6){pre={tx:tx,ty:ty,t:t};const k=tx+','+ty;
+    if(!MS.some(m=>Math.hypot(m.x-P.x,m.y-P.y)<2)&&TL('s')&&Math.random()<TV.s*TL('s')*TQ())hits[k]=(hits[k]||0)+1}}}
+ const hp0=MS.map(m=>[m,m.hp]);
+ _ac();
+ if(pre&&pre.t>=4&&map[pre.ty][pre.tx]!=pre.t&&TL('f')&&Math.random()<TV.f*TL('f')*TQ()){const k=pre.t==4?'i':pre.t==5?'s':'g';S[k]++;toast('✨ โชคแร่! ได้แร่เพิ่ม +1')}
+ const ed=TL('e');if(ed)for(const[m,h]of hp0)if(MS.includes(m)&&m.hp<h&&m.hp>0){const q=Math.round((h-m.hp)*TV.e*ed*TQ());if(q>0){m.hp=Math.max(1,m.hp-q);flt(m.x,m.y-.7,'+'+q)}}};
+// ----- หน้าต่างโรงตี -----
+const old=BIN[14];
+BIN[14]=()=>{const o=old(),p=S.pick,q=Math.min(3,S.pq|0);let h='';
+ if(FG){const z=zw()*100;h+='<div class="wu"><div class="wh2"><b>🔨 '+(FG.mode=='up'?'ตี'+PN[p+1]:'ตีซ้ำเพิ่มคุณภาพ')+'</b><span>ครั้งที่ '+Math.min(3,FG.sc.length+1)+' / 3</span></div><small>กด "ตี!" ตอนเส้นทองอยู่กลางโซนเขียว ตีแม่นคุณภาพจอบยิ่งสูง</small><div class="fgb"><div class="fgz" style="left:'+(50-z)+'%;width:'+z*2+'%"></div><div class="fgm" id="fgm"></div></div><small>'+(FG.sc.length?'แม่นยำ: '+FG.sc.map(s=>Math.round(s*100)+'%').join(' · '):'ยังไม่ได้ตี')+'</small><button class="ac" data-a="fg_hit">🔨 ตี!</button> <button class="gb" data-a="fg_c">ยกเลิก</button></div>'}
+ let m='<div class="sm-sec">🔥 เทมเปอร์จอบ</div><div class="sm-sum">จอบ'+PN[p].slice(3)+' · คุณภาพ '+QN[q]+' (โบนัสเทมเปอร์ ×'+QM[q]+')</div>';
+ const c=rc();
+ m+=(q>=3?'<small class="sm-max">✔ คุณภาพสูงสุดแล้ว</small>':'<small class="sm-note">ตีซ้ำเพื่อลองเพิ่มคุณภาพ (ได้คุณภาพที่ดีกว่าเสมอ ไม่เสียของเดิม)</small>'+rows(c)+'<button class="ac" data-a="fg_re"'+(afford(c)?'':' disabled')+'>🔨 ตีซ้ำ</button>');
+ for(const k in TR){const l=TL(k);m+='<div class="wu"><div class="wh2"><b>'+TR[k][0]+'</b><span class="pips">'+pips(l,5)+'</span></div><small>'+TR[k][1]+(l?' · ตอนนี้ +'+Math.round(TV[k]*l*QM[q]*100)+'%':'')+'</small>';
+  if(l>=5)m+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';else{const cc=tc(l);m+=rows(cc)+'<button class="ac" data-a="fg_t'+k+'"'+(afford(cc)?'':' disabled')+'>เทมเปอร์เป็นระดับ '+(l+1)+'</button>'}m+='</div>'}
+ const f=FL();m+='<div class="wu"><div class="wh2"><b>🧲 หัวตีเหล็ก</b><span class="pips">'+pips(f,3)+'</span></div><small>ขยายโซนเขียวของมินิเกมให้ตีแม่นง่ายขึ้น</small>';
+ if(f>=3)m+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';else m+=rows(FU[f])+'<button class="ac" data-a="fg_u"'+(afford(FU[f])?'':' disabled')+'>อัปเกรดเป็นระดับ '+(f+1)+'</button>';
+ m+='</div>';
+ const mk='<div class="sm-sec">🛡️',i=o.b.indexOf(mk);
+ return{t:o.t,d:'ตีจอบด้วยมินิเกมจับจังหวะ ปรับแต่งจอบให้ขุดเร็ว ได้แร่เพิ่ม และตีมอนแรงขึ้น พร้อมตีอุปกรณ์ป้องกัน',b:h+(i<0?o.b+m:o.b.slice(0,i)+m+o.b.slice(i))}};
+ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a||!(a=='14'||a.slice(0,3)=='fg_'))return;e.stopImmediatePropagation();const p=S.pick;
+ if(a=='14'){if(p>=5)return;if(!afford(REC[p+1]))return toast('วัตถุดิบไม่พอ');FG={mode:'up',sc:[]}}
+ else if(a=='fg_re'){if((S.pq|0)>=3||!afford(rc()))return toast('วัตถุดิบไม่พอ');FG={mode:'re',sc:[]}}
+ else if(a=='fg_c')FG=null;
+ else if(a=='fg_hit'&&FG){const d=Math.abs(pos()-.5),z=zw();FG.sc.push(d<=z?1:Math.max(0,1-(d-z)/.3));
+  if(FG.sc.length>=3){const av=FG.sc.reduce((s,v)=>s+v,0)/3,q=av>=.9?3:av>=.7?2:av>=.4?1:0;
+   if(FG.mode=='up'){const r=REC[p+1];if(p>=5||!afford(r)){FG=null;return toast('วัตถุดิบไม่พอ')}pay(r);S.pick++;S.pq=q;toast('ตี'+PN[S.pick]+'สำเร็จ! คุณภาพ'+QN[q])}
+   else{const c=rc();if(!afford(c)){FG=null;return toast('วัตถุดิบไม่พอ')}pay(c);S.pq=Math.max(S.pq|0,q);toast('ตีซ้ำสำเร็จ! คุณภาพจอบ'+QN[S.pq])}
+   FG=null;save()}}
+ else if(a=='fg_u'){const f=FL();if(f>=3||!afford(FU[f]))return toast('วัตถุดิบไม่พอ');pay(FU[f]);S.fl=f+1;toast('อัปเกรดหัวตีเหล็กสำเร็จ! ระดับ '+(f+1));save()}
+ else if(a[3]=='t'){const k=a.slice(4),l=TL(k);if(!TR[k]||l>=5)return;const c=tc(l);if(!afford(c))return toast('วัตถุดิบไม่พอ');pay(c);S.fg[k]=l+1;toast('เทมเปอร์'+TR[k][0].slice(2)+'สำเร็จ! ระดับ '+(l+1));save()}
+ rndBld()},true);
+setInterval(()=>{if(!FG)return;if(ov.hidden||ov.dataset.k!='14'){FG=null;return}const m=ov.querySelector('#fgm');if(m)m.style.left=(pos()*100)+'%'},30);
+})();
+
+// ===== ค่ายคนงาน 3.0: สายงาน / ระดับคนงานรายคน / ขวัญกำลังใจ / สิ่งอำนวยความสะดวก =====
+(function(){
+const ov=$('bld'),NM=['สมชาย','สมหญิง','ช้าง','บุญมี','ปราณี'],LX=[8,20,40,70],
+RO={m:['⛏','ช่างขุด','+18% โอกาสได้แร่เพิ่มทุกก้อนที่ส่ง'],p:['🔍','นักสำรวจ','มีโอกาสเจอแร่เงิน แร่ทอง และเพชรระหว่างทาง'],f:['📣','หัวหน้าคนงาน','มีได้ 1 คน: ลูกทีมไม่เหนื่อย และทุกคน +4% โอกาสแร่เพิ่ม']},
+FA={wf:{t:'🍲 โรงอาหาร',d:'ขวัญฟื้นเร็วขึ้น และจัดเลี้ยงถูกลง 15% ต่อระดับ',m:3,c:[{gold:400,bi:3},{gold:1000,bi:6},{gold:2200,bs:5}]},
+ wt:{t:'🧰 ชุดเครื่องมือ',d:'โบนัสจากทุกสายงานแรงขึ้น +12% ต่อระดับ',m:3,c:[{gold:600,bi:4},{gold:1500,bs:4},{gold:3000,bs:6,bg:2}]},
+ wa:{t:'🛒 รถเข็นส่งแร่',d:'ส่งแร่ที่รอรับเข้ากระเป๋าให้อัตโนมัติเมื่อกองถึง 30 ก้อน (Lv.1) / 10 ก้อน (Lv.2)',m:2,c:[{gold:800,bi:5},{gold:2000,bs:5}]}};
+const F=k=>Math.min(FA[k].m,Math.max(0,S[k]|0)),ar=k=>Array.isArray(S[k])?S[k]:(S[k]=[]),
+ ro=i=>ar('wr')[i]||'m',xp=i=>ar('wx')[i]|0,wlv=i=>{let l=1;for(const t of LX)if(xp(i)>=t)l++;return l},
+ fm=()=>{for(let i=0;i<(S.wk|0);i++)if(ro(i)=='f')return 1;return 0},
+ md=()=>S.wm==null?70:Math.max(0,Math.min(100,+S.wm||0)),mf=()=>md()>=75?1.25:md()<30?.7:1,tf=()=>1+.12*F('wt'),
+ bc=i=>((ro(i)=='m'?.18:0)+.04*(wlv(i)-1)+(fm()?.04:0))*tf()*mf(),
+ mood=()=>md()>=75?'😄':md()>=30?'🙂':'😟',
+ afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
+ rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LB[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
+ feast=()=>({gold:Math.max(40,Math.round(60*(S.wk|0)*(1-.15*F('wf'))))}),
+ pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
+const addOre=()=>{if(S.pick>=3&&Math.random()<.33)S.ws=Math.min(200,S.ws+1);else S.wi=Math.min(200,S.wi+1)};
+function deliver(i,n){n=Math.max(1,n);const k=tf()*mf(),l0=wlv(i);let got=0;
+ for(let q=0;q<n;q++){
+  if(Math.random()<bc(i)){addOre();got++}
+  if(ro(i)=='p'){
+   if(Math.random()<.12*k*(1+.15*(wlv(i)-1))){if(S.pick>=3)S.ws=Math.min(200,S.ws+1);else S.wi=Math.min(200,S.wi+1);got++}
+   if(S.pick>=4&&Math.random()<.03*k){S.g++;got++;toast('🔍 '+NM[i]+' เจอแร่ทองระหว่างทาง!')}
+   if(Math.random()<.012*k){S.dm=(S.dm||0)+1;toast('💎 '+NM[i]+' เจอเพชรระหว่างทาง!')}}
+  if(md()<30&&Math.random()<.3){if(S.wi>0)S.wi--;else if(S.ws>0)S.ws--}}
+ ar('wx')[i]=xp(i)+1;S.wm=Math.max(0,md()-n*.6*(fm()?0:1));
+ if(wlv(i)>l0)toast('🎖 '+NM[i]+' เลื่อนเป็นคนงานระดับ '+wlv(i)+' สำเร็จ!');
+ if(got&&where=='town')flt(14.5,8.4,'+'+got)}
+const PV=[],PQ=[];
+const _u=update;update=function(dt){_u(dt);if(where!='town'||!window.WKI)return;
+ for(const w of WKI()){if(PV[w.i]=='back'&&w.ph=='rest')deliver(w.i,PQ[w.i]);PV[w.i]=w.ph;PQ[w.i]=w.n}
+ if(S.wk)S.wm=Math.min(100,md()+dt*.012*(1+F('wf')));
+ const th=[0,30,10][F('wa')];
+ if(th&&S.wi+S.ws>=th){const a=S.wi,b=S.ws;S.i+=a;S.s+=b;S.wi=S.ws=0;toast('🛒 รถเข็นส่งแร่เข้ากระเป๋าแล้ว เหล็ก '+a+' เงิน '+b)}};
+const _dw=window.drawWK;window.drawWK=function(){if(_dw)_dw();if(!S.wk)return;
+ x.save();x.font='16px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(mood(),14.5*T,7.6*T);x.restore()};
+// ----- หน้าต่าง -----
+const old=BIN[19];
+BIN[19]=()=>{const o=old(),m=md(),n=S.wk|0,fc=feast();
+ let a='<h5>🎯 ขวัญกำลังใจ</h5><div class="rw"><span>'+mood()+' ขวัญ <b data-wmt>'+Math.round(m)+' / 100</b></span><b>'+(m>=75?'ฮึกเหิม โบนัส ×1.25':m<30?'หมดกำลังใจ แร่หล่นหายระหว่างทาง':'ปกติ')+'</b></div><div class="wb"><i data-wm style="width:'+m+'%"></i></div><small class="wh">คนงานเหนื่อยทุกครั้งที่ส่งแร่ (หัวหน้าช่วยกันเหนื่อย) จัดเลี้ยงเพื่อเรียกขวัญกลับมา</small>'
+ +rows(fc)+'<button class="ac" data-a="wx_f"'+(n&&m<100&&afford(fc)?'':' disabled')+'>🍲 จัดเลี้ยง (ขวัญ +35)</button><h5>👷 ทีมงาน</h5>';
+ if(!n)a+='<small>ยังไม่มีคนงาน</small>';
+ for(let i=0;i<n;i++){const r=RO[ro(i)],l=wlv(i),nx=LX[l-1],b=Math.round(bc(i)*100);
+  a+='<div class="gcd"><div class="gtop"><div class="av2">'+r[0]+'</div><div class="wi"><div class="wn"><b>'+NM[i]+' <small>'+r[1]+' · ระดับ '+l+'</small></b></div><small>'+r[2]+' · โอกาสแร่เพิ่มตอนนี้ '+b+'% · ส่งแร่ '+xp(i)+' ครั้ง</small><div class="wb xp"><i style="width:'+(nx?Math.min(100,xp(i)/nx*100):100)+'%"></i></div></div></div><div class="gbt"><button class="gb" data-a="wx_r'+i+'"'+(S.gold>=120?'':' disabled')+'>🔁 เปลี่ยนสายงาน (120 ทอง)</button></div></div>'}
+ let c='<h5>🏕 สิ่งอำนวยความสะดวก</h5>';
+ for(const k in FA){const u=FA[k],l=F(k);c+='<div class="wu"><div class="wh2"><b>'+u.t+'</b><span class="pips">'+pips(l,u.m)+'</span></div><small>'+u.d+'</small>';
+  if(l>=u.m)c+='<div class="mx">✔ ระดับสูงสุดแล้ว</div>';else c+=rows(u.c[l])+'<button class="ac" data-a="wx_g'+k+'"'+(afford(u.c[l])?'':' disabled')+'>อัปเกรดเป็นระดับ '+(l+1)+'</button>';c+='</div>'}
+ const ia=o.b.indexOf('<h5>อัปเกรดค่าย</h5>'),ib=o.b.indexOf('<h5>จ้างคนงาน</h5>');
+ return{t:o.t,d:'จ้างคนงานแล้วกำหนดสายงานรายคน ดูแลขวัญกำลังใจ และสร้างสิ่งอำนวยความสะดวก แร่ยังถูกส่งกลับมาเองแม้ปิดเกม (โบนัสสายงานทำงานตอนเปิดเกมอยู่)',
+  b:ia<0||ib<0?o.b+a+c:o.b.slice(0,ia)+a+o.b.slice(ia,ib)+c+o.b.slice(ib)}};
+ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a||a.slice(0,3)!='wx_')return;e.stopImmediatePropagation();
+ const c=a[3],k=a.slice(4);
+ if(a=='wx_f'){const fc=feast();if(!(S.wk|0)||!afford(fc))return;pay(fc);S.wm=Math.min(100,md()+35);toast('🍲 จัดเลี้ยงสำเร็จ! ขวัญกำลังใจ +35')}
+ else if(c=='r'){const i=+k;if(i>=(S.wk|0)||S.gold<120)return;const o=['m','p','f'].filter(r=>r!='f'||ro(i)=='f'||!fm()),cur=ro(i);
+  S.gold-=120;ar('wr')[i]=o[(o.indexOf(cur)+1)%o.length];toast('เปลี่ยนสายงาน '+NM[i]+' เป็น'+RO[ro(i)][1]+'สำเร็จ')}
+ else if(c=='g'){const u=FA[k];if(!u)return;const l=F(k);if(l>=u.m||!afford(u.c[l]))return toast('วัตถุดิบไม่พอ');pay(u.c[l]);S[k]=l+1;toast('อัปเกรด'+u.t.slice(2)+'สำเร็จ! ระดับ '+(l+1))}
+ save();rndBld()},true);
+setInterval(()=>{if(ov.hidden||ov.dataset.k!='19')return;const b=ov.querySelector('[data-wm]'),t=ov.querySelector('[data-wmt]');if(b)b.style.width=md()+'%';if(t)t.textContent=Math.round(md())+' / 100'},500);
+})();
+
+// ===== หีบทองกลางเมือง: เก็บทองไว้ในหีบ โจรจะมาปล้นจากหีบ =====
+(function(){
+const ov=$('bld'),CAPS=[2000,5000,12000,30000],UL=[{gold:500,bi:3},{gold:1500,bi:6},{gold:4000,bs:6}],UK=[{gold:600,bi:4},{gold:1600,bs:4},{gold:3500,bs:6,bg:2}],
+ LBt={gold:'ทอง',bi:'แท่งเหล็ก',bs:'แท่งเงิน',bg:'แท่งทองคำ'};
+SOL.add(31);MC[31]='#d2a94f';LBL[31]='หีบทอง';LBICO[31]='🪙';
+const cg=()=>Math.max(0,Math.floor(+S.cg)||0),lc=()=>Math.min(3,S.cl|0),lk=()=>Math.min(3,S.ck|0),cap=()=>CAPS[lc()],
+ afford=c=>Object.keys(c).every(k=>(S[k]||0)>=c[k]),pay=c=>{for(const k in c)S[k]-=c[k]},
+ rows=c=>Object.keys(c).map(k=>{const ok=(S[k]||0)>=c[k];return '<div class="rw '+(ok?'ok':'no')+'"><span>'+LBt[k]+'</span><b>'+(S[k]||0)+' / '+c[k]+'</b></div>'}).join(''),
+ pips=(n,m)=>{let s='';for(let q=0;q<m;q++)s+='<i class="'+(q<n?'on':'')+'"></i>';return s};
+const _tw=town;town=function(){_tw();if(map&&map[3])map[3][9]=31};
+if(where=='town'&&map&&map[3])map[3][9]=31;
+// ----- ภาพหีบ -----
+const _tl=tile;tile=function(t,i,j){if(t!=31)return _tl(t,i,j);_tl(0,i,j);
+ const X=i*T,Y=j*T,f=(c,a,b,w,h)=>{x.fillStyle=c;x.fillRect(X+a,Y+b,w,h)},q=Math.min(1,cg()/cap());
+ f('#0005',3,26,26,5);f('#5a3515',4,14,24,13);f('#7a4a1f',4,14,24,4);f('#8f5e2f',3,8,26,8);f('#a8743a',4,8,24,3);
+ f('#d2a94f',3,15,26,2);f('#d2a94f',3,8,2,19);f('#d2a94f',27,8,2,19);f('#ffd96a',14,16,4,6);f('#6b4423',15,18,2,3);
+ if(q>0){f('#ffd23f',9,5,6,3);f('#e8b923',10,3,4,2)}if(q>.3){f('#ffd23f',16,4,7,4);f('#fff6a0',18,4,2,1)}if(q>.65){f('#ffd23f',12,1,8,3);f('#fff6a0',14,1,2,1)}};
+// ----- โจรปล้นหีบก่อนกระเป๋า -----
+const _b=bandit;bandit=function(dt){if(where!='town'||cg()<=0)return _b(dt);
+ const wal=S.gold,box=cg();S.gold=box;let bad=0;
+ try{_b(dt)}finally{if(S.gold<=box){const loss=box-S.gold,back=Math.round(loss*.2*lk());S.cg=S.gold+back;S.gold=wal;if(back>0)toast('🔒 ล็อกหีบช่วยกันทองคืน '+back)}else{S.gold=wal}}};
+// ----- หน้าต่างหีบ -----
+BIN[31]=()=>{const c=cg(),cp=cap(),l=lc(),k=lk();
+ let h='<div class="wcamp"><div class="wsum"><span>🪙 ในหีบ '+c.toLocaleString('en-US')+' / '+cp.toLocaleString('en-US')+'</span><span>👛 กระเป๋า '+S.gold.toLocaleString('en-US')+'</span></div>'
+ +'<div class="wb"><i style="width:'+Math.min(100,c/cp*100)+'%"></i></div><small class="wh">ทองในหีบปลอดภัยจากการเสียทองตอนสลบในเหมือง แต่โจรที่บุกมาจะปล้นจากหีบก่อน ฝากให้ทหารยามเฝ้าไว้ให้ดี</small>'
+ +'<h5>ฝาก / ถอน</h5><div class="bgr"><button class="ac" data-a="ch_d100"'+(S.gold>=1&&c<cp?'':' disabled')+'>ฝาก 100</button><button class="ac" data-a="ch_d1000"'+(S.gold>=1&&c<cp?'':' disabled')+'>ฝาก 1,000</button><button class="ac" data-a="ch_da"'+(S.gold>=1&&c<cp?'':' disabled')+'>ฝากทั้งหมด</button></div>'
+ +'<div class="bgr"><button class="ac" data-a="ch_w100"'+(c?'':' disabled')+'>ถอน 100</button><button class="ac" data-a="ch_w1000"'+(c?'':' disabled')+'>ถอน 1,000</button><button class="ac" data-a="ch_wa"'+(c?'':' disabled')+'>ถอนทั้งหมด</button></div>'
+ +'<h5>อัปเกรดหีบ</h5>'
+ +'<div class="wu"><div class="wh2"><b>📦 ขยายหีบ</b><span class="pips">'+pips(l,3)+'</span></div><small>จุทองได้มากขึ้น (ตอนนี้ '+cp.toLocaleString('en-US')+')</small>'+(l>=3?'<div class="mx">✔ ระดับสูงสุดแล้ว</div>':rows(UL[l])+'<button class="ac" data-a="ch_ul"'+(afford(UL[l])?'':' disabled')+'>ขยายเป็นความจุ '+CAPS[l+1].toLocaleString('en-US')+'</button>')+'</div>'
+ +'<div class="wu"><div class="wh2"><b>🔒 ล็อกนิรภัย</b><span class="pips">'+pips(k,3)+'</span></div><small>ถ้าโจรปล้นหีบสำเร็จ ได้ทองคืน 20% ของที่เสีย ต่อระดับ (ตอนนี้ '+20*k+'%)</small>'+(k>=3?'<div class="mx">✔ ระดับสูงสุดแล้ว</div>':rows(UK[k])+'<button class="ac" data-a="ch_uk"'+(afford(UK[k])?'':' disabled')+'>อัปเกรดเป็นระดับ '+(k+1)+'</button>')+'</div></div>';
+ return{t:'🪙 หีบทอง',d:'ตู้เก็บทองกลางหมู่บ้าน',b:h}};
+ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a||a.slice(0,3)!='ch_')return;e.stopImmediatePropagation();
+ const c=cg(),cp=cap(),m=a.slice(3);
+ if(m[0]=='d'){const n=m=='da'?S.gold:+m.slice(1),v=Math.max(0,Math.min(n,S.gold,cp-c));if(!v)return toast('ฝากไม่ได้ หีบเต็มหรือทองไม่พอ');S.gold-=v;S.cg=c+v;toast('ฝากทอง '+v+' เข้าหีบสำเร็จ')}
+ else if(m[0]=='w'){const n=m=='wa'?c:+m.slice(1),v=Math.min(n,c);if(!v)return;S.cg=c-v;S.gold+=v;toast('ถอนทอง '+v+' ออกจากหีบสำเร็จ')}
+ else if(m=='ul'){const l=lc();if(l>=3||!afford(UL[l]))return toast('วัตถุดิบไม่พอ');pay(UL[l]);S.cl=l+1;toast('ขยายหีบสำเร็จ! จุได้ '+cap())}
+ else if(m=='uk'){const k=lk();if(k>=3||!afford(UK[k]))return toast('วัตถุดิบไม่พอ');pay(UK[k]);S.ck=k+1;toast('อัปเกรดล็อกนิรภัยสำเร็จ! ระดับ '+(k+1))}
+ save();rndBld()},true);
+})();
+
+(function(){
+// ===== ผู้ช่วยขุดเหมือง v2 : ขุด → กลับมาขาย → พักเลือด → ลงใหม่ (กด T เปิด/ปิด, แตะ 🤖 เปิดตั้งค่า) =====
+const prev=window.mouseK;
+const free=t=>!SOL.has(t)&&t!=17;
+const ORE={4:{k:'i',n:'เหล็ก',b:0},5:{k:'s',n:'เงิน',b:6},6:{k:'g',n:'ทอง',b:12}};
+const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
+const CFGV={depth:[0,5,10,15],sellAt:[0,40,80,150]};
+const CFG=()=>{const o=S.ab&&typeof S.ab=='object'?S.ab:(S.ab={});if(!CFGV.depth.includes(o.depth))o.depth=0;if(!CFGV.sellAt.includes(o.sellAt))o.sellAt=80;return o};
+let ON=0,T=0,phase='idle',stat='',tgt=null,eng=null,noEng=0,wanderT=0,wdx=0,wdy=0,lx=0,ly=0,mvT=0,stuck=0,bl={},floorKey='',floorT=0,tgtT=0,leaving=0,leaveWhy='',fails=0,pw='town',sellT=0,sellTry=0,selling=0,qT=0;
+const carried=()=>S.i+S.s+S.g;
+const inSpecial=()=>(window.IN_HUNT&&IN_HUNT())||String((typeof Z!='undefined'&&Z&&Z.n)||'').startsWith('ดันเจี้ยน');
+const hpR=()=>HP/mhp();
+// ---------- ค้นหาเส้นทาง (BFS) คืนก้าวถัดไป + ระยะ ----------
+function path(goal,pass){
+  const sx=Math.floor(P.x),sy=Math.floor(P.y);if(!map||sx<0||sy<0||sx>=W||sy>=H)return null;
+  const s0=sy*W+sx,pr=new Int32Array(W*H).fill(-2),q=[s0],dist=new Int16Array(W*H);pr[s0]=-1;
+  for(let h=0;h<q.length;h++){const c=q[h],a=c%W,b=(c/W)|0;
+    if(c!=s0&&goal(map[b][a],a,b)){let cur=c;while(pr[cur]!=s0&&pr[cur]>=0)cur=pr[cur];return{gx:a,gy:b,nx:cur%W,ny:(cur/W)|0,d:dist[c]}}
+    for(const[dx,dy]of DIRS){const u=a+dx,v=b+dy;if(u<0||v<0||u>=W||v>=H)continue;const i=v*W+u;if(pr[i]!=-2)continue;const t=map[v][u];
+      if(pass(t)||goal(t,u,v)){pr[i]=c;dist[i]=dist[c]+1;q.push(i)}}}
+  return null}
+const go=(K,p)=>{if(!p)return false;steer(K,p.nx,p.ny);return true};
+function face2(x,y){const dx=x-P.x,dy=y-P.y;face=Math.abs(dx)>=Math.abs(dy)?[Math.sign(dx)||1,0]:[0,Math.sign(dy)||1]}
+function center(K){const ex=Math.floor(P.x)+.5-P.x,ey=Math.floor(P.y)+.5-P.y;if(Math.abs(ex)>.07||Math.abs(ey)>.07){K.ax=ex*5;K.ay=ey*5;return true}return false}
+const banned=(x,y)=>(bl[x+','+y]||0)>T;
+const ban=(x,y,sec)=>{bl[x+','+y]=T+sec};
+// ---------- เลือกเป้าหมายแร่: ใกล้ที่สุด แต่ให้โบนัสกับแร่เงิน/ทอง ----------
+function pickOre(){let best=null;
+  for(const t of[4,5,6]){const p=path((q,x,y)=>q==t&&!banned(x,y),PASS);if(!p)continue;const sc=p.d-ORE[t].b;if(!best||sc<best.sc)best={x:p.gx,y:p.gy,t,sc}}
+  return best}
+const leave=why=>{if(leaving)return;leaving=1;leaveWhy=why;stat='กำลังออกจากเหมือง ('+why+')';dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ',key:'q'}))};
+function stop(msg){if(!ON)return;ON=0;phase='idle';tgt=eng=null;selling=0;paint();if(msg)toast(msg)}
+function start(){if(window.__stopFish)__stopFish();ON=1;phase='run';tgt=eng=null;fails=0;leaving=0;bl={};paint();toast('🤖 เปิดผู้ช่วยขุดเหมือง')}
+window.__setAuto=v=>v?start():stop('🤖 ปิดผู้ช่วยขุดเหมือง');
+// ---------- ลูปหลัก ----------
+window.mouseK=function(dt){
+  const base=prev&&prev(dt);if(base)return base;
+  if(!ON||BL)return null;
+  if(Object.values(keys).some(v=>v)){mvT=0;return null}        // ผู้เล่นคุมเอง
+  T+=dt;noEng-=dt;
+  const K={};
+  // เปลี่ยนสถานที่
+  if(where!=pw){
+    if(pw=='mine'&&where=='town'){if(leaving&&(leaveWhy=='เลือดต่ำ')||!leaving){fails++;if(fails>=3){stop('🤖 หยุดอัตโนมัติ: ลงเหมือง-เลือดหมด/ตายซ้ำหลายรอบ ลองอัปเกรดจอบ/เลเวลก่อน');pw=where;return null}}else fails=0;leaving=0;sellTry=0;selling=0;tgt=eng=null}
+    if(pw=='town'&&where=='mine'){bl={};floorKey='';tgt=eng=null}
+    pw=where}
+  // ตรวจติดขัด
+  mvT+=dt;if(mvT>.5){mvT=0;stuck=Math.hypot(P.x-lx,P.y-ly)<.12?stuck+1:0;lx=P.x;ly=P.y}
+  if(stuck>=4){stuck=0;if(tgt){ban(tgt.x,tgt.y,25);tgt=null}eng=null;noEng=6;wanderT=1.2;const a=Math.random()*6.283;wdx=Math.cos(a);wdx=wdx;wdy=Math.sin(a)}
+  if(wanderT>0){wanderT-=dt;K.ax=wdx;K.ay=wdy;return K}
+  return where=='town'?townLogic(K,dt):mineLogic(K,dt)};
+// ---------- ในหมู่บ้าน ----------
+function townLogic(K,dt){
+  if(MS.length){const[m,d]=near();if(m){phase='fight';stat='ป้องกันหมู่บ้าน';
+    if(d<1.4){face2(m.x,m.y);K.a=1;return K}
+    const dx=m.x-P.x,dy=m.y-P.y,l=Math.hypot(dx,dy)||1;K.ax=dx/l;K.ay=dy/l;return K}}
+  const cfg=CFG();
+  // 1) ขายแร่
+  if(cfg.sellAt>0&&carried()>0&&sellTry<3){phase='sell';stat='ไปขายแร่ที่ร้านค้า';
+    const adj=(x,y)=>DIRS.some(d=>map[y+d[1]]&&map[y+d[1]][x+d[0]]===9);
+    const cx=Math.floor(P.x),cy=Math.floor(P.y);
+    if(adj(cx,cy)){if(center(K))return K;const d=DIRS.find(d=>map[cy+d[1]]&&map[cy+d[1]][cx+d[0]]===9);face=d;selling=1;sellT+=dt;if(sellT>.8){sellT=0;sellTry++;K.a=1}return K}
+    const p=path((t,x,y)=>free(t)&&adj(x,y),free);if(go(K,p))return K;sellTry=3}
+  // 2) พักเลือด
+  if(HP<mhp()*.9){phase='rest';stat='พักฟื้นเลือด '+Math.round(hpR()*100)+'%';return null}
+  // 3) ไปปากทางเหมือง
+  phase='enter';stat='ไปปากทางเหมือง';
+  const p=path(t=>t==8,free);if(go(K,p))return K;return null}
+// ---------- ในเหมือง ----------
+function mineLogic(K,dt){
+  const cfg=CFG(),sp=inSpecial(),r=hpR();
+  const fk=where+floor;if(fk!=floorKey){floorKey=fk;floorT=0;tgt=eng=null;bl={}}floorT+=dt;
+  if(leaving){stat='กำลังออกจากเหมือง';qT+=dt;if(qT>1.2){qT=0;dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ',key:'q'}))}return null}
+  if(r<.35&&!sp){leave('เลือดต่ำ');return null}
+  if(!sp&&cfg.sellAt>0&&carried()>=cfg.sellAt){leave('กระเป๋าเต็มแล้วไปขาย');return null}
+  const[mm,dd]=near();
+  // สู้: ประชิดตีทันที / เจอใกล้ๆ ไล่ตีตัวเดียวจนจบ
+  if(mm&&dd<1.4){phase='fight';stat='สู้มอนสเตอร์';face2(mm.x,mm.y);K.a=1;return K}
+  if(eng&&(!MS.includes(eng)||Math.hypot(eng.x-P.x,eng.y-P.y)>5.5||r<=.4))eng=null;
+  if(!eng&&mm&&dd<3.2&&r>.5&&noEng<=0)eng=mm;
+  if(eng){phase='fight';stat='ไล่ตีมอนสเตอร์';const cx=Math.floor(eng.x),cy=Math.floor(eng.y);
+    if(go(K,path((t,x,y)=>x==cx&&y==cy,free)))return K;eng=null;noEng=4}
+  // ขุดแร่ (มีเป้าหมายค้างไว้จนกว่าจะขุดหมดหรือหมดเวลา)
+  if(tgt){const t=map[tgt.y][tgt.x];tgtT+=dt;
+    if(!(t>=4&&t<=6)){tgt=null}
+    else if(tgtT>25){ban(tgt.x,tgt.y,90);tgt=null}}
+  if(!tgt){const o=pickOre();if(o){tgt=o;tgtT=0}}
+  if(tgt){phase='mine';stat='ขุดแร่'+ORE[map[tgt.y][tgt.x]].n+' ชั้น '+floor+' · มีแร่ '+carried();
+    if(go(K,path((t,x,y)=>x==tgt.x&&y==tgt.y,PASS)))return K;ban(tgt.x,tgt.y,30);tgt=null}
+  // ไม่เหลือแร่ที่เข้าถึงได้
+  const lim=!sp&&cfg.depth>0&&floor>=cfg.depth;
+  if(lim){leave('ครบชั้นที่ตั้งไว้');return null}
+  const st=path(t=>t==7,PASS);
+  if(st){phase='descend';stat='ลงบันไดไปชั้น '+(floor+1);if(go(K,st))return K}
+  if(MS.length){                                         // ชั้นบอส/ดันเจี้ยน: ต้องกำจัดศัตรูก่อนบันไดเปิด
+    if(r<.5&&!sp){leave('เลือดต่ำ');return null}
+    phase='fight';stat='ล่าบอส/ศัตรู';const cx=Math.floor(mm.x),cy=Math.floor(mm.y);
+    if(go(K,path((t,x,y)=>x==cx&&y==cy,free)))return K;
+    const dx=mm.x-P.x,dy=mm.y-P.y,l=Math.hypot(dx,dy)||1;K.ax=dx/l;K.ay=dy/l;return K}
+  leave('ไม่เหลืองานในชั้นนี้');return null}
+// ---------- ขายของ: เมื่อหน้าต่างร้านเปิด กดขายทั้งหมดแล้วปิด ----------
+setInterval(()=>{if(!ON||!selling||!BL)return;const b=document.querySelector('[data-a="sh-all"]');if(!b)return;
+  b.click();selling=0;setTimeout(()=>{dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape'}));sellTry=carried()>0?sellTry:3},350)},400);
+// ---------- UI ----------
+function paint(){for(const q of document.querySelectorAll('#autob,#autob2')){q.textContent=ON?'🤖 ON':'🤖';q.style.background=ON?'#2f8f3a':'';q.style.opacity=ON?'1':''}rp()}
+const css=document.createElement('style');
+css.textContent='#abp{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:#000a;pointer-events:auto}#abp[hidden]{display:none}#abp .bx{width:min(92vw,26em);padding:1em;border-radius:10px;background:linear-gradient(#2a2014,#16110d);border:1px solid var(--brass2);color:var(--parch);font-family:var(--bd);font-size:14px}#abp h3{font-family:var(--hd);font-weight:500;color:var(--brass);margin-bottom:.5em;display:flex;justify-content:space-between;align-items:center}#abp .s{margin:.5em 0;padding:.5em .6em;background:#0007;border-radius:6px;border:1px solid #7d5f2455;min-height:2.6em}#abp .o{margin:.7em 0 .2em}#abp .o>b{display:block;font-family:var(--hd);font-weight:500;margin-bottom:.3em}#abp .g{display:flex;gap:.35em;flex-wrap:wrap}#abp button{pointer-events:auto;font:500 14px var(--hd);padding:.4em .8em;border-radius:6px;background:#3a2c18;color:var(--parch);border:1px solid var(--brass2)}#abp button.on{background:linear-gradient(#f2cd72,#b07d1f);color:#2a1a04;border-color:#5b3f0e}#abp .go{width:100%;margin-top:.8em;padding:.6em;font-size:16px}#abp .go.run{background:linear-gradient(#e0605a,#a82a27);color:#fff;border-color:#5a1210}#abp small{color:#cdbf9f;display:block;margin-top:.5em}';
+document.head.appendChild(css);
+const pn=document.createElement('div');pn.id='abp';pn.hidden=true;document.body.appendChild(pn);
+function rp(){if(pn.hidden)return;const c=CFG();
+  const row=(t,key,vals,lab)=>'<div class="o"><b>'+t+'</b><div class="g">'+vals.map(v=>'<button type="button" data-k="'+key+'" data-v="'+v+'" class="'+(c[key]==v?'on':'')+'">'+lab(v)+'</button>').join('')+'</div></div>';
+  pn.innerHTML='<div class="bx"><h3><span>🤖 ผู้ช่วยขุดเหมือง</span><button type="button" id="abx">✕</button></h3>'
+   +'<div class="s">'+(ON?'🟢 ทำงานอยู่ — '+(stat||'เริ่มต้น'):'⚪ ปิดอยู่')+'</div>'
+   +row('ลงลึกสุดถึงชั้น','depth',CFGV.depth,v=>v?v:'ไม่จำกัด')
+   +row('กลับไปขายแร่เมื่อมีแร่ครบ','sellAt',CFGV.sellAt,v=>v?v+' ก้อน':'ไม่ขาย')
+   +'<button type="button" id="abgo" class="go '+(ON?'run':'on')+'">'+(ON?'⏹ หยุด':'▶ เริ่มขุดอัตโนมัติ')+'</button>'
+   +'<small>บอทจะขุดแร่ ต่อสู้ ลงบันได เมื่อเลือดต่ำกว่า 35% หรือกระเป๋าครบจะกลับหมู่บ้าน ขายแร่ พักเลือด แล้วลงเหมืองใหม่เอง กดปุ่มเดินเองเมื่อไรบอทจะหยุดชั่วคราว</small></div>';
+  document.getElementById('abx').onclick=cl;document.getElementById('abgo').onclick=()=>{if(ON)stop('🤖 ปิดผู้ช่วยขุดเหมือง');else{start();cl()}};
+  for(const b of pn.querySelectorAll('[data-k]'))b.onclick=()=>{CFG()[b.dataset.k]=+b.dataset.v;try{save()}catch(e){}rp()}}
+const op=()=>{pn.hidden=false;rp()},cl=()=>{pn.hidden=true};
+pn.addEventListener('pointerdown',e=>{if(e.target===pn)cl()});
+setInterval(()=>{if(!pn.hidden)rp()},700);
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!pn.hidden)cl()});
+const hl=document.getElementById('hlp'),b=document.createElement('button');
+b.type='button';b.id='autob';b.textContent='🤖';b.title='ผู้ช่วยขุดเหมือง (T)';b.setAttribute('aria-label','ผู้ช่วยขุดเหมือง');b.style.pointerEvents='auto';
+if(hl)hl.before(b);else document.body.appendChild(b);
+b.onclick=()=>pn.hidden?op():cl();
+const pad=document.getElementById('pad'),A=document.getElementById('A');
+if(pad&&A){const c=document.createElement('button');c.type='button';c.id='autob2';c.textContent='🤖';c.setAttribute('aria-label','ผู้ช่วยขุดเหมือง');
+c.style.cssText='pointer-events:auto;width:clamp(48px,14vw,62px);height:clamp(48px,14vw,62px);border-radius:50%;font-size:22px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:6px';
+c.onclick=()=>pn.hidden?op():cl();pad.insertBefore(c,A)}
+addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyT'||e.key=='t'||e.key=='T'))(ON?stop('🤖 ปิดผู้ช่วยขุดเหมือง'):start())});
+window.__autoMine={get:()=>({ON,phase,stat,fails,tgt,floor}),cfg:CFG};
+})();
+
+(function(){
+// ===== บอทตกปลา (กด G หรือปุ่ม 🎣) =====
+let ON=0,st='go',t=0,catches=0,sellMode=0,sellT=0,qT=0;
+window.FISHBOT_SELL_N=window.FISHBOT_SELL_N||10;
+const prev=window.mouseK;
+const _toast=toast;
+toast=function(m){_toast(m);if(!ON)return;
+  if(/โยนเบ็ดแล้ว/.test(m)){st='wait';t=0}
+  else if(/ปลากินเบ็ด/.test(m)){st='hit';t=0}
+  else if(/^จับได้/.test(m)){catches++;st='rest';t=0;if(catches>=window.FISHBOT_SELL_N)sellMode=1}
+  else if(/ปลาหลุด/.test(m)){st='rest';t=0}};
+const freeT=q=>!SOL.has(q)&&q!=17;
+const DIRS=[[0,-1],[1,0],[-1,0],[0,1]];
+const waterNb=(a,b)=>{for(const d of DIRS){const r=map[b+d[1]];if(r&&r[a+d[0]]===22)return d}return null};
+const farmNb=(a,b)=>{for(const d of DIRS){const r=map[b+d[1]];if(r&&r[a+d[0]]===25)return d}return null};
+function center(K){const ex=Math.floor(P.x)+.5-P.x,ey=Math.floor(P.y)+.5-P.y;if(Math.abs(ex)>.07||Math.abs(ey)>.07){K.ax=ex*5;K.ay=ey*5;return true}return false}
+function station(K,test){const cx=Math.floor(P.x),cy=Math.floor(P.y);
+  if(test(cx,cy))return center(K)?'moving':'there';
+  const n=bfs((q,a,b)=>freeT(q)&&test(a,b),freeT);if(!n)return'none';steer(K,n.x,n.y);return'moving'}
+function setFish(v){ON=v;st='go';t=0;sellMode=0;if(v&&window.__setAuto)__setAuto(0);
+  for(const q of document.querySelectorAll('#fishb,#fishb2')){q.textContent=v?'🎣 ON':'🎣';q.style.background=v?'#2f6fbf':'';q.style.opacity=v?'1':''}
+  toast(v?'🎣 เปิดบอทตกปลา — ไปยืนริมบ่อให้เอง ขายผลผลิตทุก '+window.FISHBOT_SELL_N+' ตัว':'🎣 ปิดบอทตกปลา')}
+window.__stopFish=()=>{if(ON)setFish(0)};
+window.__fish={sell:()=>{sellMode=1}};
+window.mouseK=function(dt){
+  const base=prev&&prev(dt);if(base)return base;
+  if(!ON||BL)return null;
+  if(Object.values(keys).some(v=>v)){st='go';return null}
+  if(where!='town'){qT+=dt;if(qT>1){qT=0;dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ',key:'q'}))}return null}
+  const K={};
+  if(MS.length){const[m,d]=near();if(m){st='go';
+    if(d<1.4){const dx=m.x-P.x,dy=m.y-P.y;face=Math.abs(dx)>=Math.abs(dy)?[Math.sign(dx)||1,0]:[0,Math.sign(dy)||1];K.a=1;return K}
+    const dx=m.x-P.x,dy=m.y-P.y,l=Math.hypot(dx,dy)||1;K.ax=dx/l;K.ay=dy/l;return K}}
+  if(sellMode){
+    const r=station(K,farmNb);
+    if(r=='there'){face=farmNb(Math.floor(P.x),Math.floor(P.y));sellT+=dt;if(sellT>.8){sellT=0;K.a=1}return K}
+    if(r=='none'){sellMode=0;catches=0}
+    return K}
+  const r=station(K,waterNb);
+  if(r=='none'){return null}
+  if(r=='moving'){st='go';return K}
+  face=waterNb(Math.floor(P.x),Math.floor(P.y));
+  t+=dt;
+  if(st=='go'){st='cast';t=1.2}
+  if(st=='cast'){if(t>=1.2){t=0;K.a=1}}
+  else if(st=='wait'){if(t>14){st='cast';t=1.2}}
+  else if(st=='hit'){K.a=1;if(t>2.5){st='rest';t=0}}
+  else if(st=='rest'){if(t>1){st='cast';t=1.2}}
+  return K};
+// ขายผลผลิตเมื่อหน้าต่างแปลงผักเปิด
+setInterval(()=>{if(!ON||!sellMode||!BL)return;const b=document.querySelector('[data-a="fm_sell"]');if(!b)return;
+  if(!b.disabled)b.click();
+  setTimeout(()=>{dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape'}));sellMode=0;catches=0;st='go'},350)},400);
+// ปุ่ม
+const dk=document.getElementById('hlp'),b=document.createElement('button');
+b.type='button';b.id='fishb';b.textContent='🎣';b.title='บอทตกปลา (G)';b.setAttribute('aria-label','บอทตกปลา');b.style.pointerEvents='auto';
+if(dk)dk.before(b);else document.body.appendChild(b);
+b.onclick=()=>setFish(!ON);
+const pad=document.getElementById('pad'),A=document.getElementById('A');
+if(pad&&A){const c=document.createElement('button');c.type='button';c.id='fishb2';c.textContent='🎣';c.setAttribute('aria-label','บอทตกปลา');
+c.style.cssText='pointer-events:auto;width:clamp(48px,14vw,62px);height:clamp(48px,14vw,62px);border-radius:50%;font-size:22px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:6px';
+c.onclick=()=>setFish(!ON);pad.insertBefore(c,A)}
+addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyG'||e.key=='g'||e.key=='G'))setFish(!ON)});
+})();
+
+(function(){
+// ===== ระบบความชำนาญ: ขุดเหมือง / ตกปลา / ปลูกผัก / ทำอาหาร (เก่งขึ้นตามที่ใช้) =====
+const MAXL=20,need=l=>Math.round(35*Math.pow(l,1.6));
+const PR=[
+ {k:'m',e:'⛏️',n:'ขุดเหมือง',c:'#d2a94f',perk:l=>'โอกาสได้แร่เพิ่ม +'+Math.round(Math.min(.4,.02*l)*100)+'%'+(l>=10?' · เจอเพชรตอนขุด +'+(l-9)+'%':'')},
+ {k:'f',e:'🎣',n:'ตกปลา',c:'#4aa3ff',perk:l=>'โอกาสได้ปลาเพิ่ม +'+Math.round(Math.min(.5,.025*l)*100)+'%'+(l>=8?' · ปลาทองแถม +'+(l-7)+'%':'')},
+ {k:'a',e:'🌱',n:'ปลูกผัก',c:'#6fcf6a',perk:l=>'ผลผลิตเพิ่ม +'+Math.round(Math.min(.6,.03*l)*100)+'% · ผักโตเร็วขึ้น +'+3*l+'%'},
+ {k:'c',e:'🍳',n:'ทำอาหาร',c:'#ff9a5a',perk:l=>'ปรุงได้ 2 จาน +'+Math.round(Math.min(.6,.03*l)*100)+'% · บัฟนานขึ้น +'+4*l+'%'}];
+const D=()=>{const o=S.pf&&typeof S.pf=='object'?S.pf:(S.pf={});for(const q of PR){const r=o[q.k]&&typeof o[q.k]=='object'?o[q.k]:(o[q.k]={});r.l=Math.min(MAXL,Math.max(1,Math.floor(+r.l)||1));r.x=Math.max(0,Math.floor(+r.x)||0)}return o};
+D();let dirty=0;
+const LV=k=>D()[k].l;
+function gain(k,n,fx){if(n<=0)return;const r=D()[k],q=PR.find(a=>a.k==k);if(r.l>=MAXL)return;r.x+=n;dirty=1;
+  try{if(typeof flt=='function'&&fx!==false)flt(P.x,P.y-.7,'+'+n+q.e)}catch(e){}
+  let up=0;while(r.l<MAXL&&r.x>=need(r.l)){r.x-=need(r.l);r.l++;up++;const g=r.l*30;S.gold+=g;
+    toast('🆙 '+q.e+' '+q.n+' เลเวล '+r.l+'! รางวัล +'+g+' ทอง · '+q.perk(r.l))}
+  if(r.l>=MAXL)r.x=0;if(up){try{save()}catch(e){}render()}else if(panel&&!panel.hidden)render()}
+// ---------- ขุดเหมือง: ฟังข้อความตอนได้แร่ ----------
+const _toast=toast,OK={'เหล็ก':['i',3],'เงิน':['s',6],'ทอง':['g',12]};
+toast=function(m){_toast(m);const x=/^ได้แร่(เหล็ก|เงิน|ทอง)\s*\+(\d+)/.exec(m);if(!x)return;
+  const o=OK[x[1]],n=+x[2]||1;gain('m',o[1]*n);const L=LV('m');
+  if(Math.random()<Math.min(.4,.02*L)){S[o[0]]++;_toast('⛏ ความชำนาญ: ได้แร่'+x[1]+'เพิ่ม +1')}
+  if(L>=10&&Math.random()<.01*(L-9)){S.dm=(S.dm||0)+1;_toast('💎 ความชำนาญขุดเหมือง: เจอเพชร +1')}};
+// ---------- ตกปลา / ปลูกผัก / ทำอาหาร: ตรวจจากคลังผลผลิต ----------
+const FX={f0:6,f1:9,f2:14,f3:50},CX={c0:6,c1:9,c2:14};
+let snap=null;
+const take=()=>{const m=S.fm||{},o={};for(const k of['f0','f1','f2','f3','c0','c1','c2'])o[k]=m[k]||0;o.ml=[0,1,2,3,4,5].map(i=>(S.ml&&S.ml[i])||0);o.bf=S.bf?S.bf.u:0;o.ra=(S.rb&&S.rb.atk)||0;o.ro=(S.rb&&S.rb.ore)||0;return o};
+snap=take();
+setInterval(()=>{try{
+  const n=take(),fm=S.fm||(S.fm={}),now=Date.now();
+  for(const k of['f0','f1','f2','f3']){const d=n[k]-snap[k];if(d>0){gain('f',FX[k]*d);const L=LV('f');
+    for(let j=0;j<d;j++){if(Math.random()<Math.min(.5,.025*L)){fm[k]=(fm[k]||0)+1;n[k]++;_toast('🎣 ความชำนาญ: ได้ปลาเพิ่ม +1')}
+      if(L>=8&&Math.random()<.01*(L-7)){fm.f3=(fm.f3||0)+1;n.f3++;_toast('✨ ความชำนาญตกปลา: ได้ปลาทองแถม!')}}}}
+  for(const k of['c0','c1','c2']){const d=n[k]-snap[k];if(d>0){gain('a',CX[k]*d);const L=LV('a');
+    for(let j=0;j<d;j++)if(Math.random()<Math.min(.6,.03*L)){fm[k]=(fm[k]||0)+1;n[k]++;_toast('🌱 ความชำนาญ: เก็บผักได้เพิ่ม +1')}}}
+  for(let i=0;i<6;i++){const d=n.ml[i]-snap.ml[i];if(d>0){gain('c',(15+10*i)*d);const L=LV('c');
+    for(let j=0;j<d;j++)if(Math.random()<Math.min(.6,.03*L)){S.ml[i]=(S.ml[i]||0)+1;n.ml[i]++;_toast('🍳 ความชำนาญ: ปรุงได้เพิ่มอีก 1 จาน!')}}}
+  const L=LV('c');
+  if(S.bf&&S.bf.u>snap.bf&&S.bf.u>now){const ex=Math.round((S.bf.u-now)*.04*L);if(ex>0){S.bf.u+=ex;n.bf=S.bf.u}gain('c',4)}
+  for(const[kk,sk2,key]of[['ra','atk','ra'],['ro','ore','ro']]){const v=(S.rb&&S.rb[sk2])||0;if(v>snap[key]){const ex=Math.round((v-Math.max(snap[key],now))*.04*L);if(ex>0){S.rb[sk2]+=ex}n[key]=S.rb[sk2];gain('c',2)}}
+  snap=n}catch(e){}},300);
+// ผักโตเร็วขึ้นตามเลเวลปลูกผัก (เลื่อนเวลาปลูกย้อนกลับทุกวินาที)
+setInterval(()=>{try{const L=LV('a');if(!Array.isArray(S.pl))return;const sh=1000*.03*L;for(const q of S.pl)if(q&&q.t&&q.t>0)q.t-=sh}catch(e){}},1000);
+setInterval(()=>{if(dirty){dirty=0;try{save()}catch(e){}}},5000);
+// ---------- หน้าต่างแสดงเลเวล ----------
+const st=document.createElement('style');
+st.textContent='#profp{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:#000a;pointer-events:auto}#profp[hidden]{display:none}#profp .bx{width:min(92vw,28em);max-height:92vh;overflow:auto;padding:1em;border-radius:10px;background:linear-gradient(#2a2014,#16110d);border:1px solid var(--brass2);color:var(--parch);font-family:var(--bd);font-size:14px}#profp h3{font-family:var(--hd);font-weight:500;color:var(--brass);margin-bottom:.6em;display:flex;justify-content:space-between;align-items:center}#profp .r{margin:.6em 0;padding:.6em;border:1px solid #7d5f2455;border-radius:8px;background:#0006}#profp .t{display:flex;justify-content:space-between;font-family:var(--hd)}#profp .b{height:9px;margin:.4em 0;background:#000a;border-radius:5px;overflow:hidden}#profp .b i{display:block;height:100%}#profp small{color:#cdbf9f;display:block}#profp button{pointer-events:auto;font:500 14px var(--hd);padding:.3em .8em;border-radius:6px;background:#3a2c18;color:var(--parch);border:1px solid var(--brass2)}';
+document.head.appendChild(st);
+const panel=document.createElement('div');panel.id='profp';panel.hidden=true;document.body.appendChild(panel);
+function render(){if(panel.hidden)return;D();
+  panel.innerHTML='<div class="bx"><h3><span>📊 ความชำนาญ</span><button type="button" id="profx">✕</button></h3><small>ยิ่งทำบ่อยยิ่งเก่ง เลเวลอัปได้ทองและโบนัสถาวร (สูงสุดเลเวล '+MAXL+')</small>'
+  +PR.map(q=>{const r=D()[q.k],mx=r.l>=MAXL,pc=mx?100:Math.round(r.x/need(r.l)*100);
+   return '<div class="r"><div class="t"><span>'+q.e+' '+q.n+'</span><b>เลเวล '+r.l+(mx?' (MAX)':'')+'</b></div><div class="b"><i style="width:'+pc+'%;background:'+q.c+'"></i></div><small>'+(mx?'ครบแล้ว':'XP '+r.x+' / '+need(r.l))+'</small><small>✨ '+q.perk(r.l)+'</small>'+(mx?'':'<small style="opacity:.7">เลเวลถัดไป: '+q.perk(r.l+1)+'</small>')+'</div>'}).join('')+'</div>';
+  const x=document.getElementById('profx');if(x)x.onclick=close}
+function open(){panel.hidden=false;render()}function close(){panel.hidden=true}
+const tg=()=>panel.hidden?open():close();
+panel.addEventListener('pointerdown',e=>{if(e.target===panel)close()});
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!panel.hidden){close();return}if(!e.repeat&&!BL&&panel.hidden&&(e.code=='KeyP'||e.key=='p'||e.key=='P'))open();else if(!e.repeat&&e.key.toLowerCase()=='p'&&!panel.hidden)close()});
+// ปุ่ม
+const dk=document.getElementById('hlp'),b=document.createElement('button');
+b.type='button';b.id='profb';b.textContent='📊';b.title='ความชำนาญ (P)';b.setAttribute('aria-label','ความชำนาญ');b.style.pointerEvents='auto';
+if(dk)dk.before(b);else document.body.appendChild(b);b.onclick=tg;
+const pad=document.getElementById('pad'),A=document.getElementById('A');
+if(pad&&A){const c=document.createElement('button');c.type='button';c.id='profb2';c.textContent='📊';c.setAttribute('aria-label','ความชำนาญ');
+c.style.cssText='pointer-events:auto;width:clamp(38px,10vw,46px);height:clamp(38px,10vw,46px);border-radius:50%;font-size:18px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:8px';
+c.onclick=tg;pad.insertBefore(c,A)}
+window.__prof={gain,D,need};
+})();
 </script>
 </body>
 </html>
