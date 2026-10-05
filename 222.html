@@ -2239,13 +2239,17 @@ window.__autoMine={get:()=>({ON,phase,stat,fails,tgt,floor}),cfg:CFG};
 (function(){
 // ===== บอทตกปลา (กด G หรือปุ่ม 🎣) =====
 let ON=0,st='go',t=0,catches=0,sellMode=0,sellT=0,qT=0;
-window.FISHBOT_SELL_N=window.FISHBOT_SELL_N||10;
+let FON=0,trip=0,tripT=0,fT=0,fcd=0,harv=0;
+const FV={sellN:[5,10,20,40],wait:[10,14,20,30],rest:[1,2,3],sell:[1,0],fight:[1,0],crop:[0,1,2],replant:[1,0],vsell:[1,0],expand:[0,1]};
+const FD={sellN:window.FISHBOT_SELL_N||10,wait:14,rest:1,sell:1,fight:1,crop:1,replant:1,vsell:1,expand:0};
+const FC=()=>{const o=S.fb&&typeof S.fb=='object'?S.fb:(S.fb={});for(const k in FD)if(!FV[k].includes(o[k]))o[k]=FD[k];return o};
+window.FISHBOT_SELL_N=FD.sellN;
 const prev=window.mouseK;
 const _toast=toast;
 toast=function(m){_toast(m);if(!ON)return;
   if(/โยนเบ็ดแล้ว/.test(m)){st='wait';t=0}
   else if(/ปลากินเบ็ด/.test(m)){st='hit';t=0}
-  else if(/^จับได้/.test(m)){catches++;st='rest';t=0;if(catches>=window.FISHBOT_SELL_N)sellMode=1}
+  else if(/^จับได้/.test(m)){catches++;st='rest';t=0;if(FC().sell&&catches>=FC().sellN)sellMode=1}
   else if(/ปลาหลุด/.test(m)){st='rest';t=0}};
 const freeT=q=>!SOL.has(q)&&q!=17;
 const DIRS=[[0,-1],[1,0],[-1,0],[0,1]];
@@ -2255,25 +2259,35 @@ function center(K){const ex=Math.floor(P.x)+.5-P.x,ey=Math.floor(P.y)+.5-P.y;if(
 function station(K,test){const cx=Math.floor(P.x),cy=Math.floor(P.y);
   if(test(cx,cy))return center(K)?'moving':'there';
   const n=bfs((q,a,b)=>freeT(q)&&test(a,b),freeT);if(!n)return'none';steer(K,n.x,n.y);return'moving'}
-function setFish(v){ON=v;st='go';t=0;sellMode=0;if(v&&window.__setAuto)__setAuto(0);
-  for(const q of document.querySelectorAll('#fishb,#fishb2')){q.textContent=v?'🎣 ON':'🎣';q.style.background=v?'#2f6fbf':'';q.style.opacity=v?'1':''}
-  toast(v?'🎣 เปิดบอทตกปลา — ไปยืนริมบ่อให้เอง ขายผลผลิตทุก '+window.FISHBOT_SELL_N+' ตัว':'🎣 ปิดบอทตกปลา')}
-window.__stopFish=()=>{if(ON)setFish(0)};
-window.__fish={sell:()=>{sellMode=1}};
+function paintB(){const on=ON||FON;for(const q of document.querySelectorAll('#fishb,#fishb2')){q.textContent=on?(ON&&FON?'🎣🌱':ON?'🎣 ON':'🌱 ON'):'🎣';q.style.background=on?(ON?'#2f6fbf':'#2f8f3a'):'';q.style.opacity=on?'1':''}}
+function setFarm(v){FON=v;trip=0;fT=0;harv=0;if(v&&window.__setAuto)__setAuto(0);paintB();toast(v?'🌱 เปิดบอทปลูกผัก — ดูแลแปลงให้อัตโนมัติ':'🌱 ปิดบอทปลูกผัก')}
+function setFish(v){ON=v;st='go';t=0;sellMode=0;trip=0;if(v&&window.__setAuto)__setAuto(0);
+  paintB();
+  toast(v?'🎣 เปิดบอทตกปลา — ไปยืนริมบ่อให้เอง '+(FC().sell?'ขายผลผลิตทุก '+FC().sellN+' ตัว':'ไม่ขายอัตโนมัติ'):'🎣 ปิดบอทตกปลา')}
+window.__stopFish=()=>{if(ON)setFish(0);if(FON)setFarm(0)};
+window.__fish={sell:()=>{sellMode=1},cfg:FC,farm:()=>FON,setFarm};
+const FCRC=[8,20,50],FCRT=[60,150,360],FUC=[150,250,400,600,850,1200];
+const plots=()=>{const pl=Array.isArray(S.pl)?S.pl:[],n=Math.max(6,Math.min(12,Math.floor(+S.pn)||6));let ready=0,grow=0,empty=0,nx=0;for(let i=0;i<n;i++){const q=pl[i];if(!q)empty++;else{const l=FCRT[q.c]*1000-(Date.now()-q.t);if(l<=0)ready++;else{grow++;nx=nx?Math.min(nx,l):l}}}return{n,ready,grow,empty,nx}};
+const farmNeed=()=>{const c=FC(),p=plots();if(p.ready)return 1;if(c.replant&&p.empty&&S.gold>=FCRC[c.crop])return 1;if(c.expand&&p.n<12&&S.gold>=FUC[p.n-6]+FCRC[c.crop])return 1;return 0};
 window.mouseK=function(dt){
   const base=prev&&prev(dt);if(base)return base;
-  if(!ON||BL)return null;
+  if(!(ON||FON)||BL)return null;
   if(Object.values(keys).some(v=>v)){st='go';return null}
   if(where!='town'){qT+=dt;if(qT>1){qT=0;dispatchEvent(new KeyboardEvent('keydown',{code:'KeyQ',key:'q'}))}return null}
   const K={};
-  if(MS.length){const[m,d]=near();if(m){st='go';
+  if(FC().fight&&MS.length){const[m,d]=near();if(m){st='go';
     if(d<1.4){const dx=m.x-P.x,dy=m.y-P.y;face=Math.abs(dx)>=Math.abs(dy)?[Math.sign(dx)||1,0]:[0,Math.sign(dy)||1];K.a=1;return K}
     const dx=m.x-P.x,dy=m.y-P.y,l=Math.hypot(dx,dy)||1;K.ax=dx/l;K.ay=dy/l;return K}}
-  if(sellMode){
+  // บอทปลูกผัก: ทำงานคู่กับบอทตกปลา — พักการตกปลาแล้วแวะไปดูแลแปลงเมื่อมีงาน แล้วกลับมาตกต่อ
+  if(FON&&!trip&&!sellMode&&st!='hit'){fT+=dt;if(fT>2){fT=0;if(Date.now()>fcd&&farmNeed()){trip=1;tripT=0;harv=0}}}
+  if(trip||sellMode){
+    tripT+=dt;if(tripT>90){trip=0;sellMode=0;tripT=0;fcd=Date.now()+20000;st='go';return K}
     const r=station(K,farmNb);
     if(r=='there'){face=farmNb(Math.floor(P.x),Math.floor(P.y));sellT+=dt;if(sellT>.8){sellT=0;K.a=1}return K}
-    if(r=='none'){sellMode=0;catches=0}
+    if(r=='none'){sellMode=0;trip=0;catches=0;fcd=Date.now()+20000}
     return K}
+  tripT=0;
+  if(!ON)return K;
   const r=station(K,waterNb);
   if(r=='none'){return null}
   if(r=='moving'){st='go';return K}
@@ -2281,23 +2295,87 @@ window.mouseK=function(dt){
   t+=dt;
   if(st=='go'){st='cast';t=1.2}
   if(st=='cast'){if(t>=1.2){t=0;K.a=1}}
-  else if(st=='wait'){if(t>14){st='cast';t=1.2}}
+  else if(st=='wait'){if(t>FC().wait){st='cast';t=1.2}}
   else if(st=='hit'){K.a=1;if(t>2.5){st='rest';t=0}}
-  else if(st=='rest'){if(t>1){st='cast';t=1.2}}
+  else if(st=='rest'){if(t>FC().rest){st='cast';t=1.2}}
   return K};
-// ขายผลผลิตเมื่อหน้าต่างแปลงผักเปิด
-setInterval(()=>{if(!ON||!sellMode||!BL)return;const b=document.querySelector('[data-a="fm_sell"]');if(!b)return;
-  if(!b.disabled)b.click();
-  setTimeout(()=>{dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape'}));sellMode=0;catches=0;st='go'},350)},400);
+// หน้าต่างแปลงผักเปิด: เก็บเกี่ยว → ขยาย → ปลูกใหม่ → ขาย → ปิด
+setInterval(()=>{if(!(ON||FON)||!(sellMode||trip)||!BL)return;
+  const ov=document.getElementById('bld');if(!ov||!ov.querySelector('.farm'))return;
+  const q=s=>ov.querySelector(s),c=FC(),go=e=>{e.click()};
+  if(FON){
+    const tb=q('[data-a="fm_s_'+c.crop+'"]');if(tb&&!tb.classList.contains('on'))return go(tb);
+    const ha=q('[data-a="fm_ha"]:not([disabled])');if(ha){harv=1;return go(ha)}
+    const pn=Math.max(6,Math.min(12,Math.floor(+S.pn)||6));
+    if(c.expand&&pn<12&&S.gold>=FUC[pn-6]+FCRC[c.crop]){const u=q('[data-a="fm_u"]:not([disabled])');if(u)return go(u)}
+    if(c.replant&&q('[data-a^="fm_p_"]:not([disabled])')){const pa=q('[data-a="fm_pa"]');if(pa)return go(pa)}
+  }
+  const sb=q('[data-a="fm_sell"]:not([disabled])');
+  if(sb&&(sellMode||(FON&&c.vsell&&harv)))return go(sb);
+  dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape'}));
+  sellMode=0;trip=0;catches=0;harv=0;st='go';fcd=Date.now()+15000},400);
+
+// ---------- หน้าตั้งค่าบอทตกปลา ----------
+const fcss=document.createElement('style');
+let base='';for(const s of document.querySelectorAll('style'))if(s.textContent.includes('#abp{'))base=s.textContent;
+fcss.textContent=base.replace(/#abp/g,'#fbp').replace(/background:linear-gradient\(#2a2014,#16110d\)/,'background:linear-gradient(#14202e,#0d141c)')+'#fbp .go.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .g button.on{background:linear-gradient(#6fb2ff,#2f6fbf);color:#04121f;border-color:#12365f}#fbp .bx{max-height:94vh;overflow:auto}#fbp .st{display:flex;gap:.5em;margin:.5em 0}#fbp .st div{flex:1;text-align:center;padding:.4em;background:#0007;border:1px solid #7d5f2455;border-radius:6px}#fbp .st b{display:block;font:500 18px var(--hd);color:var(--coin)}#fbp .rs{margin-top:.6em;background:transparent;font-size:13px}#fbp .s{line-height:1.7}#fbp .rs:disabled{pointer-events:none}';
+document.head.appendChild(fcss);
+const fp=document.createElement('div');fp.id='fbp';fp.hidden=true;document.body.appendChild(fp);
+const SN={go:'🚶 เดินไปริมบ่อ',cast:'🎣 โยนเบ็ด',wait:'⏳ รอปลากินเบ็ด',hit:'❗ ปลากินเบ็ด! กำลังดึง',rest:'☕ พักก่อนโยนใหม่'};
+let ptab='f';
+const tmf=ms=>{const s=Math.ceil(ms/1000);return s>=60?Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' นาที':s+' วิ'};
+function fpr(){if(fp.hidden)return;const c=FC(),p=plots();
+  const row=(t,key,vals,lab,hint)=>'<div class="o"><b>'+t+'</b><div class="g">'+vals.map(v=>'<button type="button" data-k="'+key+'" data-v="'+v+'" class="'+(c[key]==v?'on':'')+'">'+lab(v)+'</button>').join('')+'</div>'+(hint?'<small style="color:#9fb4c8;display:block;margin-top:.25em;font-size:12px">'+hint+'</small>':'')+'</div>';
+  const fst=!ON?'⚪ ตกปลา: ปิดอยู่':'🟢 ตกปลา: '+(sellMode?'🛒 ไปขายผลผลิต':trip?'⏸ พักไปดูแลแปลงผัก':(SN[st]||'เริ่มต้น'));
+  const vst=!FON?'⚪ ปลูกผัก: ปิดอยู่':'🟢 ปลูกผัก: '+(trip?'🚶 กำลังดูแลแปลง':p.ready?'✨ '+p.ready+' แปลงพร้อมเก็บ':p.grow?'🌱 รอผักโตอีก '+tmf(p.nx):'🟫 แปลงว่าง');
+  const both=ON&&FON;
+  let h='<div class="bx"><h3><span>🎣🌱 ตั้งค่าบอท</span><button type="button" id="fbx">✕</button></h3>'
+   +'<div class="s">'+fst+'<br>'+vst+'</div>'
+   +'<button type="button" id="fbboth" class="go '+(both?'run':'on')+'" style="margin-top:.2em">'+(both?'⏹ หยุดทั้งสองบอท':'▶ เริ่มตกปลา + ปลูกผักพร้อมกัน')+'</button>'
+   +'<div class="g" style="margin:.8em 0 .2em"><button type="button" data-t="f" class="'+(ptab=='f'?'on':'')+'">🎣 ตกปลา</button><button type="button" data-t="v" class="'+(ptab=='v'?'on':'')+'">🌱 ปลูกผัก</button></div>';
+  if(ptab=='f'){
+   h+='<div class="st"><div><b>'+catches+'</b>จับได้ (รอบนี้)</div><div><b>'+(c.sell?c.sellN:'–')+'</b>ขายเมื่อครบ</div></div>'
+   +row('ขายผลผลิตอัตโนมัติ','sell',FV.sell,v=>v?'เปิด':'ปิด','พาไปขายที่แปลงผักเมื่อจับปลาครบจำนวน')
+   +(c.sell?row('ขายเมื่อจับได้ครบ','sellN',FV.sellN,v=>v+' ตัว'):'')
+   +row('รอปลากินเบ็ดนานสุด','wait',FV.wait,v=>v+' วิ','ถ้าเกินเวลานี้จะโยนเบ็ดใหม่')
+   +row('พักก่อนโยนครั้งถัดไป','rest',FV.rest,v=>v+' วิ')
+   +row('สู้มอนสเตอร์ที่เข้าใกล้','fight',FV.fight,v=>v?'สู้':'ไม่สู้')
+   +'<button type="button" id="fbgo" class="go '+(ON?'run':'on')+'">'+(ON?'⏹ หยุดตกปลา':'▶ เริ่มตกปลาอัตโนมัติ')+'</button>'
+   +'<button type="button" id="fbsell" class="rs"'+(ON?'':' disabled style="opacity:.4"')+'>🛒 ไปขายผลผลิตตอนนี้</button>'}
+  else{
+   h+='<div class="st"><div><b>'+p.ready+'</b>พร้อมเก็บ</div><div><b>'+p.grow+'</b>กำลังโต</div><div><b>'+p.empty+'</b>แปลงว่าง</div></div>'
+   +row('พืชที่ปลูก','crop',FV.crop,v=>['🥬 ผักกาด','🍅 มะเขือเทศ','🎃 ฟักทอง'][v],'โต '+tmf(FCRT[c.crop]*1000)+' · เมล็ด '+FCRC[c.crop]+' ทอง · ขายได้ '+[20,55,150][c.crop]+' ทอง')
+   +row('ปลูกใหม่ทุกแปลงที่ว่าง','replant',FV.replant,v=>v?'เปิด':'ปิด','ซื้อเมล็ดและปลูกให้ทันทีหลังเก็บเกี่ยว')
+   +row('ขายผักหลังเก็บเกี่ยว','vsell',FV.vsell,v=>v?'เปิด':'ปิด','ขายผลผลิตทั้งหมด (รวมปลา) ทุกครั้งที่แวะแปลง')
+   +row('ขยายแปลงอัตโนมัติ','expand',FV.expand,v=>v?'เปิด':'ปิด',p.n<12?'ขยายเมื่อมีทองพอ (แปลงที่ '+(p.n+1)+' ใช้ '+FUC[p.n-6]+' ทอง)':'ขยายครบ 12 แปลงแล้ว')
+   +'<button type="button" id="fvgo" class="go '+(FON?'run':'on')+'">'+(FON?'⏹ หยุดปลูกผัก':'▶ เริ่มปลูกผักอัตโนมัติ')+'</button>'
+   +'<button type="button" id="fvnow" class="rs"'+(FON?'':' disabled style="opacity:.4"')+'>🚶 ไปดูแลแปลงตอนนี้</button>'}
+  h+='<button type="button" id="fbrst" class="rs">↺ คืนค่าเริ่มต้น</button>'
+   +'<small>บอททั้งสองทำงานพร้อมกัน: บอทตกปลายืนริมบ่อ ส่วนบอทปลูกผักจะพักการตกปลาแล้วแวะไปเก็บเกี่ยว/ปลูกใหม่เมื่อผักโตหรือแปลงว่าง จากนั้นกลับมาตกปลาต่อเอง ผักโตตามเวลาจริงแม้ปิดเกม · กดปุ่มเดินเองบอทจะหยุดชั่วคราว · ปุ่มลัด G เปิด/ปิดบอทตกปลา</small></div>';
+  fp.innerHTML=h;
+  const $q=i=>document.getElementById(i);
+  $q('fbx').onclick=fcl;
+  $q('fbboth').onclick=()=>{if(both){setFish(0);setFarm(0);fpr()}else{if(!ON)setFish(1);if(!FON)setFarm(1);fcl()}};
+  if($q('fbgo'))$q('fbgo').onclick=()=>{setFish(!ON);if(ON)fcl();else fpr()};
+  if($q('fbsell'))$q('fbsell').onclick=()=>{if(ON){sellMode=1;fpr()}};
+  if($q('fvgo'))$q('fvgo').onclick=()=>{setFarm(!FON);if(FON)fcl();else fpr()};
+  if($q('fvnow'))$q('fvnow').onclick=()=>{if(FON&&!trip){trip=1;tripT=0;harv=0;fpr()}};
+  $q('fbrst').onclick=()=>{Object.assign(FC(),FD);try{save()}catch(e){}fpr()};
+  for(const b of fp.querySelectorAll('[data-t]'))b.onclick=()=>{ptab=b.dataset.t;fpr()};
+  for(const b of fp.querySelectorAll('[data-k]'))b.onclick=()=>{FC()[b.dataset.k]=+b.dataset.v;try{save()}catch(e){}fpr()}}
+const fop=()=>{fp.hidden=false;fpr()},fcl=()=>{fp.hidden=true};
+fp.addEventListener('pointerdown',e=>{if(e.target===fp)fcl()});
+setInterval(()=>{if(!fp.hidden)fpr()},700);
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!fp.hidden)fcl()});
 // ปุ่ม
 const dk=document.getElementById('hlp'),b=document.createElement('button');
-b.type='button';b.id='fishb';b.textContent='🎣';b.title='บอทตกปลา (G)';b.setAttribute('aria-label','บอทตกปลา');b.style.pointerEvents='auto';
+b.type='button';b.id='fishb';b.textContent='🎣';b.title='ตั้งค่าบอทตกปลา/ปลูกผัก (G เปิด/ปิดตกปลา)';b.setAttribute('aria-label','บอทตกปลา');b.style.pointerEvents='auto';
 if(dk)dk.before(b);else document.body.appendChild(b);
-b.onclick=()=>setFish(!ON);
+b.onclick=()=>fp.hidden?fop():fcl();
 const pad=document.getElementById('pad'),A=document.getElementById('A');
-if(pad&&A){const c=document.createElement('button');c.type='button';c.id='fishb2';c.textContent='🎣';c.setAttribute('aria-label','บอทตกปลา');
+if(pad&&A){const c=document.createElement('button');c.type='button';c.id='fishb2';c.textContent='🎣';c.setAttribute('aria-label','ตั้งค่าบอทตกปลาและปลูกผัก');
 c.style.cssText='pointer-events:auto;width:clamp(48px,14vw,62px);height:clamp(48px,14vw,62px);border-radius:50%;font-size:22px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:6px';
-c.onclick=()=>setFish(!ON);pad.insertBefore(c,A)}
+c.onclick=()=>fp.hidden?fop():fcl();pad.insertBefore(c,A)}
 addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyG'||e.key=='g'||e.key=='G'))setFish(!ON)});
 })();
 
@@ -2358,6 +2436,7 @@ function open(){panel.hidden=false;render()}function close(){panel.hidden=true}
 const tg=()=>panel.hidden?open():close();
 panel.addEventListener('pointerdown',e=>{if(e.target===panel)close()});
 addEventListener('keydown',e=>{if(e.key=='Escape'&&!panel.hidden){close();return}if(!e.repeat&&!BL&&panel.hidden&&(e.code=='KeyP'||e.key=='p'||e.key=='P'))open();else if(!e.repeat&&e.key.toLowerCase()=='p'&&!panel.hidden)close()});
+
 // ปุ่ม
 const dk=document.getElementById('hlp'),b=document.createElement('button');
 b.type='button';b.id='profb';b.textContent='📊';b.title='ความชำนาญ (P)';b.setAttribute('aria-label','ความชำนาญ');b.style.pointerEvents='auto';
