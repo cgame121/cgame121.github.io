@@ -221,7 +221,7 @@ body:has(#bld:not([hidden])) #dock{display:none}
 </div>
 </div>
 <div id="pad">
-<div id="dp" aria-label="จอยสติ๊ก"><i id="jk"></i></div>
+<div id="jz" aria-label="โซนจอยสติ๊ก"><div id="dp"><i id="jd"></i><i id="jk"></i></div></div>
 <button id="A" data-k="a">ฟัน<br>ขุด</button>
 </div>
 </main>
@@ -1184,17 +1184,37 @@ const _u=update;update=function(dt){_u(dt);if(where!='town'||!MS.length)return;
     if(m.wt>3){if(m.wx!=null&&Math.hypot(m.x-m.wx,m.y-m.wy)<.2&&Math.hypot(m.x-9.5,m.y-4.4)>1){m.x=9.5;m.y=Math.max(11.5,Math.min(m.y,14))}m.wx=m.x;m.wy=m.y;m.wt=0}}};
 })();
 
-// ---- จอยสติ๊กเดินได้ทุกทิศทาง (360 องศา ความแรงตามระยะลาก) ----
+// ---- จอยสติ๊กลอย 360° (ฐานตามนิ้ว ไม่หลุดง่าย) ----
 (function(){
-const dp=$('dp'),jk=$('jk');let id=null,bx=0,by=0;
-function set(e){const r=dp.getBoundingClientRect(),R=r.width/2,vx=e.clientX-(r.left+R),vy=e.clientY-(r.top+R),d=Math.hypot(vx,vy),ux=d?vx/d:0,uy=d?vy/d:0,m=R*.6,mag=d<R*.1?0:Math.min(1,d/m);
-  keys.ax=ux*mag;keys.ay=uy*mag;keys.left=keys.ax<-.35?1:0;keys.right=keys.ax>.35?1:0;keys.up=keys.ay<-.35?1:0;keys.down=keys.ay>.35?1:0;
-  if(d>R*1.05){bx+=ux*(d-R*1.05);by+=uy*(d-R*1.05);dp.style.translate=bx+'px '+by+'px';jk.style.transform='translate('+ux*m+'px,'+uy*m+'px)';return}
-  const o=Math.min(d,m);jk.style.transform='translate('+ux*o+'px,'+uy*o+'px)'}
-function rel(){id=null;keys.ax=keys.ay=null;keys.left=keys.right=keys.up=keys.down=0;jk.style.transform='';bx=by=0;dp.style.translate='';dp.classList.remove('on')}
-dp.addEventListener('pointerdown',e=>{id=e.pointerId;try{dp.setPointerCapture(id)}catch(_){}dp.classList.add('on');set(e);e.preventDefault()});
-dp.addEventListener('pointermove',e=>{if(e.pointerId===id)set(e)});
-['pointerup','pointercancel','lostpointercapture'].forEach(t=>dp.addEventListener(t,e=>{if(e.pointerId===id)rel()}));
+const jz=$('jz'),dp=$('dp'),jk=$('jk'),jd=$('jd');let id=null,ox=0,oy=0;
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+/* วางฐานจอยให้กึ่งกลางอยู่ที่จุดนิ้ว (free=true: ยอมออกนอกโซน แต่ไม่ออกนอกจอ) */
+function place(cx,cy,free){const z=jz.getBoundingClientRect(),R=dp.offsetWidth/2;
+ if(free){ox=cl(cx,R,innerWidth-R);oy=cl(cy,R,innerHeight-R)}else{ox=cl(cx,z.left+R,z.right-R);oy=cl(cy,z.top+R,z.bottom-R)}
+ dp.style.left=(ox-R-z.left)+'px';dp.style.top=(oy-R-z.top)+'px';dp.style.bottom='auto'}
+function set(e){
+ const R=dp.offsetWidth/2;let vx=e.clientX-ox,vy=e.clientY-oy,d=Math.hypot(vx,vy);
+ if(d>R){const ux=vx/d,uy=vy/d;place(ox+ux*(d-R),oy+uy*(d-R),true);vx=e.clientX-ox;vy=e.clientY-oy;d=Math.hypot(vx,vy)}
+ const ux=d?vx/d:0,uy=d?vy/d:0,m=R*.55,dz=R*.12;
+ let mag=d<dz?0:Math.min(1,(d-dz)/(m-dz));mag=mag*mag*(3-2*mag);
+ const ax=ux*mag,ay=uy*mag;keys.ax=ax;keys.ay=ay;
+ keys.left=ax<-(keys.left?.25:.38)?1:0;keys.right=ax>(keys.right?.25:.38)?1:0;
+ keys.up=ay<-(keys.up?.25:.38)?1:0;keys.down=ay>(keys.down?.25:.38)?1:0;
+ const o=Math.min(d,R*.58);jk.style.transform='translate('+ux*o+'px,'+uy*o+'px)';
+ jd.style.setProperty('--a',(Math.atan2(uy,ux)*180/Math.PI+90)+'deg');jd.style.opacity=mag>0?(.4+.6*mag):0}
+function rel(){const pid=id;id=null;
+ if(pid!=null){try{if(jz.hasPointerCapture(pid))jz.releasePointerCapture(pid)}catch(_){}}
+ keys.ax=keys.ay=null;keys.left=keys.right=keys.up=keys.down=0;
+ jk.style.transform='';jd.style.opacity=0;dp.style.left=dp.style.top=dp.style.bottom='';dp.classList.remove('on')}
+jz.addEventListener('pointerdown',e=>{if(id!=null)return;e.preventDefault();id=e.pointerId;
+ try{jz.setPointerCapture(id)}catch(_){}
+ dp.classList.add('on');place(e.clientX,e.clientY);set(e)});
+jz.addEventListener('pointermove',e=>{if(e.pointerId===id){e.preventDefault();set(e)}});
+['pointerup','pointercancel','lostpointercapture'].forEach(t=>jz.addEventListener(t,e=>{if(e.pointerId===id)rel()}));
+/* กันตัวละครเดินค้าง: ปล่อยจอยเมื่อแอปเสียโฟกัส / หมุนจอ / เมนูทับ (ปุ่มถูกซ่อนจะไม่มี pointerup) */
+addEventListener('blur',rel);addEventListener('pagehide',rel);addEventListener('orientationchange',rel);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)rel()});
+setInterval(()=>{if(id!=null&&(!jz.offsetWidth||!jz.hasPointerCapture(id)))rel()},200);
 })();
 
 // ---- โลกเรียลไทม์: กลางวัน/กลางคืนตามนาฬิกาจริง + ตัวนับเหตุการณ์ + แร่งอก/มอนสเตอร์เกิดตามเวลา ----
@@ -1480,15 +1500,29 @@ body{position:fixed;inset:0;width:100%}
 /* ปุ่มควบคุมมือถือ: ใหญ่ ห่างขอบ อยู่ในโซนหัวแม่โป้ง */
 :root{--js:clamp(120px,min(36vh,32vw),172px);--ab:clamp(80px,min(24vh,21vw),108px);--gx:max(34px,5vw);--iy:max(16px,5vh)}
 #pad{padding:0 calc(var(--gx) + var(--sr)) 0 calc(var(--gx) + var(--sl))!important;bottom:calc(var(--iy) + var(--sb))!important;align-items:flex-end!important}
-#dp{width:var(--js)!important;height:var(--js)!important;opacity:.85!important}
-#dp::before{inset:12%}
-#dp::after{font-size:12px}
-#dp.on{opacity:1!important;box-shadow:inset 0 0 16px #000,0 4px 10px #0008,0 0 0 6px rgba(210,169,79,.3)}
-#dp.on #jk{filter:brightness(1.15)}
-#jk{width:46%;height:46%;margin:-23% 0 0 -23%}
-#A{width:var(--ab)!important;height:var(--ab)!important;font-size:clamp(14px,4vh,19px)!important;opacity:.88!important;margin-bottom:calc(var(--js)*.12);position:relative}
-#A::before{content:"";position:absolute;inset:-16px}
-#A:active{opacity:1!important}
+/* --- จอยสติ๊กรูปแบบใหม่: วงแก้วใส + ขีดทิศ 8 ทาง + ลูกศรชี้ทิศ + ปุ่มนูนสีทอง --- */
+#jz{position:relative;flex:none;width:calc(var(--js)*1.7);height:calc(var(--js)*1.5);pointer-events:auto!important;touch-action:none;-webkit-user-select:none;user-select:none}
+#dp{position:absolute!important;left:calc(50% - var(--js)/2);bottom:0;top:auto;width:var(--js)!important;height:var(--js)!important;border-radius:50%;pointer-events:none!important;opacity:.55!important;
+ background:radial-gradient(circle at 50% 45%,rgba(60,44,24,.28) 0,rgba(20,14,8,.5) 62%,rgba(210,169,79,.16) 100%)!important;
+ border:2px solid rgba(210,169,79,.5)!important;box-shadow:inset 0 0 22px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.45)!important;
+ -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);transition:opacity .15s,box-shadow .15s,left .14s,bottom .14s,top .14s}
+#dp.on{opacity:1!important;transition:opacity .08s,box-shadow .15s;box-shadow:inset 0 0 22px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.45),0 0 0 5px rgba(255,210,63,.22)!important}
+#dp::before{content:"";position:absolute;inset:0;border:0;border-radius:50%;
+ background:repeating-conic-gradient(from -2deg,rgba(241,230,198,.75) 0 4deg,transparent 4deg 45deg);
+ -webkit-mask:radial-gradient(circle,transparent 0 78%,#000 79% 91%,transparent 92%);mask:radial-gradient(circle,transparent 0 78%,#000 79% 91%,transparent 92%)}
+#dp::after{content:"";position:absolute;inset:30%;border-radius:50%;border:1.5px solid rgba(210,169,79,.28);background:none;display:block;letter-spacing:0}
+#jd{position:absolute;inset:0;opacity:0;transform:rotate(var(--a,0deg));pointer-events:none}
+#jd::before{content:"";position:absolute;left:50%;top:3%;margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom:15px solid #ffd23f;filter:drop-shadow(0 0 5px rgba(255,210,63,.8))}
+#jk{position:absolute;left:50%;top:50%;width:44%;height:44%;margin:-22% 0 0 -22%;border-radius:50%;pointer-events:none;transition:transform .09s ease-out;
+ background:radial-gradient(circle at 36% 30%,#fff1b8 0,#f2cd72 22%,#b07d1f 72%,#7d5a14 100%);border:2px solid #5b3f0e;
+ box-shadow:0 4px 8px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 5px rgba(0,0,0,.3)}
+#jk::after{content:"";position:absolute;inset:26%;border-radius:50%;border:1.5px solid rgba(91,63,14,.5)}
+#dp.on #jk{transition:none;filter:brightness(1.12)}
+#A{width:var(--ab)!important;height:var(--ab)!important;font-size:clamp(14px,4vh,19px)!important;opacity:.9!important;margin-bottom:calc(var(--js)*.12);position:relative;
+ background:radial-gradient(circle at 36% 28%,#fff1b8 0,#f2cd72 24%,#b07d1f 74%,#7d5a14 100%)!important;border:3px solid #5b3f0e!important;
+ box-shadow:0 0 0 5px rgba(210,169,79,.22),0 0 0 7px rgba(0,0,0,.35),0 6px 0 #3d2a08,0 10px 16px rgba(0,0,0,.5)!important;-webkit-tap-highlight-color:transparent}
+#A::before{content:"";position:absolute;inset:-18px}
+#A:active{opacity:1!important;transform:translateY(4px);box-shadow:0 0 0 5px rgba(255,210,63,.4),0 0 0 7px rgba(0,0,0,.35),0 2px 0 #3d2a08,0 4px 8px rgba(0,0,0,.5)!important}
 /* แนวนอน: ปุ่มลอยทับเกม → ยกเมนูมุมขวาให้พ้นปุ่ม A (พิกัดอิงกรอบเกมที่เว้น safe-area แล้ว) */
 @media(pointer:coarse) and (orientation:landscape){
  #dock{bottom:calc(var(--iy) + var(--ab) + var(--js)*.12 + 12px)!important;right:var(--gx)!important}
