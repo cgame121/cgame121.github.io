@@ -2559,7 +2559,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){ms=0;n=0}}
 
 <style>
 /* ===== โหมดมือถือแนวตั้ง: เกมอยู่บน, แผงควบคุมอยู่ล่าง ไม่ซ้อนทับภาพเกม ===== */
-body.pv{--js:clamp(104px,30vw,140px);--ab:clamp(84px,24vw,104px)}
+body.pv{--js:clamp(92px,min(30vw,19vh),140px);--ab:clamp(76px,min(24vw,15vh),104px)}
 body.pv #stage{align-items:center;padding:0}
 body.pv #pad{position:static!important;flex:none;width:100%!important;max-width:none!important;margin:0!important;
  display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"menu menu" "joy act";gap:8px 10px;align-items:center!important;
@@ -2573,7 +2573,7 @@ body.pv #dock #mt{display:none!important}
 body.pv #dock button,body.pv #dock:not(.open) button:not(#mt):not(#ex){display:flex!important;order:0!important;min-width:0!important;width:100%;height:42px;min-height:42px!important;margin:0!important;padding:0!important;
  font-size:20px!important;border-radius:12px!important;background:linear-gradient(180deg,rgba(60,45,28,.95),rgba(26,19,12,.95))!important;border:1px solid rgba(210,169,79,.4)!important;box-shadow:0 2px 0 #000a}
 body.pv #dock button[hidden],body.pv #dock #ex[hidden],body.pv #dock #fs[hidden]{display:none!important}
-body.pv #dock #ex{background:linear-gradient(180deg,rgba(150,45,40,.95),rgba(90,22,20,.95))!important;grid-column:span 2}
+body.pv #dock #ex{background:linear-gradient(180deg,rgba(150,45,40,.95),rgba(90,22,20,.95))!important;}
 body.pv #dock button:active{transform:scale(.94)}
 body.pv #autob2,body.pv #fishb2,body.pv #profb2{display:none!important}
 /* จอยสติ๊กซ้าย (ลอยตามนิ้ว) / ปุ่มตีขุดขวา */
@@ -2584,6 +2584,7 @@ body.pv #A{grid-area:act;margin:0!important;justify-self:end;width:var(--ab)!imp
 /* HUD ในภาพเกม: ขนาดอ่านง่ายและเรียงใหม่ ไม่ซ้อนกัน */
 body.pv #hud{font-size:12px!important}
 body.pv #bld{font-size:13px!important}
+body.pv #log div:nth-last-child(n+3){display:none}
 body.pv #log{left:.9em!important;right:.9em!important;bottom:.9em!important;width:auto!important}
 body.pv #abs{top:auto!important;bottom:6em!important}
 body.pvn #ct{left:auto!important;right:1.2em!important;transform:none!important;top:4.3em!important;max-width:calc(100% - 17em);white-space:normal!important;text-align:right;padding:.3em .9em!important;border-radius:12px!important}
