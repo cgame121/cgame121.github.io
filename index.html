@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0c11">
+<meta name="format-detection" content="telephone=no">
+<title>Game Hub – แพลตฟอร์มรวมเกมออนไลน์</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c11;--surface:#11141b;--surface2:#171b24;--border:#232836;--text:#e9ebf1;--muted:#8d95a9;--accent:#5b8cff;--accent-ink:#fff;--shadow:0 20px 40px -24px rgba(0,0,0,.8);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6f7fb;--surface:#fff;--surface2:#f0f2f8;--border:#e1e4ee;--text:#12151f;--muted:#5d6579;--shadow:0 20px 40px -26px rgba(30,40,90,.35)}}
+:root[data-theme="light"]{--bg:#f6f7fb;--surface:#fff;--surface2:#f0f2f8;--border:#e1e4ee;--text:#12151f;--muted:#5d6579;--shadow:0 20px 40px -26px rgba(30,40,90,.35)}
+:root[data-theme="dark"]{--bg:#0a0c11;--surface:#11141b;--surface2:#171b24;--border:#232836;--text:#e9ebf1;--muted:#8d95a9;--shadow:0 20px 40px -24px rgba(0,0,0,.8)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+a,button{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+a{color:inherit;text-decoration:none}
+svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.c{max-width:1120px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left,0px)) 0 max(20px,env(safe-area-inset-right,0px))}
+.seg{scrollbar-width:none}.seg::-webkit-scrollbar{display:none}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em}
+.mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#7a5cff);color:#fff;display:grid;place-items:center;font-size:18px}
+.links{display:flex;align-items:center;gap:26px;font-size:15px;color:var(--muted)}
+.links a:hover{color:var(--text)}
+.ibtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:18px;transition:.2s}
+.ibtn:hover{background:var(--surface2)}
+.hero{padding:84px 0 56px;position:relative}
+.hero::before{content:"";position:absolute;inset:-40px 0 auto;height:420px;background:radial-gradient(600px 260px at 22% 0,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%);pointer-events:none}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:var(--surface);padding:5px 14px;border-radius:999px}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:#2fcf8a}
+h1{position:relative;margin:22px 0 16px;font-size:clamp(34px,6.4vw,62px);line-height:1.12;font-weight:700;letter-spacing:-.025em;max-width:760px}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent),#9a7bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{position:relative;margin:0;max-width:560px;font-size:18px;color:var(--muted);font-weight:300}
+.cta{position:relative;display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:500;font-size:15px;height:46px;padding:0 22px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:.2s}
+.btn:hover{background:var(--surface2);transform:translateY(-1px)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 10px 24px -10px var(--accent)}
+.btn.p:hover{filter:brightness(1.1);background:var(--accent)}
+.stats{position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:48px;padding-top:28px;border-top:1px solid var(--border)}
+.stats b{display:block;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.stats span{font-size:14px;color:var(--muted)}
+.resume{display:none;align-items:center;gap:16px;margin:0 0 32px;padding:14px 18px;border:1px solid var(--border);background:var(--surface);border-radius:14px}
+.resume.show{display:flex}
+.resume .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:22px;color:#fff}
+.resume div{flex:1;font-size:13.5px;color:var(--muted)}.resume b{display:block;font-size:16px;color:var(--text);font-weight:600}
+.sec{padding:24px 0 72px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px}
+.head h2{margin:0;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.head p{margin:2px 0 0;color:var(--muted);font-size:15px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;padding:3px;border:1px solid var(--border);background:var(--surface);border-radius:12px;overflow-x:auto;max-width:100%}
+.seg button{font:inherit;font-size:14px;font-weight:500;border:0;background:none;color:var(--muted);padding:7px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:.2s}
+.seg button.on{background:var(--surface2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border)}
+.sb{display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border:1px solid var(--border);background:var(--surface);border-radius:12px;color:var(--muted)}
+.sb:focus-within{border-color:var(--accent)}
+.sb input{font:inherit;font-size:14px;border:0;outline:0;background:none;color:var(--text);width:150px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:20px}
+.card{display:flex;flex-direction:column;border:1px solid var(--border);background:var(--surface);border-radius:18px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.card:active{border-color:var(--k)}
+@media (hover:hover){.card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--k) 55%,var(--border));box-shadow:var(--shadow)}}
+.art{position:relative;height:140px;display:grid;place-items:center;color:#fff;font-size:54px;background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--k) 85%,#fff),var(--k) 55%,color-mix(in srgb,var(--k) 55%,#000))}
+.art::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:28px 28px}
+.art svg{position:relative;stroke-width:1.5;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3));transition:transform .3s}
+@media (hover:hover){.card:hover .art svg{transform:scale(1.1)}}
+.fav{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:9px;border:0;background:rgba(0,0,0,.28);color:#fff;cursor:pointer;display:grid;place-items:center;font-size:16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.2s}
+.fav:hover{background:rgba(0,0,0,.45)}
+.fav.on svg{fill:#ff5470;stroke:#ff5470;filter:none}
+.bd{display:flex;flex-direction:column;gap:4px;padding:18px 18px 18px;flex:1}
+.cat{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--k)}
+.bd h3{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.bd p{margin:2px 0 14px;color:var(--muted);font-size:14.5px;flex:1;font-weight:300}
+.go{display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--border);font-weight:500;font-size:15px;transition:.2s}
+.go svg{transition:transform .2s}
+.go:active,.card:hover .go{background:var(--k);border-color:var(--k);color:#fff}
+.go:hover svg{transform:translateX(4px)}
+.empty{display:none;text-align:center;color:var(--muted);padding:56px 0;border:1px dashed var(--border);border-radius:16px}
+.feat{border-top:1px solid var(--border);background:var(--surface);padding:64px 0}
+.f3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:36px}
+.f3 .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);margin-bottom:14px}
+.f3 h4{margin:0 0 6px;font-size:17px;font-weight:600}.f3 p{margin:0;color:var(--muted);font-size:14.5px;font-weight:300}
+footer{border-top:1px solid var(--border);padding:28px 0;color:var(--muted);font-size:13.5px}
+footer .c{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media (max-width:760px){
+.nav{height:56px}.logo{font-size:17px}.mark{width:30px;height:30px}
+.hero{padding:40px 0 32px}.hero::before{height:300px}
+.eyebrow{font-size:12px}
+h1{font-size:clamp(30px,9vw,40px);margin:18px 0 12px}
+.lead{font-size:16px}
+.cta{margin-top:24px}.cta .btn{flex:1 1 100%;justify-content:center;height:50px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:32px;padding-top:20px}
+.stats b{font-size:19px}.stats span{font-size:12px;line-height:1.3;display:block}
+.links{display:none}
+.sec{padding:8px 0 48px}
+.head{margin-bottom:18px}.head h2{font-size:24px}
+.tools{width:100%}.seg{width:100%}.sb{width:100%}.sb input{flex:1;width:100%;font-size:16px;min-width:0}
+.sb,.seg button{min-height:44px}
+.grid{grid-template-columns:1fr;gap:14px}
+.card{flex-direction:row}
+.art{width:108px;height:auto;min-height:168px;font-size:42px;flex:none}
+.fav{top:8px;left:8px;right:auto;width:40px;height:40px}
+.bd{padding:14px 14px 14px;min-width:0}.bd h3{font-size:18px}.bd p{font-size:13.5px;margin-bottom:12px}
+.resume{flex-wrap:wrap;gap:12px;padding:14px}.resume .btn{width:100%;justify-content:center}
+.feat{padding:44px 0}.f3{gap:26px}
+footer .c{flex-direction:column;gap:6px}
+}
+@media (max-width:360px){.card{flex-direction:column}.art{width:100%;min-height:120px}.fav{left:auto;right:8px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></symbol>
+<symbol id="sword" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/></symbol>
+<symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></symbol>
+<symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+<symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
+<symbol id="bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="device" viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="11" rx="2"/><rect x="14" y="8" width="8" height="13" rx="2"/></symbol>
+<symbol id="tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.5"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="M6 4v16l14-8z" fill="currentColor"/></symbol>
+</defs></svg>
+
+<nav><div class="c nav">
+<a class="logo" href="#"><span class="mark"><svg><use href="#play"/></svg></span>Game Hub</a>
+<div style="display:flex;align-items:center;gap:26px">
+<div class="links"><a href="#games">เกมทั้งหมด</a><a href="#about">คุณสมบัติ</a></div>
+<button class="ibtn" id="theme" aria-label="สลับธีม"><svg><use href="#theme"/></svg></button>
+</div></div></nav>
+
+<header class="hero"><div class="c">
+<span class="eyebrow"><i></i>ให้บริการแล้ว · เล่นฟรีทุกเกม</span>
+<h1>แพลตฟอร์มรวมเกมออนไลน์<br><em>เปิดเบราว์เซอร์ก็เล่นได้ทันที</em></h1>
+<p class="lead">รวบรวมเกมคุณภาพไว้ในที่เดียว ไม่ต้องดาวน์โหลด ไม่ต้องติดตั้ง เลือกเกมที่ใช่แล้วเริ่มเล่นได้ในคลิกเดียว</p>
+<div class="cta">
+<a class="btn p" href="#games"><svg><use href="#play"/></svg>เริ่มเล่นเลย</a>
+<button class="btn" id="rand"><svg><use href="#bolt"/></svg>สุ่มเกมให้ฉัน</button>
+</div>
+<div class="stats"><div><b>4</b><span>เกมพร้อมเล่น</span></div><div><b>ฟรี 100%</b><span>ไม่มีค่าใช้จ่าย</span></div><div><b>1 คลิก</b><span>เข้าเล่นทันที</span></div></div>
+</div></header>
+
+<section class="sec" id="games"><div class="c">
+<div class="resume" id="resume"><span class="ic" id="ri"></span><div>เล่นต่อจากครั้งก่อน<b id="rn"></b></div><a class="btn p" id="ra" href="#" target="_blank" rel="noopener">เล่นต่อ</a></div>
+<div class="head">
+<div><h2>เกมทั้งหมด</h2><p id="count"></p></div>
+<div class="tools">
+<div class="seg" id="seg"><button class="on" data-f="all">ทั้งหมด</button><button data-f="rpg">RPG</button><button data-f="chill">สายชิล</button><button data-f="arcade">อาร์เคด</button><button data-f="fav">รายการโปรด</button></div>
+<label class="sb"><svg><use href="#search"/></svg><input id="q" placeholder="ค้นหาเกม" aria-label="ค้นหาเกม"></label>
+</div></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty">ไม่พบเกมที่ตรงกับเงื่อนไข</div>
+</div></section>
+
+<section class="feat" id="about"><div class="c"><div class="f3">
+<div><div class="ic"><svg><use href="#bolt"/></svg></div><h4>เริ่มเล่นได้ทันที</h4><p>ไม่ต้องสมัครสมาชิกหรือติดตั้งโปรแกรม กดปุ่มเดียวเกมก็พร้อมให้เล่น</p></div>
+<div><div class="ic"><svg><use href="#device"/></svg></div><h4>เล่นได้ทุกอุปกรณ์</h4><p>รองรับทั้งคอมพิวเตอร์ แท็บเล็ต และมือถือ ผ่านเบราว์เซอร์ที่คุณใช้อยู่</p></div>
+<div><div class="ic"><svg><use href="#tag"/></svg></div><h4>ฟรีทุกเกม</h4><p>เข้าถึงทุกเกมโดยไม่มีค่าใช้จ่ายและไม่มีการบังคับซื้อ</p></div>
+</div></div></section>
+
+<footer><div class="c"><span>© 2026 Game Hub · สงวนลิขสิทธิ์</span><span>เกมเปิดในแท็บใหม่ · รายการโปรดบันทึกในเบราว์เซอร์ของคุณ</span></div></footer>
+
+<script>
+(function(){
+var G=[
+{id:'mine',n:'Mine',cat:'chill',tag:'Mining',k:'#3b82f6',i:'gem',u:'https://cgame121.github.io/mine',d:'ขุดแร่ รวบรวมทรัพยากร และอัปเกรดอุปกรณ์ให้แข็งแกร่งขึ้น'},
+{id:'idle',n:'Idle RPG',cat:'rpg chill',tag:'Idle RPG',k:'#f97316',i:'sword',u:'https://cgame121.github.io/idelrpg.html',d:'ตัวละครต่อสู้อัตโนมัติ สะสมเลเวลและไอเทมอย่างต่อเนื่อง'},
+{id:'mmo',n:'MMORPG',cat:'rpg',tag:'MMORPG',k:'#10b981',i:'globe',u:'https://cgame121.github.io/mmorpg',d:'ผจญภัยในโลกกว้าง ล่าม็อนสเตอร์ และพัฒนาตัวละครของคุณ'},
+{id:'222',n:'222',cat:'arcade',tag:'Arcade',k:'#a855f7',i:'target',u:'https://cgame121.github.io/222',d:'เกมเล่นง่าย สนุกรวดเร็ว ท้าทายสกอร์ของตัวเอง'}];
+var S={favs:{},last:null};
+try{var r=localStorage.getItem('gh2');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem('gh2',JSON.stringify(S))}catch(e){}}
+var $=function(s){return document.querySelector(s)},f='all',grid=$('#grid');
+function ic(n){return '<svg><use href="#'+n+'"/></svg>'}
+function render(){
+var q=$('#q').value.trim().toLowerCase(),L=G.filter(function(g){return(f==='all'||(f==='fav'?S.favs[g.id]:g.cat.split(' ').indexOf(f)>-1))&&(!q||g.n.toLowerCase().indexOf(q)>-1)});
+grid.innerHTML=L.map(function(g){return '<article class="card" style="--k:'+g.k+'"><div class="art">'+ic(g.i)+'<button class="fav'+(S.favs[g.id]?' on':'')+'" data-id="'+g.id+'" aria-label="รายการโปรด">'+ic('heart')+'</button></div><div class="bd"><span class="cat">'+g.tag+'</span><h3>'+g.n+'</h3><p>'+g.d+'</p><a class="go" data-id="'+g.id+'" href="'+g.u+'" target="_blank" rel="noopener"><span>เล่นเกม</span>'+ic('arrow')+'</a></div></article>'}).join('');
+$('#empty').style.display=L.length?'none':'block';
+$('#count').textContent='แสดง '+L.length+' จาก '+G.length+' เกม';
+var l=G.filter(function(g){return g.id===S.last})[0];
+if(l){$('#ri').style.background=l.k;$('#ri').innerHTML=ic(l.i);$('#rn').textContent=l.n;$('#ra').href=l.u;$('#resume').classList.add('show')}
+}
+grid.addEventListener('click',function(e){
+var b=e.target.closest('.fav');if(b){S.favs[b.dataset.id]=!S.favs[b.dataset.id];save();render();return}
+var a=e.target.closest('.go');if(a){S.last=a.dataset.id;save();setTimeout(render,0)}});
+$('#ra').addEventListener('click',function(){});
+$('#seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;document.querySelectorAll('#seg button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');f=b.dataset.f;render()});
+$('#q').addEventListener('input',render);
+$('#rand').addEventListener('click',function(){var g=G[Math.floor(Math.random()*G.length)];window.open(g.u,'_blank','noopener');S.last=g.id;save();render()});
+$('#theme').addEventListener('click',function(){var d=document.documentElement,c=d.dataset.theme||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');d.dataset.theme=c==='dark'?'light':'dark'});
+render();
+})();
+</script>
+</body>
+</html>
