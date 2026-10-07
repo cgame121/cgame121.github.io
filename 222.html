@@ -446,17 +446,30 @@ const ZN=[{n:'ถ้ำเหล็ก',fl:'#5a5560',f2:'#4d4852',w:'#24222b',w2
 {n:'เหมืองลาวา',fl:'#5a3a34',f2:'#4b2f2a',w:'#2a1512',w2:'#3a1e19',r:'#9a6a5a',rh:'#c08a74',rd:'#7a4d3e'}];
 let Z=ZN[0];
 function mine(f){W=32;H=22;where='mine';floor=f;hits={};map=[];const zi=Math.min(2,Math.ceil(f/5)-1),boss=f%5==0;Z=ZN[zi];
- const pg=ECON.ore*Math.min(.06,Math.max(0,.008*(f-2))),ps=ECON.ore*Math.min(.09,.008+.011*f),lp=zi==0?0:zi==1?.03:.06;
- for(let y=0;y<H;y++){map[y]=[];for(let q=0;q<W;q++){let t=11;
-  if(!q||!y||q==W-1||y==H-1)t=2;
-  else if(boss){if(Math.random()<.05)t=3}
-  else if(Math.random()<.36){const r=Math.random();t=r<pg?6:r<pg+ps?5:r<pg+ps+.10*ECON.ore?4:3}
-  else if(Math.random()<lp)t=17;
-  map[y][q]=t}}
+ const pg=ECON.ore*Math.min(.06,Math.max(0,.008*(f-2))),ps=ECON.ore*Math.min(.09,.008+.011*f),lp=zi==0?0:zi==1?.3:.55;
+ const RI=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),rock=()=>{const r=Math.random();return r<pg?6:r<pg+ps?5:r<pg+ps+.10*ECON.ore?4:3};
+ for(let y=0;y<H;y++){map[y]=[];for(let q=0;q<W;q++)map[y][q]=(!q||!y||q==W-1||y==H-1)?2:11}
+ if(boss){
+  // ลานบอส: โล่งกว้าง มีเสาหินกระจายห่างกัน (เหลือช่องว่างกว้างอย่างน้อย 2 ช่องทุกด้าน)
+  for(let y=5;y<=15;y+=5)for(let q=6;q<=26;q+=5)if(Math.random()<.65){const px=q+RI(0,1),py=y+RI(0,1);if(Math.hypot(px-2.5,py-2.5)>4&&Math.hypot(px-(W-8),py-(H>>1))>3.5)map[py][px]=3}
+ }else{
+  // แมพแบบทางเดินตาราง: ทางเดินกว้าง 2 ช่องทุกเส้น (เดินสะดวก ไม่มีช่องแคบ/มุมเฉียง) คั่นด้วยก้อนหินขนาด 5x4 ที่มีแร่ฝังอยู่
+  const GX=[1,8,15,22,29],GY=[1,7,13,19],inG=(v,a)=>a.some(s=>v>=s&&v<=s+1);
+  for(let y=1;y<H-1;y++)for(let q=1;q<W-1;q++)if(!inG(q,GX)&&!inG(y,GY))map[y][q]=rock();
+  // ทางแนวตั้งบางช่วงถล่ม (ต้องขุดทะลุ) แต่เหลือทางเปิดอย่างน้อย 2 ทางในแต่ละช่วง ทางแนวนอนเปิดตลอด จึงเดินถึงกันทุกจุดได้เสมอ
+  for(let b=0;b<3;b++){const y0=GY[b]+2,y1=GY[b+1]-1;let open=GX.length;
+   for(const i of GX.map((_,k)=>k).sort(()=>Math.random()-.5)){if(open<=2)break;if(Math.random()<.35){open--;for(let y=y0;y<=y1;y++)for(let q=GX[i];q<=GX[i]+1;q++)map[y][q]=rock()}}}
+  // ก้อนหินแต่ละก้อน: อาจมีช่องเว้า 3x2 เปิดออกทางเดินแนวนอน (ที่ซ่อนมอนสเตอร์/จุดขุดแร่) และบ่อลาวาเล็กๆ ฝังอยู่ข้างในที่เปิดไม่ถึงจนกว่าจะขุด
+  for(let bi=0;bi<4;bi++)for(let bj=0;bj<3;bj++){const x0=GX[bi]+2,y0=GY[bj]+2;
+   if(Math.random()<.4){const ny=Math.random()<.5?y0:y0+2;for(let y=ny;y<ny+2;y++)for(let q=x0+1;q<=x0+3;q++)map[y][q]=11}
+   if(Math.random()<lp){const c=[];for(let y=y0+1;y<=y0+2;y++)for(let q=x0+1;q<=x0+3;q++)if(map[y][q]>=3&&map[y][q]<=6&&[[1,0],[-1,0],[0,1],[0,-1]].every(d=>map[y+d[1]][q+d[0]]!=11))c.push([q,y]);
+    if(c.length){const p=c[RI(0,c.length-1)];map[p[1]][p[0]]=17;const n=c.filter(o=>Math.abs(o[0]-p[0])+Math.abs(o[1]-p[1])==1);if(n.length&&Math.random()<.5){const o=n[RI(0,n.length-1)];map[o[1]][o[0]]=17}}}}
+ }
  for(let y=1;y<4;y++)for(let q=1;q<4;q++)map[y][q]=11;
  map[1][1]=12;P={x:2.5,y:2.5};MS=[];
  const bx=W-8,by=H>>1;if(boss){map[by][bx]=11;const h=200+f*40;MS.push({x:bx+.5,y:by+.5,t:f%10==5?'K':'D',b:1,hp:h,mx:h,cd:0,fl:0,sum:0})}
- else{map[3+Math.floor(Math.random()*(H-5))][8+Math.floor(Math.random()*(W-10))]=7;
+ else{const cd=[];for(let y=1;y<H-1;y++)for(let q=8;q<W-1;q++)if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>12)cd.push([q,y]);
+  const sp=cd[RI(0,cd.length-1)];map[sp[1]][sp[0]]=7;
   for(let n=0,k=0;n<Math.min(16,Math.round((2+f)*1.7))&&k<800;k++){const q=1+Math.floor(Math.random()*(W-2)),y=1+Math.floor(Math.random()*(H-2));
    if(map[y][q]==11&&Math.hypot(q-2.5,y-2.5)>6){n++;const t=f>=4&&Math.random()<.4?'k':'g',h=t=='k'?40+f*6:20+f*4;MS.push({x:q+.5,y:y+.5,t,hp:h,mx:h,cd:0,fl:0})}}}
  qa('fl',f);toast('ชั้น '+f+' — '+Z.n+(boss?' ⚠ มีบอส!':''))}
@@ -1759,7 +1772,7 @@ function applyMod(f){
    if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>6&&!MS.some(m=>Math.hypot(m.x-q-.5,m.y-y-.5)<1.2)){c++;
     const kk=f>=4&&Math.random()<.4?'k':'g',h=kk=='k'?40+f*6:20+f*4;MS.push({x:q+.5,y:y+.5,t:kk,hp:h,mx:h,cd:0,fl:0})}}}
  else if(k=='quiet')MS=[];
- else{oreC(.12);for(let y=1;y<H-1;y++)for(let q=1;q<W-1;q++)if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>5&&Math.random()<.04)map[y][q]=17}
+ else{oreC(.12);for(let y=1;y<H-1;y++)for(let q=1;q<W-1;q++)if(map[y][q]==11&&Math.hypot(q+.5-2.5,y+.5-2.5)>5&&Math.random()<.04){let ok=1;for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)if((map[y+j]||[])[q+i]==17||(map[y+j]||[])[q+i]==7)ok=0;if(ok)map[y][q]=17}}
  MOD=MODS[k];toast('✨ ชั้นพิเศษ: '+MOD.e+' '+MOD.n)}
 const _mn=mine;mine=function(f){MOD=null;_mn(f);
  try{if(where=='mine'&&f>=2&&f%5!=0&&!String((Z&&Z.n)||'').startsWith('ดันเจี้ยน')&&!(window.IN_HUNT&&IN_HUNT()))applyMod(f)}catch(e){MOD=null}};
@@ -2272,7 +2285,7 @@ const val=t=>t==4?PRICE.i:t==5?PRICE.s:PRICE.g;
 let ON=0,clk=0,phase='idle',stat='',tgt=null,tgtT=0,eng=null,engT=0,noEng=0,noMine=0,leaving=0,leaveWhy='',qT=0,fails=0,pw='town',
     sellT=0,sellTry=0,selling=0,mvT=0,lx=0,ly=0,stuck=0,wanderT=0,wdx=0,wdy=0,bl={},floorKey='',progK='',progT=0,esc=0,
     camping=0,RC=null,lastSig='',lowTrips=0;
-const ses={g0:0,t0:0,tm0:0,trips:0,deaths:0};
+const ses={g0:0,t0:0,tm0:0,trips:0,deaths:0,stucks:0};
 const carried=()=>S.i+S.s+S.g;
 const inSpecial=()=>(window.IN_HUNT&&IN_HUNT())||String((typeof Z!='undefined'&&Z&&Z.n)||'').startsWith('ดันเจี้ยน');
 const hpR=()=>HP/mhp();
@@ -2287,23 +2300,23 @@ const need=(t,x,y)=>{const n=Math.max(1,[0,2,3,4,5][t-3]+Math.floor(floor/4)-(S.
 function RT(){
   const sx=Math.floor(P.x),sy=Math.floor(P.y);
   if(RC&&RC.map===map&&RC.sx==sx&&RC.sy==sy&&clk-RC.t<.25)return RC;
-  const n=W*H,d=new Float32Array(n).fill(1e9),pr=new Int32Array(n).fill(-1),mp=new Float32Array(n);
+  const n=W*H,d=new Float64Array(n).fill(1e9),pr=new Int32Array(n).fill(-1),mp=new Float64Array(n);
   if(!map||sx<0||sy<0||sx>=W||sy>=H)return RC={map,sx,sy,t:clk,d,pr,s0:-1};
   for(const m of MS){const a=Math.floor(m.x),b=Math.floor(m.y);for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const u=a+i,v=b+j;if(u>=0&&v>=0&&u<W&&v<H)mp[v*W+u]+=.5}}
-  const s0=sy*W+sx,hp=[[0,s0]];d[s0]=0;
+  const s0=sy*W+sx,hp=[[0,s0]],w_=W,h_=H,M=map,sol=SOL,hs=hits,nb=[0,2,3,4,5].map(q=>q+Math.floor(floor/4)-(S.pick-1)-Math.floor((Math.min(S.lv,40)-1)/3));d[s0]=0;
   const push=(c,i)=>{let k=hp.length;hp.push([c,i]);while(k>0){const p=(k-1)>>1;if(hp[p][0]<=hp[k][0])break;const t=hp[p];hp[p]=hp[k];hp[k]=t;k=p}};
   const pop=()=>{const top=hp[0],last=hp.pop();if(hp.length){hp[0]=last;let k=0;for(;;){const l=2*k+1,r=l+1;let m=k;if(l<hp.length&&hp[l][0]<hp[m][0])m=l;if(r<hp.length&&hp[r][0]<hp[m][0])m=r;if(m==k)break;const t=hp[m];hp[m]=hp[k];hp[k]=t;k=m}}return top};
   while(hp.length){
-    const[c,cur]=pop();if(c>d[cur])continue;
-    const a=cur%W,b=(cur/W)|0,tc=map[b][a];
+    const[c,cur]=pop();if(c>d[cur]+1e-9)continue;
+    const a=cur%w_,b=(cur/w_)|0,tc=M[b][a];
     if(cur!=s0&&(tc==7||tc==8))continue;                 // บันได/ปากทางเป็นปลายทางเท่านั้น
-    for(const[dx,dy]of DIRS){const u=a+dx,v=b+dy;if(u<0||v<0||u>=W||v>=H)continue;
-      const t=map[v][u];let w;
+    for(const[dx,dy]of DIRS){const u=a+dx,v=b+dy;if(u<0||v<0||u>=w_||v>=h_)continue;
+      const t=M[v][u];let w;
       if(t==7||t==8)w=.25;else if(t==12||t==17)continue;
-      else if(t>=3&&t<=6)w=.25+need(t,u,v)*.3;
-      else if(SOL.has(t))continue;else w=.25;
-      const i=v*W+u,nd=c+w+mp[i];
-      if(nd<d[i]){d[i]=nd;pr[i]=cur;push(nd,i)}}}
+      else if(t>=3&&t<=6)w=.25+Math.max(1,Math.max(1,nb[t-3])-(hs[u+','+v]||0))*.3;
+      else if(sol.has(t))continue;else w=.25;
+      const i=v*w_+u,nd=c+w+mp[i];
+      if(nd<d[i]-1e-9){d[i]=nd;pr[i]=cur;push(nd,i)}}}
   return RC={map,sx,sy,t:clk,d,pr,s0}}
 const cost=(R,x,y)=>(x<0||y<0||x>=W||y>=H)?1e9:R.d[y*W+x];
 function stepTo(R,x,y){let c=y*W+x;if(R.s0<0||c==R.s0||R.pr[c]<0)return null;
@@ -2321,10 +2334,20 @@ const goTile=(K,R,x,y)=>{const s=stepTo(R,x,y);if(!s)return false;walk(K,s[0],s[
 function goPoint(K,x,y){const dx=x-P.x,dy=y-P.y,l=Math.hypot(dx,dy)||1;K.ax=dx/l;K.ay=dy/l}
 function toXY(K,R,x,y){const tx=Math.floor(x),ty=Math.floor(y);
   if(tx==Math.floor(P.x)&&ty==Math.floor(P.y)){goPoint(K,x,y);return true}return goTile(K,R,tx,ty)}
-function strike(K,m){const dx=m.x-P.x,dy=m.y-P.y,hz=Math.abs(dx)>=Math.abs(dy);
-  const lat=hz?Math.abs(dy):Math.abs(dx);
-  if(lat>(m.b?1.0:.7)&&Math.hypot(dx,dy)<1.6){if(hz){K.ay=Math.sign(dy)}else{K.ax=Math.sign(dx)}return}   // จัดแนวให้อยู่ในระยะตี
-  face=hz?[Math.sign(dx)||1,0]:[0,Math.sign(dy)||1];K.a=1}
+// เส้นตรงจาก (x0,y0) ไป (x1,y1) ไม่มีหินกั้นไหม
+function los(x0,y0,x1,y1){const d=Math.hypot(x1-x0,y1-y0),n=Math.ceil(d/.25);
+  for(let i=1;i<n;i++){const x=x0+(x1-x0)*i/n,y=y0+(y1-y0)*i/n,tx=Math.floor(x),ty=Math.floor(y);
+    if(tx<0||ty<0||tx>=W||ty>=H||SOL.has(map[ty][tx]))return false}return true}
+// ตีมอนสเตอร์: เลือกหันหน้าทิศที่ตัวมันอยู่ในระยะตี (ด้านหน้า<1.4 / ด้านข้าง<.8, บอส 2 / 1.2) ถ้าเหลื่อมแนวค่อยขยับ แต่เฉพาะเมื่อทางนั้นไม่ใช่กำแพง
+function strike(K,m){const dx=m.x-P.x,dy=m.y-P.y,fr=m.b?2:1.4,lm=m.b?1.2:.8;
+  const H_={f:[Math.sign(dx)||1,0],fw:Math.abs(dx),lt:Math.abs(dy)},V_={f:[0,Math.sign(dy)||1],fw:Math.abs(dy),lt:Math.abs(dx)};
+  const ok=o=>o.fw<fr-.1&&o.lt<lm-.1;
+  let c=ok(H_)&&ok(V_)?(H_.lt<=V_.lt?H_:V_):ok(H_)?H_:ok(V_)?V_:null;
+  if(!c){                                                   // ยังไม่อยู่ในระยะตี: ขยับเข้าไปให้เหลื่อมน้อยลง (ไม่ชนผนัง)
+    c=Math.abs(dx)>=Math.abs(dy)?H_:V_;
+    const mx=c===H_?0:Math.sign(dx),my=c===H_?Math.sign(dy):0;
+    if(c.lt>=lm-.1&&Math.hypot(dx,dy)<1.8&&!solid(Math.floor(P.x+mx*.6),Math.floor(P.y+my*.6))){K.ax=mx;K.ay=my;return}}
+  face=c.f;K.a=1}
 // ---------- เลือกเป้าหมาย ----------
 function pickOre(R,cfg){let best=null;const lim=cfg.reach>0?cfg.reach:1e9;
   for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const t=map[y][x];if(t<4||t>6||banned(x,y))continue;
@@ -2339,10 +2362,11 @@ function leave(why){if(leaving)return;
   if(why=='เลือดต่ำ'){const sig=floor+'|'+(S.tm||0)+'|'+Math.round(MS.reduce((a,m)=>a+m.hp,0));
     lowTrips=sig==lastSig?lowTrips+1:0;lastSig=sig;
     if(lowTrips>=2){stop('🤖 หยุดอัตโนมัติ: เลือดหมดซ้ำที่ชั้น '+floor+' โดยไม่คืบหน้า ลองอัปเกรดจอบ/เลเวลก่อน');return}}
+  if(why=='ไม่เหลืองานในชั้นนี้'||why=='ครบชั้นที่ตั้งไว้')window.__mzSkip=1;      // ชั้นหมดงานแล้ว: รอบหน้าเริ่มชั้นใหม่ ไม่กลับมาชั้นที่ร้าง
   leaving=1;leaveWhy=why;qT=0;ses.trips++;stat='กำลังออกจากเหมือง ('+why+')';Qkey()}
 function stop(msg){if(!ON)return;ON=0;phase='idle';tgt=eng=null;selling=0;leaving=0;camping=0;paint();if(msg)toast(msg)}
 function start(){if(window.__stopFish)__stopFish();ON=1;phase='run';tgt=eng=null;fails=0;leaving=0;camping=0;bl={};lowTrips=0;lastSig='';noMine=0;
-  ses.g0=S.gold;ses.t0=Date.now();ses.tm0=S.tm||0;ses.trips=0;ses.deaths=0;paint();toast('🤖 เปิดผู้ช่วยขุดเหมือง')}
+  ses.g0=S.gold;ses.t0=Date.now();ses.tm0=S.tm||0;ses.trips=0;ses.deaths=0;ses.stucks=0;paint();toast('🤖 เปิดผู้ช่วยขุดเหมือง')}
 window.__setAuto=v=>v?start():stop('🤖 ปิดผู้ช่วยขุดเหมือง');
 // ---------- ลูปหลัก ----------
 window.mouseK=function(dt){
@@ -2360,12 +2384,12 @@ window.mouseK=function(dt){
   const K=where=='town'?townTick({},dt):mineTick({},dt);
   // ตรวจติดขัด: สั่งเดินแต่ตัวไม่ขยับ
   if(K&&(K.ax||K.ay)&&!K.a){mvT+=dt;if(mvT>.5){mvT=0;stuck=Math.hypot(P.x-lx,P.y-ly)<.1?stuck+1:0;lx=P.x;ly=P.y}}else{mvT=0;stuck=0;lx=P.x;ly=P.y}
-  if(stuck>=4){stuck=0;if(tgt){ban(tgt.x,tgt.y,25);tgt=null}eng=null;noEng=6;wanderT=1.2;const a=Math.random()*6.283;wdx=Math.cos(a);wdy=Math.sin(a);RC=null}
+  if(stuck>=4){stuck=0;ses.stucks++;try{(window.__stuckLog=window.__stuckLog||[]).push({x:P.x,y:P.y,ph:phase,st:stat,ax:K.ax,ay:K.ay,tgt:tgt&&[tgt.x,tgt.y],fl:floor,w:where});if(window.__stuckLog.length>40)window.__stuckLog.shift()}catch(e){}if(tgt){ban(tgt.x,tgt.y,25);tgt=null}eng=null;noEng=6;wanderT=1.2;const a=Math.random()*6.283;wdx=Math.cos(a);wdy=Math.sin(a);RC=null}
   return K};
 // ---------- ในหมู่บ้าน ----------
 function townTick(K,dt){
   const cfg=CFG(),R=RT();
-  if(MS.length){const[m,d]=near();if(m){phase='fight';stat='ป้องกันหมู่บ้าน';if(d<1.4){strike(K,m);return K}goPoint(K,m.x,m.y);return K}}
+  if(MS.length){const[m,d]=near();if(m){phase='fight';stat='ป้องกันหมู่บ้าน';if(d<1.4){strike(K,m);return K}if(los(P.x,P.y,m.x,m.y))goPoint(K,m.x,m.y);else if(!toXY(K,R,m.x,m.y))goPoint(K,m.x,m.y);return K}}
   if(cfg.sellAt>0&&carried()>0&&sellTry<3){phase='sell';stat='ไปขายแร่ที่ร้านค้า';
     let best=null;
     for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(map[y][x]==9)for(const d of DIRS){const u=x+d[0],v=y+d[1];if(u<0||v<0||u>=W||v>=H)continue;const c=cost(R,u,v);if(c<1e8&&(!best||c<best.c))best={u,v,c,fx:-d[0],fy:-d[1]}}
@@ -2390,7 +2414,8 @@ function mineTick(K,dt){
   if(leaving){stat='กำลังออกจากเหมือง ('+leaveWhy+')';qT+=dt;if(qT>1.2){qT=0;Qkey()}return null}
   const[mm,dd]=near();
   // ชั้นบอส: ถอยก่อนที่บอสจะตีอีก 2 ครั้งติด (ดาเมจบอส = 20 + ชั้น ต่อครั้ง)
-  const retreat=Math.max(cfg.hp/100,(!sp&&floor%5==0)?Math.min(.8,(20+floor)*2.2/mxh):0);
+  const crowd=MS.reduce((a,m)=>a+(Math.hypot(m.x-P.x,m.y-P.y)<3.5?1:0),0);      // ถูกรุมหลายตัว → ถอยเร็วขึ้น
+  const retreat=Math.max(cfg.hp/100+(crowd>=2?Math.min(.2,.08*(crowd-1)):0),(!sp&&floor%5==0)?Math.min(.8,(20+floor)*2.2/mxh):0);
   const camp=hz.camp&&!hz.camp.done&&hz.camp.pool>mxh*.12?hz.camp:null;
   const campC=camp?cost(R,Math.floor(camp.x),Math.floor(camp.y)):1e9;
   // 1) เลือดต่ำ: กองไฟ → หัวใจใกล้ๆ → กลับไปพักที่หมู่บ้าน (เหมืองถูกจำไว้ ไม่ต้องเริ่มชั้นใหม่)
@@ -2415,7 +2440,7 @@ function mineTick(K,dt){
   if(eng&&(!MS.includes(eng)||Math.hypot(eng.x-P.x,eng.y-P.y)>6||r<.4))eng=null;
   if(!eng&&mm&&dd<4.5&&r>.5&&noEng<=0){eng=mm;engT=0}
   if(eng){engT+=dt;if(engT>10){eng=null;noEng=10}
-    else{phase='fight';stat='ไล่ตีมอนสเตอร์';if(Math.hypot(eng.x-P.x,eng.y-P.y)<2.2)goPoint(K,eng.x,eng.y);else if(!toXY(K,R,eng.x,eng.y)){eng=null;noEng=4;return K}return K}}
+    else{phase='fight';stat='ไล่ตีมอนสเตอร์';if(Math.hypot(eng.x-P.x,eng.y-P.y)<2.2&&los(P.x,P.y,eng.x,eng.y))goPoint(K,eng.x,eng.y);else if(!toXY(K,R,eng.x,eng.y)){eng=null;noEng=4;return K}return K}}
   // 5) ขุดแร่ตามความคุ้ม (มูลค่า ÷ เวลาเดิน+เวลาขุด)
   if(tgt){const t=map[tgt.y][tgt.x];tgtT+=dt;
     if(!(t>=4&&t<=6))tgt=null;else if(tgtT>30||cost(R,tgt.x,tgt.y)>=1e8){ban(tgt.x,tgt.y,90);tgt=null}}
@@ -2423,12 +2448,12 @@ function mineTick(K,dt){
   if(tgt){phase='mine';stat='ขุดแร่'+ORE[map[tgt.y][tgt.x]]+' ชั้น '+floor+' · มีแร่ '+carried();
     if(goTile(K,R,tgt.x,tgt.y))return K;ban(tgt.x,tgt.y,30);tgt=null}
   // 6) หมดแร่ที่คุ้ม: ลงบันได / ล่าบอส / ออก
-  if(!sp&&cfg.depth>0&&floor>=cfg.depth){leave('ครบชั้นที่ตั้งไว้');return null}
-  const st=findTile(7);
+  const lim=!sp&&cfg.depth>0&&floor>=cfg.depth;          // ถึงชั้นที่ตั้งไว้: ไม่ลงต่อ แต่ยังกำจัดศัตรู/บอสในชั้นนี้ให้จบก่อน
+  const st=lim?null:findTile(7);
   if(st&&cost(R,st[0],st[1])<1e8){phase='descend';stat='ลงบันไดไปชั้น '+(floor+1);if(goTile(K,R,st[0],st[1]))return K}
   if(MS.length&&mm){phase='fight';stat='ล่าบอส/ศัตรู';
-    if(dd<2.2)goPoint(K,mm.x,mm.y);else if(!toXY(K,R,mm.x,mm.y))goPoint(K,mm.x,mm.y);return K}
-  leave('ไม่เหลืองานในชั้นนี้');return null}
+    if(dd<2.2&&los(P.x,P.y,mm.x,mm.y))goPoint(K,mm.x,mm.y);else if(!toXY(K,R,mm.x,mm.y))goPoint(K,mm.x,mm.y);return K}
+  leave(lim?'ครบชั้นที่ตั้งไว้':'ไม่เหลืองานในชั้นนี้');return null}
 // ---------- ขายของ: เมื่อหน้าต่างร้านเปิด กดขายทั้งหมดแล้วปิด ----------
 setInterval(()=>{if(!ON||!selling||!BL)return;const b=document.querySelector('[data-a="sh-all"]');if(!b)return;
   b.click();selling=0;setTimeout(()=>{dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape'}));sellTry=carried()>0?sellTry:3},350)},400);
@@ -2464,7 +2489,7 @@ if(pad&&A){const c=document.createElement('button');c.type='button';c.id='autob2
 c.style.cssText='pointer-events:auto;width:clamp(48px,14vw,62px);height:clamp(48px,14vw,62px);border-radius:50%;font-size:22px;line-height:1;background:rgba(22,16,11,.75);color:#f1e6c6;border:2px solid #7d5f24;opacity:.8;align-self:flex-end;margin-bottom:6px';
 c.onclick=()=>pn.hidden?op():cl();pad.insertBefore(c,A)}
 addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyT'||e.key=='t'||e.key=='T'))(ON?stop('🤖 ปิดผู้ช่วยขุดเหมือง'):start())});
-window.__autoMine={get:()=>({ON,phase,stat,fails,tgt,floor}),cfg:CFG};
+window.__autoMine={get:()=>({ON,phase,stat,fails,tgt,floor,leaveWhy,leaving,stucks:ses.stucks}),cfg:CFG};
 })();
 
 (function(){
@@ -2887,7 +2912,7 @@ function snap(){if(!reg())return;try{
         P:dead?{x:2.5,y:2.5}:{x:P.x,y:P.y},mod:window.__mzMod?window.__mzMod():null,heal:window.__mzHeal?window.__mzHeal.get():null}
 }catch(e){}}
 // เก็บตอนออกจากเหมือง (กด Q / ปุ่มออก / ทางออก / หมดสติ) และตอนเซฟอัตโนมัติ / ลงชั้นใหม่
-const _tw=town;town=function(){snap();return _tw.apply(this,arguments)};
+const _tw=town;town=function(){if(window.__mzSkip){window.__mzSkip=0;S.mz=null}else snap();return _tw.apply(this,arguments)};   // __mzSkip: บอทสั่งไม่ต้องจำชั้นนี้ (ขุดจนหมดแล้ว)
 const _sl=sleep;sleep=function(forced){dead=forced?1:0;try{return _sl.apply(this,arguments)}finally{dead=0}};
 const _sv=save;save=function(){snap();return _sv.apply(this,arguments)};
 const _mi=mine;mine=function(){const r=_mi.apply(this,arguments);snap();return r};
@@ -2909,6 +2934,162 @@ window.mzResume=function(){
   snap();
   toast('⛏ กลับเข้าเหมืองชั้น '+floor+' — ต่อจากที่ค้างไว้');
   return true};
+})();
+
+// ═══ Visual Effects: เอฟเฟกต์ภาพเสริม (กด V หรือปุ่ม ✨ เพื่อสลับ เต็ม / ประหยัด / ปิด) ═══
+(function(){
+const RMQ=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
+const LV=()=>{let v=S.vfx;if(v==null)v=window.LOWQ?1:2;if(RMQ&&v>1)v=1;return v};      // 0 ปิด · 1 ประหยัด · 2 เต็ม
+const CL={stone:'184,178,166',iron:'224,160,112',silver:'225,238,255',gold:'255,222,90',fire:'255,150,46',lava:'255,90,24',heal:'110,235,130',red:'255,70,60',white:'255,255,255',gem:'130,220,255',dust:'150,138,120',soul:'190,235,255',pink:'255,122,160'};
+const ORE_C={3:CL.stone,4:CL.iron,5:CL.silver,6:CL.gold};
+const PS=[],LT=[];let tm=0,err=0,shk=0,fl=0,flc='255,255,255',lastHP=HP,ha=0,prevMS=[],mv=0,lx=P.x,ly=P.y,key='',tr=null,vOre=[],vLava=[],vSt=null,sc=0;
+const ac={ore:0,lava:0,st:0,camp:0,smoke:0,mote:0,heart:0,ring:0};
+const rnd=(a,b)=>a+Math.random()*(b-a),pick=a=>a[(Math.random()*a.length)|0],N=n=>Math.max(1,Math.round(n*(LV()==1?.5:1))),mh=new WeakMap();
+const later=(ms,f)=>LT.push({t:ms/1000,f});
+function add(o){if(QUIET||!LV())return;if(PS.length>=(LV()==1?150:300))PS.shift();o.l0=o.l;if(o.r1==null)o.r1=o.r;PS.push(o)}
+const SP={};
+function glow(c){if(SP[c])return SP[c];const k=document.createElement('canvas');k.width=k.height=64;const g=k.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);
+  r.addColorStop(0,'rgba('+c+',1)');r.addColorStop(.4,'rgba('+c+',.45)');r.addColorStop(1,'rgba('+c+',0)');g.fillStyle=r;g.fillRect(0,0,64,64);return SP[c]=k}
+// ---------- ตัวสร้างอนุภาค ----------
+const debris=(X,Y,c,n,sp)=>{for(let i=0,m=N(n);i<m;i++){const a=rnd(0,6.283),v=rnd(.4,1)*sp;add({k:'sq',x:X,y:Y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-40,g:380,l:rnd(.4,.8),r:rnd(2,4),c})}};
+const sparks=(X,Y,c,n,sp)=>{for(let i=0,m=N(n);i<m;i++){const a=rnd(0,6.283),v=rnd(.3,1)*sp;add({k:'spark',x:X,y:Y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,g:160,d:2.2,l:rnd(.25,.5),r:1.6,c})}};
+const ring=(X,Y,c,r0,r1,l,w)=>add({k:'ring',x:X,y:Y,l,r:r0,r1,c,w:w||2});
+const puff=(X,Y,c,r0,r1,l,vy,vx)=>add({k:'puff',x:X,y:Y,vx:vx||0,vy:vy==null?-8:vy,d:1,l,r:r0,r1,c});
+const glint=(X,Y,c,s,l)=>add({k:'glint',x:X,y:Y,l:l||.5,r:s,c});
+const glw=(X,Y,c,r0,r1,l,a)=>add({k:'glow',x:X,y:Y,l,r:r0,r1,c,a:a==null?.8:a});
+const plus=(X,Y)=>add({k:'plus',x:X,y:Y,vx:rnd(-6,6),vy:rnd(-34,-22),l:.9,r:rnd(3,4),c:CL.heal});
+const coin=(X,Y)=>add({k:'coin',x:X,y:Y,vx:rnd(-55,55),vy:rnd(-170,-100),g:430,l:1.1,r:4,c:CL.gold});
+const conf=(X,Y)=>add({k:'conf',x:X,y:Y,vx:rnd(-100,100),vy:rnd(-190,-90),g:260,d:1.1,l:rnd(1,1.6),r:rnd(2,4),c:pick([CL.gold,CL.pink,CL.heal,CL.gem,CL.white])});
+const gem=(X,Y,c)=>add({k:'gem',x:X,y:Y,vx:rnd(-60,60),vy:rnd(-90,-30),l:1,r:3,c});
+const mote=(X,Y,c,vx,vy,l,r)=>add({k:'mote',x:X,y:Y,vx,vy,l,r,c});
+const flash=(c,a)=>{if(RMQ)return;flc=c;fl=Math.max(fl,a)},shake=a=>{if(!RMQ)shk=Math.max(shk,a)};
+// ---------- เหตุการณ์ในเกม ----------
+function oreFx(t,broke,tx,ty){const X=(tx+.5)*T,Y=(ty+.5)*T,c=ORE_C[t];
+  if(!broke){debris(X,Y,c,3,70);sparks(X,Y,t>3?c:CL.white,t>3?4:2,110);if(t>3)glint(X+rnd(-8,8),Y+rnd(-8,8),c,6,.35);return}
+  if(t==3){puff(X,Y,CL.dust,5,18,.55,-10);puff(X+6,Y+2,CL.stone,4,14,.5,-8);debris(X,Y,c,10,110);return}
+  debris(X,Y,c,8,110);sparks(X,Y,c,14,170);ring(X,Y,c,4,26+t*3,.45,3);glw(X,Y,c,10,44,.5,.9);
+  for(let i=0,m=N(3);i<m;i++)glint(X+rnd(-12,12),Y+rnd(-12,12),c,rnd(6,10),rnd(.45,.8));
+  for(let i=0,m=N(t-3);i<m;i++)gem(X,Y,c);
+  if(t==6){ring(X,Y,CL.white,2,40,.55,2);flash('255,230,120',.12)}}
+function hitFx(m){const X=m.x*T,Y=m.y*T-4;sparks(X,Y,CL.white,6,140);glint(X,Y,'255,235,170',9,.3);ring(X,Y,'255,235,170',3,15,.25,2);if(m.b)shake(.08)}
+function deathFx(m){const X=m.x*T,Y=m.y*T,c=m.t=='k'?'225,225,225':m.t=='b'?'160,100,210':m.b?'230,80,60':'110,200,110';
+  puff(X,Y,CL.dust,6,24,.6,-12);puff(X-5,Y+3,CL.stone,4,16,.5,-8);debris(X,Y,c,10,130);ring(X,Y,c,4,30,.4,3);
+  for(let i=0,n=N(3);i<n;i++)add({k:'glow',x:X+rnd(-6,6),y:Y,vx:rnd(-8,8),vy:rnd(-55,-35),l:.9,r:4,r1:9,c:CL.soul,a:.8});
+  if(m.b){for(let i=0;i<3;i++)later(i*160,()=>ring(X,Y,i==1?CL.white:c,6,120+i*30,.7,4));sparks(X,Y,CL.gold,34,260);glw(X,Y,CL.gold,20,130,.7,.9);flash('255,240,200',.45);shake(.35)}}
+const coinShower=()=>{const X=P.x*T,Y=P.y*T-8;for(let i=0,n=N(10);i<n;i++)coin(X,Y);ring(X,Y,CL.gold,4,34,.5,3);sparks(X,Y,CL.gold,12,150)};
+const confetti=()=>{const X=P.x*T,Y=P.y*T-8;for(let i=0,n=N(26);i<n;i++)conf(X,Y);ring(X,Y,CL.white,4,40,.5,2);glw(X,Y,CL.gold,10,60,.5,.7)};
+// act: ตรวจว่าตีหิน/แร่แล้วแตกหรือไม่
+const _ac=act;act=function(){const tx=Math.floor(P.x+face[0]*.8),ty=Math.floor(P.y+face[1]*.8),ok=tx>=0&&ty>=0&&tx<W&&ty<H,b4=ok?map[ty][tx]:0;
+  _ac.apply(this,arguments);
+  try{if(ok&&!QUIET&&where=='mine'&&b4>=3&&b4<=6)oreFx(b4,map[ty][tx]!=b4,tx,ty)}catch(e){}};
+const _tt=toast;toast=function(m){_tt(m);try{if(QUIET||!LV())return;const s=String(m);
+  if(/ขายได้|ขาย.*ทอง/.test(s))coinShower();
+  else if(/สำเร็จ/.test(s))confetti();
+  else if(/หลอมได้|รับแร่/.test(s)){const X=P.x*T,Y=P.y*T-8;sparks(X,Y,CL.fire,16,170);ring(X,Y,CL.gold,4,30,.45,2);glint(X,Y,CL.gold,9,.5)}}catch(e){}};
+// ---------- ตรวจการเปลี่ยนแปลงทุกเฟรม ----------
+function scan(dt){
+  const k=where+'|'+floor;
+  if(k!=key){key=k;PS.length=0;LT.length=0;vOre=[];vLava=[];vSt=null;sc=9;prevMS=[];tr={t:0,boss:where=='mine'&&floor>0&&floor%5==0,txt:where=='mine'?'ชั้น '+floor:'',zone:where=='mine'&&typeof Z!='undefined'&&Z?Z.n||'':''};lastHP=HP}
+  for(const m of MS){const h=mh.get(m);if(h!==undefined&&m.hp<h-.5)hitFx(m);mh.set(m,m.hp)}
+  for(const m of prevMS)if(!MS.includes(m)&&m.hp<=0)deathFx(m);prevMS=MS.slice();
+  const d=HP-lastHP;lastHP=HP,X=P.x*T,Y=P.y*T;
+  if(d<-1){sparks(X,Y,CL.red,10,150);ring(X,Y,CL.red,6,30,.35,3)}
+  if(d>0){ha+=d;for(let i=0;i<4&&ha>=5;i++){ha-=5;plus(X+rnd(-10,10),Y-6)}if(ha>20)ha=0;if(d>=8){ring(X,Y,CL.heal,6,34,.5,2);glw(X,Y,CL.heal,8,40,.5,.7)}}
+  const mvd=Math.hypot(P.x-lx,P.y-ly)*T;lx=P.x;ly=P.y;
+  if(mvd<40){mv+=mvd;if(mv>15){mv=0;if(where=='mine'||where=='town')puff(X+rnd(-3,3),Y+9,where=='mine'?CL.dust:'170,160,130',2,7,.4,-6)}}
+  // รายการแร่/ลาวา/บันไดที่อยู่ในจอ (สแกนทุก ~0.3 วิ)
+  sc+=dt;if(sc>.3){sc=0;vOre=[];vLava=[];vSt=null;
+    if(where=='mine'&&map){const i0=Math.max(0,Math.floor(CX/T)-1),i1=Math.min(W-1,Math.floor((CX+VW)/T)+1),j0=Math.max(0,Math.floor(CY/T)-1),j1=Math.min(H-1,Math.floor((CY+VH)/T)+1);
+      for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const t=map[j][i];if(t>=4&&t<=6)vOre.push([i,j,t]);else if(t==17)vLava.push([i,j]);else if(t==7)vSt=[i,j]}}}
+  const lv=LV(),hz=window.__mzHeal&&__mzHeal.ref?__mzHeal.ref():null;
+  // แร่ระยิบระยับ
+  if((ac.ore+=dt)>(lv>1?.35:.8)&&vOre.length){ac.ore=0;const o=pick(vOre);glint((o[0]+rnd(.2,.8))*T,(o[1]+rnd(.2,.8))*T,ORE_C[o[2]],rnd(4,7),.6)}
+  // ลาวา: ประกายไฟลอย
+  if((ac.lava+=dt)>(lv>1?.14:.35)&&vLava.length){ac.lava=0;const o=pick(vLava);mote((o[0]+rnd(.2,.8))*T,(o[1]+.3)*T,CL.fire,rnd(-6,6),rnd(-46,-26),rnd(.7,1.2),rnd(1.4,2.4))}
+  // บันได: ประกายลอยขึ้น + วงแหวนเรียกสายตา
+  if(vSt){if((ac.st+=dt)>.22){ac.st=0;mote((vSt[0]+rnd(.2,.8))*T,(vSt[1]+.7)*T,CL.gem,rnd(-4,4),rnd(-34,-18),rnd(.8,1.3),rnd(1.2,2))}
+    if((ac.ring+=dt)>1.5){ac.ring=0;ring((vSt[0]+.5)*T,(vSt[1]+.6)*T,CL.gem,3,20,.9,2)}}
+  // กองไฟ + หัวใจ
+  if(where=='mine'&&hz){const c=hz.camp;
+    if(c){const cx=c.x*T,cy=c.y*T;
+      if(!c.done&&(ac.camp+=dt)>(lv>1?.08:.2)){ac.camp=0;mote(cx+rnd(-5,5),cy-6,CL.fire,rnd(-10,10),rnd(-70,-40),rnd(.7,1.1),rnd(1.4,2.4))}
+      if((ac.smoke+=dt)>.45){ac.smoke=0;puff(cx+rnd(-3,3),cy-14,c.done?CL.dust:'110,100,92',3,10,1.1,-16,rnd(-4,4))}}
+    if(hz.pu.length&&(ac.heart+=dt)>.3){ac.heart=0;const p=pick(hz.pu);glint(p.x*T+rnd(-8,8),p.y*T+rnd(-8,6),'255,170,190',5,.5)}}
+  // ฝุ่นละอองลอยในอากาศ
+  if(lv>1&&(ac.mote+=dt)>.22){ac.mote=0;let n=0;for(const p of PS)if(p.k=='mote'&&p.amb)n++;
+    if(n<26)add({k:'mote',amb:1,x:rnd(CX,CX+VW),y:rnd(CY,CY+VH),vx:rnd(-5,5),vy:rnd(-7,-1),l:rnd(3,5.5),r:rnd(1.2,2.4),c:where=='mine'?'255,214,150':'255,246,200'})}
+  // ตัวจับเวลาหน่วง
+  for(let i=LT.length-1;i>=0;i--){LT[i].t-=dt;if(LT[i].t<=0){const f=LT[i].f;LT.splice(i,1);try{f()}catch(e){}}}
+  if(tr)tr.t+=dt;if(fl>0)fl-=dt*1.6;if(shk>0)shk-=dt;
+}
+function step(dt){const px=P.x*T,py=P.y*T-4;
+  for(let i=PS.length-1;i>=0;i--){const p=PS[i];p.l-=dt;
+    if(p.l<=0){if(p.k=='gem')glint(px,py,p.c,6,.35);PS.splice(i,1);continue}
+    if(p.k=='gem'){const dx=px-p.x,dy=py-p.y,dd=Math.hypot(dx,dy)||1,a=300+900*(1-p.l/p.l0);p.vx+=dx/dd*a*dt;p.vy+=dy/dd*a*dt;p.vx*=1-3*dt;p.vy*=1-3*dt;if(dd<7)p.l=Math.min(p.l,.001)}
+    else{if(p.g)p.vy+=p.g*dt;if(p.d){const f=Math.max(0,1-p.d*dt);p.vx*=f;p.vy*=f}}
+    p.x+=p.vx*dt;p.y+=p.vy*dt}}
+// ---------- วาด ----------
+function drawWorld(){
+  const A=1;x.save();
+  // วงฟันดาบ เมื่อมีมอนสเตอร์อยู่ใกล้
+  if(swing>0&&MS.some(m=>Math.hypot(m.x-P.x,m.y-P.y)<2.4)){const p=1-swing/.18,a0=Math.atan2(face[1],face[0])-1.0,px=P.x*T,py=P.y*T;
+    x.globalCompositeOperation='lighter';x.lineCap='round';
+    x.globalAlpha=(1-p)*.85;x.strokeStyle='rgb(255,244,200)';x.lineWidth=4*(1-p)+1.5;x.beginPath();x.arc(px,py,21,a0,a0+2*Math.min(1,p*1.6));x.stroke();
+    x.globalAlpha=(1-p)*.4;x.strokeStyle='rgb(255,200,110)';x.lineWidth=7*(1-p)+2;x.beginPath();x.arc(px,py,19,a0,a0+2*Math.min(1,p*1.6));x.stroke()}
+  x.globalCompositeOperation='source-over';
+  for(const p of PS){const f=p.l/p.l0,r=p.r+(p.r1-p.r)*(1-f);
+    if(p.k=='sq'){x.globalAlpha=Math.min(1,f*2.5);x.fillStyle='rgb('+p.c+')';const s=p.r*(.5+f*.5);x.fillRect(Math.round(p.x-s/2),Math.round(p.y-s/2),s,s)}
+    else if(p.k=='puff'){x.globalAlpha=.4*f;x.fillStyle='rgb('+p.c+')';x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.fill()}
+    else if(p.k=='plus'){x.globalAlpha=Math.min(1,f*2);x.fillStyle='rgb('+p.c+')';x.fillRect(Math.round(p.x-p.r/2),Math.round(p.y-1),p.r,2);x.fillRect(Math.round(p.x-1),Math.round(p.y-p.r/2),2,p.r)}
+    else if(p.k=='coin'){const w=Math.abs(Math.cos(tm*9+p.x))*p.r+.8;x.globalAlpha=Math.min(1,f*3);x.fillStyle='rgb('+p.c+')';x.fillRect(Math.round(p.x-w),Math.round(p.y-p.r),w*2,p.r*2);x.fillStyle='rgba(255,255,255,.6)';x.fillRect(Math.round(p.x-w),Math.round(p.y-p.r),Math.max(1,w*.6),p.r*2)}
+    else if(p.k=='conf'){const w=Math.abs(Math.cos(tm*8+p.x*.1))*p.r+.6;x.globalAlpha=Math.min(1,f*2.5);x.fillStyle='rgb('+p.c+')';x.fillRect(Math.round(p.x-w),Math.round(p.y-p.r/2),w*2,p.r)}}
+  x.globalCompositeOperation='lighter';
+  // แสงลาวา / ลำแสงบันได / แสงใต้หัวใจ
+  for(const o of vLava){x.globalAlpha=1;x.fillStyle='rgba(255,90,24,'+(.1+.07*Math.sin(tm*3+o[0]*1.7+o[1]))+')';x.fillRect(o[0]*T-5,o[1]*T-5,T+10,T+10)}
+  if(vSt){const sx=(vSt[0]+.5)*T,sy=vSt[1]*T,pu=.75+.25*Math.sin(tm*3),g=x.createLinearGradient(0,sy,0,sy-62);g.addColorStop(0,'rgba(150,220,255,'+.3*pu+')');g.addColorStop(1,'rgba(150,220,255,0)');
+    x.globalAlpha=1;x.fillStyle=g;x.fillRect(sx-9,sy-62,18,62);x.globalAlpha=.7*pu;x.drawImage(glow(CL.gem),sx-26,sy+T/2-26,52,52)}
+  const hz=window.__mzHeal&&__mzHeal.ref&&where=='mine'?__mzHeal.ref():null;
+  if(hz){for(const p of hz.pu){x.globalAlpha=(.45+.2*Math.sin(tm*5+p.x))*Math.min(1,p.t/3);x.drawImage(glow(CL.pink),p.x*T-17,p.y*T-12,34,34)}
+    if(hz.camp&&!hz.camp.done){x.globalAlpha=.5+.15*Math.sin(tm*9);x.drawImage(glow(CL.fire),hz.camp.x*T-34,hz.camp.y*T-30,68,68)}}
+  for(const p of PS){const f=p.l/p.l0,r=p.r+(p.r1-p.r)*(1-f);
+    if(p.k=='spark'){x.globalAlpha=Math.min(1,f*2.5);x.strokeStyle='rgb('+p.c+')';x.lineWidth=p.r;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x-p.vx*.045,p.y-p.vy*.045);x.stroke()}
+    else if(p.k=='glow'){x.globalAlpha=Math.min(1,f*1.5)*(p.a==null?1:p.a);x.drawImage(glow(p.c),p.x-r,p.y-r,r*2,r*2)}
+    else if(p.k=='ring'){x.globalAlpha=f;x.strokeStyle='rgb('+p.c+')';x.lineWidth=(p.w||2)*f+.5;x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.stroke()}
+    else if(p.k=='glint'){const e=Math.sin(Math.PI*(1-f)),s=p.r*e;x.globalAlpha=Math.min(1,e*1.4);x.drawImage(glow(p.c),p.x-s*1.4,p.y-s*1.4,s*2.8,s*2.8);x.fillStyle='#fff';x.fillRect(Math.round(p.x-s),Math.round(p.y),s*2,1.5);x.fillRect(Math.round(p.x),Math.round(p.y-s),1.5,s*2)}
+    else if(p.k=='gem'){x.globalAlpha=1;x.drawImage(glow(p.c),p.x-6,p.y-6,12,12);x.fillStyle='#fff';x.fillRect(Math.round(p.x-1),Math.round(p.y-1),2,2)}
+    else if(p.k=='mote'){x.globalAlpha=Math.sin(Math.PI*(1-f))*.6;x.drawImage(glow(p.c),p.x-p.r*2.2,p.y-p.r*2.2,p.r*4.4,p.r*4.4)}}
+  x.restore()}
+function drawScreen(dt){
+  const cw=cv.width,ch=cv.height,sz=Math.max(cw,ch);x.save();x.setTransform(1,0,0,1,0,0);x.globalCompositeOperation='source-over';
+  // เลือดต่ำ: ขอบจอแดงเต้นเป็นจังหวะ
+  if(where=='mine'&&HP>0&&HP<mhp()*.3){const k=1-HP/(mhp()*.3),a=(RMQ?.6:.5+.5*Math.sin(tm*5))*.3*k,g=x.createRadialGradient(cw/2,ch/2,sz*.28,cw/2,ch/2,sz*.7);g.addColorStop(0,'rgba(200,20,20,0)');g.addColorStop(1,'rgba(200,20,20,'+a+')');x.globalAlpha=1;x.fillStyle=g;x.fillRect(0,0,cw,ch)}
+  if(fl>0){x.globalAlpha=1;x.fillStyle='rgba('+flc+','+Math.min(.6,fl)+')';x.fillRect(0,0,cw,ch)}
+  // เปลี่ยนชั้น: วงกลมเปิดจากความมืด + ป้ายชื่อชั้น
+  if(tr&&tr.t<2.2){const t=tr.t;
+    if(t<.7){const r0=sz*Math.min(1,t/.6)*.85,g=x.createRadialGradient(cw/2,ch/2,r0,cw/2,ch/2,r0+sz*.25);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(t<.1?1:.97)+')');x.globalAlpha=1;x.fillStyle=g;x.fillRect(0,0,cw,ch)}
+    if(tr.txt&&t>.3&&t<2.1){const a=Math.min(1,(t-.3)/.3)*Math.min(1,(2.1-t)/.5),fs=Math.round(cv.width/640*26),ff=(getComputedStyle(document.documentElement).getPropertyValue('--hd')||'').trim()||'sans-serif',cx=cw/2,cy=ch*.27+(1-Math.min(1,(t-.3)/.4))*10;
+      x.globalAlpha=a;x.textAlign='center';x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=8;
+      x.font='700 '+fs+'px '+ff;x.fillStyle=tr.boss?'#ff7a6a':'#ffe29a';x.fillText(tr.boss?'⚠ '+tr.txt+' · บอส':tr.txt,cx,cy);
+      if(tr.zone){x.font='500 '+Math.round(fs*.55)+'px '+ff;x.fillStyle='#e6dcc0';x.fillText(tr.zone,cx,cy+fs*.95)}
+      x.shadowBlur=0;x.fillStyle=tr.boss?'#ff7a6a':'#ffe29a';const lw=fs*5*Math.min(1,(t-.3)/.5);x.fillRect(cx-lw/2,cy+fs*.52,lw,1.5)}}
+  x.restore();
+  // จอสั่นเพิ่ม (ทับของเดิมเฉพาะตอนที่เอฟเฟกต์ของเราสั่น)
+  if(shk>0){const m=Math.min(.4,shk)*16;cv.style.transform='translate('+((Math.random()-.5)*m).toFixed(1)+'px,'+((Math.random()-.5)*m).toFixed(1)+'px)'}}
+const _dr=draw;draw=function(){_dr();
+  if(!LV()||err>=3)return;
+  const n=performance.now(),dt=Math.min(.05,(n-(draw._t||n))/1000);draw._t=n;tm+=dt;
+  try{scan(dt);step(dt);x.save();x.setTransform(GK,0,0,GK,-CX*GK,-CY*GK);drawWorld();x.restore();drawScreen(dt)}
+  catch(e){err++;PS.length=0;try{x.restore()}catch(_){}try{console.error('vfx',e)}catch(_){}}};
+// ---------- ปุ่มสลับ ----------
+const names=['ปิด','ประหยัด','เต็ม'];
+function paintB(){const b=document.getElementById('vfxb');if(!b)return;const v=LV();b.style.opacity=v==2?'1':v==1?'.65':'.4';b.style.filter=v?'':'grayscale(1)';b.title='เอฟเฟกต์ภาพ: '+names[v]+' (V)'}
+function cycle(){const v=LV();S.vfx=v==2?1:v==1?0:2;if(!S.vfx){PS.length=0;cv.style.transform=''}try{save()}catch(e){}paintB();toast('✨ เอฟเฟกต์ภาพ: '+names[LV()])}
+const hl=document.getElementById('hlp'),vb=document.createElement('button');
+vb.type='button';vb.id='vfxb';vb.textContent='✨';vb.setAttribute('aria-label','เอฟเฟกต์ภาพ');vb.style.pointerEvents='auto';
+if(hl)hl.before(vb);else document.body.appendChild(vb);
+vb.onclick=cycle;paintB();
+addEventListener('keydown',e=>{if(!e.repeat&&!BL&&(e.code=='KeyV'||e.key=='v'||e.key=='V'))cycle()});
+window.__vfx={level:LV,cycle,count:()=>PS.length};
 })();
 </script>
 
